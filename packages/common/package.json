@@ -1,0 +1,11 @@
+{
+  "name": "@feria-a-ti/common",
+  "version": "1.0.0",
+  "description": "Shared common package beetwen React and React Native",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "sevidltd",
+  "license": "ISC"
+}
