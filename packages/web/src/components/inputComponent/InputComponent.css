@@ -1,0 +1,23 @@
+.inputContainer {
+    height: 4em;
+    flex: 1;
+    flex-direction: row;
+    align-items: center;
+}
+
+.inputLabel {
+    font-size: 16px;
+    font-size: max(16px, 1em);
+    padding-left: 2em;
+    flex: 1;
+}
+
+.inputComponent {
+    font-size: 32px;
+    font-size: max(32px, 2.2em);
+    color: #000;
+    padding-left: 1em;
+    padding-right: 1em;
+    line-height: 2.2em;
+    flex: 2;
+}
