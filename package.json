@@ -2,7 +2,10 @@
    "private": true,
    "name": "feria-a-ti",
    "version": "1.0.0",
-   "workspaces":  [
+   "workspaces": [
       "packages/*"
-   ]
+   ],
+   "dependencies": {
+      "react-hook-form": "^7.43.9"
+   }
 }
