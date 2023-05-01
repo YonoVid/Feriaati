@@ -4,8 +4,8 @@ import { useForm } from "react-hook-form";
 import { colors } from "../../common/theme/base";
 import InputComponent from "./InputComponent";
 import { emailFormatRegex } from "../../common/checkRegisterFields";
-import { RegisterFields } from "../../common/model/RegisterFields";
-import { RegisterFormProps } from "../../common/model/RegisterFormProps";
+import { RegisterFields } from "../../common/model/registerFields";
+import { RegisterFormProps } from "../../common/model/registerFormProps";
 
 function RegisterForm(props: RegisterFormProps) {
     const {

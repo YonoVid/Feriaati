@@ -1,4 +1,4 @@
-import { FieldValues, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { controlValidInput } from "@feria-a-ti/common/inputControl";
 import InputComponent from "../inputComponent/InputComponent";
 import { colors } from "../../../../common/theme/base";
@@ -71,6 +71,7 @@ function RegisterForm(props: RRegisterFormProps) {
                     }}
                     type="submit"
                     value="Registrarse"
+                    disabled={(props.canSubmit!=null)?!props.canSubmit:false}
                 />
             </form>
         </div>

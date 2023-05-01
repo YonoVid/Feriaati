@@ -1,16 +1,20 @@
 import "../../App.css";
 import RegisterForm from "../../components/registerForm/RegisterForm";
-import { getAuth, sendSignInLinkToEmail } from "firebase/auth";
-import { app } from "@feria-a-ti/common/firebase";
+import { functions } from "@feria-a-ti/common/firebase";
 import { RegisterFields } from "@feria-a-ti/common/model/registerFields";
 import { checkRegisterFields } from "@feria-a-ti/common/checkRegisterFields";
-import { Field, FieldValues } from "react-hook-form";
+import { FieldValues } from "react-hook-form";
+import { httpsCallable } from "firebase/functions";
+import { useState } from "react";
 
 function RegisterPage() {
     //Import and prepare firebase data and reference
-    const auth = getAuth(app);
+    //const auth = getAuth(app);
     //Action to do on sucesfull form submit
+    const [canSubmit, setSubmitActive] = useState(true);
+
     const onSubmit = (data: FieldValues) => {
+        setSubmitActive(false);
         console.log("SUBMIT FORM");
         const formatedData: RegisterFields = {
             username: data.username as string,
@@ -23,6 +27,11 @@ function RegisterPage() {
         console.log("ERROR CHECK::", check);
 
         if (check) {
+            const addUser = httpsCallable(functions, 'addUser');
+            addUser(data).then((result) => {
+                console.log(result);
+                setSubmitActive(true);
+            })
             // sendSignInLinkToEmail(auth, data.email, {})
             //     .then(() => {
             //         window.localStorage.setItem("emailForSignIn", data.email);
@@ -35,7 +44,7 @@ function RegisterPage() {
 
     return (
         <>
-            <RegisterForm onSubmit={onSubmit} />
+            <RegisterForm onSubmit={onSubmit} canSubmit={canSubmit}/>
         </>
     );
 }

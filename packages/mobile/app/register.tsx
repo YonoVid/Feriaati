@@ -1,7 +1,7 @@
 import React from "react";
 import { Alert, ScrollView, StyleSheet, Text, View } from "react-native";
 import { checkRegisterFields } from "../../common/checkRegisterFields";
-import { RegisterFields } from "../../common/model/RegisterFields";
+import { RegisterFields } from "../../common/model/registerFields";
 import RegisterForm from "../components/RegisterForm";
 
 function Register() {
