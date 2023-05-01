@@ -9,6 +9,7 @@ import {
     RegisterOptions,
     UseFormRegister,
     UseFormSetError,
+    UseFormWatch,
 } from "react-hook-form";
 
 type InputComponentProps = {
@@ -16,15 +17,20 @@ type InputComponentProps = {
     label?: string;
     type?: "text" | "email" | "password";
     style?: object;
-    required?: boolean;
-    maxLength?: number;
-    minLength?: number;
-    registerForm: UseFormRegister<FieldValues>;
+    watch?: UseFormWatch<FieldValues>;
+    setError?: UseFormSetError<FieldValues>;
     error: FieldError | Merge<FieldError, FieldErrorsImpl<any>> | undefined;
 };
 
-export type RInputComponentProps = InputComponentProps & {
+export type RInputComponentProps<
+    TFieldValues extends FieldValues = FieldValues,
+    TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
+> = InputComponentProps & {
+    required?: boolean;
+    maxLength?: number;
+    minLength?: number;
     onChange?: React.ChangeEventHandler;
+    registerForm: UseFormRegister<FieldValues>;
 };
 
 export type RNInputComponentProps<

@@ -1,11 +1,17 @@
 {
-   "private": true,
-   "name": "feria-a-ti",
-   "version": "1.0.0",
-   "workspaces": [
-      "packages/*"
-   ],
-   "dependencies": {
-      "react-hook-form": "^7.43.9"
-   }
+    "private": true,
+    "name": "feria-a-ti",
+    "version": "1.0.0",
+    "workspaces": [
+        "packages/**"
+    ],
+    "nohoist": [
+        "**/firebase-admin",
+        "**/firebase-admin/**",
+        "**/firebase-functions",
+        "**/firebase-functions/**"
+    ],
+    "dependencies": {
+        "react-hook-form": "^7.43.9"
+    }
 }

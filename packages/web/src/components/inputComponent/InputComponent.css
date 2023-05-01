@@ -3,21 +3,42 @@
     flex: 1;
     flex-direction: row;
     align-items: center;
+    padding-bottom: 0.5em;
+}
+
+.inputLabelWrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    margin-top: "-1em";
+    flex-direction: row;
+    margin-bottom: 1em;
 }
 
 .inputLabel {
-    font-size: 16px;
-    font-size: max(16px, 1em);
-    padding-left: 2em;
-    flex: 1;
+    margin-top: -0.4em;
+    align-self: flex-start;
+    font-weight: bold;
+    margin-left: 1em;
+    padding-left: 5%;
+    padding-right: 5%;
+    font-size: 0.7em;
+    font-size: max(12px, 1em);
+    border-radius: 1em;
 }
 
 .inputComponent {
-    font-size: 32px;
-    font-size: max(32px, 2.2em);
+    position: relative;
+    width: 90%;
+    font-size: max(16px, 1em);
     color: #000;
     padding-left: 1em;
     padding-right: 1em;
-    line-height: 2.2em;
+    margin-top: 2%;
+    margin-left: 0;
+    margin-right: 0;
+    height: 2.5em;
+    line-height: 2em;
     flex: 2;
+    border-radius: 3.2em;
 }

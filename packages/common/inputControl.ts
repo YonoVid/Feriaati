@@ -8,6 +8,7 @@ import {
 
 export type InputComponentProps = {
     name: string;
+    type?: string;
     style?: object;
     required?: boolean;
     maxLength?: number;

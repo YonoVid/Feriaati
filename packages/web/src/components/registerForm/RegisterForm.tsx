@@ -1,84 +1,79 @@
 import { FieldValues, useForm } from "react-hook-form";
 import { controlValidInput } from "@feria-a-ti/common/inputControl";
 import InputComponent from "../inputComponent/InputComponent";
+import { colors } from "../../../../common/theme/base";
+import "./RegisterForm.css";
+import { RRegisterFormProps } from "../../../../common/model/registerFormProps";
 
-export type RegisterFormProps = {
-    actionOnSubmit: (data: FieldValues) => void;
-};
-
-function RegisterForm(registerFormProps: RegisterFormProps) {
-    const { actionOnSubmit } = registerFormProps;
+function RegisterForm(props: RRegisterFormProps) {
+    const { onSubmit } = props;
     const {
         register,
         formState: { errors },
         watch,
         handleSubmit,
+        setError,
     } = useForm();
 
-    let passwordVerificationEqual = true;
-    const passwordValue = watch("password");
-
-    const checkPassword = (e: React.ChangeEvent<HTMLInputElement>) => {
-        console.log("CHECK PASSWORD::", e);
-        console.log(passwordValue);
-        if (e.target.value != null) {
-            passwordVerificationEqual = passwordValue === e.target.value;
-        }
-    };
-
-    const onSubmit = (data: FieldValues) => {
-        if (!data.errors) {
-            console.log(data);
-        }
-        if (data.email != null && data.password != null) {
-            actionOnSubmit(data);
-        }
-    };
-
     return (
-        <>
+        <div
+            className="formContainer"
+            style={{ backgroundColor: colors.secondary }}
+        >
+            <h1 style={{ maxWidth: "80%" }}>REGISTRARSE</h1>
             <form onSubmit={handleSubmit(onSubmit)}>
                 <InputComponent
                     name="username"
+                    label="Nombre de usuario"
                     onChange={controlValidInput}
                     required={true}
                     maxLength={25}
                     minLength={8}
-                    hookForm={register}
+                    registerForm={register}
                     error={errors.username}
                 />
                 <InputComponent
                     name="email"
+                    type="email"
+                    label="Correo electrónico"
                     required={true}
                     maxLength={254}
-                    hookForm={register}
+                    registerForm={register}
                     error={errors.email}
                 />
                 <InputComponent
                     name="password"
+                    label="Contraseña"
+                    type="password"
                     required={true}
                     maxLength={128}
                     minLength={10}
-                    onChange={checkPassword}
-                    hookForm={register}
+                    registerForm={register}
                     error={errors.password}
                 />
                 <InputComponent
                     name="confirmPassword"
+                    label="Confirmar contraseña"
+                    type="password"
                     required={true}
                     maxLength={254}
                     minLength={10}
-                    hookForm={register}
+                    registerForm={register}
+                    watch={watch("password")}
+                    setError={setError}
                     error={errors.confirmPassword}
                 />
-                <div>
-                    {!passwordVerificationEqual && (
-                        <p>Las contraseñas no son iguales</p>
-                    )}
-                </div>
-                <input type="submit" />
+                <input
+                    className="formButton"
+                    style={{
+                        color: colors.light,
+                        backgroundColor: colors.secondaryShadow,
+                    }}
+                    type="submit"
+                    value="Registrarse"
+                />
             </form>
-        </>
+        </div>
     );
 }
 
