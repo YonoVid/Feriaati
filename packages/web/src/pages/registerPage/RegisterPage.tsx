@@ -1,7 +1,7 @@
 import "../../App.css";
 import RegisterForm from "../../components/registerForm/RegisterForm";
 import { functions } from "@feria-a-ti/common/firebase";
-import { RegisterFields } from "@feria-a-ti/common/model/registerFields";
+import { RegisterFields, userStatus } from "@feria-a-ti/common/model/registerFields";
 import { checkRegisterFields } from "@feria-a-ti/common/checkRegisterFields";
 import { FieldValues } from "react-hook-form";
 import { httpsCallable } from "firebase/functions";
@@ -21,6 +21,7 @@ function RegisterPage() {
             email: data.email as string,
             password: data.password as string,
             confirmPassword: data.confirmPassword as string,
+            status: userStatus.registered
         };
         const check = checkRegisterFields(formatedData);
 
@@ -28,7 +29,7 @@ function RegisterPage() {
 
         if (check) {
             const addUser = httpsCallable(functions, 'addUser');
-            addUser(data).then((result) => {
+            addUser(formatedData).then((result) => {
                 console.log(result);
                 setSubmitActive(true);
             })
