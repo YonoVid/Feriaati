@@ -1,4 +1,4 @@
-import {RegisterFields} from "./types";
+import { RegisterFields } from "./types";
 
 export const emailFormatRegex = new RegExp(
   "^([\\w-]+(?:\\.[\\w-]+)*)@((?:[\\w-]+\\.)" +

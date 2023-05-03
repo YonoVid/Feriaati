@@ -1,8 +1,10 @@
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
+import * as sendGrid from "@sendgrid/mail";
 import { RegisterFields } from "./types";
 import { checkRegisterFields } from "./checkRegister";
 import Encryption, { generativeIvOfSize } from "./encryption"
+import { getRandomInt } from "./random";
 
 // // Start writing functions
 // // https://firebase.google.com/docs/functions/typescript
@@ -21,6 +23,7 @@ const config = {
     iv: generativeIvOfSize(16)
 };
  const encryption = new Encryption(config);
+ sendGrid.setApiKey(process.env.SENDGRID_API_KEY as string);
 
 export const helloWorld = functions.https.onRequest((request, response) => {
   functions.logger.info("Hello logs!", {structuredData: true});
@@ -43,8 +46,23 @@ export const addUser = functions.https.onCall(
                 email: data.email,
                 password: encryption.encrypt(data.password),
                 algorithm: config.algorithm,
-                iv: config.iv
+                status: data.status as string || "null",
+                iv: config.iv,
+                code: getRandomInt(999999).toString().padStart(6, "0")
             }
+            functions.logger.info("TO UPLOAD DATA::", collectionData);
+
+            sendGrid.send({
+                to: data.email, // Change to your recipient
+                from: 'feriaati@gmail.com', // Change to your verified sender
+                text: "Message to register " + data.username,
+                templateId: process.env.REGISTER_TEMPLATE_ID,
+                dynamicTemplateData: {
+                    username: data.username,
+                    code: collectionData.code
+                }}
+            ).catch((reason:any) => functions.logger.info(reason, reason.body?.errors));
+        
             db.collection("users").doc(data.email).create(collectionData);
             msg = "Data added successfully";
         }
