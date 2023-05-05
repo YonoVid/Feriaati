@@ -2,11 +2,11 @@ import { useForm } from "react-hook-form";
 import { controlValidInput } from "@feria-a-ti/common/inputControl";
 import InputComponent from "../inputComponent/InputComponent";
 import { colors } from "../../../../common/theme/base";
-import "./RegisterForm.css";
-import { RRegisterFormProps } from "../../../../common/model/registerFormProps";
-import { Link } from "react-router-dom";
+import "./LoginForm";
+import { RUpdatepPassFormProps } from "../../../../common/model/loginFormProps";
+//import { Link } from "react-router-dom";
 
-function RegisterForm(props: RRegisterFormProps) {
+function UpdatePassForm(props: RUpdatepPassFormProps) {
   const { onSubmit } = props;
   const {
     register,
@@ -21,30 +21,22 @@ function RegisterForm(props: RRegisterFormProps) {
       className="formContainer"
       style={{ backgroundColor: colors.secondary }}
     >
-      <h1 style={{ maxWidth: "100%" }}>REGISTRARSE</h1>
+      <h1 style={{ maxWidth: "100%" }}>Intoduce nueva contraseña</h1>
       <form onSubmit={handleSubmit(onSubmit)}>
         <InputComponent
-          name="username"
-          label="Nombre de usuario"
+          name="codigo"
+          label="Código"
           onChange={controlValidInput}
           required={true}
-          maxLength={25}
-          minLength={8}
+          maxLength={6}
+          minLength={6}
           registerForm={register}
-          error={errors.username}
+          error={errors}
         />
-        <InputComponent
-          name="email"
-          type="email"
-          label="Correo electrónico"
-          required={true}
-          maxLength={254}
-          registerForm={register}
-          error={errors.email}
-        />
+
         <InputComponent
           name="password"
-          label="Contraseña"
+          label="Ingrese nueva contraseña"
           type="password"
           required={true}
           maxLength={128}
@@ -54,7 +46,7 @@ function RegisterForm(props: RRegisterFormProps) {
         />
         <InputComponent
           name="confirmPassword"
-          label="Confirmar contraseña"
+          label="Confirmar nueva contraseña"
           type="password"
           required={true}
           maxLength={254}
@@ -75,9 +67,8 @@ function RegisterForm(props: RRegisterFormProps) {
           disabled={props.canSubmit != null ? !props.canSubmit : false}
         />
       </form>
-      <Link to={"/login"}>Ya tienes una cuenta? Inicia Sesion</Link>
     </div>
   );
 }
 
-export default RegisterForm;
+export default UpdatePassForm;

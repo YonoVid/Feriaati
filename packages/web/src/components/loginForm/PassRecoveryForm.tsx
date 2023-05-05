@@ -2,10 +2,9 @@ import { useForm } from "react-hook-form";
 import InputComponent from "../inputComponent/InputComponent";
 import { colors } from "@feria-a-ti/common/theme/base";
 import "./LoginForm.css";
-import { RLoginFormProps } from "@feria-a-ti/common/model/loginFormProps";
-import { Link } from "react-router-dom";
+import { RRecoveryFormProps } from "@feria-a-ti/common/model/loginFormProps";
 
-function LoginForm(props: RLoginFormProps) {
+function RecoveryForm(props: RRecoveryFormProps) {
   const { onSubmit } = props;
   const {
     register,
@@ -18,7 +17,8 @@ function LoginForm(props: RLoginFormProps) {
       className="formContainer"
       style={{ backgroundColor: colors.secondary }}
     >
-      <h1 style={{ maxWidth: "100%" }}>Iniciar Sesion</h1>
+      <h1 style={{ maxWidth: "100%" }}>Recuperar Contraseña</h1>
+      <h3 style={{ maxWidth: "100%" }}>Ingrese su correo</h3>
       <form onSubmit={handleSubmit(onSubmit)}>
         <InputComponent
           name="email"
@@ -29,16 +29,6 @@ function LoginForm(props: RLoginFormProps) {
           registerForm={register}
           error={errors.email}
         />
-        <InputComponent
-          name="password"
-          label="Contraseña"
-          type="password"
-          required={true}
-          maxLength={128}
-          minLength={10}
-          registerForm={register}
-          error={errors.password}
-        />
 
         <input
           className="formButton"
@@ -47,15 +37,12 @@ function LoginForm(props: RLoginFormProps) {
             backgroundColor: colors.secondaryShadow,
           }}
           type="submit"
-          value="Iniciar sesion"
+          value="Enviar Código"
           disabled={props.canSubmit != null ? !props.canSubmit : false}
         />
       </form>
-      <Link to={"/register"}>No tienes una cuenta? Registrate</Link>
-      <br />
-      <Link to={"/recovery"}>Olvidaste tu contraseña?</Link>
     </div>
   );
 }
 
-export default LoginForm;
+export default RecoveryForm;

@@ -2,30 +2,40 @@ import React from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import ErrorPage from "./pages/errorPage/ErrorPage";
 import RegisterPage from "./pages/registerPage/RegisterPage";
-import LoginPage  from "./pages/loginPage/LoginPage";
+import LoginPage from "./pages/loginPage/LoginPage";
+import RecoveryPage from "./pages/loginPage/RecoveryPage";
+import UpdatePassPage from "./pages/loginPage/UpdatePassPage";
 
 const router = createBrowserRouter([
-    {
-        path: "/",
-        element: <RegisterPage />,
-        errorElement: <ErrorPage />,
-    },
-    {
-        path: "/register",
-        element: <RegisterPage />,
-    },
-    {
-        path: "/login",
-        element: <LoginPage />,
-    },
+  {
+    path: "/",
+    element: <RegisterPage />,
+    errorElement: <ErrorPage />,
+  },
+  {
+    path: "/register",
+    element: <RegisterPage />,
+  },
+  {
+    path: "/login",
+    element: <LoginPage />,
+  },
+  {
+    path: "/recovery",
+    element: <RecoveryPage />,
+  },
+  {
+    path: "/updatePass",
+    element: <UpdatePassPage />,
+  },
 ]);
 
 function App() {
-    return (
-        <React.StrictMode>
-            <RouterProvider router={router} />
-        </React.StrictMode>
-    );
+  return (
+    <React.StrictMode>
+      <RouterProvider router={router} />
+    </React.StrictMode>
+  );
 }
 
 export default App;

@@ -5,36 +5,20 @@ import { useForm } from "react-hook-form";
 import { colors } from "../../common/theme/base";
 import InputComponent from "./InputComponent";
 import { emailFormatRegex } from "../../common/checkRegisterFields";
-import { RegisterFields } from "../../common/model/registerFields";
-import { RegisterFormProps } from "../../common/model/registerFormProps";
+import { LoginFields } from "../../common/model/loginFields";
+import { LoginFormProps } from "../../common/model/loginFormProps";
 
-function RegisterForm(props: RegisterFormProps) {
+function LoginForm(props: LoginFormProps) {
   const {
     handleSubmit,
     control,
     formState: { errors },
-  } = useForm<RegisterFields>();
+  } = useForm<LoginFields>();
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>REGISTER</Text>
-      <InputComponent
-        name="username"
-        label="Nombre de usuario"
-        control={control}
-        error={errors?.username}
-        rules={{
-          required: "El nombre de usuario es requerido",
-          maxLength: {
-            value: 25,
-            message: "El máximo de caracteres es 25",
-          },
-          minLength: {
-            value: 8,
-            message: "El mínimo de caracteres es 8",
-          },
-        }}
-      />
+      <Text style={styles.title}>Login</Text>
+
       <InputComponent
         name="email"
         label="Correo electrónico"
@@ -69,23 +53,11 @@ function RegisterForm(props: RegisterFormProps) {
           },
         }}
       />
-      <InputComponent
-        name="confirmPassword"
-        label="Confirmar contraseña"
-        control={control}
-        error={errors?.confirmPassword}
-        rules={{
-          required: "La confirmación de contraseña es requerida",
-          maxLength: {
-            value: 128,
-            message: "El máximo de caracteres es 128",
-          },
-        }}
-      />
+
       <View style={styles.button}>
         <Button
           color={styles.buttonInner.color}
-          title="Registrarse"
+          title="Iniciar Sesion"
           onPress={handleSubmit(props.onSubmit)}
         />
       </View>
@@ -128,4 +100,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default RegisterForm;
+export default LoginForm;
