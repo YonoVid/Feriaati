@@ -14,3 +14,12 @@ export type UserFields = {
 export type RegisterFields = UserFields & {
     confirmPassword: string;
 };
+
+export type ConfirmRegisterFields = UserFields & {
+    code: string;
+};
+
+export type RegisterConfirm = {
+    email: string;
+    code: string;
+};

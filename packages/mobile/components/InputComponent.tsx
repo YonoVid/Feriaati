@@ -11,12 +11,14 @@ import { colors } from "../../common/theme/base";
 
 interface Props<T> extends UseControllerProps<T> {
     label: string;
+    type?: "text" | "password" | "email";
     error: FieldError | undefined;
 }
 
 const InputComponent = <T extends FieldValues>({
     name,
     label,
+    type,
     control,
     rules,
     error,
@@ -57,6 +59,8 @@ const InputComponent = <T extends FieldValues>({
                     fieldState: { error },
                 }) => (
                     <TextInput
+                        autoCapitalize="none"
+                        secureTextEntry={type == "password" ? true : false}
                         style={styles.input}
                         placeholder={labelText}
                         placeholderTextColor={

@@ -71,7 +71,9 @@ function RegisterForm(props: RRegisterFormProps) {
                     }}
                     type="submit"
                     value="Registrarse"
-                    disabled={(props.canSubmit!=null)?!props.canSubmit:false}
+                    disabled={
+                        props.canSubmit != null ? !props.canSubmit : false
+                    }
                 />
             </form>
         </div>

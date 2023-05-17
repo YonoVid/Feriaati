@@ -3,7 +3,10 @@ import { Text, View, Button, StyleSheet } from "react-native";
 import { useForm } from "react-hook-form";
 import { colors } from "../../common/theme/base";
 import InputComponent from "./InputComponent";
-import { emailFormatRegex } from "../../common/checkRegisterFields";
+import {
+    emailFormatRegex,
+    passwordFormatRegex,
+} from "../../common/checkRegisterFields";
 import { RegisterFields } from "../../common/model/registerFields";
 import { RegisterFormProps } from "../../common/model/registerFormProps";
 
@@ -55,6 +58,7 @@ function RegisterForm(props: RegisterFormProps) {
             <InputComponent
                 name="password"
                 label="Contraseña"
+                type="password"
                 control={control}
                 error={errors?.password}
                 rules={{
@@ -67,11 +71,17 @@ function RegisterForm(props: RegisterFormProps) {
                         value: 10,
                         message: "El mínimo de caracteres es 10",
                     },
+                    pattern: {
+                        value: passwordFormatRegex,
+                        message:
+                            "Formato de contraseña incorrecto, debe ser alfanumérico",
+                    },
                 }}
             />
             <InputComponent
                 name="confirmPassword"
                 label="Confirmar contraseña"
+                type="password"
                 control={control}
                 error={errors?.confirmPassword}
                 rules={{
@@ -86,6 +96,7 @@ function RegisterForm(props: RegisterFormProps) {
                 <Button
                     color={styles.buttonInner.color}
                     title="Registrarse"
+                    disabled={!props.canSubmit}
                     onPress={handleSubmit(props.onSubmit)}
                 />
             </View>

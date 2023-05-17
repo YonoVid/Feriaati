@@ -1,6 +1,9 @@
 import { ChangeEvent, useState } from "react";
 import { RInputComponentProps } from "@feria-a-ti/common/model/inputProps";
-import { emailFormatRegex } from "@feria-a-ti/common/checkRegisterFields";
+import {
+    emailFormatRegex,
+    passwordFormatRegex,
+} from "@feria-a-ti/common/checkRegisterFields";
 import { colors } from "@feria-a-ti/common/theme/base";
 import "./InputComponent.css";
 
@@ -109,14 +112,23 @@ function InputComponent(data: RInputComponentProps) {
                         )) ||
                     (type === "password" &&
                         value != "" &&
-                        checkEqualPassword() && (
+                        ((checkEqualPassword() && (
                             <label
                                 htmlFor={name + "Form"}
                                 className="inputLabel"
                             >
                                 Contraseñas no son iguales
                             </label>
-                        ))}
+                        )) ||
+                            (!passwordFormatRegex.test(value) && (
+                                <label
+                                    htmlFor={name + "Form"}
+                                    className="inputLabel"
+                                >
+                                    Formato de contraseña incorrecto, debe ser
+                                    alfanumérica
+                                </label>
+                            ))))}
             </div>
         </>
     );

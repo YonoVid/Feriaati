@@ -1,14 +1,23 @@
 import { FieldValues } from "react-hook-form";
-import { RegisterFields } from "./registerFields";
+import { ConfirmRegisterFields, RegisterFields } from "./registerFields";
 
-type RegisterProps = {
+type FormProps = {
     canSubmit?: boolean;
-}
+};
 
-export type RegisterFormProps = RegisterProps & {
+export type RFormProps = {
+    canSubmit?: boolean;
+    onSubmit: (data: FieldValues) => void;
+};
+
+export type RegisterFormProps = FormProps & {
     onSubmit: (data: RegisterFields) => void;
 };
 
-export type RRegisterFormProps = RegisterProps & {
-    onSubmit: (data: FieldValues) => void;
+export type ConfirmRegisterFormProps = FormProps & {
+    onSubmit: (data: ConfirmRegisterFields) => void;
+};
+
+export type RRegisterFormProps = RFormProps & {
+    type?: "register";
 };
