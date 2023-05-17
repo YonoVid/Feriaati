@@ -1,125 +1,82 @@
-import { FieldValues, useForm } from "react-hook-form";
-import {
-    getAuth,
-    createUserWithEmailAndPassword,
-    sendSignInLinkToEmail,
-} from "firebase/auth";
+import { useForm } from "react-hook-form";
 import { controlValidInput } from "@feria-a-ti/common/inputControl";
-import { app } from "@feria-a-ti/common/firebase";
+import InputComponent from "../inputComponent/InputComponent";
+import { colors } from "../../../../common/theme/base";
+import "./RegisterForm.css";
+import { RRegisterFormProps } from "../../../../common/model/registerFormProps";
 
-function RegisterForm() {
-    const auth = getAuth(app);
+function RegisterForm(props: RRegisterFormProps) {
+    const { onSubmit } = props;
     const {
         register,
         formState: { errors },
         watch,
         handleSubmit,
+        setError,
     } = useForm();
 
-    let passwordVerificationEqual = true;
-    const passwordValue = watch("password");
-
-    const checkPassword = (e: React.ChangeEvent<HTMLInputElement>) => {
-        console.log("CHECK PASSWORD::", e);
-        console.log(passwordValue);
-        if (e.target.value != null) {
-            passwordVerificationEqual = passwordValue === e.target.value;
-        }
-    };
-
-    const onSubmit = (data: FieldValues) => {
-        if (!data.errors) {
-            console.log(data);
-        }
-        if (auth != null && data.email != null && data.password != null) {
-            sendSignInLinkToEmail(auth, data.email, data.password)
-                .then(() => {
-                    window.localStorage.setItem("emailForSignIn", data.email);
-                })
-                .catch((error) => {
-                    console.log(error.code, error.message);
-                });
-        }
-    };
-
     return (
-        <>
+        <div
+            className="formContainer"
+            style={{ backgroundColor: colors.secondary }}
+        >
+            <h1 style={{ maxWidth: "80%" }}>REGISTRARSE</h1>
             <form onSubmit={handleSubmit(onSubmit)}>
-                <div>
-                    <input
-                        type="text"
-                        maxLength={25}
-                        {...register("username", {
-                            onChange: controlValidInput,
-                            required: true,
-                            maxLength: 25,
-                        })}
-                    />
-                    {errors.username?.type === "required" && (
-                        <p>Campo es requerido</p>
-                    )}
-                    {errors.username?.type === "maxLength" && (
-                        <p>Campo debe tener menos de 25 caracteres</p>
-                    )}
-                </div>
-                <div>
-                    <input
-                        type="text"
-                        maxLength={254}
-                        {...register("email", {
-                            required: true,
-                            maxLength: 254,
-                        })}
-                    />
-                    {errors.email?.type === "required" && (
-                        <p>Campo es requerido</p>
-                    )}
-                    {errors.email?.type === "maxLength" && (
-                        <p>Campo debe tener menos de 254 caracteres</p>
-                    )}
-                </div>
-                <div>
-                    <input
-                        type="text"
-                        minLength={10}
-                        maxLength={128}
-                        {...register("password", {
-                            required: true,
-                            maxLength: 128,
-                            minLength: 10,
-                        })}
-                    />
-                    {errors.password?.type === "required" && (
-                        <p>Campo es requerido</p>
-                    )}
-                    {errors.password?.type === "maxLength" && (
-                        <p>Campo debe tener menos de 128 caracteres</p>
-                    )}
-                </div>
-                <div>
-                    <input
-                        type="text"
-                        maxLength={128}
-                        {...register("confirmPassword", {
-                            onChange: checkPassword,
-                            required: true,
-                            maxLength: 128,
-                            minLength: 10,
-                        })}
-                    />
-                    {!passwordVerificationEqual && (
-                        <p>Las contraseñas no son iguales</p>
-                    )}
-                    {errors.confirmPassword?.type === "required" && (
-                        <p>Campo es requerido</p>
-                    )}
-                    {errors.confirmPassword?.type === "maxLength" && (
-                        <p>Campo debe tener menos de 128 caracteres</p>
-                    )}
-                </div>
-                <input type="submit" />
+                <InputComponent
+                    name="username"
+                    label="Nombre de usuario"
+                    onChange={controlValidInput}
+                    required={true}
+                    maxLength={25}
+                    minLength={8}
+                    registerForm={register}
+                    error={errors.username}
+                />
+                <InputComponent
+                    name="email"
+                    type="email"
+                    label="Correo electrónico"
+                    required={true}
+                    maxLength={254}
+                    registerForm={register}
+                    error={errors.email}
+                />
+                <InputComponent
+                    name="password"
+                    label="Contraseña"
+                    type="password"
+                    required={true}
+                    maxLength={128}
+                    minLength={10}
+                    registerForm={register}
+                    error={errors.password}
+                />
+                <InputComponent
+                    name="confirmPassword"
+                    label="Confirmar contraseña"
+                    type="password"
+                    required={true}
+                    maxLength={254}
+                    minLength={10}
+                    registerForm={register}
+                    watch={watch("password")}
+                    setError={setError}
+                    error={errors.confirmPassword}
+                />
+                <input
+                    className="formButton"
+                    style={{
+                        color: colors.light,
+                        backgroundColor: colors.secondaryShadow,
+                    }}
+                    type="submit"
+                    value="Registrarse"
+                    disabled={
+                        props.canSubmit != null ? !props.canSubmit : false
+                    }
+                />
             </form>
-        </>
+        </div>
     );
 }
 
