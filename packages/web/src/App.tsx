@@ -5,6 +5,8 @@ import RegisterPage from "./pages/registerPage/RegisterPage";
 import LoginPage from "./pages/loginPage/LoginPage";
 import RecoveryPage from "./pages/loginPage/RecoveryPage";
 import UpdatePassPage from "./pages/loginPage/UpdatePassPage";
+import Home from "./pages/Home";
+import SessionPage from "./pages/SessionPage";
 
 const router = createBrowserRouter([
   {
@@ -27,6 +29,14 @@ const router = createBrowserRouter([
   {
     path: "/updatePass",
     element: <UpdatePassPage />,
+  },
+  {
+    path: "/session",
+    element: <SessionPage />,
+  },
+  {
+    path: "/home",
+    element: <Home />,
   },
 ]);
 

@@ -10,8 +10,10 @@ import UpdatePassword from "../../components/loginForm/UpdatePassword";
 function UpdatePassPage() {
   const [canSubmit, setSubmitActive] = useState(true);
   const onSubmit = (data: FieldValues) => {
+    
     setSubmitActive(false);
     console.log("SUBMIT FORM");
+    window.alert("hla");
     const formatedData: UpdatePassFields = {
       email: data.email as string,
       codigo: data.codigo as string,
@@ -22,8 +24,13 @@ function UpdatePassPage() {
     if (check) {
       const passUpdate = httpsCallable(functions, "passUpdate");
       passUpdate(formatedData).then((result) => {
+        const {msg} = result.data as any;
+        
+        
         console.log(result);
+        console.log("hola")
         setSubmitActive(true);
+        window.alert(msg);
       });
     }
   };

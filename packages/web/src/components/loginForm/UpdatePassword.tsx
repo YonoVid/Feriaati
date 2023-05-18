@@ -4,6 +4,7 @@ import InputComponent from "../inputComponent/InputComponent";
 import { colors } from "../../../../common/theme/base";
 import "./LoginForm";
 import { RUpdatepPassFormProps } from "../../../../common/model/loginFormProps";
+import { Link } from "react-router-dom";
 //import { Link } from "react-router-dom";
 
 function UpdatePassForm(props: RUpdatepPassFormProps) {
@@ -63,10 +64,11 @@ function UpdatePassForm(props: RUpdatepPassFormProps) {
             backgroundColor: colors.secondaryShadow,
           }}
           type="submit"
-          value="Registrarse"
+          value="Cambiar contraseña"
           disabled={props.canSubmit != null ? !props.canSubmit : false}
         />
       </form>
+      <Link to={"/login"}>Ir a iniciar sesión</Link>
     </div>
   );
 }

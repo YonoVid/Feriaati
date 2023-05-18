@@ -16,6 +16,8 @@ import {
 import UpdatePassword from "../../components/loginForm/UpdatePassword";
 
 function RecoveryPage() {
+  const [userEmail, setUserEmail] = useState('');
+
   const [canSubmit, setSubmitActive] = useState(true);
   const [changePass, setChangePass] = useState(true);
   const onSubmitRecoveryPass = (data: FieldValues) => {
@@ -29,8 +31,12 @@ function RecoveryPage() {
     if (check) {
       const passRecovery = httpsCallable(functions, "passRecovery");
       passRecovery(formatedData.email).then((result) => {
+        
+        window.alert("Código enviado con éxito");
         console.log(result);
         setSubmitActive(true);
+        setUserEmail(data.email)
+        setChangePass(false)
       });
     }
   };
@@ -38,6 +44,7 @@ function RecoveryPage() {
     setSubmitActive(false);
     console.log("SUBMIT FORM");
     const formatedData: UpdatePassFields = {
+      email: userEmail,
       codigo: data.codigo as string,
       password: data.password as string,
       confirmPassword: data.confirmPassword as string,
@@ -46,6 +53,8 @@ function RecoveryPage() {
     if (check) {
       const passUpdate = httpsCallable(functions, "passUpdate");
       passUpdate(formatedData).then((result) => {
+        let {msg} = result.data as any;
+        window.alert(msg);
         console.log(result);
         setSubmitActive(true);
       });

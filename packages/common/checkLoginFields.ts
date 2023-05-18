@@ -40,5 +40,5 @@ export const checkUpdatePassFields = (input: UpdatePassFields): boolean => {
     password != null && password.length < 128 && password === confirmPassword;
   // console.log("Password check", passwordCheck);
 
-  return codigo && passwordCheck;
+  return codeCheck && passwordCheck;
 };

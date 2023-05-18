@@ -10,6 +10,7 @@ import {
 //import { checkUpdatePassFields } from "./checkUpdate";
 import { checkRegisterFields } from "./checkRegister";
 import { checkLoginFields } from "./checkLogin";
+import { checkUpdatePassFields } from "./checkUpdate";
 import Encryption, { generativeIvOfSize } from "./encryption";
 import { randomBytes } from "crypto";
 import { getRandomInt } from "./random";
@@ -96,13 +97,13 @@ export const login = functions.https.onCall(
   async (data: LoginFields, context) => {
     try {
       const db = admin.firestore();
-
       let { msg } = checkLoginFields(data);
       const usersRef = db.collection("users");
       const querySnapshot = usersRef.doc(data.email);
       const userDoc = await querySnapshot.get();
       let userData = userDoc.data();
       let token = "";
+      let isLogged = false;
 
       if (
         userDoc.exists &&
@@ -119,20 +120,26 @@ export const login = functions.https.onCall(
         const desencryption = new Encryption(config);
 
         if (userData?.password !== desencryption.encrypt(data.password)) {
-          msg = "password incorrecta";
+          msg = "Contraseña incorrecta";
           if ((data?.attempts as number) >= 5) {
             querySnapshot.update({ status: "blocked" }),
-              (msg = "su cuenta ha sido bloqueada, contactese con soporte");
+              (msg = "Su cuenta ha sido bloqueada, contactese con soporte");
           }
         } else {
           token = randomBytes(20).toString("hex");
           querySnapshot.update({ token: token });
+          msg = "Acceso correcto";
+          isLogged = true;
         }
       } else {
-        msg = "Usuario no existe";
+        if (userData?.status === (userStatus.blocked as string)) {
+          msg = "Su cuenta se encuentra bloqueada, contacte a soporte";
+        } else {
+          msg = "Usuario no existe";
+        }
       }
 
-      return { user: userData?.id, msg: msg, token: token };
+      return { user: userData?.id, msg: msg, token: token, isLogged: isLogged };
     } catch (err) {
       functions.logger.error(err);
       throw new functions.https.HttpsError("invalid-argument", "some message");
@@ -159,7 +166,7 @@ export const passRecovery = functions.https.onCall(async (email: string) => {
 export const passUpdate = functions.https.onCall(
   async (data: UpdatePassFields) => {
     const db = admin.firestore();
-    //let { msg } = checkUpdatePassFields(data);
+    let { msg } = checkUpdatePassFields(data);
     const usersRef = db.collection("users");
     const querySnapshot = usersRef.doc(data.email);
     const userDocR = await querySnapshot.get();
@@ -170,8 +177,9 @@ export const passUpdate = functions.https.onCall(
       functions.logger.info("hola");
       db.collection("users")
         .doc(data.email)
-        .update({ password: data.password });
+        .update({ password: encryption.encrypt(data.password) });
+      msg = "Contraseña actualizada con éxito";
     }
-    return { mensaje: "data.codigo" };
+    return { mensaje: "data.codigo", msg: msg };
   }
 );

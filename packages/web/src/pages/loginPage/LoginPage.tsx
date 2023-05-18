@@ -6,9 +6,12 @@ import { FieldValues } from "react-hook-form";
 import { httpsCallable } from "firebase/functions";
 import { useState } from "react";
 import { LoginFields } from "@feria-a-ti/common/model/loginFields";
+import { useNavigate } from "react-router-dom";
 
 function LoginPage() {
+  const navigate = useNavigate();
   const [attempt, setAttempt] = useState(0);
+  //const [isLogged, setIsLogged] = useState(false);
   //let attempt = 0;
   const [canSubmit, setSubmitActive] = useState(true);
   const onSubmit = (data: FieldValues) => {
@@ -24,9 +27,18 @@ function LoginPage() {
     if (check) {
       const login = httpsCallable(functions, "login");
       login(formatedData).then((result) => {
+        const { msg, token } = result.data as any;
+        localStorage.setItem("token", token);
         console.log(result);
         console.log(attempt);
         setSubmitActive(true);
+        //setIsLogged(result.data as any);
+        if (msg !== "") {
+          window.alert(msg);
+        }
+        if (token !== "") {
+          navigate("/session");
+        }
       });
     }
   };
