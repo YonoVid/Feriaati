@@ -1,3 +1,5 @@
+import { ThemeOptions } from "@mui/material/styles";
+
 type ColorsProps = {
     primary: string;
     primaryShadow: string;
@@ -14,64 +16,24 @@ export const colors: ColorsProps = {
     light: "#EEEAE0",
 };
 
-// type syleContent = {
-//     container: {},
-//     title: {},
-
-// }
-
-// const stylesBasic = {
-//     container: {
-//         justifyContent: "center",
-//         padding: 8,
-//         margin: 20,
-//         paddingVertical: 20,
-//         backgroundColor: colors.secondary,
-//         borderRadius: 30,
-//     },
-//     title: {
-//         marginTop: 40,
-//         textAlign: "center",
-//         color: colors.primaryShadow,
-//         fontSize: 30,
-//         fontWeight: "bold",
-//         borderRadius: 4,
-//     },
-//     button: {
-//         marginTop: 40,
-//         color: colors.light,
-//         height: 40,
-//         backgroundColor: colors.secondaryShadow,
-//         borderRadius: 4,
-//     },
-//     buttonInner: {
-//         marginTop: 40,
-//         color: colors.primaryShadow,
-//         backgroundColor: colors.primary,
-//         borderRadius: 4,
-//     },
-//     labelWrapper: {
-//         alignItems: "center",
-//         marginTop: "-2%",
-//         flexDirection: "row",
-//     },
-//     label: {
-//         color: colors.primaryShadow,
-//         backgroundColor: colors.light,
-//         alignSelf: "flex-start",
-//         fontSize: 12,
-//         fontWeight: "bold",
-//         marginLeft: 15,
-//         paddingHorizontal: "5%",
-//         borderRadius: 10,
-//     },
-//     input: {
-//         color: colors.primaryShadow,
-//         backgroundColor: colors.light,
-//         borderColor: colors.secondary,
-//         marginTop: "2%",
-//         height: 40,
-//         padding: 10,
-//         borderRadius: 50,
-//     },
-// };
+export const themeOptions: ThemeOptions = {
+    palette: {
+        mode: "light",
+        primary: {
+            main: "#f97777",
+            contrastText: "#fafbfa",
+        },
+        secondary: {
+            main: "#89B056",
+            contrastText: "#EEEAE0",
+        },
+        background: {
+            default: "#f5e3cd",
+            paper: "#f9f6f5",
+        },
+        text: {
+            primary: "rgba(49,61,39,0.87)",
+            secondary: "rgba(58,67,59,0.6)",
+        },
+    },
+};

@@ -11,7 +11,7 @@ import {
 import { ResponseData } from "@feria-a-ti/common/model/functionsTypes";
 import { messagesCode } from "@feria-a-ti/common/constants/errors";
 import { checkRegisterFields } from "@feria-a-ti/common/checkRegisterFields";
-import RegisterForm from "../../components/registerForm/RegisterForm";
+import RegisterUserForm from "../../components/registerUserForm/RegisterUserForm";
 import ConfirmRegisterForm from "../../components/confirmRegisterForm/ConfirmRegisterForm";
 import MessageAlert from "../../components/messageAlert/MessageAlert";
 import { useNavigate } from "react-router-dom";
@@ -112,7 +112,7 @@ function RegisterPage() {
                     canSubmit={canConfirmRegister}
                 />
             )) || (
-                <RegisterForm
+                <RegisterUserForm
                     onSubmit={onSubmitRegister}
                     canSubmit={canRegister}
                 />

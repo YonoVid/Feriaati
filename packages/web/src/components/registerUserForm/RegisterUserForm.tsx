@@ -4,6 +4,8 @@ import InputComponent from "../inputComponent/InputComponent";
 import { colors } from "@feria-a-ti/common/theme/base";
 import "./RegisterUserForm.css";
 import { RRegisterFormProps } from "@feria-a-ti/common/model/registerFormProps";
+import { Link } from "react-router-dom";
+import { Button } from "@mui/material";
 
 function RegisterUserForm(props: RRegisterFormProps) {
     const { onSubmit } = props;
@@ -63,19 +65,18 @@ function RegisterUserForm(props: RRegisterFormProps) {
                     setError={setError}
                     error={errors.confirmPassword}
                 />
-                <input
-                    className="formButton"
-                    style={{
-                        color: colors.light,
-                        backgroundColor: colors.secondaryShadow,
-                    }}
+                <Button
+                    color="secondary"
                     type="submit"
-                    value="Registrarse"
+                    variant="contained"
                     disabled={
                         props.canSubmit != null ? !props.canSubmit : false
                     }
-                />
+                >
+                    Registrar cuenta de comprador
+                </Button>
             </form>
+            <Link to={"/login"}>Ya tienes una cuenta? Inicia Sesión</Link>
         </div>
     );
 }

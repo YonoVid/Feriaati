@@ -33,7 +33,12 @@ export default class Encryption {
 
         // validate missing config options
         if (!this.algorithm && !this.key) {
-            throw Error("Configuration Error!");
+            throw Error(
+                "Configuration Error! Algorithm::" +
+                    this.algorithm +
+                    "|Key::" +
+                    this.key
+            );
         }
     }
 

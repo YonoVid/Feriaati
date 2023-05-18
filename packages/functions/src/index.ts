@@ -1,5 +1,6 @@
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
+import * as dotenv from "dotenv";
 import {
     ResponseData,
     RegisterConfirm,
@@ -20,8 +21,11 @@ import { sendRecoveryMail, sendVerificationMail } from "./mail";
 
 //Setup firebase configuration
 admin.initializeApp(functions.config().firebase);
+//Setup dotenv data
+dotenv.config({ path: __dirname + "/.env" });
 
 //Setup encryption configuration
+//IF YOU USE .env first install dotenv (npm install dotenv --save)
 const config = {
     algorithm: process.env.ENCRYPTION_ALGORITHM, //"aes-256-cbc"
     encryptionKey: process.env.ENCRYPTION_KEY, //"KQIusXppu9dIj0JHa6yRtMOgqW7qUyJQ"
@@ -56,13 +60,13 @@ export const login = functions.https.onCall(
                     "DATA COLLECTION::",
                     userData?.iv as Buffer
                 );
-                const config = {
+                const eConfig = {
                     algorithm: userData?.algorithm,
-                    encryptionKey: userData?.encryptionKey,
+                    encryptionKey: config.encryptionKey,
                     salt: "123",
                     iv: userData?.iv as Buffer,
                 };
-                const desencryption = new Encryption(config);
+                const desencryption = new Encryption(eConfig);
 
                 if (
                     userData?.password !== desencryption.encrypt(data.password)

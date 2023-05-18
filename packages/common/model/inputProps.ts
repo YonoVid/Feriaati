@@ -31,6 +31,7 @@ export type RInputComponentProps<
     minLength?: number;
     onChange?: React.ChangeEventHandler;
     registerForm: UseFormRegister<FieldValues>;
+    test?: TName;
 };
 
 export type RNInputComponentProps<

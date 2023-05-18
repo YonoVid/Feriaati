@@ -1,7 +1,6 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import {
     AppBar,
-    Avatar,
     Box,
     Button,
     Container,
@@ -15,11 +14,14 @@ import {
 import MenuIcon from "@mui/icons-material/Menu";
 import AdbIcon from "@mui/icons-material/Adb";
 // import "./NavBar.css";
+import { UserContext } from "../../App";
 
 const pages = ["Products", "Pricing", "Blog"];
 const settings = ["Profile", "Account", "Dashboard", "Logout"];
 
 function NavBar() {
+    const { auth } = useContext(UserContext);
+
     const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
     const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
 
@@ -62,7 +64,7 @@ function NavBar() {
                     >
                         LOGO
                     </Typography>
-                    {localStorage.getItem("token") && (
+                    {auth !== "" && (
                         <Box
                             sx={{
                                 flexGrow: 1,
@@ -131,7 +133,7 @@ function NavBar() {
                     >
                         LOGO
                     </Typography>
-                    {(localStorage.getItem("token") && (
+                    {(auth !== "" && (
                         <>
                             <Box
                                 sx={{
