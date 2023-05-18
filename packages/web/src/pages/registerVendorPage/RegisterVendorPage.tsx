@@ -11,12 +11,12 @@ import {
 import { ResponseData } from "@feria-a-ti/common/model/functionsTypes";
 import { messagesCode } from "@feria-a-ti/common/constants/errors";
 import { checkRegisterFields } from "@feria-a-ti/common/checkRegisterFields";
-import RegisterForm from "../../components/registerForm/RegisterForm";
 import ConfirmRegisterForm from "../../components/confirmRegisterForm/ConfirmRegisterForm";
 import MessageAlert from "../../components/messageAlert/MessageAlert";
 import { useNavigate } from "react-router-dom";
+import RegisterVendorForm from "../../components/registerVendorForm/RegisterVendorForm";
 
-function RegisterPage() {
+function RegisterVendorPage() {
     // Dom redirection variable
     const navigate = useNavigate();
     // Action to do on sucesfull form submit
@@ -112,7 +112,7 @@ function RegisterPage() {
                     canSubmit={canConfirmRegister}
                 />
             )) || (
-                <RegisterForm
+                <RegisterVendorForm
                     onSubmit={onSubmitRegister}
                     canSubmit={canRegister}
                 />
@@ -127,4 +127,4 @@ function RegisterPage() {
     );
 }
 
-export default RegisterPage;
+export default RegisterVendorPage;

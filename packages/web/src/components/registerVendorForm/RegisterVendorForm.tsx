@@ -1,12 +1,13 @@
 import { useForm } from "react-hook-form";
 import { controlValidInput } from "@feria-a-ti/common/inputControl";
 import InputComponent from "../inputComponent/InputComponent";
-import { colors } from "../../../../common/theme/base";
-import "./RegisterForm.css";
-import { RRegisterFormProps } from "../../../../common/model/registerFormProps";
-import { Link } from "react-router-dom";
+import { colors } from "@feria-a-ti/common/theme/base";
+import "./RegisterVendorForm.css";
+import { RRegisterFormProps } from "@feria-a-ti/common/model/registerFormProps";
+import { Button } from "@mui/material";
+import InputComponentAlt from "../inputComponent/InputComponentAlt";
 
-function RegisterForm(props: RRegisterFormProps) {
+function RegisterVendorForm(props: RRegisterFormProps) {
     const { onSubmit } = props;
     const {
         register,
@@ -24,14 +25,41 @@ function RegisterForm(props: RRegisterFormProps) {
             <h1 style={{ maxWidth: "80%" }}>REGISTRARSE</h1>
             <form onSubmit={handleSubmit(onSubmit)}>
                 <InputComponent
-                    name="username"
-                    label="Nombre de usuario"
+                    name="rut"
+                    label="RUT"
+                    required={true}
+                    registerForm={register}
+                    error={errors.rut}
+                />
+                <InputComponent
+                    name="localNumber"
+                    label="Número de local"
+                    required={true}
+                    registerForm={register}
+                    error={errors.localNumber}
+                />
+                <InputComponent
+                    name="enterpriseName"
+                    label="Nombre de la empresa"
+                    required={true}
+                    registerForm={register}
+                    error={errors.enterpriseName}
+                />
+                <InputComponent
+                    name="name"
+                    label="Nombre"
                     onChange={controlValidInput}
                     required={true}
-                    maxLength={25}
-                    minLength={8}
                     registerForm={register}
-                    error={errors.username}
+                    error={errors.name}
+                />
+                <InputComponent
+                    name="surname"
+                    label="Apellido"
+                    onChange={controlValidInput}
+                    required={true}
+                    registerForm={register}
+                    error={errors.surname}
                 />
                 <InputComponent
                     name="email"
@@ -52,7 +80,7 @@ function RegisterForm(props: RRegisterFormProps) {
                     registerForm={register}
                     error={errors.password}
                 />
-                <InputComponent
+                <InputComponentAlt
                     name="confirmPassword"
                     label="Confirmar contraseña"
                     type="password"
@@ -64,22 +92,19 @@ function RegisterForm(props: RRegisterFormProps) {
                     setError={setError}
                     error={errors.confirmPassword}
                 />
-                <input
-                    className="formButton"
-                    style={{
-                        color: colors.light,
-                        backgroundColor: colors.secondaryShadow,
-                    }}
+                <Button
+                    color="secondary"
                     type="submit"
-                    value="Registrarse"
+                    variant="contained"
                     disabled={
                         props.canSubmit != null ? !props.canSubmit : false
                     }
-                />
+                >
+                    Registrar cuenta de vendedor
+                </Button>
             </form>
-            <Link to={"/login"}>Ya tienes una cuenta? Inicia Sesión</Link>
         </div>
     );
 }
 
-export default RegisterForm;
+export default RegisterVendorForm;

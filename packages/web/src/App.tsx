@@ -9,43 +9,43 @@ import Home from "./pages/Home";
 import SessionPage from "./pages/SessionPage";
 
 const router = createBrowserRouter([
-  {
-    path: "/",
-    element: <RegisterPage />,
-    errorElement: <ErrorPage />,
-  },
-  {
-    path: "/register",
-    element: <RegisterPage />,
-  },
-  {
-    path: "/login",
-    element: <LoginPage />,
-  },
-  {
-    path: "/recovery",
-    element: <RecoveryPage />,
-  },
-  {
-    path: "/updatePass",
-    element: <UpdatePassPage />,
-  },
-  {
-    path: "/session",
-    element: <SessionPage />,
-  },
-  {
-    path: "/home",
-    element: <Home />,
-  },
+    {
+        path: "/",
+        element: <RegisterPage />,
+        errorElement: <ErrorPage />,
+    },
+    {
+        path: "/register",
+        element: <RegisterPage />,
+    },
+    {
+        path: "/login",
+        element: <LoginPage />,
+    },
+    {
+        path: "/recovery",
+        element: <RecoveryPage />,
+    },
+    {
+        path: "/updatePass",
+        element: <UpdatePassPage />,
+    },
+    {
+        path: "/session",
+        element: <SessionPage />,
+    },
+    {
+        path: "/home",
+        element: <Home />,
+    },
 ]);
 
 function App() {
-  return (
-    <React.StrictMode>
-      <RouterProvider router={router} />
-    </React.StrictMode>
-  );
+    return (
+        <React.StrictMode>
+            <RouterProvider router={router} />
+        </React.StrictMode>
+    );
 }
 
 export default App;

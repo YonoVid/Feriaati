@@ -1,23 +1,17 @@
-import React, { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import LoginPage from "../pages/loginPage/LoginPage";
+import { useEffect } from "react";
+import { Navigate, useNavigate } from "react-router-dom";
 import Home from "../pages/Home";
 
 function SessionPage() {
-  const nav = useNavigate();
-  const token = localStorage.getItem("token");
+    const nav = useNavigate();
+    const token = localStorage.getItem("token");
 
-  useEffect(() => {
-    if (token) {
-      nav("/home");
-    }
-  }, [token, nav]);
-
-  if (token) {
-    return <Home />;
-  } else {
-    nav("/login");
-  }
+    useEffect(() => {
+        if (token) {
+            nav("/home");
+        }
+    }, [token, nav]);
+    return (token && <Home />) || <Navigate to="/login" replace={true} />;
 }
 
 export default SessionPage;

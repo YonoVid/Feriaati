@@ -1,41 +1,44 @@
 {
-  "firestore": {
-    "rules": "firestore.rules",
-    "indexes": "firestore.indexes.json"
-  },
-  "functions": [
-    {
-      "source": "packages/functions",
-      "codebase": "default",
-      "ignore": [
-        "node_modules",
-        ".git",
-        "firebase-debug.log",
-        "firebase-debug.*.log"
-      ],
-      "predeploy": [
-        "yarn --prefix \"$RESOURCE_DIR\" run lint",
-        "yarn --prefix \"$RESOURCE_DIR\" run build"
-      ]
-    }
-  ],
-  "hosting": {
-    "public": "packages/web/public",
-    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"]
-  },
-  "emulators": {
-    "functions": {
-      "port": 5001
-    },
     "firestore": {
-      "port": 8084
+        "rules": "firestore.rules",
+        "indexes": "firestore.indexes.json"
     },
+    "functions": [
+        {
+            "source": "packages/functions",
+            "codebase": "default",
+            "ignore": [
+                "node_modules",
+                ".git",
+                "firebase-debug.log",
+                "firebase-debug.*.log"
+            ],
+            "predeploy": [
+                "yarn --prefix \"$RESOURCE_DIR\" run lint",
+                "yarn --prefix \"$RESOURCE_DIR\" run build"
+            ]
+        }
+    ],
     "hosting": {
-      "port": 5000
+        "public": "packages/web/public",
+        "ignore": ["firebase.json", "**/.*", "**/node_modules/**"]
     },
-    "ui": {
-      "enabled": true
-    },
-    "singleProjectMode": true
-  }
+    "emulators": {
+        "functions": {
+            "host": "0.0.0.0",
+            "port": 5001
+        },
+        "firestore": {
+            "host": "0.0.0.0",
+            "port": 8080
+        },
+        "hosting": {
+            "host": "0.0.0.0",
+            "port": 5000
+        },
+        "ui": {
+            "enabled": true
+        },
+        "singleProjectMode": true
+    }
 }
