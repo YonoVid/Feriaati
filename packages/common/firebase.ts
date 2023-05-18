@@ -21,9 +21,9 @@ const firebaseConfig = {
 
 // Initialize Firebase for deploy
 export const app = initializeApp(firebaseConfig);
-
 export const functions = getFunctions(app);
-connectFunctionsEmulator(functions, "192.168.0.12", 5001);
+
+connectFunctionsEmulator(functions, "localhost", 5001);
 
 export const actionCodeSettings = {
     // URL you want to redirect back to. The domain (www.example.com) for this

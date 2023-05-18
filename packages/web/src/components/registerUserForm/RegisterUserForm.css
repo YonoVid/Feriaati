@@ -1,0 +1,21 @@
+.formContainer {
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    margin: 20%;
+    padding-top: 2%;
+    padding-bottom: 5%;
+    border-radius: 2em;
+    flex: 1;
+}
+
+.formButton {
+    margin-top: 2em;
+    align-content: center;
+    height: 2.5em;
+    border-radius: 2em;
+}
+
+h1 {
+    font-size: max(6.2vw, 80px);
+}

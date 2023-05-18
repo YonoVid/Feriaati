@@ -1,4 +1,5 @@
 import { FieldValues } from "react-hook-form";
+
 import { ConfirmRegisterFields, RegisterFields } from "./registerFields";
 
 type FormProps = {

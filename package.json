@@ -12,6 +12,8 @@
         "**/firebase-functions/**"
     ],
     "dependencies": {
-        "react-hook-form": "^7.43.9"
+        "firebase-tools": "^10.9.2",
+        "react-hook-form": "^7.43.9",
+        "react-router-dom": "^6.11.1"
     }
 }

@@ -1,5 +1,6 @@
 import * as sendGrid from "@sendgrid/mail";
 //Set API Key to use service
+//"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"
 sendGrid.setApiKey(process.env.SENDGRID_API_KEY as string);
 
 /**
@@ -9,7 +10,11 @@ sendGrid.setApiKey(process.env.SENDGRID_API_KEY as string);
  * @param email Email of user being created
  * @param code Verification code to activate account
  */
-export const sendVerificationMail = (username: string, email: string, code: string) => {
+export const sendVerificationMail = (
+    username: string,
+    email: string,
+    code: string
+) => {
     sendGrid
         .send({
             to: email, // Change to your recipient
@@ -21,7 +26,23 @@ export const sendVerificationMail = (username: string, email: string, code: stri
                 code: code,
             },
         })
-        .catch((reason: any) =>
-            console.log(reason, reason.body?.errors)
-        );
+        .catch((reason: any) => console.log(reason, reason.body?.errors));
+};
+
+export const sendRecoveryMail = (
+    username: string,
+    email: string,
+    code: string
+) => {
+    sendGrid
+        .send({
+            to: email,
+            from: "feriaati@gmail.com",
+            text: " ",
+            templateId: "d-4e7a9b52ff65492f9d702217d4e9f51d",
+            dynamicTemplateData: {
+                Codigo: code,
+            },
+        })
+        .catch((reason: any) => console.log(reason, reason.body?.errors));
 };

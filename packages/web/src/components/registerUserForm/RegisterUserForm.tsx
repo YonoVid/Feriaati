@@ -1,12 +1,11 @@
 import { useForm } from "react-hook-form";
 import { controlValidInput } from "@feria-a-ti/common/inputControl";
 import InputComponent from "../inputComponent/InputComponent";
-import { colors } from "../../../../common/theme/base";
-import "./RegisterForm.css";
-import { RRegisterFormProps } from "../../../../common/model/registerFormProps";
-import { Link } from "react-router-dom";
+import { colors } from "@feria-a-ti/common/theme/base";
+import "./RegisterUserForm.css";
+import { RRegisterFormProps } from "@feria-a-ti/common/model/registerFormProps";
 
-function RegisterForm(props: RRegisterFormProps) {
+function RegisterUserForm(props: RRegisterFormProps) {
     const { onSubmit } = props;
     const {
         register,
@@ -21,7 +20,7 @@ function RegisterForm(props: RRegisterFormProps) {
             className="formContainer"
             style={{ backgroundColor: colors.secondary }}
         >
-            <h1 style={{ maxWidth: "80%" }}>REGISTRARSE</h1>
+            <h1>REGISTRARSE</h1>
             <form onSubmit={handleSubmit(onSubmit)}>
                 <InputComponent
                     name="username"
@@ -77,9 +76,8 @@ function RegisterForm(props: RRegisterFormProps) {
                     }
                 />
             </form>
-            <Link to={"/login"}>Ya tienes una cuenta? Inicia Sesión</Link>
         </div>
     );
 }
 
-export default RegisterForm;
+export default RegisterUserForm;

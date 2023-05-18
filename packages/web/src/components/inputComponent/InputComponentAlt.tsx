@@ -6,8 +6,10 @@ import {
 } from "@feria-a-ti/common/checkRegisterFields";
 import { colors } from "@feria-a-ti/common/theme/base";
 import "./InputComponent.css";
+// import { Box, TextField } from "@mui/material";
+// import { Controller } from "react-hook-form";
 
-function InputComponent(data: RInputComponentProps) {
+function InputComponentAlt(data: RInputComponentProps) {
     const {
         name,
         label,
@@ -41,7 +43,7 @@ function InputComponent(data: RInputComponentProps) {
             return watch.toString() !== value;
         }
         if (setError != null) {
-            console.log("SETTING PASSWORD ERROR");
+            console.log("SETTING PASSSWORD ERROR");
             setError("notEqualPassword", { type: "custom" });
         }
         return false;
@@ -134,4 +136,4 @@ function InputComponent(data: RInputComponentProps) {
     );
 }
 
-export default InputComponent;
+export default InputComponentAlt;
