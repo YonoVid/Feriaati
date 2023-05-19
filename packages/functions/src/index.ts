@@ -16,3 +16,5 @@ export {
 } from "./buyer/buyerFunctions";
 
 export { addVendor } from "./vendor/vendorFunctions";
+
+export { adminLogin } from "./admin/adminFunctions";

@@ -12,11 +12,12 @@ import UpdatePassPage from "./pages/loginPage/UpdatePassPage";
 import Home from "./pages/Home";
 import SessionPage from "./pages/SessionPage";
 import RegisterVendorPage from "./pages/registerVendorPage/RegisterVendorPage";
+import AdminLoginPage from "./pages/adminPage/AdminLoginPage";
 
 const router = createBrowserRouter([
     {
         path: "/",
-        element: <RegisterPage />,
+        element: <LoginPage />,
         errorElement: <ErrorPage />,
     },
     {
@@ -51,18 +52,34 @@ const router = createBrowserRouter([
         path: "/vendor",
         element: <RegisterVendorPage />,
     },
+    {
+        path: "/admin",
+        element: <AdminLoginPage />,
+    },
 ]);
 
 const theme = createTheme(themeOptions);
-export const UserContext = React.createContext<SessionUserData>({});
+export const UserContext = React.createContext<SessionUserData>({
+    type: undefined,
+});
 
 function App() {
     const [user, setUser] = useState("");
+    const [type, setType] = useState<
+        "admin" | "buyer" | "vendor" | undefined
+    >();
 
     return (
         <React.StrictMode>
             <ThemeProvider theme={theme}>
-                <UserContext.Provider value={{ auth: user, setAuth: setUser }}>
+                <UserContext.Provider
+                    value={{
+                        auth: user,
+                        setAuth: setUser,
+                        type: type,
+                        setType: setType,
+                    }}
+                >
                     <NavBar />
                     <div id="main">
                         <RouterProvider router={router} />

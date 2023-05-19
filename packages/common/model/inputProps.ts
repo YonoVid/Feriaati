@@ -37,6 +37,7 @@ export type RInputComponentProps<
     >;
     control?: Control<FieldValues, any>;
     selectOptions?: (string | number)[][];
+    defaultValue?: string;
     test?: TName;
 };
 

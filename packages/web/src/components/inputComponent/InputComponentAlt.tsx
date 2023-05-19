@@ -7,7 +7,16 @@ import { MenuItem, TextField } from "@mui/material";
 // import { Controller } from "react-hook-form";
 
 function InputComponentAlt(data: RInputComponentProps) {
-    const { name, label, type, selectOptions, rules, control, onChange } = data;
+    const {
+        name,
+        label,
+        type,
+        selectOptions,
+        defaultValue,
+        rules,
+        control,
+        onChange,
+    } = data;
 
     const inputLabel = label != null ? label : name;
 
@@ -31,6 +40,7 @@ function InputComponentAlt(data: RInputComponentProps) {
                     fieldState: { error },
                 }) => (
                     <TextField
+                        sx={{ flex: 1, minWidth: "10em", maxWidth: "20em" }}
                         select={type === "select"}
                         label={inputLabel}
                         margin="dense"
@@ -40,18 +50,22 @@ function InputComponentAlt(data: RInputComponentProps) {
                         variant="filled"
                         value={value || ""}
                         placeholder={inputLabel}
+                        defaultValue={defaultValue}
                         onChange={(value) => {
                             onChangeWrapper(onChange, value);
                         }}
                         onBlur={onBlur}
-                        helperText={error?.message}
+                        helperText={error?.message || ""}
                     >
-                        {type === "select" &&
+                        {type === "select" && selectOptions ? (
                             selectOptions?.map((value) => (
                                 <MenuItem key={value[0]} value={value[0]}>
                                     {value[1]}
                                 </MenuItem>
-                            ))}
+                            ))
+                        ) : (
+                            <MenuItem>{defaultValue}</MenuItem>
+                        )}
                     </TextField>
                 )}
                 name={name as string}

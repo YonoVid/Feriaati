@@ -18,6 +18,7 @@ function RegisterVendorForm(props: RRegisterFormProps) {
         formState: { errors },
         watch,
         handleSubmit,
+        setValue,
         control,
     } = useForm();
 
@@ -75,6 +76,8 @@ function RegisterVendorForm(props: RRegisterFormProps) {
                             label="Región"
                             type="select"
                             selectOptions={regionCode}
+                            defaultValue="Elige tú región"
+                            onChange={() => setValue("commune", "")}
                             rules={{
                                 required: "La región es requerida",
                             }}
@@ -86,6 +89,7 @@ function RegisterVendorForm(props: RRegisterFormProps) {
                             label="Comuna"
                             type="select"
                             selectOptions={regionCommune[watch("region")]}
+                            defaultValue="Elige tú comuna"
                             rules={{
                                 required: "La comuna es requerida",
                             }}
