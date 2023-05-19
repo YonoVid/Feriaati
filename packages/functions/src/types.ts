@@ -29,3 +29,9 @@ export type UpdatePassFields = {
   password: string;
   confirmPassword: string;
 };
+
+export type UpdateStateFields = {
+  id: string;
+  email: string;
+  state: userStatus;
+};

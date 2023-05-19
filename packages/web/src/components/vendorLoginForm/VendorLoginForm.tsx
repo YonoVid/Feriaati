@@ -5,7 +5,7 @@ import "./LoginForm.css";
 import { RLoginFormProps } from "@feria-a-ti/common/model/loginFormProps";
 import { Link } from "react-router-dom";
 
-function LoginForm(props: RLoginFormProps) {
+function VendorLoginForm(props: RLoginFormProps) {
   const { onSubmit } = props;
   const {
     register,
@@ -18,7 +18,7 @@ function LoginForm(props: RLoginFormProps) {
       className="formContainer"
       style={{ backgroundColor: colors.secondary }}
     >
-      <h1 style={{ maxWidth: "100%" }}>Iniciar Sesion</h1>
+      <h1 style={{ maxWidth: "100%" }}>Inicio sesión vendedor</h1>
       <form onSubmit={handleSubmit(onSubmit)}>
         <InputComponent
           name="email"
@@ -53,13 +53,9 @@ function LoginForm(props: RLoginFormProps) {
       </form>
       <Link to={"/register"}>No tienes una cuenta? Registrate</Link>
       <br />
-      <Link to={"/loginVendor"}>
-        Posees una cuenta de vendedor, inicia sesión.
-      </Link>
-      <br />
-      <Link to={"/recovery"}>Olvidaste tu contraseña?</Link>
+      <Link to={"/recoveryVendor"}>Olvidaste tu contraseña?</Link>
     </div>
   );
 }
 
-export default LoginForm;
+export default VendorLoginForm;

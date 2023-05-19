@@ -8,6 +8,9 @@ export const emailFormatRegex = new RegExp(
   "^([\\w-]+(?:\\.[\\w-]+)*)@((?:[\\w-]+\\.)*\\w[\\w-]{0,66})\\.([a-z]{2,6}(?:\\.[a-z]{2})?)$",
   "i"
 );
+export const passwordFormatRegex = new RegExp(
+  /^(?=.*[a-zA-Zñ])(?=.*[0-9])[A-Zña-z0-9!@#$%^&+=*.\\\-_]+$/
+);
 
 export const checkLoginFields = (input: LoginFields): boolean => {
   const { email, password } = input;
@@ -37,7 +40,10 @@ export const checkUpdatePassFields = (input: UpdatePassFields): boolean => {
   const codeCheck = codigo != null;
 
   const passwordCheck =
-    password != null && password.length < 128 && password === confirmPassword;
+    password != null &&
+    password.length < 128 &&
+    passwordFormatRegex.test(password) &&
+    password === confirmPassword;
   // console.log("Password check", passwordCheck);
 
   return codeCheck && passwordCheck;

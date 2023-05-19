@@ -17,7 +17,7 @@ function RecoveryForm(props: RRecoveryFormProps) {
       className="formContainer"
       style={{ backgroundColor: colors.secondary }}
     >
-      <h1 style={{ maxWidth: "100%" }}>Recuperar Contraseña</h1>
+      <h1 style={{ maxWidth: "100%" }}>Recuperar Contraseña Vendedor</h1>
       <h3 style={{ maxWidth: "100%" }}>Ingrese su correo</h3>
       <form onSubmit={handleSubmit(onSubmit)}>
         <InputComponent

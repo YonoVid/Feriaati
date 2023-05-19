@@ -7,6 +7,10 @@ import RecoveryPage from "./pages/loginPage/RecoveryPage";
 import UpdatePassPage from "./pages/loginPage/UpdatePassPage";
 import Home from "./pages/Home";
 import SessionPage from "./pages/SessionPage";
+//import ActivateVendors from "./pages/adminPage/activateVendors";
+import VendorLoginPage from "./pages/vendorLoginPage/VendorLoginPage";
+import VendorRecoveryPage from "./pages/vendorLoginPage/VendorRecoveryPage";
+import VendorUpdatePassPage from "./pages/vendorLoginPage/VendorUpdatePassPage";
 
 const router = createBrowserRouter([
   {
@@ -31,6 +35,19 @@ const router = createBrowserRouter([
     element: <UpdatePassPage />,
   },
   {
+    path: "/loginVendor",
+    element: <VendorLoginPage />,
+  },
+  {
+    path: "/recoveryVendor",
+    element: <VendorRecoveryPage />,
+  },
+  {
+    path: "/updatePassVendor",
+    element: <VendorUpdatePassPage />,
+  },
+
+  {
     path: "/session",
     element: <SessionPage />,
   },
@@ -38,6 +55,10 @@ const router = createBrowserRouter([
     path: "/home",
     element: <Home />,
   },
+  /* {
+    path: "/vendorList",
+    element: <ActivateVendors />,
+  },*/
 ]);
 
 function App() {
