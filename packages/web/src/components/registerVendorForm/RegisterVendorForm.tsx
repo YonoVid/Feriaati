@@ -1,109 +1,258 @@
 import { useForm } from "react-hook-form";
-import { controlValidInput } from "@feria-a-ti/common/inputControl";
-import InputComponent from "../inputComponent/InputComponent";
-import { colors } from "@feria-a-ti/common/theme/base";
-import "./RegisterVendorForm.css";
-import { RRegisterFormProps } from "@feria-a-ti/common/model/registerFormProps";
-import { Button } from "@mui/material";
+import { Box, Button, Card, CardActions, Paper } from "@mui/material";
 import InputComponentAlt from "../inputComponent/InputComponentAlt";
+import {
+    checkRutVerificationCodeString,
+    emailFormatRegex,
+    numberRegex,
+    passwordFormatRegex,
+    rutFormatRegex,
+} from "@feria-a-ti/common/checkRegisterFields";
+import { RRegisterFormProps } from "@feria-a-ti/common/model/registerFormProps";
+import "./RegisterVendorForm.css";
+import { regionCode, regionCommune } from "@feria-a-ti/common/constants/form";
 
 function RegisterVendorForm(props: RRegisterFormProps) {
     const { onSubmit } = props;
     const {
-        register,
         formState: { errors },
         watch,
         handleSubmit,
-        setError,
+        control,
     } = useForm();
 
     return (
-        <div
-            className="formContainer"
-            style={{ backgroundColor: colors.secondary }}
-        >
-            <h1 style={{ maxWidth: "80%" }}>REGISTRARSE</h1>
-            <form onSubmit={handleSubmit(onSubmit)}>
-                <InputComponent
-                    name="rut"
-                    label="RUT"
-                    required={true}
-                    registerForm={register}
-                    error={errors.rut}
-                />
-                <InputComponent
-                    name="localNumber"
-                    label="Número de local"
-                    required={true}
-                    registerForm={register}
-                    error={errors.localNumber}
-                />
-                <InputComponent
-                    name="enterpriseName"
-                    label="Nombre de la empresa"
-                    required={true}
-                    registerForm={register}
-                    error={errors.enterpriseName}
-                />
-                <InputComponent
-                    name="name"
-                    label="Nombre"
-                    onChange={controlValidInput}
-                    required={true}
-                    registerForm={register}
-                    error={errors.name}
-                />
-                <InputComponent
-                    name="surname"
-                    label="Apellido"
-                    onChange={controlValidInput}
-                    required={true}
-                    registerForm={register}
-                    error={errors.surname}
-                />
-                <InputComponent
-                    name="email"
-                    type="email"
-                    label="Correo electrónico"
-                    required={true}
-                    maxLength={254}
-                    registerForm={register}
-                    error={errors.email}
-                />
-                <InputComponent
-                    name="password"
-                    label="Contraseña"
-                    type="password"
-                    required={true}
-                    maxLength={128}
-                    minLength={10}
-                    registerForm={register}
-                    error={errors.password}
-                />
-                <InputComponentAlt
-                    name="confirmPassword"
-                    label="Confirmar contraseña"
-                    type="password"
-                    required={true}
-                    maxLength={254}
-                    minLength={10}
-                    registerForm={register}
-                    watch={watch("password")}
-                    setError={setError}
-                    error={errors.confirmPassword}
-                />
-                <Button
-                    color="secondary"
-                    type="submit"
-                    variant="contained"
-                    disabled={
-                        props.canSubmit != null ? !props.canSubmit : false
-                    }
-                >
-                    Registrar cuenta de vendedor
-                </Button>
-            </form>
-        </div>
+        <>
+            <Card
+                className="inputContainer"
+                sx={{
+                    maxWidth: "60%",
+                    alignContent: "center",
+                    borderRadius: "10%",
+                }}
+            >
+                <h1 style={{ maxWidth: "80%" }}>REGISTRARSE</h1>
+                <form onSubmit={handleSubmit(onSubmit)}>
+                    <Box>
+                        <InputComponentAlt
+                            control={control}
+                            name="enterpriseName"
+                            label="Nombre de la empresa"
+                            type="text"
+                            rules={{
+                                required:
+                                    "El nombre de la empresa es requerido",
+                                maxLength: {
+                                    value: 128,
+                                    message: "El máximo de caracteres es 128",
+                                },
+                            }}
+                            error={errors.enterpriseName}
+                        />
+                        <InputComponentAlt
+                            control={control}
+                            name="localNumber"
+                            label="Número de local"
+                            type="text"
+                            rules={{
+                                required: "El número de local es requerido",
+                                maxLength: {
+                                    value: 128,
+                                    message: "El máximo de caracteres es 128",
+                                },
+                                pattern: {
+                                    value: numberRegex,
+                                    message: "Valor debe ser numérico",
+                                },
+                            }}
+                            error={errors.enterpriseName}
+                        />
+                    </Box>
+                    <Box>
+                        <InputComponentAlt
+                            control={control}
+                            name="region"
+                            label="Región"
+                            type="select"
+                            selectOptions={regionCode}
+                            rules={{
+                                required: "La región es requerida",
+                            }}
+                            error={errors.region}
+                        />
+                        <InputComponentAlt
+                            control={control}
+                            name="commune"
+                            label="Comuna"
+                            type="select"
+                            selectOptions={regionCommune[watch("region")]}
+                            rules={{
+                                required: "La comuna es requerida",
+                            }}
+                            error={errors.commune}
+                        />
+                    </Box>
+                    <Box>
+                        <InputComponentAlt
+                            control={control}
+                            name="street"
+                            label="Calle"
+                            type="text"
+                            rules={{
+                                required: "La calle es requerida",
+                                maxLength: {
+                                    value: 128,
+                                    message: "El máximo de caracteres es 128",
+                                },
+                            }}
+                            error={errors.street}
+                        />
+                        <InputComponentAlt
+                            control={control}
+                            name="streetNumber"
+                            label="Número de calle"
+                            type="text"
+                            rules={{
+                                required: "El número de calle es requerido",
+                                maxLength: {
+                                    value: 128,
+                                    message: "El máximo de caracteres es 128",
+                                },
+                                pattern: {
+                                    value: numberRegex,
+                                    message: "Valor debe ser numérico",
+                                },
+                            }}
+                            error={errors.streetNumber}
+                        />
+                        <InputComponentAlt
+                            control={control}
+                            name="rut"
+                            label="RUT"
+                            type="text"
+                            rules={{
+                                required: "El RUT es requerido",
+                                maxLength: {
+                                    value: 128,
+                                    message: "El máximo de caracteres es 128",
+                                },
+                                pattern: {
+                                    value: rutFormatRegex,
+                                    message:
+                                        "El formato debe ser, por ejemplo: 11111111-1",
+                                },
+                                validate: (value) =>
+                                    checkRutVerificationCodeString(value) ||
+                                    "El formato debe ser, por ejemplo: 11111111-1",
+                            }}
+                            error={errors.enterpriseName}
+                        />
+                    </Box>
+
+                    <Box>
+                        <InputComponentAlt
+                            control={control}
+                            name="name"
+                            label="Nombres"
+                            type="text"
+                            rules={{
+                                required: "Los nombres son requeridos",
+                            }}
+                            error={errors.name}
+                        />
+                        <InputComponentAlt
+                            control={control}
+                            name="surname"
+                            label="Apellidos"
+                            type="text"
+                            rules={{
+                                required: "Los apellidos son requeridos",
+                            }}
+                            error={errors.surname}
+                        />
+                    </Box>
+                    <InputComponentAlt
+                        control={control}
+                        name="email"
+                        label="Correo electrónico"
+                        type="text"
+                        rules={{
+                            required: "El correo es requerido",
+                            maxLength: {
+                                value: 128,
+                                message: "El máximo de caracteres es 128",
+                            },
+                            pattern: {
+                                value: emailFormatRegex,
+                                message:
+                                    "El formato debe ser, por ejemplo: ejemplo@correo.cl",
+                            },
+                        }}
+                        error={errors.password}
+                    />
+                    <Box>
+                        <InputComponentAlt
+                            control={control}
+                            name="password"
+                            label="Contraseña"
+                            type="password"
+                            rules={{
+                                required: "La contraseña es requerida",
+                                minLength: {
+                                    value: 8,
+                                    message: "El mínimo de caracteres es 8",
+                                },
+                                maxLength: {
+                                    value: 128,
+                                    message: "El máximo de caracteres es 128",
+                                },
+                                pattern: {
+                                    value: passwordFormatRegex,
+                                    message:
+                                        "La contraseña debe ser alfanumérica\n(contener una letra y un número)",
+                                },
+                            }}
+                            error={errors.password}
+                        />
+                        <InputComponentAlt
+                            control={control}
+                            name="confirmPassword"
+                            label="Confirmar contraseña"
+                            type="password"
+                            rules={{
+                                required: "Se debe confirmar la contraseña",
+                                validate: {
+                                    confirmPassword: (value) =>
+                                        watch("password").toString() ===
+                                            value ||
+                                        "Las contraseñas deben ser iguales",
+                                },
+                            }}
+                            error={errors.confirmPassword}
+                        />
+                    </Box>
+                    <CardActions>
+                        <Button
+                            sx={{
+                                borderRadius: "20em",
+                                marginLeft: "auto",
+                                marginRight: "auto",
+                            }}
+                            color="secondary"
+                            type="submit"
+                            variant="contained"
+                            disabled={
+                                props.canSubmit != null
+                                    ? !props.canSubmit
+                                    : false
+                            }
+                        >
+                            Registrar cuenta de vendedor
+                        </Button>
+                    </CardActions>
+                </form>
+            </Card>
+        </>
     );
 }
 
