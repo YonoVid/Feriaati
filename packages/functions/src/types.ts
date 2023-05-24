@@ -29,6 +29,7 @@ export type RegisterVendorFields = AccountFields & {
     name: string;
     surname: string;
     confirmPassword: string;
+    image: string;
 };
 
 export type ConfirmRegisterFields = UserFields & {
@@ -79,6 +80,7 @@ export type VendorCollectionData = AccountCollectionData & {
     streetNumber: number;
     name: string;
     surname: string;
+    image: string;
 };
 
 export type ResponseData = {

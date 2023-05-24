@@ -11,6 +11,7 @@ import { messagesCode } from "../errors";
 
 //import { sendVerificationMail } from "../utilities/mail";
 import { checkRegisterVendorFields } from "./checkRegister";
+import { uploadRegisterImage } from "../utilities/storage";
 
 //Setup encryption configuration
 //IF YOU USE .env first install dotenv (npm install dotenv --save)
@@ -47,6 +48,15 @@ export const addVendor = functions.https.onCall(
                     !collectionDoc.exists ||
                     collectionDoc.get("status") === "registered"
                 ) {
+                    functions.logger.info(
+                        "IMAGE HAS DATA::",
+                        data.image != null
+                    );
+                    //Upload image
+                    const imageURL = await uploadRegisterImage(
+                        data.email,
+                        data.image
+                    );
                     //Setup document of user data
                     const collectionData: VendorCollectionData = {
                         rut: data.rut,
@@ -58,6 +68,7 @@ export const addVendor = functions.https.onCall(
                         streetNumber: data.streetNumber,
                         name: data.name,
                         surname: data.surname,
+                        image: imageURL,
                         email: data.email,
                         password: encryption.encrypt(data.password),
                         algorithm: config.algorithm as string,
