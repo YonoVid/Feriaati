@@ -8,6 +8,7 @@ import { useContext, useState } from "react";
 import { LoginFields } from "@feria-a-ti/common/model/loginFields";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../../App";
+import { Grid, Link } from "@mui/material";
 
 function LoginPage() {
     //Global state variable
@@ -42,15 +43,37 @@ function LoginPage() {
                 }
                 if (token !== "") {
                     navigate("/session");
-                    setAuth("token");
+                    setAuth && setAuth("token");
                 }
             });
         }
     };
     return (
-        <>
-            <LoginForm onSubmit={onSubmit} canSubmit={canSubmit} />
-        </>
+        <Grid
+            container
+            direction="column"
+            alignItems="center"
+            justifyContent="center"
+            sx={{ minHeight: "80vh" }}
+        >
+            <Grid item xs={12} sx={{ minWidth: "100%" }}>
+                <LoginForm onSubmit={onSubmit} canSubmit={canSubmit}>
+                    <Link
+                        component="button"
+                        onClick={() => navigate("/register")}
+                    >
+                        ¿No tienes una cuenta? Registrate
+                    </Link>
+                    <br />
+                    <Link
+                        component="button"
+                        onClick={() => navigate("/recovery")}
+                    >
+                        ¿Olvidaste tu contraseña?
+                    </Link>
+                </LoginForm>
+            </Grid>
+        </Grid>
     );
 }
 export default LoginPage;

@@ -41,6 +41,9 @@ function InputComponentAlt(data: RInputComponentProps) {
                 }) => (
                     <TextField
                         sx={{ flex: 1, minWidth: "10em", maxWidth: "20em" }}
+                        InputLabelProps={{
+                            shrink: type === "file" ? true : undefined,
+                        }}
                         select={type === "select"}
                         label={inputLabel}
                         margin="dense"

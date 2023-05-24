@@ -1,14 +1,12 @@
 import { FieldValues } from "react-hook-form";
 import { LoginFields, RecoveryFields, UpdatePassFields } from "./loginFields";
+import { FormProps } from "./sharedProps";
 
-type LoginProps = {
-    canSubmit?: boolean;
-};
-export type LoginFormProps = LoginProps & {
+export type LoginFormProps = FormProps & {
     onSubmit: (data: LoginFields) => void;
 };
 
-export type RLoginFormProps = LoginProps & {
+export type RLoginFormProps = FormProps & {
     onSubmit: (data: FieldValues) => void;
 };
 

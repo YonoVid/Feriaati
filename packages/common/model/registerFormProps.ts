@@ -1,4 +1,5 @@
 import { FieldValues } from "react-hook-form";
+import { FormProps } from "./sharedProps";
 
 import {
     ConfirmRegisterFields,
@@ -6,12 +7,7 @@ import {
     RegisterVendorFields,
 } from "./registerFields";
 
-type FormProps = {
-    canSubmit?: boolean;
-};
-
-export type RFormProps = {
-    canSubmit?: boolean;
+export type RFormProps = FormProps & {
     onSubmit: (data: FieldValues) => void;
 };
 
@@ -29,4 +25,8 @@ export type ConfirmRegisterFormProps = FormProps & {
 
 export type RRegisterFormProps = RFormProps & {
     type?: "register";
+};
+
+export type RRegisterVendorFormProps = RRegisterFormProps & {
+    setImageData: React.Dispatch<React.SetStateAction<string | ArrayBuffer>>;
 };

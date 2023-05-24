@@ -20,6 +20,9 @@ function RegisterVendorPage() {
     // Action to do on sucesfull form submit
     //const [emailRegistered, setEmailRegistered] = useState("");
 
+    //Image data
+    const [imageData, setImageData] = useState<string | ArrayBuffer>("");
+
     const [canRegister, setCanRegister] = useState(true);
 
     // Alert Related values
@@ -49,6 +52,7 @@ function RegisterVendorPage() {
             password: data.password as string,
             confirmPassword: data.confirmPassword as string,
             status: userStatus.registered,
+            image: imageData as ArrayBuffer, //Read image data,
         };
         const check = checkRegisterVendorFields(formatedData);
 
@@ -82,6 +86,7 @@ function RegisterVendorPage() {
             <RegisterVendorForm
                 onSubmit={onSubmitRegister}
                 canSubmit={canRegister}
+                setImageData={setImageData}
             />
             <MessageAlert
                 open={showAlert}

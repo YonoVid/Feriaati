@@ -67,24 +67,22 @@ function Register() {
     };
 
     return (
-        <PaperProvider>
-            <ScrollView
-                style={styles.container}
-                contentContainerStyle={styles.innerContainer}
-            >
-                <RegisterVendorForm
-                    onSubmit={onSubmitRegister}
-                    canSubmit={canRegister}
-                />
+        <ScrollView
+            style={styles.container}
+            contentContainerStyle={styles.innerContainer}
+        >
+            <RegisterVendorForm
+                onSubmit={onSubmitRegister}
+                canSubmit={canRegister}
+            />
 
-                <MessageAlert
-                    open={showAlert}
-                    title={"ESTADO DE ACCIÓN"}
-                    message={alertMessage}
-                    handleClose={closeAlert}
-                />
-            </ScrollView>
-        </PaperProvider>
+            <MessageAlert
+                open={showAlert}
+                title={"ESTADO DE ACCIÓN"}
+                message={alertMessage}
+                handleClose={closeAlert}
+            />
+        </ScrollView>
     );
 }
 

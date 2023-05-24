@@ -15,7 +15,7 @@ import {
 type InputComponentProps = {
     name: string;
     label?: string;
-    type?: "text" | "email" | "password" | "select";
+    type?: "text" | "email" | "password" | "select" | "file";
     style?: object;
     watch?: UseFormWatch<FieldValues>;
     setError?: UseFormSetError<FieldValues>;

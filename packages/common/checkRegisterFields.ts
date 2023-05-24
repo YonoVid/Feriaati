@@ -82,6 +82,7 @@ export const checkRegisterVendorFields = (
         email,
         password,
         confirmPassword,
+        image,
     } = input;
 
     const requiredCheck =
@@ -92,7 +93,8 @@ export const checkRegisterVendorFields = (
         region != null &&
         commune != null &&
         street != null &&
-        streetNumber != null;
+        streetNumber != null &&
+        image != null;
     // console.log("Username check", userCheck);
 
     const confirmPasswordCheck = password === confirmPassword;

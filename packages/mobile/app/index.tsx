@@ -2,28 +2,49 @@ import { useRouter } from "expo-router";
 import React from "react";
 import { Button, StyleSheet, Text, View } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { NavigationContainer } from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { RegisterClient } from "./RegisterClient";
+import { DefaultTheme, PaperProvider, Title } from "react-native-paper";
+import { LoginClient } from "./LoginClient";
+import { themePaperLight } from "@feria-a-ti/common/theme/base";
+
+const Stack = createNativeStackNavigator();
+
+const theme = {
+    ...DefaultTheme,
+    roundness: 2,
+    colors: themePaperLight.colors,
+};
 
 export default function App() {
-    const router = useRouter();
+    // const router = useRouter();
     const KEY = "user-token";
 
-    AsyncStorage.getItem(KEY).then((asyncStorageRes) => {
-        console.log(JSON.parse(asyncStorageRes));
-        if (asyncStorageRes == null) {
-            router.push("/register");
-        }
-    });
+    // AsyncStorage.getItem(KEY).then((asyncStorageRes) => {
+    //     console.log(JSON.parse(asyncStorageRes));
+    //     if (asyncStorageRes == null) {
+    //         router.push("/register");
+    //     }
+    // });
 
     return (
-        <View style={styles.container}>
-            <Text>HOME PAGE</Text>
-            <Button
-                title={"TO REGISTER"}
-                onPress={() => {
-                    router.push("/register");
-                }}
-            />
-        </View>
+        <PaperProvider theme={theme}>
+            <NavigationContainer>
+                <Stack.Navigator initialRouteName="loginClient">
+                    <Stack.Screen
+                        name="loginClient"
+                        component={LoginClient}
+                        options={{ title: "Inicio de sesión de usuario " }}
+                    />
+                    <Stack.Screen
+                        name="registerClient"
+                        component={RegisterClient}
+                        options={{ title: "Registro de usuario " }}
+                    />
+                </Stack.Navigator>
+            </NavigationContainer>
+        </PaperProvider>
     );
 }
 

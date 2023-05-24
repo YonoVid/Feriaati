@@ -100,6 +100,7 @@ function RegisterForm(props: RegisterFormProps) {
                     onPress={handleSubmit(props.onSubmit)}
                 />
             </View>
+            {props.children}
         </View>
     );
 }

@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "feria-a-ti",
+  "private_key_id": "2dcf0f12c71a1bea761e749c42ecc9d887cf373b",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDN2qKfKQEPdocW\nPkSjOELLXFoSTQoxZQk2mPEOGyJoJKa9LGaeux+s5R3CFDkFtU3fov6JX9ZVju6O\nYcJSjkegYKmplA7fJQPgfxBCi6s3Ve0WR340+udsx81DUCUmJzbAzqP/awByY7dM\nF4UmQ8alUn79O/qZuW+OHt4SauufRLgbYL86DRkR1zXBVch2M/a6ApzYknItb7by\ntJcRSMoaScN8+hdFf8EiZleVUmLz3ltZ+1oEbaOp+so8VzhDNkaIg91+AEFlUT3O\n9rPTX/lQpTj/LGEKXN2r7GwemRqV/e07YSliN/eu1Y2ZM9DQpztYXnHgsOAvPozA\np36gD6lXAgMBAAECggEAVBayhVeHolxllDV9bjsmNdIUzRMBTeoa2F2jYoK9DFOk\ndPQ1OzPvHX4+KLCAFo/YLrlzRoSKlkqbsjfG3FhYc+/ofmgHpymEqujcqIJLP4Bv\nJ8GukU/Ix0va0ltjwXEVUa9XmJeKCDApiQC2mEnpVFEdpK4ikTcJlcGQL2/Triv1\nRG8chCUtaqh19E0vFhkSZulSbh92pS/Dv3JWXW/QIxQaarPh/1l7WzrQNvv6PfSO\nWmUmKdkHmM//HFFgTFR4sSb5jbU2PcGV1/hVwEQNK3wi8+4ducfiGRDCyW+sfMHo\nIzSSYIehmdSyf5/S2yFHo5SEshoEBlSqTAmbTaVhSQKBgQDyGq9RM/ynbPMryRDL\nF0Lcl5KypfyXT/XzUA3PGh9rZf0A8aqBOm9BWeWQSgihmbLv2yz88DiRx4N0TY3X\njDEf5Hi2OvP/HQWFiHwrPloNVAqtx6cm0KHqy7Sam1eVEY7/Y4/9ODq/xazAevsL\nFMsAg8BI9EpRbhDV8vpAe/scUwKBgQDZq1CPrnlPuii9gnd3h7v6JdgWHUMGqkYM\n5G6EQ7fMlsmTXT666hGmRAzPCq5yeJmFRFhgA8H/vvRgdUoQsD4RNvJ8Fcflfzci\nqdAmaChJHJP6zVPF5csrBK547r6cSB5J7f7Y8JqeCOeBN3uoeQart9ySfQwL6n3t\nuWU5QIW+bQKBgQCIppU0EVLXMYCjwy5uY2fC2O7dVSEYSvK47gONVOJNHVjLspwZ\nquDnExWm9pKenAFKrvxanEBh0CobeDbKZf/IT43u1aGo6jmWoG3tfpkXkssgQWPQ\nXcw2mdoLtgieRDXhYtIADD/kxG94iTGvlIHsfXEH/JMCGUz5ZdbolNIsrwKBgGXx\nzGtexcZHY+lN/3HmCm4f51KEJe4rNV+4ZOJhbOXPAV2ZYFXeZqG+YVleoVFPlmdK\nGTHu0J9c6ct7Y1LpmEgruenPsa2UpVgAvFIgmi2TyuK946xd8YeWS7ir6G39gOIT\nKzajiWbWuMZWG/5NoIgwNogNNOUn0A7Us8napEkJAoGBAIytO4QMQSAJhU0WOHkr\ngQy9p92vjur4TmFTjh66lLRjY+vtnUC2pE1DNwDoJrlBzPDS49NvoQfRYZ87X+Sn\nupDuSrco49hDVnkS+HBEAZSDDzp36i9Kt12lVd+WlCFd1Wc/aHh1bfONUJ1zU+e3\n9Lh3Rdi8ZPFdOhKF9LWLWkpK\n-----END PRIVATE KEY-----\n",
+  "client_email": "feria-a-ti@appspot.gserviceaccount.com",
+  "client_id": "107343162709434056086",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/feria-a-ti%40appspot.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}

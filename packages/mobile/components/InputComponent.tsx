@@ -5,8 +5,8 @@ import {
     FieldValues,
     UseControllerProps,
 } from "react-hook-form";
-import { View, Text, StyleSheet, TextInput, Keyboard } from "react-native";
-import { RNInputComponentProps } from "../../common/model/inputProps";
+import { View, Text, StyleSheet, Keyboard } from "react-native";
+import { TextInput } from "react-native-paper";
 import { colors } from "../../common/theme/base";
 
 interface Props<T> extends UseControllerProps<T> {
@@ -61,14 +61,16 @@ const InputComponent = <T extends FieldValues>({
                     <TextInput
                         autoCapitalize="none"
                         secureTextEntry={type == "password" ? true : false}
-                        style={styles.input}
+                        //style={styles.input}
                         placeholder={labelText}
-                        placeholderTextColor={
-                            isFocused
-                                ? styles.input.backgroundColor
-                                : styles.input.borderColor
-                        }
+                        label={labelText}
+                        // placeholderTextColor={
+                        //     isFocused
+                        //         ? styles.input.backgroundColor
+                        //         : styles.input.borderColor
+                        // }
                         selectionColor={styles.input.color}
+                        mode="flat"
                         onFocus={() => {
                             setFocusState(true);
                         }}
@@ -84,15 +86,16 @@ const InputComponent = <T extends FieldValues>({
                             Keyboard.dismiss();
                         }}
                         value={value}
+                        error={error != null}
                     />
                 )}
                 name={name}
             />
-            {(isFocused || inputText !== "") && (
+            {/* {(isFocused || inputText !== "") && (
                 <View style={styles.labelWrapper}>
                     <Text style={styles.label}>{labelText}</Text>
                 </View>
-            )}
+            )} */}
             {error && <Text>{error?.message || "ERROR"}</Text>}
         </>
     );

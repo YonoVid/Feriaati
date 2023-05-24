@@ -1,22 +1,30 @@
 import React, { useState } from "react";
 import { httpsCallable, FunctionsError } from "firebase/functions";
 import { Alert, ScrollView, StyleSheet, Text, View } from "react-native";
+import { NavigationProp, ParamListBase } from "@react-navigation/native";
+
 import { app, functions } from "@feria-a-ti/common/firebase";
 import { messagesCode } from "@feria-a-ti/common/constants/errors";
-import { checkRegisterFields } from "../../common/checkRegisterFields";
+import { checkRegisterFields } from "@feria-a-ti/common/checkRegisterFields";
 import {
     ConfirmRegisterFields,
     RegisterConfirm,
     RegisterFields,
     userStatus,
-} from "../../common/model/registerFields";
-import { ResponseData } from "../../common/model/functionsTypes";
+} from "@feria-a-ti/common/model/registerFields";
+import { ResponseData } from "@feria-a-ti/common/model/functionsTypes";
 import RegisterForm from "../components/RegisterForm";
 import ConfirmRegisterForm from "../components/ConfirmRegisterForm";
 import { MessageAlert } from "../components/MessageAlert";
-import { PaperProvider } from "react-native-paper";
+import { Button, PaperProvider } from "react-native-paper";
 
-function Register() {
+export interface RegisterClientProps {
+    navigation: NavigationProp<ParamListBase>;
+}
+
+export const RegisterClient = (props: RegisterClientProps) => {
+    const { navigation } = props;
+
     const [emailRegistered, setEmailRegistered] = useState("");
 
     const [canRegister, setCanRegister] = useState(true);
@@ -70,15 +78,19 @@ function Register() {
             code: data.code,
         };
         //Call firebase function to create user
-        const addUser = httpsCallable<RegisterConfirm, ResponseData>(
+        const confirmRegister = httpsCallable<RegisterConfirm, ResponseData>(
             functions,
             "confirmRegister"
         );
-        addUser(formatedData)
+        confirmRegister(formatedData)
             .then((result) => {
                 console.log(result);
 
                 setCanConfirmRegister(true);
+                setAlertMessage(messagesCode["00000"]);
+                navigation.navigate("loginClient", {
+                    email: { emailRegistered },
+                });
             })
             .catch((error) => {
                 console.log(error);
@@ -89,32 +101,37 @@ function Register() {
     };
 
     return (
-        <PaperProvider>
-            <ScrollView
-                style={styles.container}
-                contentContainerStyle={styles.innerContainer}
-            >
-                {(!registerComplete && (
-                    <RegisterForm
-                        onSubmit={onSubmitRegister}
-                        canSubmit={canRegister}
-                    />
-                )) || (
-                    <ConfirmRegisterForm
-                        onSubmit={onSubmitConfirmRegister}
-                        canSubmit={canConfirmRegister}
-                    />
-                )}
-                <MessageAlert
-                    open={showAlert}
-                    title={"ESTADO DE ACCIÓN"}
-                    message={alertMessage}
-                    handleClose={closeAlert}
+        <ScrollView
+            style={styles.container}
+            contentContainerStyle={styles.innerContainer}
+        >
+            {(!registerComplete && (
+                <RegisterForm
+                    onSubmit={onSubmitRegister}
+                    canSubmit={canRegister}
+                >
+                    <Button
+                        mode="text"
+                        onPress={() => navigation.navigate("loginClient")}
+                    >
+                        Ya tengo una cuenta
+                    </Button>
+                </RegisterForm>
+            )) || (
+                <ConfirmRegisterForm
+                    onSubmit={onSubmitConfirmRegister}
+                    canSubmit={canConfirmRegister}
                 />
-            </ScrollView>
-        </PaperProvider>
+            )}
+            <MessageAlert
+                open={showAlert}
+                title={"ESTADO DE ACCIÓN"}
+                message={alertMessage}
+                handleClose={closeAlert}
+            />
+        </ScrollView>
     );
-}
+};
 
 const styles = StyleSheet.create({
     innerContainer: {
@@ -128,5 +145,3 @@ const styles = StyleSheet.create({
         backgroundColor: "#EEEAE0",
     },
 });
-
-export default Register;

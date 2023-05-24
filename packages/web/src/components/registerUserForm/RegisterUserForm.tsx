@@ -1,83 +1,121 @@
 import { useForm } from "react-hook-form";
 import { controlValidInput } from "@feria-a-ti/common/inputControl";
-import InputComponent from "../inputComponent/InputComponent";
-import { colors } from "@feria-a-ti/common/theme/base";
 import "./RegisterUserForm.css";
 import { RRegisterFormProps } from "@feria-a-ti/common/model/registerFormProps";
-import { Link } from "react-router-dom";
-import { Button } from "@mui/material";
+import { Box, Button, Card, Divider } from "@mui/material";
+import InputComponentAlt from "../inputComponent/InputComponentAlt";
+import { emailFormatRegex } from "@feria-a-ti/common/checkRegisterFields";
 
 function RegisterUserForm(props: RRegisterFormProps) {
-    const { onSubmit } = props;
+    const { children, onSubmit } = props;
     const {
-        register,
         formState: { errors },
         watch,
         handleSubmit,
-        setError,
+        control,
     } = useForm();
 
     return (
-        <div
-            className="formContainer"
-            style={{ backgroundColor: colors.secondary }}
+        <Card
+            className="inputContainer"
+            sx={{
+                maxWidth: "50%",
+                alignContent: "center",
+                borderRadius: "10%",
+            }}
         >
-            <h1>REGISTRARSE</h1>
+            <h1 style={{ maxWidth: "100%" }}>Registrarse</h1>
             <form onSubmit={handleSubmit(onSubmit)}>
-                <InputComponent
-                    name="username"
-                    label="Nombre de usuario"
-                    onChange={controlValidInput}
-                    required={true}
-                    maxLength={25}
-                    minLength={8}
-                    registerForm={register}
-                    error={errors.username}
-                />
-                <InputComponent
-                    name="email"
-                    type="email"
-                    label="Correo electrónico"
-                    required={true}
-                    maxLength={254}
-                    registerForm={register}
-                    error={errors.email}
-                />
-                <InputComponent
-                    name="password"
-                    label="Contraseña"
-                    type="password"
-                    required={true}
-                    maxLength={128}
-                    minLength={10}
-                    registerForm={register}
-                    error={errors.password}
-                />
-                <InputComponent
-                    name="confirmPassword"
-                    label="Confirmar contraseña"
-                    type="password"
-                    required={true}
-                    maxLength={254}
-                    minLength={10}
-                    registerForm={register}
-                    watch={watch("password")}
-                    setError={setError}
-                    error={errors.confirmPassword}
-                />
-                <Button
-                    color="secondary"
-                    type="submit"
-                    variant="contained"
-                    disabled={
-                        props.canSubmit != null ? !props.canSubmit : false
-                    }
-                >
-                    Registrar cuenta de comprador
-                </Button>
+                <Box>
+                    <InputComponentAlt
+                        control={control}
+                        name="username"
+                        label="Nombre de usuario"
+                        type="text"
+                        onChange={controlValidInput}
+                        rules={{
+                            required: "El nombre de usuario es requerido",
+                            minLength: {
+                                value: 8,
+                                message: "El máximo de caracteres es 128",
+                            },
+                            maxLength: {
+                                value: 25,
+                                message: "El máximo de caracteres es 128",
+                            },
+                        }}
+                        error={errors.name}
+                    />
+                </Box>
+                <Box>
+                    <InputComponentAlt
+                        control={control}
+                        name="email"
+                        label="Correo electrónico"
+                        type="text"
+                        rules={{
+                            required: "El correo es requerido",
+                            maxLength: {
+                                value: 128,
+                                message: "El máximo de caracteres es 128",
+                            },
+                            pattern: {
+                                value: emailFormatRegex,
+                                message:
+                                    "El formato debe ser, por ejemplo: ejemplo@correo.cl",
+                            },
+                        }}
+                        error={errors.password}
+                    />
+                </Box>
+                <Box>
+                    <InputComponentAlt
+                        control={control}
+                        name="password"
+                        label="Contraseña"
+                        type="password"
+                        rules={{
+                            required: "La contraseña es requerida",
+                            minLength: {
+                                value: 10,
+                                message:
+                                    "La contraseña tiene un mínimo de 10 caracteres",
+                            },
+                        }}
+                        error={errors.confirmPassword}
+                    />
+                    <InputComponentAlt
+                        control={control}
+                        name="confirmPassword"
+                        label="Confirmar contraseña"
+                        type="password"
+                        rules={{
+                            required: "Se debe confirmar la contraseña",
+                            validate: {
+                                confirmPassword: (value) =>
+                                    watch("password").toString() === value ||
+                                    "Las contraseñas deben ser iguales",
+                            },
+                        }}
+                        error={errors.confirmPassword}
+                    />
+                </Box>
+                <Box sx={{ margin: "1em" }}>
+                    <Button
+                        color="secondary"
+                        type="submit"
+                        variant="contained"
+                        disabled={
+                            props.canSubmit != null ? !props.canSubmit : false
+                        }
+                    >
+                        Registrar cuenta de comprador
+                    </Button>
+                </Box>
             </form>
-            <Link to={"/login"}>Ya tienes una cuenta? Inicia Sesión</Link>
-        </div>
+            <Divider />
+            <Box sx={{ margin: "1em" }}>{children}</Box>
+        </Card>
     );
 }
 

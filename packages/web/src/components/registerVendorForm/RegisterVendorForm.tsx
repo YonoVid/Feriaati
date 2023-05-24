@@ -8,12 +8,13 @@ import {
     passwordFormatRegex,
     rutFormatRegex,
 } from "@feria-a-ti/common/checkRegisterFields";
-import { RRegisterFormProps } from "@feria-a-ti/common/model/registerFormProps";
-import "./RegisterVendorForm.css";
+import { RRegisterVendorFormProps } from "@feria-a-ti/common/model/registerFormProps";
 import { regionCode, regionCommune } from "@feria-a-ti/common/constants/form";
+import { compressImage } from "@feria-a-ti/common/compression";
+import "./RegisterVendorForm.css";
 
-function RegisterVendorForm(props: RRegisterFormProps) {
-    const { onSubmit } = props;
+function RegisterVendorForm(props: RRegisterVendorFormProps) {
+    const { setImageData, onSubmit } = props;
     const {
         formState: { errors },
         watch,
@@ -21,6 +22,15 @@ function RegisterVendorForm(props: RRegisterFormProps) {
         setValue,
         control,
     } = useForm();
+
+    //Image reader
+    const fileReader = new FileReader();
+
+    if (fileReader != null && setImageData != null) {
+        fileReader.onload = (ev: ProgressEvent<FileReader>) => {
+            setImageData(ev.target?.result as ArrayBuffer);
+        };
+    }
 
     return (
         <>
@@ -129,6 +139,35 @@ function RegisterVendorForm(props: RRegisterFormProps) {
                             }}
                             error={errors.streetNumber}
                         />
+                    </Box>
+                    <InputComponentAlt
+                        control={control}
+                        name="image"
+                        label="Imagen de local"
+                        type="file"
+                        rules={{
+                            required: "Se debe subir una imagen del local",
+                        }}
+                        onChange={async (e) => {
+                            const target = e.target as HTMLInputElement;
+                            if (
+                                !(
+                                    e.target.hasAttribute("type") &&
+                                    e.target.getAttribute("type") === "submit"
+                                ) &&
+                                target &&
+                                target != null &&
+                                target.files != null
+                            ) {
+                                const img = await compressImage(
+                                    target!.files![0]
+                                );
+                                fileReader?.readAsDataURL(img as File);
+                            }
+                        }}
+                        error={errors.name}
+                    />
+                    <Box>
                         <InputComponentAlt
                             control={control}
                             name="rut"
@@ -151,9 +190,6 @@ function RegisterVendorForm(props: RRegisterFormProps) {
                             }}
                             error={errors.enterpriseName}
                         />
-                    </Box>
-
-                    <Box>
                         <InputComponentAlt
                             control={control}
                             name="name"

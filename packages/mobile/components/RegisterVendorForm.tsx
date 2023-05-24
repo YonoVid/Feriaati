@@ -1,6 +1,6 @@
 import React from "react";
 import { Text, View, Button, StyleSheet } from "react-native";
-import { useForm } from "react-hook-form";
+import { FieldError, useForm } from "react-hook-form";
 import { colors } from "../../common/theme/base";
 import InputComponent from "./InputComponent";
 import {
@@ -103,6 +103,15 @@ function RegisterVendorForm(props: RegisterVendorFormProps) {
                         value: numberRegex,
                         message: "Valor debe ser numérico",
                     },
+                }}
+            />
+            <InputComponent
+                name="image"
+                label="Imagen de local"
+                control={control}
+                error={errors?.image as FieldError}
+                rules={{
+                    required: "La imagen del local es requerida",
                 }}
             />
             <InputComponent
