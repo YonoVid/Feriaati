@@ -8,6 +8,9 @@ import { RegisterClient } from "./RegisterClient";
 import { DefaultTheme, PaperProvider, Title } from "react-native-paper";
 import { LoginClient } from "./LoginClient";
 import { themePaperLight } from "@feria-a-ti/common/theme/base";
+import AppBar from "../components/AppBar";
+import { LoginVendor } from "./LoginVendor";
+import { RegisterVendor } from "./RegisterVendor";
 
 const Stack = createNativeStackNavigator();
 
@@ -31,7 +34,12 @@ export default function App() {
     return (
         <PaperProvider theme={theme}>
             <NavigationContainer>
-                <Stack.Navigator initialRouteName="loginClient">
+                <Stack.Navigator
+                    initialRouteName="loginClient"
+                    screenOptions={{
+                        header: (props) => <AppBar {...props} />,
+                    }}
+                >
                     <Stack.Screen
                         name="loginClient"
                         component={LoginClient}
@@ -41,6 +49,16 @@ export default function App() {
                         name="registerClient"
                         component={RegisterClient}
                         options={{ title: "Registro de usuario " }}
+                    />
+                    <Stack.Screen
+                        name="loginVendor"
+                        component={LoginVendor}
+                        options={{ title: "Inicio de sesión de vendedor " }}
+                    />
+                    <Stack.Screen
+                        name="registerVendor"
+                        component={RegisterVendor}
+                        options={{ title: "Registro de vendedor " }}
                     />
                 </Stack.Navigator>
             </NavigationContainer>

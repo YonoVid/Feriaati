@@ -1,6 +1,9 @@
-import React from "react";
+import React, { useCallback, useState } from "react";
 import { Text, View, Button, StyleSheet } from "react-native";
 import { FieldError, useForm } from "react-hook-form";
+import * as DocumentPicker from "expo-document-picker";
+import * as ExpoFileSystem from "expo-file-system";
+
 import { colors } from "../../common/theme/base";
 import InputComponent from "./InputComponent";
 import {
@@ -10,19 +13,40 @@ import {
     passwordFormatRegex,
     rutFormatRegex,
 } from "../../common/checkRegisterFields";
-import {
-    RegisterFields,
-    RegisterVendorFields,
-} from "../../common/model/registerFields";
-import { RegisterVendorFormProps } from "../../common/model/registerFormProps";
+import { RegisterVendorFields } from "../../common/model/registerFields";
+import { RRegisterVendorFormProps } from "../../common/model/registerFormProps";
+import DropdownComponent from "./DropdownComponent";
+import { regionCode, regionCommune } from "@feria-a-ti/common/constants/form";
 
-function RegisterVendorForm(props: RegisterVendorFormProps) {
+function RegisterVendorForm(props: RRegisterVendorFormProps) {
     const {
         handleSubmit,
         watch,
         control,
         formState: { errors },
     } = useForm<RegisterVendorFields>();
+
+    const [fileResponse, setFileResponse] =
+        useState<DocumentPicker.DocumentResult>();
+
+    const handleDocumentSelection = useCallback(async () => {
+        try {
+            const response = await DocumentPicker.getDocumentAsync({
+                type: "image/*",
+                multiple: false,
+                copyToCacheDirectory: false,
+            });
+            setFileResponse(response);
+            console.log(response);
+            console.log(
+                await ExpoFileSystem.readAsStringAsync(response["uri"], {
+                    encoding: "base64",
+                })
+            );
+        } catch (err) {
+            console.warn(err);
+        }
+    }, []);
 
     return (
         <View style={styles.container}>
@@ -57,7 +81,7 @@ function RegisterVendorForm(props: RegisterVendorFormProps) {
                     },
                 }}
             />
-            <InputComponent
+            <DropdownComponent
                 name="region"
                 label="Región"
                 control={control}
@@ -65,8 +89,9 @@ function RegisterVendorForm(props: RegisterVendorFormProps) {
                 rules={{
                     required: "La región es requerida",
                 }}
+                list={regionCode}
             />
-            <InputComponent
+            <DropdownComponent
                 name="commune"
                 label="Comuna"
                 control={control}
@@ -74,6 +99,7 @@ function RegisterVendorForm(props: RegisterVendorFormProps) {
                 rules={{
                     required: "La comuna es requerida",
                 }}
+                list={regionCommune[watch("region")] || []}
             />
             <InputComponent
                 name="street"
@@ -105,6 +131,7 @@ function RegisterVendorForm(props: RegisterVendorFormProps) {
                     },
                 }}
             />
+            <Button title="TEST PICKER" onPress={handleDocumentSelection} />
             <InputComponent
                 name="image"
                 label="Imagen de local"

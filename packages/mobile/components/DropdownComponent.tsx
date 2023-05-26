@@ -7,46 +7,37 @@ import {
 } from "react-hook-form";
 import { View, Text, StyleSheet, Keyboard } from "react-native";
 import { TextInput } from "react-native-paper";
-import { colors } from "../../common/theme/base";
+import Dropdown from "react-native-paper-dropdown";
+
+import { colors } from "@feria-a-ti/common/theme/base";
 
 interface Props<T> extends UseControllerProps<T> {
     label: string;
-    type?: "text" | "password" | "email";
+    list: (string | number)[][];
     error: FieldError | undefined;
 }
 
 const InputComponent = <T extends FieldValues>({
     name,
     label,
-    type,
+    list,
     control,
     rules,
     error,
 }: Props<T>) => {
     //const { name, label, control, rules, error } = props;
-    const [isFocused, setFocusState] = useState(false);
-    const [inputText, setInputText] = useState("");
+    const [valueDropdown, setValueDropdown] = useState(null);
+    const [showDropdown, setShowDropdown] = useState(false);
     const labelText = label != null ? label : name;
-    const [errorMessage, setErrorMessage] = useState("");
 
     const onChangeWrapper = (
         onChange: (...event: any[]) => void,
-        text: string
+        value: any
     ) => {
         console.log("ERROR", error?.type);
-        switch (error?.type) {
-            case "required": {
-                setErrorMessage("Message required");
-                break;
-            }
-            case "minLength": {
-                setErrorMessage("Message minLength");
-                break;
-            }
-        }
-        setInputText(text);
-        onChange(text);
-        return text;
+        onChange(value);
+        setValueDropdown(value);
+        return value;
     };
 
     return (
@@ -58,35 +49,26 @@ const InputComponent = <T extends FieldValues>({
                     field: { onChange, onBlur, value },
                     fieldState: { error },
                 }) => (
-                    <TextInput
-                        autoCapitalize="none"
-                        secureTextEntry={type == "password" ? true : false}
+                    <Dropdown
                         //style={styles.input}
                         placeholder={labelText}
                         label={labelText}
-                        // placeholderTextColor={
-                        //     isFocused
-                        //         ? styles.input.backgroundColor
-                        //         : styles.input.borderColor
-                        // }
-                        selectionColor={styles.input.color}
+                        visible={showDropdown}
+                        showDropDown={() => setShowDropdown(true)}
+                        onDismiss={() => setShowDropdown(false)}
                         mode="flat"
-                        onFocus={() => {
-                            setFocusState(true);
+                        setValue={(value) => {
+                            onChange(value);
+                            setValueDropdown(value);
                         }}
-                        onEndEditing={() => {
-                            setFocusState(false);
-                        }}
-                        onBlur={onBlur}
-                        onChangeText={(text) => {
-                            onChangeWrapper(onChange, text);
-                            console.log(error);
-                        }}
-                        onSubmitEditing={() => {
-                            Keyboard.dismiss();
-                        }}
-                        value={"" || value}
-                        error={error != null}
+                        list={list.map((element) => {
+                            const data = {
+                                label: element[1] as string,
+                                value: element[0],
+                            };
+                            return data;
+                        })}
+                        value={"" || valueDropdown}
                     />
                 )}
                 name={name}

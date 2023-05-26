@@ -1,31 +1,31 @@
 import React, { useState } from "react";
 import { httpsCallable, FunctionsError } from "firebase/functions";
 import { Alert, ScrollView, StyleSheet, Text, View } from "react-native";
-import { app, functions } from "@feria-a-ti/common/firebase";
+import { NavigationProp, ParamListBase } from "@react-navigation/native";
+
+import { functions } from "@feria-a-ti/common/firebase";
 import { messagesCode } from "@feria-a-ti/common/constants/errors";
+import { checkRegisterVendorFields } from "@feria-a-ti/common/checkRegisterFields";
 import {
-    checkRegisterFields,
-    checkRegisterVendorFields,
-} from "../../common/checkRegisterFields";
-import {
-    ConfirmRegisterFields,
-    RegisterConfirm,
-    RegisterFields,
     RegisterVendorFields,
     userStatus,
-} from "../../common/model/registerFields";
-import { ResponseData } from "../../common/model/functionsTypes";
-import RegisterForm from "../components/RegisterForm";
-import ConfirmRegisterForm from "../components/ConfirmRegisterForm";
+} from "@feria-a-ti/common/model/registerFields";
+import { ResponseData } from "@feria-a-ti/common/model/functionsTypes";
 import { MessageAlert } from "../components/MessageAlert";
-import { PaperProvider } from "react-native-paper";
 import RegisterVendorForm from "../components/RegisterVendorForm";
 
-function Register() {
+export interface RegisterVendorProps {
+    navigation: NavigationProp<ParamListBase>;
+}
+
+export const RegisterVendor = () => {
     const [emailRegistered, setEmailRegistered] = useState("");
 
     const [canRegister, setCanRegister] = useState(true);
     const [registerComplete, setRegisterComplete] = useState(false);
+
+    //Store user file data
+    const [imageData, setImageData] = useState<string | ArrayBuffer>("");
 
     // Alert Related values
     const [showAlert, setShowAlert] = useState(false);
@@ -74,6 +74,7 @@ function Register() {
             <RegisterVendorForm
                 onSubmit={onSubmitRegister}
                 canSubmit={canRegister}
+                setImageData={setImageData}
             />
 
             <MessageAlert
@@ -84,7 +85,7 @@ function Register() {
             />
         </ScrollView>
     );
-}
+};
 
 const styles = StyleSheet.create({
     innerContainer: {
@@ -98,5 +99,3 @@ const styles = StyleSheet.create({
         backgroundColor: "#EEEAE0",
     },
 });
-
-export default Register;
