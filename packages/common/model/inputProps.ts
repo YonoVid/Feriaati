@@ -15,7 +15,7 @@ import {
 type InputComponentProps = {
     name: string;
     label?: string;
-    type?: "text" | "email" | "password";
+    type?: "text" | "email" | "password" | "select" | "file";
     style?: object;
     watch?: UseFormWatch<FieldValues>;
     setError?: UseFormSetError<FieldValues>;
@@ -30,7 +30,15 @@ export type RInputComponentProps<
     maxLength?: number;
     minLength?: number;
     onChange?: React.ChangeEventHandler;
-    registerForm: UseFormRegister<FieldValues>;
+    registerForm?: UseFormRegister<FieldValues>;
+    rules?: Omit<
+        RegisterOptions<FieldValues, TName>,
+        "valueAsNumber" | "valueAsDate" | "setValueAs" | "disabled"
+    >;
+    control?: Control<FieldValues, any>;
+    selectOptions?: (string | number)[][];
+    defaultValue?: string;
+    test?: TName;
 };
 
 export type RNInputComponentProps<

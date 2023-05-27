@@ -1,7 +1,7 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 // Import for local emulator
-import { getApp } from "firebase/app";
+//import { getApp } from "firebase/app";
 import { getFunctions, connectFunctionsEmulator } from "firebase/functions";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -23,7 +23,7 @@ const firebaseConfig = {
 export const app = initializeApp(firebaseConfig);
 export const functions = getFunctions(app);
 
-connectFunctionsEmulator(functions, "localhost", 5001);
+connectFunctionsEmulator(functions, "192.168.0.12", 5001);
 
 export const actionCodeSettings = {
     // URL you want to redirect back to. The domain (www.example.com) for this

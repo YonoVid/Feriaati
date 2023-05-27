@@ -1,16 +1,16 @@
 export type LoginFields = {
-  email: string;
-  password: string;
-  attempts: number;
+    email: string;
+    password: string;
+    attempts?: number;
 };
 
 export type RecoveryFields = {
-  email: string;
+    email: string;
 };
 
 export type UpdatePassFields = {
-  email: string;
-  codigo: string;
-  password: string;
-  confirmPassword: string;
+    email: string;
+    codigo: string;
+    password: string;
+    confirmPassword: string;
 };

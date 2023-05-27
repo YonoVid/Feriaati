@@ -1,3 +1,5 @@
+import { ThemeOptions } from "@mui/material/styles";
+
 type ColorsProps = {
     primary: string;
     primaryShadow: string;
@@ -14,64 +16,69 @@ export const colors: ColorsProps = {
     light: "#EEEAE0",
 };
 
-// type syleContent = {
-//     container: {},
-//     title: {},
+export const themeOptions: ThemeOptions = {
+    palette: {
+        mode: "light",
+        primary: {
+            main: "#f97777",
+            contrastText: "#fafbfa",
+        },
+        secondary: {
+            main: "#89B056",
+            contrastText: "#EEEAE0",
+        },
+        background: {
+            default: "#f5e3cd",
+            paper: "#f9f6f5",
+        },
+        text: {
+            primary: "rgba(49,61,39,0.87)",
+            secondary: "rgba(58,67,59,0.6)",
+        },
+    },
+};
 
-// }
-
-// const stylesBasic = {
-//     container: {
-//         justifyContent: "center",
-//         padding: 8,
-//         margin: 20,
-//         paddingVertical: 20,
-//         backgroundColor: colors.secondary,
-//         borderRadius: 30,
-//     },
-//     title: {
-//         marginTop: 40,
-//         textAlign: "center",
-//         color: colors.primaryShadow,
-//         fontSize: 30,
-//         fontWeight: "bold",
-//         borderRadius: 4,
-//     },
-//     button: {
-//         marginTop: 40,
-//         color: colors.light,
-//         height: 40,
-//         backgroundColor: colors.secondaryShadow,
-//         borderRadius: 4,
-//     },
-//     buttonInner: {
-//         marginTop: 40,
-//         color: colors.primaryShadow,
-//         backgroundColor: colors.primary,
-//         borderRadius: 4,
-//     },
-//     labelWrapper: {
-//         alignItems: "center",
-//         marginTop: "-2%",
-//         flexDirection: "row",
-//     },
-//     label: {
-//         color: colors.primaryShadow,
-//         backgroundColor: colors.light,
-//         alignSelf: "flex-start",
-//         fontSize: 12,
-//         fontWeight: "bold",
-//         marginLeft: 15,
-//         paddingHorizontal: "5%",
-//         borderRadius: 10,
-//     },
-//     input: {
-//         color: colors.primaryShadow,
-//         backgroundColor: colors.light,
-//         borderColor: colors.secondary,
-//         marginTop: "2%",
-//         height: 40,
-//         padding: 10,
-//         borderRadius: 50,
-//     },
-// };
+export const themePaperLight = {
+    colors: {
+        primary: "rgb(166, 56, 60)",
+        onPrimary: "rgb(255, 255, 255)",
+        primaryContainer: "rgb(255, 218, 216)",
+        onPrimaryContainer: "rgb(65, 0, 7)",
+        secondary: "rgb(69, 104, 18)",
+        onSecondary: "rgb(255, 255, 255)",
+        secondaryContainer: "rgb(197, 240, 139)",
+        onSecondaryContainer: "rgb(16, 32, 0)",
+        tertiary: "rgb(127, 86, 0)",
+        onTertiary: "rgb(255, 255, 255)",
+        tertiaryContainer: "rgb(255, 221, 174)",
+        onTertiaryContainer: "rgb(40, 24, 0)",
+        error: "rgb(186, 26, 26)",
+        onError: "rgb(255, 255, 255)",
+        errorContainer: "rgb(255, 218, 214)",
+        onErrorContainer: "rgb(65, 0, 2)",
+        background: "rgb(255, 251, 255)",
+        onBackground: "rgb(32, 26, 26)",
+        surface: "rgb(255, 251, 255)",
+        onSurface: "rgb(32, 26, 26)",
+        surfaceVariant: "rgb(244, 221, 220)",
+        onSurfaceVariant: "rgb(82, 67, 66)",
+        outline: "rgb(133, 115, 114)",
+        outlineVariant: "rgb(215, 193, 192)",
+        shadow: "rgb(0, 0, 0)",
+        scrim: "rgb(0, 0, 0)",
+        inverseSurface: "rgb(54, 47, 46)",
+        inverseOnSurface: "rgb(251, 238, 237)",
+        inversePrimary: "rgb(255, 179, 177)",
+        elevation: {
+            level0: "transparent",
+            level1: "rgb(251, 241, 245)",
+            level2: "rgb(248, 235, 239)",
+            level3: "rgb(245, 230, 234)",
+            level4: "rgb(244, 228, 232)",
+            level5: "rgb(243, 224, 228)",
+        },
+        surfaceDisabled: "rgba(32, 26, 26, 0.12)",
+        onSurfaceDisabled: "rgba(32, 26, 26, 0.38)",
+        backdrop: "rgba(59, 45, 44, 0.4)",
+    },
+};

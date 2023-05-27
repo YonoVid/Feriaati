@@ -1,17 +1,32 @@
 import { FieldValues } from "react-hook-form";
-import { RegisterFields } from "./registerFields";
-//import { LoginFields } from "./loginFields";
+import { FormProps } from "./sharedProps";
 
-type RegisterProps = {
-    canSubmit?: boolean;
-}
+import {
+    ConfirmRegisterFields,
+    RegisterFields,
+    RegisterVendorFields,
+} from "./registerFields";
 
-
-export type RegisterFormProps = RegisterProps & {
-    onSubmit: (data: RegisterFields) => void;
-};
-
-export type RRegisterFormProps = RegisterProps & {
+export type RFormProps = FormProps & {
     onSubmit: (data: FieldValues) => void;
 };
 
+export type RegisterFormProps = FormProps & {
+    onSubmit: (data: RegisterFields) => void;
+};
+
+export type RegisterVendorFormProps = FormProps & {
+    onSubmit: (data: RegisterVendorFields) => void;
+};
+
+export type ConfirmRegisterFormProps = FormProps & {
+    onSubmit: (data: ConfirmRegisterFields) => void;
+};
+
+export type RRegisterFormProps = RFormProps & {
+    type?: "register";
+};
+
+export type RRegisterVendorFormProps = RRegisterFormProps & {
+    setImageData: React.Dispatch<React.SetStateAction<string | ArrayBuffer>>;
+};

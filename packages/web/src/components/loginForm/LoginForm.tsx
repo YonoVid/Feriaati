@@ -1,65 +1,84 @@
 import { useForm } from "react-hook-form";
-import InputComponent from "../inputComponent/InputComponent";
-import { colors } from "@feria-a-ti/common/theme/base";
 import "./LoginForm.css";
 import { RLoginFormProps } from "@feria-a-ti/common/model/loginFormProps";
-import { Link } from "react-router-dom";
+import { Box, Button, Card, Divider } from "@mui/material";
+import InputComponentAlt from "../inputComponent/InputComponentAlt";
+import { emailFormatRegex } from "@feria-a-ti/common/checkLoginFields";
 
 function LoginForm(props: RLoginFormProps) {
-  const { onSubmit } = props;
-  const {
-    register,
-    formState: { errors },
-    handleSubmit,
-  } = useForm();
+    const { children, onSubmit } = props;
+    const {
+        formState: { errors },
+        handleSubmit,
+        control,
+    } = useForm();
 
-  return (
-    <div
-      className="formContainer"
-      style={{ backgroundColor: colors.secondary }}
-    >
-      <h1 style={{ maxWidth: "100%" }}>Iniciar Sesion</h1>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <InputComponent
-          name="email"
-          type="email"
-          label="Correo electrónico"
-          required={true}
-          maxLength={254}
-          registerForm={register}
-          error={errors.email}
-        />
-        <InputComponent
-          name="password"
-          label="Contraseña"
-          type="password"
-          required={true}
-          maxLength={128}
-          minLength={10}
-          registerForm={register}
-          error={errors.password}
-        />
-
-        <input
-          className="formButton"
-          style={{
-            color: colors.light,
-            backgroundColor: colors.secondaryShadow,
-          }}
-          type="submit"
-          value="Iniciar sesion"
-          disabled={props.canSubmit != null ? !props.canSubmit : false}
-        />
-      </form>
-      <Link to={"/register"}>No tienes una cuenta? Registrate</Link>
-      <br />
-      <Link to={"/loginVendor"}>
-        Posees una cuenta de vendedor, inicia sesión.
-      </Link>
-      <br />
-      <Link to={"/recovery"}>Olvidaste tu contraseña?</Link>
-    </div>
-  );
+    return (
+        <Card
+            className="inputContainer"
+            sx={{
+                maxWidth: "50%",
+                alignContent: "center",
+                borderRadius: "10%",
+            }}
+        >
+            <h1 style={{ maxWidth: "100%" }}>Iniciar Sesion</h1>
+            <form onSubmit={handleSubmit(onSubmit)}>
+                <Box>
+                    <InputComponentAlt
+                        control={control}
+                        name="email"
+                        label="Correo electrónico"
+                        type="text"
+                        rules={{
+                            required: "El correo es requerido",
+                            maxLength: {
+                                value: 128,
+                                message: "El máximo de caracteres es 128",
+                            },
+                            pattern: {
+                                value: emailFormatRegex,
+                                message:
+                                    "El formato debe ser, por ejemplo: ejemplo@correo.cl",
+                            },
+                        }}
+                        error={errors.password}
+                    />
+                </Box>
+                <Box>
+                    <InputComponentAlt
+                        control={control}
+                        name="password"
+                        label="Contraseña"
+                        type="password"
+                        rules={{
+                            required: "La contraseña es requerida",
+                            minLength: {
+                                value: 10,
+                                message:
+                                    "La contraseña tiene un mínimo de 10 caracteres",
+                            },
+                        }}
+                        error={errors.confirmPassword}
+                    />
+                </Box>
+                <Box sx={{ margin: "1em" }}>
+                    <Button
+                        color="secondary"
+                        type="submit"
+                        variant="contained"
+                        disabled={
+                            props.canSubmit != null ? !props.canSubmit : false
+                        }
+                    >
+                        Iniciar sesión
+                    </Button>
+                </Box>
+            </form>
+            <Divider />
+            <Box sx={{ margin: "1em" }}>{children}</Box>
+        </Card>
+    );
 }
 
 export default LoginForm;
