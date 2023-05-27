@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { httpsCallable, FunctionsError } from "firebase/functions";
 import { Alert, ScrollView, StyleSheet, Text, View } from "react-native";
 import { NavigationProp, ParamListBase } from "@react-navigation/native";
+import { Button, PaperProvider } from "react-native-paper";
 
 import { app, functions } from "@feria-a-ti/common/firebase";
 import { messagesCode } from "@feria-a-ti/common/constants/errors";
@@ -13,10 +14,9 @@ import {
     userStatus,
 } from "@feria-a-ti/common/model/registerFields";
 import { ResponseData } from "@feria-a-ti/common/model/functionsTypes";
-import RegisterForm from "../components/RegisterForm";
-import ConfirmRegisterForm from "../components/ConfirmRegisterForm";
-import { MessageAlert } from "../components/MessageAlert";
-import { Button, PaperProvider } from "react-native-paper";
+import RegisterForm from "@feria-a-ti/mobile/components/forms/RegisterForm";
+import ConfirmRegisterForm from "@feria-a-ti/mobile/components/forms/ConfirmRegisterForm";
+import { MessageAlert } from "@feria-a-ti/mobile/components/MessageAlert";
 
 export interface RegisterClientProps {
     navigation: NavigationProp<ParamListBase>;

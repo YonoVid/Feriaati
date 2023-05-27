@@ -7,11 +7,12 @@ import {
 } from "react-hook-form";
 import { View, Text, StyleSheet, Keyboard } from "react-native";
 import { TextInput } from "react-native-paper";
-import { colors } from "../../common/theme/base";
+import { colors } from "@feria-a-ti/common/theme/base";
 
 interface Props<T> extends UseControllerProps<T> {
     label: string;
     type?: "text" | "password" | "email";
+    hidden?: boolean;
     error: FieldError | undefined;
 }
 

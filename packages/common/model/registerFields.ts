@@ -29,7 +29,7 @@ export type RegisterVendorFields = AccountFields & {
     name: string;
     surname: string;
     confirmPassword: string;
-    image: ArrayBuffer;
+    image: string | ArrayBuffer;
 };
 
 export type ConfirmRegisterFields = UserFields & {

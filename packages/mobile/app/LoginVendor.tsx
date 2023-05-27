@@ -6,7 +6,7 @@ import { NavigationProp, ParamListBase } from "@react-navigation/native";
 import { checkLoginFields } from "@feria-a-ti/common/checkLoginFields";
 import { LoginFields } from "@feria-a-ti/common/model/loginFields";
 import { functions } from "@feria-a-ti/common/firebase";
-import LoginForm from "../components/LoginForm";
+import LoginForm from "@feria-a-ti/mobile/components/forms/LoginForm";
 import { httpsCallable } from "@firebase/functions";
 import { Button } from "react-native-paper";
 

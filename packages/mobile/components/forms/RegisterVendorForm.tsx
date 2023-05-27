@@ -1,33 +1,32 @@
 import React, { useCallback, useState } from "react";
-import { Text, View, Button, StyleSheet } from "react-native";
-import { FieldError, useForm } from "react-hook-form";
-import * as DocumentPicker from "expo-document-picker";
-import * as ExpoFileSystem from "expo-file-system";
+import { Image, Text, View, StyleSheet } from "react-native";
+import { Controller, FieldError, useForm } from "react-hook-form";
+import { Button } from "react-native-paper";
 
-import { colors } from "../../common/theme/base";
-import InputComponent from "./InputComponent";
+import { colors } from "@feria-a-ti/common/theme/base";
 import {
     checkRutVerificationCodeString,
     emailFormatRegex,
     numberRegex,
     passwordFormatRegex,
     rutFormatRegex,
-} from "../../common/checkRegisterFields";
-import { RegisterVendorFields } from "../../common/model/registerFields";
-import { RRegisterVendorFormProps } from "../../common/model/registerFormProps";
-import DropdownComponent from "./DropdownComponent";
+} from "@feria-a-ti/common/checkRegisterFields";
+import { RegisterVendorFields } from "@feria-a-ti/common/model/registerFields";
+import { RRegisterVendorFormProps } from "@feria-a-ti/common/model/registerFormProps";
 import { regionCode, regionCommune } from "@feria-a-ti/common/constants/form";
+import InputComponent from "@feria-a-ti/mobile/components/inputs/InputComponent";
+import DropdownComponent from "@feria-a-ti/mobile/components/inputs/DropdownComponent";
+import FileInputComponent from "../inputs/FileInputComponent";
 
 function RegisterVendorForm(props: RRegisterVendorFormProps) {
+    const { setImageData, onSubmit } = props;
     const {
+        setValue,
         handleSubmit,
         watch,
         control,
         formState: { errors },
     } = useForm<RegisterVendorFields>();
-
-    const [fileResponse, setFileResponse] =
-        useState<DocumentPicker.DocumentResult>();
 
     const handleDocumentSelection = useCallback(async () => {
         try {
@@ -36,13 +35,29 @@ function RegisterVendorForm(props: RRegisterVendorFormProps) {
                 multiple: false,
                 copyToCacheDirectory: false,
             });
-            setFileResponse(response);
-            console.log(response);
-            console.log(
-                await ExpoFileSystem.readAsStringAsync(response["uri"], {
-                    encoding: "base64",
-                })
-            );
+            if (response.type === "success") {
+                let imageAction = [];
+                if (response["size"] / 1024 ** 2 > 1) {
+                    Image.getSize(response["uri"], (width, height) => {
+                        console.log(width, "x", height);
+                        imageAction.push(
+                            height > width ? { height: 1500 } : { width: 1500 }
+                        );
+                    });
+                }
+                setValue("image", response["name"]);
+                console.log(response);
+                console.log(response.size);
+                await ExpoImageManipulator.manipulateAsync(
+                    response["uri"],
+                    imageAction,
+                    { compress: 0.75, base64: true }
+                ).then((value) => {
+                    setImageData(value.base64);
+                    console.log(value.base64 != null);
+                    console.log(value.width);
+                });
+            }
         } catch (err) {
             console.warn(err);
         }
@@ -131,15 +146,18 @@ function RegisterVendorForm(props: RRegisterVendorFormProps) {
                     },
                 }}
             />
-            <Button title="TEST PICKER" onPress={handleDocumentSelection} />
-            <InputComponent
+
+            <FileInputComponent
                 name="image"
-                label="Imagen de local"
+                type="image"
                 control={control}
-                error={errors?.image as FieldError}
+                label="Ingresar foto de local"
+                error={errors?.image}
                 rules={{
                     required: "La imagen del local es requerida",
                 }}
+                icon="camera"
+                setData={setImageData}
             />
             <InputComponent
                 name="rut"
@@ -241,11 +259,13 @@ function RegisterVendorForm(props: RRegisterVendorFormProps) {
             />
             <View style={styles.button}>
                 <Button
+                    mode="contained"
                     color={styles.buttonInner.color}
-                    title="Registrarse"
                     disabled={!props.canSubmit}
-                    onPress={handleSubmit(props.onSubmit)}
-                />
+                    onPress={handleSubmit(onSubmit)}
+                >
+                    Registrarse
+                </Button>
             </View>
         </View>
     );

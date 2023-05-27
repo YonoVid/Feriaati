@@ -1,11 +1,11 @@
 import React from "react";
 import { Text, View, Button, StyleSheet } from "react-native";
 import { useForm } from "react-hook-form";
-import { colors } from "../../common/theme/base";
-import InputComponent from "./InputComponent";
-import { emailFormatRegex } from "../../common/checkRegisterFields";
-import { LoginFields } from "../../common/model/loginFields";
-import { LoginFormProps } from "../../common/model/loginFormProps";
+import { colors } from "@feria-a-ti/common/theme/base";
+import InputComponent from "@feria-a-ti/mobile/components/inputs/InputComponent";
+import { emailFormatRegex } from "@feria-a-ti/common/checkRegisterFields";
+import { LoginFields } from "@feria-a-ti/common/model/loginFields";
+import { LoginFormProps } from "@feria-a-ti/common/model/loginFormProps";
 
 function LoginForm(props: LoginFormProps) {
     const {

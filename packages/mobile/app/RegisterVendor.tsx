@@ -11,8 +11,8 @@ import {
     userStatus,
 } from "@feria-a-ti/common/model/registerFields";
 import { ResponseData } from "@feria-a-ti/common/model/functionsTypes";
-import { MessageAlert } from "../components/MessageAlert";
-import RegisterVendorForm from "../components/RegisterVendorForm";
+import { MessageAlert } from "@feria-a-ti/mobile/components/MessageAlert";
+import RegisterVendorForm from "@feria-a-ti/mobile/components/forms/RegisterVendorForm";
 
 export interface RegisterVendorProps {
     navigation: NavigationProp<ParamListBase>;
@@ -22,7 +22,6 @@ export const RegisterVendor = () => {
     const [emailRegistered, setEmailRegistered] = useState("");
 
     const [canRegister, setCanRegister] = useState(true);
-    const [registerComplete, setRegisterComplete] = useState(false);
 
     //Store user file data
     const [imageData, setImageData] = useState<string | ArrayBuffer>("");
@@ -40,6 +39,8 @@ export const RegisterVendor = () => {
         const check = checkRegisterVendorFields(data);
 
         if (check) {
+            let dataWithImage = data;
+            dataWithImage.image = imageData;
             //Call firebase function to create user
             const addUser = httpsCallable<RegisterVendorFields, ResponseData>(
                 functions,
@@ -53,8 +54,6 @@ export const RegisterVendor = () => {
                     setCanRegister(true);
                     //Set registered email
                     setEmailRegistered(data.email);
-                    //Set register complete
-                    setRegisterComplete(true);
                     setAlertMessage(result.data?.msg);
                 })
                 .catch((error) => {

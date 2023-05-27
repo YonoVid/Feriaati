@@ -1,14 +1,15 @@
 import React from "react";
 import { Text, View, Button, StyleSheet } from "react-native";
 import { useForm } from "react-hook-form";
-import { colors } from "../../common/theme/base";
-import InputComponent from "./InputComponent";
+
+import { colors } from "@feria-a-ti/common/theme/base";
 import {
     emailFormatRegex,
     passwordFormatRegex,
-} from "../../common/checkRegisterFields";
-import { RegisterFields } from "../../common/model/registerFields";
-import { RegisterFormProps } from "../../common/model/registerFormProps";
+} from "@feria-a-ti/common/checkRegisterFields";
+import { RegisterFields } from "@feria-a-ti/common/model/registerFields";
+import { RegisterFormProps } from "@feria-a-ti/common/model/registerFormProps";
+import InputComponent from "@feria-a-ti/mobile/components/inputs/InputComponent";
 
 function RegisterForm(props: RegisterFormProps) {
     const {

@@ -6,11 +6,11 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { RegisterClient } from "./RegisterClient";
 import { DefaultTheme, PaperProvider, Title } from "react-native-paper";
-import { LoginClient } from "./LoginClient";
+import { LoginClient } from "@feria-a-ti/mobile/app/LoginClient";
 import { themePaperLight } from "@feria-a-ti/common/theme/base";
-import AppBar from "../components/AppBar";
-import { LoginVendor } from "./LoginVendor";
-import { RegisterVendor } from "./RegisterVendor";
+import AppBar from "@feria-a-ti/mobile/components/AppBar";
+import { LoginVendor } from "@feria-a-ti/mobile/app/LoginVendor";
+import { RegisterVendor } from "@feria-a-ti/mobile/app/RegisterVendor";
 
 const Stack = createNativeStackNavigator();
 
