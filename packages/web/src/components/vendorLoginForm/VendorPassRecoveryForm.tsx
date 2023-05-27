@@ -4,7 +4,7 @@ import { colors } from "@feria-a-ti/common/theme/base";
 import "./LoginForm.css";
 import { RRecoveryFormProps } from "@feria-a-ti/common/model/loginFormProps";
 
-function RecoveryForm(props: RRecoveryFormProps) {
+function VendorRecoveryForm(props: RRecoveryFormProps) {
   const { onSubmit } = props;
   const {
     register,
@@ -17,7 +17,7 @@ function RecoveryForm(props: RRecoveryFormProps) {
       className="formContainer"
       style={{ backgroundColor: colors.secondary }}
     >
-      <h1 style={{ maxWidth: "100%" }}>Recuperar Contraseña Vendedor</h1>
+      <h1 style={{ maxWidth: "100%" }}>Recuperar Contraseña</h1>
       <h3 style={{ maxWidth: "100%" }}>Ingrese su correo</h3>
       <form onSubmit={handleSubmit(onSubmit)}>
         <InputComponent
@@ -45,4 +45,4 @@ function RecoveryForm(props: RRecoveryFormProps) {
   );
 }
 
-export default RecoveryForm;
+export default VendorRecoveryForm;

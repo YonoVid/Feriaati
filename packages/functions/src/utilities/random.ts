@@ -6,7 +6,7 @@ export const getRandomIntString = (
     max: number,
     fixedLength: boolean = true
 ) => {
-    let number = getRandomInt(999999);
+    let number = getRandomInt(max);
     return number
         .toString()
         .padStart((fixedLength ? number : max).toString().length, "0");

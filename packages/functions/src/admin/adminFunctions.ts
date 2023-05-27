@@ -1,6 +1,11 @@
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
-import { LoginFields, ResponseData, userStatus } from "../types";
+import {
+    LoginFields,
+    ResponseData,
+    UpdateStateFields,
+    userStatus,
+} from "../types";
 import Encryption, {
     generativeIvOfSize,
     getRandomBytes,
@@ -91,6 +96,56 @@ export const adminLogin = functions.https.onCall(
             throw new functions.https.HttpsError(
                 "invalid-argument",
                 "some message"
+            );
+        }
+    }
+);
+
+export const vendorList = functions.https.onCall(async () => {
+    try {
+        const db = admin.firestore();
+        const usersRef = db.collection("vendors");
+        const querySnapshot = await usersRef.get();
+        const vendors: any[] = [];
+
+        querySnapshot.forEach((doc) => {
+            const userData = doc.data();
+            vendors.push({ ...userData, id: doc.id });
+        });
+
+        return vendors;
+    } catch (error) {
+        functions.logger.error(error);
+        throw new functions.https.HttpsError(
+            "internal",
+            "Error al obtener datos de los vendedores"
+        );
+    }
+});
+export const vendorStateUpdate = functions.https.onCall(
+    async (data: UpdateStateFields, context) => {
+        try {
+            const db = admin.firestore();
+            const vendorRef = db.collection("vendors");
+
+            // obtiene id y estado del usuario
+            const { id, state } = data;
+
+            // revisa el estado del usuario
+            const newState =
+                state === userStatus.activated
+                    ? userStatus.registered
+                    : userStatus.activated;
+
+            // actualiza el estado del usuario
+            await vendorRef.doc(id).update({ state: newState });
+
+            return { mensaje: "Estado del vendedor actualizado correctamente" };
+        } catch (error) {
+            functions.logger.error(error);
+            throw new functions.https.HttpsError(
+                "internal",
+                "Error al actualizar el estado del vendedor"
             );
         }
     }

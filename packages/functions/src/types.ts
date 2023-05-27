@@ -90,3 +90,9 @@ export type ResponseData = {
     msg: string;
     extra?: any;
 };
+
+export type UpdateStateFields = {
+  id: string;
+  email: string;
+  state: userStatus;
+};

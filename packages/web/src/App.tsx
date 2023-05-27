@@ -13,6 +13,9 @@ import Home from "./pages/Home";
 import SessionPage from "./pages/SessionPage";
 import RegisterVendorPage from "./pages/registerVendorPage/RegisterVendorPage";
 import AdminLoginPage from "./pages/adminPage/AdminLoginPage";
+import VendorLoginPage from "./pages/vendorLoginPage/VendorLoginPage";
+import VendorRecoveryPage from "./pages/vendorLoginPage/VendorRecoveryPage";
+import VendorUpdatePassPage from "./pages/vendorLoginPage/VendorUpdatePassPage";
 
 const router = createBrowserRouter([
     {
@@ -46,10 +49,18 @@ const router = createBrowserRouter([
     },
     {
         path: "/loginVendor",
-        element: <RegisterVendorPage />,
+        element: <VendorLoginPage />,
     },
     {
-        path: "/vendor",
+        path: "/recoveryVendor",
+        element: <VendorRecoveryPage />,
+    },
+    {
+        path: "/updatePassVendor",
+        element: <VendorUpdatePassPage />,
+    },
+    {
+        path: "/registerVendor",
         element: <RegisterVendorPage />,
     },
     {

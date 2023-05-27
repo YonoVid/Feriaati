@@ -17,8 +17,8 @@ import { getRandomIntString } from "../utilities/random";
 import { messagesCode } from "../errors";
 
 import { checkRegisterFields } from "./checkRegister";
-import { checkLoginFields } from "./checkLogin";
-import { checkUpdatePassFields } from "../buyer/checkUpdate";
+import { checkLoginFields } from "../utilities/checkLogin";
+import { checkUpdatePassFields } from "../utilities/checkUpdate";
 import { sendRecoveryMail, sendVerificationMail } from "../utilities/mail";
 
 //Setup encryption configuration

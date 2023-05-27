@@ -2,9 +2,10 @@ import { useForm } from "react-hook-form";
 import InputComponent from "../inputComponent/InputComponent";
 import { colors } from "@feria-a-ti/common/theme/base";
 import "./LoginForm.css";
-import { RRecoveryFormProps } from "@feria-a-ti/common/model/loginFormProps";
+import { RLoginFormProps } from "@feria-a-ti/common/model/loginFormProps";
+import { Link } from "react-router-dom";
 
-function RecoveryForm(props: RRecoveryFormProps) {
+function VendorLoginForm(props: RLoginFormProps) {
   const { onSubmit } = props;
   const {
     register,
@@ -17,8 +18,7 @@ function RecoveryForm(props: RRecoveryFormProps) {
       className="formContainer"
       style={{ backgroundColor: colors.secondary }}
     >
-      <h1 style={{ maxWidth: "100%" }}>Recuperar Contraseña Vendedor</h1>
-      <h3 style={{ maxWidth: "100%" }}>Ingrese su correo</h3>
+      <h1 style={{ maxWidth: "100%" }}>Inicio sesión vendedor</h1>
       <form onSubmit={handleSubmit(onSubmit)}>
         <InputComponent
           name="email"
@@ -29,6 +29,16 @@ function RecoveryForm(props: RRecoveryFormProps) {
           registerForm={register}
           error={errors.email}
         />
+        <InputComponent
+          name="password"
+          label="Contraseña"
+          type="password"
+          required={true}
+          maxLength={128}
+          minLength={10}
+          registerForm={register}
+          error={errors.password}
+        />
 
         <input
           className="formButton"
@@ -37,12 +47,15 @@ function RecoveryForm(props: RRecoveryFormProps) {
             backgroundColor: colors.secondaryShadow,
           }}
           type="submit"
-          value="Enviar Código"
+          value="Iniciar sesion"
           disabled={props.canSubmit != null ? !props.canSubmit : false}
         />
       </form>
+      <Link to={"/register"}>No tienes una cuenta? Registrate</Link>
+      <br />
+      <Link to={"/recoveryVendor"}>Olvidaste tu contraseña?</Link>
     </div>
   );
 }
 
-export default RecoveryForm;
+export default VendorLoginForm;

@@ -1,17 +1,26 @@
 import * as admin from "firebase-admin";
 import * as functions from "firebase-functions";
 import {
+    LoginFields,
     RegisterVendorFields,
     ResponseData,
+    UpdatePassFields,
+    userStatus,
     VendorCollectionData,
 } from "../types";
-import Encryption, { generativeIvOfSize } from "../utilities/encryption";
+import Encryption, {
+    generativeIvOfSize,
+    getRandomBytes,
+} from "../utilities/encryption";
 import { getRandomIntString } from "../utilities/random";
 import { messagesCode } from "../errors";
 
 //import { sendVerificationMail } from "../utilities/mail";
 import { checkRegisterVendorFields } from "./checkRegister";
 import { uploadRegisterImage } from "../utilities/storage";
+import { checkUpdatePassFields } from "../utilities/checkUpdate";
+import { checkLoginFields } from "../utilities/checkLogin";
+import { sendRecoveryMail } from "../utilities/mail";
 
 //Setup encryption configuration
 //IF YOU USE .env first install dotenv (npm install dotenv --save)
@@ -111,5 +120,111 @@ export const addVendor = functions.https.onCall(
             functions.logger.error(err);
             throw new functions.https.HttpsError("invalid-argument", "ERR00");
         }
+    }
+);
+
+//login vendedor
+export const loginVendor = functions.https.onCall(
+    async (data: LoginFields, context) => {
+        try {
+            const db = admin.firestore();
+            let { msg } = checkLoginFields(data);
+            const usersRef = db.collection("vendors");
+            const querySnapshot = usersRef.doc(data.email);
+            const userDoc = await querySnapshot.get();
+            let userData = userDoc.data();
+            let token = "";
+            let isLogged = false;
+
+            if (
+                userDoc.exists &&
+                userData?.status === (userStatus.activated as string)
+            ) {
+                functions.logger.info("DATA COLLECTION::", userData);
+                functions.logger.info(
+                    "DATA COLLECTION::",
+                    userData?.iv as Buffer
+                );
+                const config = {
+                    algorithm: userData?.algorithm,
+                    encryptionKey: userData?.encryptionKey,
+                    salt: "123",
+                    iv: userData?.iv as Buffer,
+                };
+                const desencryption = new Encryption(config);
+
+                if (
+                    userData?.password !== desencryption.encrypt(data.password)
+                ) {
+                    msg = "Contraseña incorrecta";
+                    if ((data?.attempts as number) >= 5) {
+                        querySnapshot.update({ status: "blocked" }),
+                            (msg =
+                                "Su cuenta ha sido bloqueada, contactese con soporte");
+                    }
+                } else {
+                    token = getRandomBytes(20).toString("hex");
+                    querySnapshot.update({ token: token });
+                    msg = "Acceso correcto";
+                    isLogged = true;
+                }
+            } else {
+                if (userData?.status === (userStatus.blocked as string)) {
+                    msg =
+                        "Su cuenta se encuentra bloqueada, contacte a soporte";
+                } else if (
+                    userData?.status === (userStatus.registered as string)
+                ) {
+                    msg =
+                        "Su cuenta se encuentra desactivada, un administrador la debe activar";
+                } else {
+                    msg = "Usuario no existe";
+                }
+            }
+
+            return {
+                user: userData?.id,
+                msg: msg,
+                token: token,
+                isLogged: isLogged,
+            };
+        } catch (err) {
+            functions.logger.error(err);
+            throw new functions.https.HttpsError(
+                "invalid-argument",
+                "some message"
+            );
+        }
+    }
+);
+//envío de codigo al correo de vendedor
+export const passRecoveryVendor = functions.https.onCall(
+    async (email: string) => {
+        const db = admin.firestore();
+        const codigo = getRandomIntString(999999);
+        sendRecoveryMail("", email, codigo);
+
+        db.collection("users").doc(email).update({ passwordCode: codigo });
+    }
+);
+//actualización de contraseña con el código enviado al correo
+export const passUpdateVendor = functions.https.onCall(
+    async (data: UpdatePassFields) => {
+        const db = admin.firestore();
+        let { msg } = checkUpdatePassFields(data);
+        const usersRef = db.collection("vendors");
+        const querySnapshot = usersRef.doc(data.email);
+        const userDocR = await querySnapshot.get();
+        const userDoc = userDocR.data();
+        //console.log(userDoc?.passwordCode);
+        functions.logger.info(data.codigo);
+        if (userDoc?.passwordCode === data.codigo) {
+            functions.logger.info("hola");
+            db.collection("users")
+                .doc(data.email)
+                .update({ password: encryption.encrypt(data.password) });
+            msg = "Contraseña actualizada con éxito";
+        }
+        return { mensaje: "data.codigo", msg: msg };
     }
 );
