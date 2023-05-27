@@ -1,11 +1,11 @@
 import React from "react";
 import { Text, View, Button, StyleSheet } from "react-native";
 import { useForm } from "react-hook-form";
-import { colors } from "../../common/theme/base";
-import InputComponent from "./InputComponent";
-import { emailFormatRegex } from "../../common/checkRegisterFields";
-import { ConfirmRegisterFields } from "../../common/model/registerFields";
-import { ConfirmRegisterFormProps } from "../../common/model/registerFormProps";
+import { colors } from "@feria-a-ti/common/theme/base";
+import InputComponent from "@feria-a-ti/mobile/components/inputs/InputComponent";
+import { emailFormatRegex } from "@feria-a-ti/common/checkRegisterFields";
+import { ConfirmRegisterFields } from "@feria-a-ti/common/model/registerFields";
+import { ConfirmRegisterFormProps } from "@feria-a-ti/common/model/registerFormProps";
 
 function ConfirmRegisterForm(props: ConfirmRegisterFormProps) {
     const {

@@ -8,4 +8,8 @@ export const messagesCode: { [code: string]: string } = {
     ERR03: "La contraseña del usuario tiene un formato incorrecto, debe ser alfanumérica",
     ERR04: "Las contraseñas no son iguales",
     ERR05: "Código incorrecto",
+    ERR09: "Faltan datos requeridos ",
+    ERL01: "El usuario no existe",
+    ERL02: "La cuenta está bloqueada, contacte con soporte",
+    ERL03: "Contraseña incorrecta",
 };

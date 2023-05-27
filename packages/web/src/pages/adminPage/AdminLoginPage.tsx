@@ -8,11 +8,11 @@ import { useContext, useState } from "react";
 import { LoginFields } from "@feria-a-ti/common/model/loginFields";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../../App";
-import { Grid, Link } from "@mui/material";
+import SessionPage from "../SessionPage";
 
-function LoginPage() {
+function AdminLoginPage() {
     //Global state variable
-    const { setAuth } = useContext(UserContext);
+    const { setAuth, setType, type } = useContext(UserContext);
     //Navigation definition
     const navigate = useNavigate();
     const [attempt, setAttempt] = useState(0);
@@ -30,10 +30,9 @@ function LoginPage() {
         };
         const check = checkLoginFields(formatedData);
         if (check) {
-            const login = httpsCallable(functions, "login");
+            const login = httpsCallable(functions, "adminLogin");
             login(formatedData).then((result) => {
                 const { msg, token } = result.data as any;
-                localStorage.setItem("token", token);
                 console.log(result);
                 console.log(attempt);
                 setSubmitActive(true);
@@ -41,39 +40,19 @@ function LoginPage() {
                 if (msg !== "") {
                     window.alert(msg);
                 }
-                if (token !== "") {
-                    navigate("/session");
-                    setAuth && setAuth("token");
+                if (token && token !== "") {
+                    setAuth && setAuth(token);
+                    setType && setType("admin");
                 }
             });
         }
     };
     return (
-        <Grid
-            container
-            direction="column"
-            alignItems="center"
-            justifyContent="center"
-            sx={{ minHeight: "80vh" }}
-        >
-            <Grid item xs={12} sx={{ minWidth: "100%" }}>
-                <LoginForm onSubmit={onSubmit} canSubmit={canSubmit}>
-                    <Link
-                        component="button"
-                        onClick={() => navigate("/register")}
-                    >
-                        ¿No tienes una cuenta? Registrate
-                    </Link>
-                    <br />
-                    <Link
-                        component="button"
-                        onClick={() => navigate("/recovery")}
-                    >
-                        ¿Olvidaste tu contraseña?
-                    </Link>
-                </LoginForm>
-            </Grid>
-        </Grid>
+        <>
+            {(type === "admin" && <SessionPage></SessionPage>) || (
+                <LoginForm onSubmit={onSubmit} canSubmit={canSubmit} />
+            )}
+        </>
     );
 }
-export default LoginPage;
+export default AdminLoginPage;
