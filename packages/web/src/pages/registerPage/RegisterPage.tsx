@@ -15,7 +15,7 @@ import RegisterUserForm from "../../components/registerUserForm/RegisterUserForm
 import ConfirmRegisterForm from "../../components/confirmRegisterForm/ConfirmRegisterForm";
 import MessageAlert from "../../components/messageAlert/MessageAlert";
 import { useNavigate } from "react-router-dom";
-import { Grid, Link } from "@mui/material";
+import { Link } from "@mui/material";
 
 function RegisterPage() {
     // Dom redirection variable
@@ -53,7 +53,7 @@ function RegisterPage() {
 
         if (check) {
             //Call firebase function to create user
-            const addUser = httpsCallable<RegisterFields, ResponseData>(
+            const addUser = httpsCallable<RegisterFields, ResponseData<any>>(
                 functions,
                 "addUser"
             );
@@ -86,7 +86,7 @@ function RegisterPage() {
         };
 
         if (registerComplete) {
-            const addUser = httpsCallable<RegisterConfirm, ResponseData>(
+            const addUser = httpsCallable<RegisterConfirm, ResponseData<any>>(
                 functions,
                 "confirmRegister"
             );
@@ -107,34 +107,21 @@ function RegisterPage() {
 
     return (
         <>
-            <Grid
-                container
-                direction="column"
-                alignItems="center"
-                justifyContent="center"
-                sx={{ minHeight: "80vh" }}
-            >
-                <Grid item xs={12} sx={{ minWidth: "100%" }}>
-                    {(registerComplete && (
-                        <ConfirmRegisterForm
-                            onSubmit={onSubmitConfirmRegister}
-                            canSubmit={canConfirmRegister}
-                        />
-                    )) || (
-                        <RegisterUserForm
-                            onSubmit={onSubmitRegister}
-                            canSubmit={canRegister}
-                        >
-                            <Link
-                                component="button"
-                                onClick={() => navigate("/login")}
-                            >
-                                Ya tengo una cuenta
-                            </Link>
-                        </RegisterUserForm>
-                    )}
-                </Grid>
-            </Grid>
+            {(registerComplete && (
+                <ConfirmRegisterForm
+                    onSubmit={onSubmitConfirmRegister}
+                    canSubmit={canConfirmRegister}
+                />
+            )) || (
+                <RegisterUserForm
+                    onSubmit={onSubmitRegister}
+                    canSubmit={canRegister}
+                >
+                    <Link component="button" onClick={() => navigate("/login")}>
+                        Ya tengo una cuenta
+                    </Link>
+                </RegisterUserForm>
+            )}
             <MessageAlert
                 open={showAlert}
                 title="Estado de acción"

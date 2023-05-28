@@ -21,5 +21,14 @@ export {
     passUpdate,
 } from "./buyer/buyerFunctions";
 
-export { addVendor } from "./vendor/vendorFunctions";
-export { adminLogin } from "./admin/adminFunctions";
+export {
+    addVendor,
+    loginVendor,
+    passRecoveryVendor,
+    passUpdateVendor,
+} from "./vendor/vendorFunctions";
+export {
+    adminLogin,
+    vendorList,
+    vendorStateUpdate,
+} from "./admin/adminFunctions";

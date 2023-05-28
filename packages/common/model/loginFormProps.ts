@@ -10,22 +10,16 @@ export type RLoginFormProps = FormProps & {
     onSubmit: (data: FieldValues) => void;
 };
 
-type RecoveryProps = {
-    canSubmit?: boolean;
-};
-export type RecoveryFormProps = RecoveryProps & {
+export type RecoveryFormProps = FormProps & {
     onSubmit: (data: RecoveryFields) => void;
 };
-export type RRecoveryFormProps = RecoveryProps & {
+export type RRecoveryFormProps = FormProps & {
     onSubmit: (data: FieldValues) => void;
 };
 
-type UpdatePassProps = {
-    canSubmit?: boolean;
-};
-export type UpdatepPassFormProps = UpdatePassProps & {
+export type UpdatepPassFormProps = FormProps & {
     onSubmit: (data: UpdatePassFields) => void;
 };
-export type RUpdatepPassFormProps = UpdatePassProps & {
+export type RUpdatepPassFormProps = FormProps & {
     onSubmit: (data: FieldValues) => void;
 };

@@ -2,6 +2,7 @@ export const messagesCode: { [code: string]: string } = {
     "00000": "Acción realizada exitosamente",
     ERD00: "UNEXPECTED DATABASE DOCUMENT ERROR",
     ERD01: "El documento ya existe",
+    ERD02: "El documento no existe",
     ERR00: "UNEXPECTED INTERNAL ERROR",
     ERR01: "El nombre de usuario tiene un formato incorrecto",
     ERR02: "El correo del usuario tiene un formato incorrecto, debe ser del formato: correo@correo.cl",

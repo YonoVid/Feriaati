@@ -1,76 +1,111 @@
 import { useForm } from "react-hook-form";
-import { controlValidInput } from "@feria-a-ti/common/inputControl";
-import InputComponent from "../inputComponent/InputComponent";
-import { colors } from "../../../../common/theme/base";
+import { Box, Button, Card, Divider } from "@mui/material";
+
+import { emailFormatRegex } from "@feria-a-ti/common/checkLoginFields";
+import { RUpdatepPassFormProps } from "@feria-a-ti/common/model/loginFormProps";
+import InputComponentAlt from "@feria-a-ti/web/src/components/inputComponent/InputComponentAlt";
 import "./LoginForm";
-import { RUpdatepPassFormProps } from "../../../../common/model/loginFormProps";
-import { Link } from "react-router-dom";
-//import { Link } from "react-router-dom";
 
 function UpdatePassForm(props: RUpdatepPassFormProps) {
-  const { onSubmit } = props;
-  const {
-    register,
-    formState: { errors },
-    watch,
-    handleSubmit,
-    setError,
-  } = useForm();
+    const { label, color, children, onSubmit } = props;
+    const {
+        control,
+        formState: { errors },
+        watch,
+        handleSubmit,
+    } = useForm();
 
-  return (
-    <div
-      className="formContainer"
-      style={{ backgroundColor: colors.secondary }}
-    >
-      <h1 style={{ maxWidth: "100%" }}>Intoduce nueva contraseña</h1>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <InputComponent
-          name="codigo"
-          label="Código"
-          onChange={controlValidInput}
-          required={true}
-          maxLength={6}
-          minLength={6}
-          registerForm={register}
-          error={errors}
-        />
+    const colorTheme =
+        color != null && color === "secondary" ? "secondary" : "primary";
 
-        <InputComponent
-          name="password"
-          label="Ingrese nueva contraseña"
-          type="password"
-          required={true}
-          maxLength={128}
-          minLength={10}
-          registerForm={register}
-          error={errors.password}
-        />
-        <InputComponent
-          name="confirmPassword"
-          label="Confirmar nueva contraseña"
-          type="password"
-          required={true}
-          maxLength={254}
-          minLength={10}
-          registerForm={register}
-          watch={watch("password")}
-          setError={setError}
-          error={errors.confirmPassword}
-        />
-        <input
-          className="formButton"
-          style={{
-            color: colors.light,
-            backgroundColor: colors.secondaryShadow,
-          }}
-          type="submit"
-          value="Cambiar contraseña"
-          disabled={props.canSubmit != null ? !props.canSubmit : false}
-        />
-      </form>
-      <Link to={"/login"}>Ir a iniciar sesión</Link>
-    </div>
-  );
+    return (
+        <Card
+            className="inputContainer"
+            color={colorTheme}
+            sx={{
+                maxWidth: "50%",
+                alignContent: "center",
+                borderRadius: "10%",
+            }}
+        >
+            <h1 style={{ maxWidth: "100%" }}>
+                {label != null ? label : "Intoduce una nueva contraseña"}
+            </h1>
+            <form onSubmit={handleSubmit(onSubmit)}>
+                <Box>
+                    <InputComponentAlt
+                        control={control}
+                        name="code"
+                        label="Código de validación"
+                        type="text"
+                        rules={{
+                            required: "El código es requerido",
+                            minLength: {
+                                value: 6,
+                                message: "El código debe tener 6 caracters",
+                            },
+                            maxLength: {
+                                value: 6,
+                                message: "El código debe tener 6 caracters",
+                            },
+                            pattern: {
+                                value: emailFormatRegex,
+                                message:
+                                    "El formato debe ser, por ejemplo: ejemplo@correo.cl",
+                            },
+                        }}
+                        error={errors.password}
+                    />
+                </Box>
+                <Box>
+                    <InputComponentAlt
+                        control={control}
+                        name="password"
+                        label="Contraseña"
+                        type="password"
+                        rules={{
+                            required: "La contraseña es requerida",
+                            minLength: {
+                                value: 10,
+                                message:
+                                    "La contraseña tiene un mínimo de 10 caracteres",
+                            },
+                        }}
+                        error={errors.confirmPassword}
+                    />
+                    <InputComponentAlt
+                        control={control}
+                        name="confirmPassword"
+                        label="Confirmar contraseña"
+                        type="password"
+                        rules={{
+                            required: "Se debe confirmar la contraseña",
+                            validate: {
+                                confirmPassword: (value) =>
+                                    watch("password").toString() === value ||
+                                    "Las contraseñas deben ser iguales",
+                            },
+                        }}
+                        error={errors.confirmPassword}
+                    />
+                </Box>
+                <Box sx={{ margin: "1em" }}>
+                    <Button
+                        color={colorTheme}
+                        type="submit"
+                        variant="contained"
+                        disabled={
+                            props.canSubmit != null ? !props.canSubmit : false
+                        }
+                    >
+                        Actualizar contraseña
+                    </Button>
+                </Box>
+            </form>
+            <Divider />
+            <Box sx={{ margin: "1em" }}>{children}</Box>
+        </Card>
+    );
 }
 
 export default UpdatePassForm;

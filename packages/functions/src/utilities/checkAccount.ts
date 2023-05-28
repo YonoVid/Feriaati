@@ -1,4 +1,4 @@
-import { AccountFields } from "../types";
+import { AccountFields } from "../model/types";
 
 export const emailFormatRegex = new RegExp(
     "^([\\w-]+(?:\\.[\\w-]+)*)@((?:[\\w-]+\\.)" +

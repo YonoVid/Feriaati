@@ -1,4 +1,4 @@
-import { UpdatePassFields } from "../types";
+import { UpdatePassFields } from "../model/types";
 
 export const emailFormatRegex = new RegExp(
     "^([\\w-]+(?:\\.[\\w-]+)*)@((?:[\\w-]+\\.)" +

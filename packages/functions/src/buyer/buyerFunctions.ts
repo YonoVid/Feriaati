@@ -6,20 +6,22 @@ import {
     RegisterFields,
     LoginFields,
     UpdatePassFields,
+    UserToken,
+} from "../model/types";
+import {
     UserCollectionData,
     userStatus,
-} from "../types";
-import Encryption, {
-    generativeIvOfSize,
-    getRandomBytes,
-} from "../utilities/encryption";
+    userType,
+} from "../model/accountTypes";
+import Encryption, { generativeIvOfSize } from "../utilities/encryption";
 import { getRandomIntString } from "../utilities/random";
 import { messagesCode } from "../errors";
 
 import { checkRegisterFields } from "./checkRegister";
-import { checkLoginFields } from "../utilities/checkLogin";
 import { checkUpdatePassFields } from "../utilities/checkUpdate";
 import { sendRecoveryMail, sendVerificationMail } from "../utilities/mail";
+import { accountLoginVerification } from "../utilities/account";
+import { checkAccountFields } from "../utilities/checkAccount";
 
 //Setup encryption configuration
 //IF YOU USE .env first install dotenv (npm install dotenv --save)
@@ -31,69 +33,38 @@ const config = {
 };
 const encryption = new Encryption(config);
 
-// ?REFERENCE FUNCTION
-// export const helloWorld = functions.https.onRequest((request, response) => {
-//   functions.logger.info("Hello logs!", {structuredData: true});
-//   response.send("Hello from Firebase!");
-// });
+/**
+ * Function to log in user in the platform requires data of type LoginFields
+ * @typeparam LoginFields - is the data from a login form
+ */
 export const login = functions.https.onCall(
-    async (data: LoginFields, context) => {
+    async (data: LoginFields, context): Promise<ResponseData<UserToken>> => {
         try {
-            const db = admin.firestore();
-            let { msg } = checkLoginFields(data);
-            const usersRef = db.collection("users");
-            const querySnapshot = usersRef.doc(data.email);
-            const userDoc = await querySnapshot.get();
-            let userData = userDoc.data();
-            let token = "";
-            let isLogged = false;
+            let { code, check } = checkAccountFields(data);
 
-            if (
-                userDoc.exists &&
-                userData?.status === (userStatus.activated as string)
-            ) {
-                functions.logger.info("DATA COLLECTION::", userData);
-                functions.logger.info(
-                    "DATA COLLECTION::",
-                    userData?.iv as Buffer
+            if (check) {
+                let { token, code } = await accountLoginVerification(
+                    "users",
+                    data.email,
+                    data.password,
+                    data.attempts
                 );
-                const eConfig = {
-                    algorithm: userData?.algorithm,
-                    encryptionKey: config.encryptionKey,
-                    salt: "123",
-                    iv: userData?.iv as Buffer,
+                return {
+                    error: code === "00000",
+                    code: code,
+                    msg: messagesCode[code],
+                    extra: {
+                        type: userType.user,
+                        token: token,
+                        email: data.email,
+                    },
                 };
-                const desencryption = new Encryption(eConfig);
-
-                if (
-                    userData?.password !== desencryption.encrypt(data.password)
-                ) {
-                    msg = "Contraseña incorrecta";
-                    if ((data?.attempts as number) >= 5) {
-                        querySnapshot.update({ status: "blocked" }),
-                            (msg =
-                                "Su cuenta ha sido bloqueada, contactese con soporte");
-                    }
-                } else {
-                    token = getRandomBytes(20).toString("hex");
-                    querySnapshot.update({ token: token });
-                    msg = "Acceso correcto";
-                    isLogged = true;
-                }
-            } else {
-                if (userData?.status === (userStatus.blocked as string)) {
-                    msg =
-                        "Su cuenta se encuentra bloqueada, contacte a soporte";
-                } else {
-                    msg = "Usuario no existe";
-                }
             }
-
             return {
-                user: userData?.id,
-                msg: msg,
-                token: token,
-                isLogged: isLogged,
+                error: true,
+                msg: messagesCode[code],
+                code: code,
+                extra: { type: userType.user, token: "", email: data.email },
             };
         } catch (err) {
             functions.logger.error(err);
@@ -109,7 +80,7 @@ export const login = functions.https.onCall(
  * @typeparam RegisterField - is the data from a register form
  */
 export const addUser = functions.https.onCall(
-    async (data: RegisterFields, context): Promise<ResponseData> => {
+    async (data: RegisterFields, context): Promise<ResponseData<string>> => {
         try {
             const db = admin.firestore();
             //Checks of data and database
@@ -131,6 +102,7 @@ export const addUser = functions.https.onCall(
                 ) {
                     //Setup document of user data
                     const collectionData: UserCollectionData = {
+                        type: userType.user,
                         username: data.username,
                         email: data.email,
                         password: encryption.encrypt(data.password),
@@ -165,7 +137,7 @@ export const addUser = functions.https.onCall(
 
             // Returning results.
             return {
-                email: data.email,
+                extra: data.email,
                 error: error,
                 code: code,
                 msg: messagesCode[code],
@@ -178,11 +150,11 @@ export const addUser = functions.https.onCall(
 );
 
 /**
- * Function to register user in the platform requires data of type RegisterField
- * @typeparam RegisterField - is the data from a register form
+ * Function to confirm register of user in the platform requires data of type RegisterConfirm
+ * @typeparam RegisterConfirm - is the data from a confirm register form
  */
 export const confirmRegister = functions.https.onCall(
-    async (data: RegisterConfirm, context): Promise<ResponseData> => {
+    async (data: RegisterConfirm, context): Promise<ResponseData<string>> => {
         try {
             const db = admin.firestore();
             //Store return message
@@ -215,7 +187,7 @@ export const confirmRegister = functions.https.onCall(
 
             // Returning results.
             return {
-                email: data.email,
+                extra: data.email,
                 error: error,
                 code: code,
                 msg: messagesCode[code],

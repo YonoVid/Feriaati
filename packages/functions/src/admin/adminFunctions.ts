@@ -4,25 +4,13 @@ import {
     LoginFields,
     ResponseData,
     UpdateStateFields,
-    userStatus,
-} from "../types";
-import Encryption, {
-    generativeIvOfSize,
-    getRandomBytes,
-} from "../utilities/encryption";
+    UserToken,
+} from "../model/types";
+import { userStatus, userType } from "../model/accountTypes";
 
 import { checkAccountFields } from "../utilities/checkAccount";
 import { messagesCode } from "../errors";
-
-//Setup encryption configuration
-//IF YOU USE .env first install dotenv (npm install dotenv --save)
-const config = {
-    algorithm: process.env.ENCRYPTION_ALGORITHM, //"aes-256-cbc"
-    encryptionKey: process.env.ENCRYPTION_KEY, //"KQIusXppu9dIj0JHa6yRtMOgqW7qUyJQ"
-    salt: process.env.ENCRYPTION_SALT, //"123" IRRELEVANTE
-    iv: generativeIvOfSize(16),
-};
-//const encryption = new Encryption(config);
+import { accountLoginVerification } from "../utilities/account";
 
 // ?REFERENCE FUNCTION
 // export const helloWorld = functions.https.onRequest((request, response) => {
@@ -30,66 +18,36 @@ const config = {
 //   response.send("Hello from Firebase!");
 // });
 export const adminLogin = functions.https.onCall(
-    async (data: LoginFields, context): Promise<ResponseData> => {
+    async (data: LoginFields, context): Promise<ResponseData<UserToken>> => {
         try {
-            const db = admin.firestore();
-            let token = "";
-            let error = false;
-            //let isLogged = false;
+            const { email, password, attempts } = data;
+            //Check fields format
             let { check, code } = checkAccountFields(data);
 
             if (check) {
-                const usersRef = db.collection("admin");
-                const querySnapshot = usersRef.doc(data.email);
-                const userDoc = await querySnapshot.get();
-                let userData = userDoc.data();
-                if (
-                    userDoc.exists &&
-                    userData?.status === (userStatus.activated as string)
-                ) {
-                    functions.logger.info("DATA COLLECTION::", userData);
-                    const eConfig = {
-                        algorithm: userData?.algorithm,
-                        encryptionKey: config.encryptionKey,
-                        salt: "123",
-                        iv: userData?.iv as Buffer,
-                    };
-                    const desencryption = new Encryption(eConfig);
-
-                    if (
-                        userData?.password !==
-                        desencryption.encrypt(data.password)
-                    ) {
-                        if ((data?.attempts as number) >= 5) {
-                            querySnapshot.update({ status: "blocked" }),
-                                (code = "ERL02");
-                        } else {
-                            code = "ERL03";
-                        }
-                    } else {
-                        token = getRandomBytes(20).toString("hex");
-                        querySnapshot.update({ token: token });
-                        code = "00000";
-                        //isLogged = true;
-                    }
-                } else {
-                    if (userData?.status === (userStatus.blocked as string)) {
-                        code = "ERL02";
-                    } else {
-                        code = "ERL01";
-                    }
-                }
-            } else {
-                error = true;
+                let { token, code } = await accountLoginVerification(
+                    "admin",
+                    email,
+                    password,
+                    attempts
+                );
+                return {
+                    error: code === "00000",
+                    code: code,
+                    msg: messagesCode[code],
+                    extra: {
+                        token: token as string,
+                        email: data.email,
+                        type: userType.admin,
+                    },
+                };
             }
-
             // Returning results.
             return {
-                email: data.email,
-                error: error,
+                error: true,
                 code: code,
                 msg: messagesCode[code],
-                extra: { token: token },
+                extra: { token: "", email: data.email },
             };
         } catch (err) {
             functions.logger.error(err);
@@ -123,24 +81,34 @@ export const vendorList = functions.https.onCall(async () => {
     }
 });
 export const vendorStateUpdate = functions.https.onCall(
-    async (data: UpdateStateFields, context) => {
+    async (data: UpdateStateFields, context): Promise<ResponseData<null>> => {
         try {
+            // obtiene id del usuario y el estado al que se desea alterar
+            const { id, status } = data;
+
             const db = admin.firestore();
             const vendorRef = db.collection("vendors");
+            const querySnapshot = await vendorRef.doc(id);
 
-            // obtiene id y estado del usuario
-            const { id, state } = data;
+            if (
+                (await querySnapshot.get()).exists &&
+                (status === userStatus.activated ||
+                    status === userStatus.blocked)
+            ) {
+                // Update vendor account state
+                await vendorRef.doc(id).update({ status: status });
 
-            // revisa el estado del usuario
-            const newState =
-                state === userStatus.activated
-                    ? userStatus.registered
-                    : userStatus.activated;
-
-            // actualiza el estado del usuario
-            await vendorRef.doc(id).update({ state: newState });
-
-            return { mensaje: "Estado del vendedor actualizado correctamente" };
+                return {
+                    error: false,
+                    code: "00000",
+                    msg: messagesCode["00000"],
+                };
+            }
+            return {
+                error: true,
+                code: "ERD02",
+                msg: messagesCode["ERD02"],
+            };
         } catch (error) {
             functions.logger.error(error);
             throw new functions.https.HttpsError(

@@ -6,23 +6,29 @@ import InputComponentAlt from "../inputComponent/InputComponentAlt";
 import { emailFormatRegex } from "@feria-a-ti/common/checkLoginFields";
 
 function LoginForm(props: RLoginFormProps) {
-    const { children, onSubmit } = props;
+    const { label, color, children, onSubmit } = props;
     const {
         formState: { errors },
         handleSubmit,
         control,
     } = useForm();
 
+    const colorTheme =
+        color != null && color === "secondary" ? "secondary" : "primary";
+
     return (
         <Card
             className="inputContainer"
+            color={colorTheme}
             sx={{
                 maxWidth: "50%",
                 alignContent: "center",
                 borderRadius: "10%",
             }}
         >
-            <h1 style={{ maxWidth: "100%" }}>Iniciar Sesion</h1>
+            <h1 style={{ maxWidth: "100%" }}>
+                {label != null ? label : "Iniciar Sesion"}
+            </h1>
             <form onSubmit={handleSubmit(onSubmit)}>
                 <Box>
                     <InputComponentAlt
@@ -64,7 +70,7 @@ function LoginForm(props: RLoginFormProps) {
                 </Box>
                 <Box sx={{ margin: "1em" }}>
                     <Button
-                        color="secondary"
+                        color={colorTheme}
                         type="submit"
                         variant="contained"
                         disabled={

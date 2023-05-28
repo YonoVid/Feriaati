@@ -1,10 +1,11 @@
 import { Dispatch, SetStateAction } from "react";
+import { userType } from "./functionsTypes";
 
 export type SessionUserData = {
-    type: "admin" | "buyer" | "vendor" | undefined;
-    setType?: Dispatch<
-        SetStateAction<"admin" | "buyer" | "vendor" | undefined>
-    >;
-    auth?: string | undefined;
-    setAuth?: Dispatch<SetStateAction<string>>;
+    type?: userType;
+    setType?: Dispatch<SetStateAction<userType>>;
+    authUser?: string | undefined;
+    setAuthUser?: Dispatch<SetStateAction<string>>;
+    authToken?: string | undefined;
+    setAuthToken?: Dispatch<SetStateAction<string>>;
 };

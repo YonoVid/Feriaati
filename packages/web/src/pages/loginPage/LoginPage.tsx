@@ -1,14 +1,17 @@
-import "../../App.css";
-import LoginForm from "../../components/loginForm/LoginForm";
+import { useContext, useState } from "react";
+import { FieldValues } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
+import { httpsCallable } from "firebase/functions";
+
 import { functions } from "@feria-a-ti/common/firebase";
 import { checkLoginFields } from "@feria-a-ti/common/checkLoginFields";
-import { FieldValues } from "react-hook-form";
-import { httpsCallable } from "firebase/functions";
-import { useContext, useState } from "react";
 import { LoginFields } from "@feria-a-ti/common/model/loginFields";
-import { useNavigate } from "react-router-dom";
-import { UserContext } from "../../App";
-import { Grid, Link } from "@mui/material";
+import { UserContext } from "@feria-a-ti/web/src/App";
+import LoginForm from "@feria-a-ti/web/src/components/loginForm/LoginForm";
+import MessageAlert from "@feria-a-ti/web/src/components/messageAlert/MessageAlert";
+import { Link } from "@mui/material";
+
+import "../../App.css";
 
 function LoginPage() {
     //Global state variable
@@ -16,9 +19,16 @@ function LoginPage() {
     //Navigation definition
     const navigate = useNavigate();
     const [attempt, setAttempt] = useState(0);
-    //const [isLogged, setIsLogged] = useState(false);
-    //let attempt = 0;
+    // Form variables
     const [canSubmit, setSubmitActive] = useState(true);
+    // Alert Related values
+    const [showAlert, setShowAlert] = useState(false);
+    const [alertMessage, setAlertMessage] = useState("TEXT");
+    const closeAlert = () => {
+        setSubmitActive(true);
+        setShowAlert(false);
+    };
+
     const onSubmit = (data: FieldValues) => {
         setSubmitActive(false);
         console.log("SUBMIT FORM");
@@ -31,49 +41,47 @@ function LoginPage() {
         const check = checkLoginFields(formatedData);
         if (check) {
             const login = httpsCallable(functions, "login");
-            login(formatedData).then((result) => {
-                const { msg, token } = result.data as any;
-                localStorage.setItem("token", token);
-                console.log(result);
-                console.log(attempt);
-                setSubmitActive(true);
-                //setIsLogged(result.data as any);
-                if (msg !== "") {
-                    window.alert(msg);
-                }
-                if (token !== "") {
-                    navigate("/session");
-                    setAuth && setAuth("token");
-                }
-            });
+            login(formatedData)
+                .then((result) => {
+                    const { msg, token } = result.data as any;
+                    localStorage.setItem("token", token);
+                    console.log(result);
+                    console.log(attempt);
+                    setSubmitActive(true);
+                    //setIsLogged(result.data as any);
+                    if (msg !== "") {
+                        setAlertMessage(msg);
+                    }
+                    if (token !== "") {
+                        navigate("/session");
+                        setAuth && setAuth("token");
+                    }
+                })
+                .finally(() => setShowAlert(true));
         }
     };
     return (
-        <Grid
-            container
-            direction="column"
-            alignItems="center"
-            justifyContent="center"
-            sx={{ minHeight: "80vh" }}
-        >
-            <Grid item xs={12} sx={{ minWidth: "100%" }}>
-                <LoginForm onSubmit={onSubmit} canSubmit={canSubmit}>
-                    <Link
-                        component="button"
-                        onClick={() => navigate("/register")}
-                    >
-                        ¿No tienes una cuenta? Registrate
-                    </Link>
-                    <br />
-                    <Link
-                        component="button"
-                        onClick={() => navigate("/recovery")}
-                    >
-                        ¿Olvidaste tu contraseña?
-                    </Link>
-                </LoginForm>
-            </Grid>
-        </Grid>
+        <>
+            <LoginForm
+                label="Iniciar sesión"
+                onSubmit={onSubmit}
+                canSubmit={canSubmit}
+            >
+                <Link component="button" onClick={() => navigate("/register")}>
+                    ¿No tienes una cuenta? Registrate
+                </Link>
+                <br />
+                <Link component="button" onClick={() => navigate("/recovery")}>
+                    ¿Olvidaste tu contraseña?
+                </Link>
+            </LoginForm>
+            <MessageAlert
+                open={showAlert}
+                title="Estado de acción"
+                message={alertMessage}
+                handleClose={closeAlert}
+            />
+        </>
     );
 }
 export default LoginPage;

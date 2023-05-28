@@ -1,18 +1,19 @@
-import "../../App.css";
-import { FieldValues } from "react-hook-form";
-import { httpsCallable } from "firebase/functions";
 import { useState } from "react";
+import { FieldValues } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
+import { httpsCallable } from "firebase/functions";
+
 import { functions } from "@feria-a-ti/common/firebase";
+import { checkRegisterVendorFields } from "@feria-a-ti/common/checkRegisterFields";
+import { messagesCode } from "@feria-a-ti/common/constants/errors";
 import {
     RegisterVendorFields,
     userStatus,
 } from "@feria-a-ti/common/model/registerFields";
 import { ResponseData } from "@feria-a-ti/common/model/functionsTypes";
-import { messagesCode } from "@feria-a-ti/common/constants/errors";
-import { checkRegisterVendorFields } from "@feria-a-ti/common/checkRegisterFields";
-import MessageAlert from "../../components/messageAlert/MessageAlert";
-import { useNavigate } from "react-router-dom";
-import RegisterVendorForm from "../../components/registerVendorForm/RegisterVendorForm";
+import MessageAlert from "@feria-a-ti/web/src/components/messageAlert/MessageAlert";
+import RegisterVendorForm from "@feria-a-ti/web/src/components/registerVendorForm/RegisterVendorForm";
+import "@feria-a-ti/web/src/App.css";
 
 function RegisterVendorPage() {
     // Dom redirection variable
@@ -61,10 +62,10 @@ function RegisterVendorPage() {
 
         if (check) {
             //Call firebase function to create user
-            const addVendor = httpsCallable<RegisterVendorFields, ResponseData>(
-                functions,
-                "addVendor"
-            );
+            const addVendor = httpsCallable<
+                RegisterVendorFields,
+                ResponseData<any>
+            >(functions, "addVendor");
             addVendor(formatedData)
                 .then((result) => {
                     console.log(result);
@@ -72,6 +73,7 @@ function RegisterVendorPage() {
                     setCanRegister(true);
                     //Show alert message
                     setAlertMessage(result.data?.msg);
+                    navigate("/loginVendor");
                 })
                 .catch((error) => {
                     console.log(error);

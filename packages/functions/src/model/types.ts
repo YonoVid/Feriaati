@@ -1,8 +1,4 @@
-export enum userStatus {
-    registered = "registered",
-    activated = "activated",
-    blocked = "blocked",
-}
+import { userStatus, userType } from "./accountTypes";
 
 export type AccountFields = {
     email: string;
@@ -57,42 +53,21 @@ export type UpdatePassFields = {
     confirmPassword: string;
 };
 
-export type AccountCollectionData = {
-    email: string;
-    password: string;
-    algorithm: string;
-    status: string;
-    iv: ArrayBuffer;
-    code: string;
-};
-
-export type UserCollectionData = AccountCollectionData & {
-    username: string;
-};
-
-export type VendorCollectionData = AccountCollectionData & {
-    rut: string;
-    enterpriseName: string;
-    localNumber: number;
-    region: number;
-    commune: number;
-    street: string;
-    streetNumber: number;
-    name: string;
-    surname: string;
-    image: string;
-};
-
-export type ResponseData = {
-    email: string;
+export type ResponseData<T> = {
     error: boolean;
     code: string;
     msg: string;
-    extra?: any;
+    extra?: T | any;
+};
+
+export type UserToken = {
+    email: string;
+    token: string;
+    type: userType;
 };
 
 export type UpdateStateFields = {
-  id: string;
-  email: string;
-  state: userStatus;
+    id: string;
+    email: string;
+    status: userStatus;
 };

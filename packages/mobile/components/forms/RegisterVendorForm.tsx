@@ -28,41 +28,6 @@ function RegisterVendorForm(props: RRegisterVendorFormProps) {
         formState: { errors },
     } = useForm<RegisterVendorFields>();
 
-    const handleDocumentSelection = useCallback(async () => {
-        try {
-            const response = await DocumentPicker.getDocumentAsync({
-                type: "image/*",
-                multiple: false,
-                copyToCacheDirectory: false,
-            });
-            if (response.type === "success") {
-                let imageAction = [];
-                if (response["size"] / 1024 ** 2 > 1) {
-                    Image.getSize(response["uri"], (width, height) => {
-                        console.log(width, "x", height);
-                        imageAction.push(
-                            height > width ? { height: 1500 } : { width: 1500 }
-                        );
-                    });
-                }
-                setValue("image", response["name"]);
-                console.log(response);
-                console.log(response.size);
-                await ExpoImageManipulator.manipulateAsync(
-                    response["uri"],
-                    imageAction,
-                    { compress: 0.75, base64: true }
-                ).then((value) => {
-                    setImageData(value.base64);
-                    console.log(value.base64 != null);
-                    console.log(value.width);
-                });
-            }
-        } catch (err) {
-            console.warn(err);
-        }
-    }, []);
-
     return (
         <View style={styles.container}>
             <Text style={styles.title}>REGISTER</Text>

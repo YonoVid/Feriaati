@@ -1,4 +1,5 @@
 import { useContext, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
     AppBar,
     Box,
@@ -13,17 +14,53 @@ import {
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import AdbIcon from "@mui/icons-material/Adb";
+import AccountCircle from "@mui/icons-material/AccountCircle";
 // import "./NavBar.css";
-import { UserContext } from "../../App";
-
-const pages = ["Products", "Pricing", "Blog"];
-const settings = ["Profile", "Account", "Dashboard", "Logout"];
+import { userType } from "@feria-a-ti/common/model/functionsTypes";
+import { logout } from "@feria-a-ti/web/src/functions/utilities";
+import { UserContext } from "@feria-a-ti/web/src/App";
 
 function NavBar() {
-    const { auth } = useContext(UserContext);
+    //Context variables
+    const { authUser, setAuthUser, setAuthToken, setType } =
+        useContext(UserContext);
+    //Navigation definition
+    const navigate = useNavigate();
+
+    const clearAuth = () => {
+        logout();
+        setAuthUser != null && setAuthUser("");
+        setAuthToken != null && setAuthToken("");
+        setType != null && setType(userType.undefined);
+    };
+
+    const pages = ["HOME"];
+    const settings = [
+        {
+            label: "Profile",
+            action: () => {
+                1 + 1;
+            },
+        },
+        {
+            label: "Account",
+            action: () => {
+                1 + 1;
+            },
+        },
+        {
+            label: "Logout",
+            action: () => {
+                clearAuth();
+                navigate("/");
+            },
+        },
+    ];
 
     const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
     const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
+
+    const isVendorPage = window.location.pathname.includes("Vendor");
 
     const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorElNav(event.currentTarget);
@@ -41,7 +78,11 @@ function NavBar() {
     };
 
     return (
-        <AppBar position="static" sx={{ top: 0 }}>
+        <AppBar
+            color={isVendorPage ? "primary" : "secondary"}
+            position="static"
+            sx={{ top: 0 }}
+        >
             <Container maxWidth="xl">
                 <Toolbar disableGutters>
                     <AdbIcon
@@ -51,7 +92,9 @@ function NavBar() {
                         variant="h6"
                         noWrap
                         component="a"
-                        href="/"
+                        onClick={() =>
+                            navigate(isVendorPage ? "/loginVendor" : "/")
+                        }
                         sx={{
                             mr: 2,
                             display: { xs: "none", md: "flex" },
@@ -64,7 +107,7 @@ function NavBar() {
                     >
                         LOGO
                     </Typography>
-                    {auth !== "" && (
+                    {authUser !== "" && (
                         <Box
                             sx={{
                                 flexGrow: 1,
@@ -119,7 +162,9 @@ function NavBar() {
                         variant="h5"
                         noWrap
                         component="a"
-                        href=""
+                        onClick={() =>
+                            navigate(isVendorPage ? "/loginVendor" : "/")
+                        }
                         sx={{
                             mr: 2,
                             display: { xs: "flex", md: "none" },
@@ -133,7 +178,7 @@ function NavBar() {
                     >
                         LOGO
                     </Typography>
-                    {(auth !== "" && (
+                    {(authUser !== "" && (
                         <>
                             <Box
                                 sx={{
@@ -159,9 +204,16 @@ function NavBar() {
                             <Box sx={{ flexGrow: 0 }}>
                                 <Tooltip title="Open settings">
                                     <IconButton
+                                        size="large"
+                                        aria-label="account of current user"
+                                        aria-controls="menu-appbar"
+                                        aria-haspopup="true"
+                                        color="inherit"
                                         onClick={handleOpenUserMenu}
                                         sx={{ p: 0 }}
-                                    ></IconButton>
+                                    >
+                                        <AccountCircle />
+                                    </IconButton>
                                 </Tooltip>
                                 <Menu
                                     sx={{ mt: "45px" }}
@@ -181,11 +233,14 @@ function NavBar() {
                                 >
                                     {settings.map((setting) => (
                                         <MenuItem
-                                            key={setting}
-                                            onClick={handleCloseUserMenu}
+                                            key={setting.label}
+                                            onClick={() => {
+                                                setting.action();
+                                                handleCloseUserMenu();
+                                            }}
                                         >
                                             <Typography textAlign="center">
-                                                {setting}
+                                                {setting.label}
                                             </Typography>
                                         </MenuItem>
                                     ))}
@@ -204,10 +259,8 @@ function NavBar() {
                                 variant="body1"
                                 noWrap
                                 component="a"
-                                href={
-                                    window.location.pathname === "/vendor"
-                                        ? "/"
-                                        : "vendor"
+                                onClick={() =>
+                                    navigate(isVendorPage ? "/" : "loginVendor")
                                 }
                                 sx={{
                                     mr: 2,
@@ -219,7 +272,7 @@ function NavBar() {
                                     textDecoration: "none",
                                 }}
                             >
-                                {window.location.pathname === "/vendor"
+                                {isVendorPage
                                     ? "IR A ACCESO DE COMPRADOR"
                                     : "IR A ACCESO DE VENDEDOR"}
                             </Typography>

@@ -1,4 +1,4 @@
-import { RegisterFields } from "../types";
+import { RegisterFields } from "../model/types";
 import { checkAccountFields } from "../utilities/checkAccount";
 
 export const emailFormatRegex = new RegExp(

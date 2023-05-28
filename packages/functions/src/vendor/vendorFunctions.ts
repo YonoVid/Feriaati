@@ -5,13 +5,10 @@ import {
     RegisterVendorFields,
     ResponseData,
     UpdatePassFields,
-    userStatus,
-    VendorCollectionData,
-} from "../types";
-import Encryption, {
-    generativeIvOfSize,
-    getRandomBytes,
-} from "../utilities/encryption";
+    UserToken,
+} from "../model/types";
+import { userType, VendorCollectionData } from "../model/accountTypes";
+import Encryption, { generativeIvOfSize } from "../utilities/encryption";
 import { getRandomIntString } from "../utilities/random";
 import { messagesCode } from "../errors";
 
@@ -19,8 +16,9 @@ import { messagesCode } from "../errors";
 import { checkRegisterVendorFields } from "./checkRegister";
 import { uploadRegisterImage } from "../utilities/storage";
 import { checkUpdatePassFields } from "../utilities/checkUpdate";
-import { checkLoginFields } from "../utilities/checkLogin";
 import { sendRecoveryMail } from "../utilities/mail";
+import { checkAccountFields } from "../utilities/checkAccount";
+import { accountLoginVerification } from "../utilities/account";
 
 //Setup encryption configuration
 //IF YOU USE .env first install dotenv (npm install dotenv --save)
@@ -37,7 +35,10 @@ const encryption = new Encryption(config);
  * @typeparam RegisterField - is the data from a register form
  */
 export const addVendor = functions.https.onCall(
-    async (data: RegisterVendorFields, context): Promise<ResponseData> => {
+    async (
+        data: RegisterVendorFields,
+        context
+    ): Promise<ResponseData<string>> => {
         try {
             const db = admin.firestore();
             //Checks of data and database
@@ -68,6 +69,7 @@ export const addVendor = functions.https.onCall(
                     );
                     //Setup document of user data
                     const collectionData: VendorCollectionData = {
+                        type: userType.vendor,
                         rut: data.rut,
                         enterpriseName: data.enterpriseName,
                         localNumber: data.localNumber,
@@ -111,7 +113,7 @@ export const addVendor = functions.https.onCall(
 
             // Returning results.
             return {
-                email: data.email,
+                extra: data.email,
                 error: error,
                 code: code,
                 msg: messagesCode[code],
@@ -123,70 +125,35 @@ export const addVendor = functions.https.onCall(
     }
 );
 
-//login vendedor
+//Login vendedor
 export const loginVendor = functions.https.onCall(
-    async (data: LoginFields, context) => {
+    async (data: LoginFields, context): Promise<ResponseData<UserToken>> => {
         try {
-            const db = admin.firestore();
-            let { msg } = checkLoginFields(data);
-            const usersRef = db.collection("vendors");
-            const querySnapshot = usersRef.doc(data.email);
-            const userDoc = await querySnapshot.get();
-            let userData = userDoc.data();
-            let token = "";
-            let isLogged = false;
+            let { check, code } = checkAccountFields(data);
 
-            if (
-                userDoc.exists &&
-                userData?.status === (userStatus.activated as string)
-            ) {
-                functions.logger.info("DATA COLLECTION::", userData);
-                functions.logger.info(
-                    "DATA COLLECTION::",
-                    userData?.iv as Buffer
+            if (check) {
+                let { token, code } = await accountLoginVerification(
+                    "vendor",
+                    data.email,
+                    data.password,
+                    data.attempts
                 );
-                const config = {
-                    algorithm: userData?.algorithm,
-                    encryptionKey: userData?.encryptionKey,
-                    salt: "123",
-                    iv: userData?.iv as Buffer,
+                return {
+                    msg: messagesCode[code],
+                    code: code,
+                    error: false,
+                    extra: {
+                        userType: userType.vendor,
+                        email: data.email,
+                        token: token,
+                    },
                 };
-                const desencryption = new Encryption(config);
-
-                if (
-                    userData?.password !== desencryption.encrypt(data.password)
-                ) {
-                    msg = "Contraseña incorrecta";
-                    if ((data?.attempts as number) >= 5) {
-                        querySnapshot.update({ status: "blocked" }),
-                            (msg =
-                                "Su cuenta ha sido bloqueada, contactese con soporte");
-                    }
-                } else {
-                    token = getRandomBytes(20).toString("hex");
-                    querySnapshot.update({ token: token });
-                    msg = "Acceso correcto";
-                    isLogged = true;
-                }
-            } else {
-                if (userData?.status === (userStatus.blocked as string)) {
-                    msg =
-                        "Su cuenta se encuentra bloqueada, contacte a soporte";
-                } else if (
-                    userData?.status === (userStatus.registered as string)
-                ) {
-                    msg =
-                        "Su cuenta se encuentra desactivada, un administrador la debe activar";
-                } else {
-                    msg = "Usuario no existe";
-                }
             }
-
             return {
-                user: userData?.id,
-                msg: msg,
-                token: token,
-                isLogged: isLogged,
+                msg: messagesCode[code],
+                code: code,
+                error: false,
+                extra: {},
             };
         } catch (err) {
             functions.logger.error(err);

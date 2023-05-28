@@ -102,7 +102,7 @@ function RegisterUserForm(props: RRegisterFormProps) {
                 </Box>
                 <Box sx={{ margin: "1em" }}>
                     <Button
-                        color="secondary"
+                        color="primary"
                         type="submit"
                         variant="contained"
                         disabled={

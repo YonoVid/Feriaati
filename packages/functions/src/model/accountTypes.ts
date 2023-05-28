@@ -1,20 +1,3 @@
-export type ResponseData<T> = {
-    error: boolean;
-    code: string;
-    msg: string;
-    extra?: T | any;
-};
-
-export type UserToken = {
-    email: string;
-    token: string;
-    type: userType;
-};
-
-//
-// ACCOUNTS RELATED TYPES
-//
-
 export enum userType {
     admin = "admin",
     user = "user",
@@ -30,7 +13,7 @@ export enum userStatus {
 }
 
 export type AccountCollectionData = {
-    type: "admin" | "user" | "vendor" | "temp";
+    type: userType;
     email: string;
     password: string;
     algorithm: string;

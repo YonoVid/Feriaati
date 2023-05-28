@@ -1,5 +1,5 @@
 import { useForm } from "react-hook-form";
-import { Box, Button, Card, CardActions, Paper } from "@mui/material";
+import { Box, Button, Card, CardActions } from "@mui/material";
 import InputComponentAlt from "../inputComponent/InputComponentAlt";
 import {
     checkRutVerificationCodeString,

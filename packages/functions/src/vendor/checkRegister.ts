@@ -1,4 +1,4 @@
-import { RegisterVendorFields } from "../types";
+import { RegisterVendorFields } from "../model/types";
 import { checkAccountFields } from "../utilities/checkAccount";
 
 export const checkRegisterVendorFields = (
