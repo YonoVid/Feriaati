@@ -16,22 +16,16 @@ import MenuIcon from "@mui/icons-material/Menu";
 import AdbIcon from "@mui/icons-material/Adb";
 import AccountCircle from "@mui/icons-material/AccountCircle";
 // import "./NavBar.css";
-import { userType } from "@feria-a-ti/common/model/functionsTypes";
-import { logout } from "@feria-a-ti/web/src/functions/utilities";
 import { UserContext } from "@feria-a-ti/web/src/App";
 
 function NavBar() {
     //Context variables
-    const { authUser, setAuthUser, setAuthToken, setType } =
-        useContext(UserContext);
+    const { authUser, resetSession } = useContext(UserContext);
     //Navigation definition
     const navigate = useNavigate();
 
     const clearAuth = () => {
-        logout();
-        setAuthUser != null && setAuthUser("");
-        setAuthToken != null && setAuthToken("");
-        setType != null && setType(userType.undefined);
+        resetSession && resetSession();
     };
 
     const pages = ["HOME"];

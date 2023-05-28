@@ -4,27 +4,26 @@ import { FieldValues } from "react-hook-form";
 import { httpsCallable } from "firebase/functions";
 
 import { functions } from "@feria-a-ti/common/firebase";
-import { LoginFields } from "@feria-a-ti/common/model/loginFields";
 import { checkLoginFields } from "@feria-a-ti/common/checkLoginFields";
-import LoginForm from "@feria-a-ti/web/src/components/loginForm/LoginForm";
-import MessageAlert from "@feria-a-ti/web/src/components/messageAlert/MessageAlert";
-import { UserContext } from "@feria-a-ti/web/src/App";
-import "../../App.css";
+import { LoginFields } from "@feria-a-ti/common/model/loginFields";
 import {
     ResponseData,
     UserToken,
 } from "@feria-a-ti/common/model/functionsTypes";
-import { setupLogin } from "../../functions/utilities";
+import LoginForm from "@feria-a-ti/web/src/components/loginForm/LoginForm";
+import MessageAlert from "@feria-a-ti/web/src/components/messageAlert/MessageAlert";
+
+import { UserContext } from "@feria-a-ti/web/src/App";
+import "../../App.css";
 
 function AdminLoginPage() {
     //Global state variable
-    const { setAuthToken, setAuthUser, setType, type } =
-        useContext(UserContext);
+    const { setSession, type } = useContext(UserContext);
     //Navigation definition
     const navigate = useNavigate();
-    const [attempt, setAttempt] = useState(0);
     // Form related variables
     const [canSubmit, setSubmitActive] = useState(true);
+    const [attempt, setAttempt] = useState(0);
     // Alert Related values
     const [showAlert, setShowAlert] = useState(false);
     const [alertMessage, setAlertMessage] = useState("TEXT");
@@ -32,6 +31,7 @@ function AdminLoginPage() {
         setSubmitActive(true);
         setShowAlert(false);
     };
+    //ON SUBMIT Action
     const onSubmit = (data: FieldValues) => {
         setSubmitActive(false);
         console.log("SUBMIT FORM");
@@ -48,7 +48,7 @@ function AdminLoginPage() {
                 .then((result) => {
                     const {
                         msg,
-                        extra: { token, type },
+                        extra: { email, token, type },
                     } = result.data as ResponseData<UserToken>;
                     console.log(result);
                     console.log(attempt);
@@ -58,11 +58,8 @@ function AdminLoginPage() {
                         setAlertMessage(msg);
                     }
                     console.log("TOKEN::", token);
-                    if (token && token !== "") {
-                        setupLogin({ email: data.email, token, type });
-                        setAuthUser && setAuthUser(data.email);
-                        setAuthToken && setAuthToken(token);
-                        setType && setType(type);
+                    if (token != null && token !== "") {
+                        setSession && setSession({ token, type, email });
                         navigate("/admin");
                     }
                 })

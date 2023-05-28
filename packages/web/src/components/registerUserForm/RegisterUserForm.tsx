@@ -37,7 +37,7 @@ function RegisterUserForm(props: RRegisterFormProps) {
                             required: "El nombre de usuario es requerido",
                             minLength: {
                                 value: 8,
-                                message: "El máximo de caracteres es 128",
+                                message: "El mínimo de caracteres es 8",
                             },
                             maxLength: {
                                 value: 25,

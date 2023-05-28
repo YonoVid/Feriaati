@@ -1,21 +1,26 @@
 import { useContext, useState } from "react";
 import { FieldValues } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import { httpsCallable } from "firebase/functions";
 
+import { Link } from "@mui/material";
 import { functions } from "@feria-a-ti/common/firebase";
 import { checkLoginFields } from "@feria-a-ti/common/checkLoginFields";
+import {
+    ResponseData,
+    UserToken,
+} from "@feria-a-ti/common/model/functionsTypes";
 import { LoginFields } from "@feria-a-ti/common/model/loginFields";
-import { UserContext } from "@feria-a-ti/web/src/App";
+
 import LoginForm from "@feria-a-ti/web/src/components/loginForm/LoginForm";
 import MessageAlert from "@feria-a-ti/web/src/components/messageAlert/MessageAlert";
-import { Link } from "@mui/material";
+import { UserContext } from "@feria-a-ti/web/src/App";
 
 import "../../App.css";
 
 function LoginPage() {
     //Global state variable
-    const { setAuth } = useContext(UserContext);
+    const { setSession, type } = useContext(UserContext);
     //Navigation definition
     const navigate = useNavigate();
     const [attempt, setAttempt] = useState(0);
@@ -43,8 +48,10 @@ function LoginPage() {
             const login = httpsCallable(functions, "login");
             login(formatedData)
                 .then((result) => {
-                    const { msg, token } = result.data as any;
-                    localStorage.setItem("token", token);
+                    const {
+                        msg,
+                        extra: { email, type, token },
+                    } = result.data as ResponseData<UserToken>;
                     console.log(result);
                     console.log(attempt);
                     setSubmitActive(true);
@@ -52,9 +59,9 @@ function LoginPage() {
                     if (msg !== "") {
                         setAlertMessage(msg);
                     }
-                    if (token !== "") {
+                    if (token != null && token !== "") {
+                        setSession && setSession({ email, type, token });
                         navigate("/session");
-                        setAuth && setAuth("token");
                     }
                 })
                 .finally(() => setShowAlert(true));
@@ -62,6 +69,7 @@ function LoginPage() {
     };
     return (
         <>
+            {type === "user" && <Navigate to="/session" replace={true} />}
             <LoginForm
                 label="Iniciar sesión"
                 onSubmit={onSubmit}

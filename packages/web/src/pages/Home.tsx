@@ -1,20 +1,25 @@
-import React from "react";
+import React, { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 
+import { UserContext } from "@feria-a-ti/web/src/App";
+
 function Home() {
-  const nav = useNavigate();
+    //Global state variable
+    const { resetSession, type } = useContext(UserContext);
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    nav("/login");
-  };
+    const nav = useNavigate();
 
-  return (
-    <>
-      <h1>¡Bienvenido!</h1>
-      <button onClick={handleLogout}>Cerrar sesión</button>
-    </>
-  );
+    const handleLogout = () => {
+        resetSession && resetSession();
+        nav("/login");
+    };
+
+    return (
+        <>
+            <h1>¡Bienvenido!</h1>
+            <button onClick={handleLogout}>Cerrar sesión</button>
+        </>
+    );
 }
 
 export default Home;

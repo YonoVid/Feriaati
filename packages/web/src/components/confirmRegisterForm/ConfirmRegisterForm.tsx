@@ -1,49 +1,67 @@
 import { useForm } from "react-hook-form";
+import { Box, Button, Card, Divider } from "@mui/material";
+
 import { controlValidInput } from "@feria-a-ti/common/inputControl";
-import InputComponent from "../inputComponent/InputComponent";
-import { colors } from "../../../../common/theme/base";
+import { RFormProps } from "@feria-a-ti/common/model/registerFormProps";
+import InputComponentAlt from "@feria-a-ti/web/src/components/inputComponent/InputComponentAlt";
 import "./ConfirmRegisterForm.css";
-import { RFormProps } from "../../../../common/model/registerFormProps";
 
 function ConfirmRegisterForm(props: RFormProps) {
-    const { onSubmit } = props;
+    const { children, onSubmit } = props;
     const {
-        register,
+        control,
         formState: { errors },
         handleSubmit,
     } = useForm();
 
     return (
-        <div
-            className="formContainer"
-            style={{ backgroundColor: colors.secondary }}
+        <Card
+            className="inputContainer"
+            sx={{
+                maxWidth: "50%",
+                alignContent: "center",
+                borderRadius: "10%",
+            }}
         >
-            <h1 style={{ maxWidth: "80%" }}>REGISTRARSE</h1>
+            <h1 style={{ maxWidth: "100%" }}>Confirmar Registro</h1>
             <form onSubmit={handleSubmit(onSubmit)}>
-                <InputComponent
-                    name="code"
-                    label="Código de confirmación"
-                    onChange={controlValidInput}
-                    required={true}
-                    maxLength={6}
-                    minLength={6}
-                    registerForm={register}
-                    error={errors.code}
-                />
-                <input
-                    className="formButton"
-                    style={{
-                        color: colors.light,
-                        backgroundColor: colors.secondaryShadow,
-                    }}
-                    type="submit"
-                    value="Registrarse"
-                    disabled={
-                        props.canSubmit != null ? !props.canSubmit : false
-                    }
-                />
+                <Box>
+                    <InputComponentAlt
+                        control={control}
+                        name="code"
+                        label="Ingresar código de confirmación"
+                        type="text"
+                        onChange={controlValidInput}
+                        rules={{
+                            required: "El código es requerido",
+                            minLength: {
+                                value: 8,
+                                message: "El código posee 6 caracteres",
+                            },
+                            maxLength: {
+                                value: 6,
+                                message: "El código posee 6 caracteres",
+                            },
+                        }}
+                        error={errors.code}
+                    />
+                </Box>
+                <Box sx={{ margin: "1em" }}>
+                    <Button
+                        color="primary"
+                        type="submit"
+                        variant="contained"
+                        disabled={
+                            props.canSubmit != null ? !props.canSubmit : false
+                        }
+                    >
+                        Registrar cuenta de comprador
+                    </Button>
+                </Box>
             </form>
-        </div>
+            <Divider />
+            <Box sx={{ margin: "1em" }}>{children}</Box>
+        </Card>
     );
 }
 
