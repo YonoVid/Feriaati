@@ -2,7 +2,7 @@ import {
     AccountFields,
     RegisterFields,
     RegisterVendorFields,
-} from "./model/registerFields";
+} from "@feria-a-ti/common/model/registerFields";
 
 export const rutFormatRegex = new RegExp(/\b[0-9]{1,8}\-[K|k|0-9]$/gim);
 export const numberRegex = new RegExp(/\b[0-9]+$/gim);

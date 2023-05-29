@@ -1,22 +1,25 @@
+import "react-native-get-random-values";
 import React from "react";
-import { Text, View, Button, StyleSheet } from "react-native";
 import { useForm } from "react-hook-form";
+import InputComponent from "../inputs/InputComponent";
+import { Text, View, Button, StyleSheet } from "react-native";
 import { colors } from "@feria-a-ti/common/theme/base";
-import InputComponent from "@feria-a-ti/mobile/components/inputs/InputComponent";
+import { RecoveryFields } from "@feria-a-ti/common/model/loginFields";
+import { RRecoveryFormProps } from "@feria-a-ti/common/model/loginFormProps";
 import { emailFormatRegex } from "@feria-a-ti/common/check/checkRegisterFields";
-import { LoginFields } from "@feria-a-ti/common/model/loginFields";
-import { LoginFormProps } from "@feria-a-ti/common/model/loginFormProps";
+import { Link } from "expo-router";
 
-function LoginForm(props: LoginFormProps) {
+function RecoveryForm(props: RRecoveryFormProps) {
+    const { canSubmit } = props;
     const {
         handleSubmit,
         control,
         formState: { errors },
-    } = useForm<LoginFields>();
+    } = useForm<RecoveryFields>();
 
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Login</Text>
+            <Text style={styles.title}>Recuperar contraseña</Text>
 
             <InputComponent
                 name="email"
@@ -36,38 +39,18 @@ function LoginForm(props: LoginFormProps) {
                     },
                 }}
             />
-            <InputComponent
-                name="password"
-                label="Contraseña"
-                type="password"
-                control={control}
-                error={errors?.password}
-                rules={{
-                    required: "La contraseña es requerida",
-                    maxLength: {
-                        value: 128,
-                        message: "El máximo de caracteres es 128",
-                    },
-                    minLength: {
-                        value: 10,
-                        message: "El mínimo de caracteres es 10",
-                    },
-                }}
-            />
 
             <View style={styles.button}>
                 <Button
                     color={styles.buttonInner.color}
                     title="Iniciar Sesion"
-                    disabled={!props.canSubmit}
+                    disabled={!canSubmit}
                     onPress={handleSubmit(props.onSubmit)}
                 />
             </View>
-            {props.children}
         </View>
     );
 }
-
 const styles = StyleSheet.create({
     container: {
         justifyContent: "center",
@@ -103,4 +86,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default LoginForm;
+export default RecoveryForm;

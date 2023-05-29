@@ -1,11 +1,11 @@
 import { FieldValues } from "react-hook-form";
-import { FormProps } from "./sharedProps";
+import { FormProps } from "@feria-a-ti/common/model/sharedProps";
 
 import {
     ConfirmRegisterFields,
     RegisterFields,
     RegisterVendorFields,
-} from "./registerFields";
+} from "@feria-a-ti/common/model/registerFields";
 
 export type RFormProps = FormProps & {
     onSubmit: (data: FieldValues) => void;

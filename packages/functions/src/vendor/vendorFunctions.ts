@@ -2,6 +2,7 @@ import * as admin from "firebase-admin";
 import * as functions from "firebase-functions";
 import {
     LoginFields,
+    RecoveryFields,
     RegisterVendorFields,
     ResponseData,
     UpdatePassFields,
@@ -15,10 +16,12 @@ import { messagesCode } from "../errors";
 //import { sendVerificationMail } from "../utilities/mail";
 import { checkRegisterVendorFields } from "./checkRegister";
 import { uploadRegisterImage } from "../utilities/storage";
-import { checkUpdatePassFields } from "../utilities/checkUpdate";
-import { sendRecoveryMail } from "../utilities/mail";
 import { checkAccountFields } from "../utilities/checkAccount";
 import { accountLoginVerification } from "../utilities/account";
+import {
+    updateAccountCode,
+    updateAccountPassword,
+} from "../utilities/updateAccount";
 
 //Setup encryption configuration
 //IF YOU USE .env first install dotenv (npm install dotenv --save)
@@ -166,32 +169,13 @@ export const loginVendor = functions.https.onCall(
 );
 //envío de codigo al correo de vendedor
 export const passRecoveryVendor = functions.https.onCall(
-    async (email: string) => {
-        const db = admin.firestore();
-        const codigo = getRandomIntString(999999);
-        sendRecoveryMail("", email, codigo);
-
-        db.collection("users").doc(email).update({ passwordCode: codigo });
+    async (data: RecoveryFields): Promise<ResponseData<string>> => {
+        return updateAccountCode("vendors", data);
     }
 );
 //actualización de contraseña con el código enviado al correo
 export const passUpdateVendor = functions.https.onCall(
-    async (data: UpdatePassFields) => {
-        const db = admin.firestore();
-        let { msg } = checkUpdatePassFields(data);
-        const usersRef = db.collection("vendors");
-        const querySnapshot = usersRef.doc(data.email);
-        const userDocR = await querySnapshot.get();
-        const userDoc = userDocR.data();
-        //console.log(userDoc?.passwordCode);
-        functions.logger.info(data.codigo);
-        if (userDoc?.passwordCode === data.codigo) {
-            functions.logger.info("hola");
-            db.collection("users")
-                .doc(data.email)
-                .update({ password: encryption.encrypt(data.password) });
-            msg = "Contraseña actualizada con éxito";
-        }
-        return { mensaje: "data.codigo", msg: msg };
+    async (data: UpdatePassFields): Promise<ResponseData<string>> => {
+        return updateAccountPassword("vendors", data);
     }
 );

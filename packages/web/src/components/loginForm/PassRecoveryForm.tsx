@@ -1,7 +1,7 @@
 import { useForm } from "react-hook-form";
 import { Box, Button, Card, Divider } from "@mui/material";
 
-import { emailFormatRegex } from "@feria-a-ti/common/checkLoginFields";
+import { emailFormatRegex } from "@feria-a-ti/common/check/checkLoginFields";
 import { RRecoveryFormProps } from "@feria-a-ti/common/model/loginFormProps";
 import InputComponentAlt from "@feria-a-ti/web/src/components/inputComponent/InputComponentAlt";
 import "./LoginForm.css";
@@ -28,7 +28,7 @@ function RecoveryForm(props: RRecoveryFormProps) {
             }}
         >
             <h1 style={{ maxWidth: "100%" }}>
-                {label != null ? label : "Recuperar Contraseña Vendedor"}
+                {label != null ? label : "Recuperar Contraseña"}
             </h1>
             <form onSubmit={handleSubmit(onSubmit)}>
                 <Box>

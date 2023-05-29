@@ -1,6 +1,10 @@
 import { FieldValues } from "react-hook-form";
-import { LoginFields, RecoveryFields, UpdatePassFields } from "./loginFields";
-import { FormProps } from "./sharedProps";
+import {
+    LoginFields,
+    RecoveryFields,
+    UpdatePassFields,
+} from "@feria-a-ti/common/model/loginFields";
+import { FormProps } from "@feria-a-ti/common/model/sharedProps";
 
 export type LoginFormProps = FormProps & {
     onSubmit: (data: LoginFields) => void;

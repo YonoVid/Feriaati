@@ -6,7 +6,7 @@ import { colors } from "@feria-a-ti/common/theme/base";
 import {
     emailFormatRegex,
     passwordFormatRegex,
-} from "@feria-a-ti/common/checkRegisterFields";
+} from "@feria-a-ti/common/check/checkRegisterFields";
 import { RegisterFields } from "@feria-a-ti/common/model/registerFields";
 import { RegisterFormProps } from "@feria-a-ti/common/model/registerFormProps";
 import InputComponent from "@feria-a-ti/mobile/components/inputs/InputComponent";

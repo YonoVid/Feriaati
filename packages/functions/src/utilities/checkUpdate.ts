@@ -8,23 +8,29 @@ export const emailFormatRegex = new RegExp(
 
 export const checkUpdatePassFields = (
     input: UpdatePassFields
-): { check: boolean; msg: string } => {
+): { check: boolean; code: string } => {
     const { codigo, password, confirmPassword } = input;
-    let error = "";
-    const codeCheck = codigo != null;
 
-    const passwordCheck =
-        password != null &&
-        password.length < 128 &&
-        password === confirmPassword;
+    const codeCheck = codigo != null;
+    if (!codeCheck) {
+        return { check: false, code: "ERR09" };
+    }
+
+    // console.log("Email check", emailCheck);
+    const passwordCheck = password != null && password.length < 128;
     if (!passwordCheck) {
-        if (error !== "") {
-            error += "\n";
-        }
-        error +=
-            "Las contraseñas no tiene el formato correcto o no son iguales";
+        return { check: false, code: "ERR03" };
     }
     // console.log("Password check", passwordCheck);
 
-    return { check: codeCheck && passwordCheck, msg: "" };
+    const passwordConfirmCheck = password === confirmPassword;
+    if (!passwordConfirmCheck) {
+        return { check: false, code: "ERR04" };
+    }
+    // console.log("Password check", passwordCheck);
+
+    return {
+        check: codeCheck && passwordCheck && passwordConfirmCheck,
+        code: "",
+    };
 };

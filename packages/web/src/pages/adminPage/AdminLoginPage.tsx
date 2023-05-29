@@ -4,7 +4,7 @@ import { FieldValues } from "react-hook-form";
 import { httpsCallable } from "firebase/functions";
 
 import { functions } from "@feria-a-ti/common/firebase";
-import { checkLoginFields } from "@feria-a-ti/common/checkLoginFields";
+import { checkLoginFields } from "@feria-a-ti/common/check/checkLoginFields";
 import { LoginFields } from "@feria-a-ti/common/model/loginFields";
 import {
     ResponseData,

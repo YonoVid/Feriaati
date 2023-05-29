@@ -5,7 +5,7 @@ import { NavigationProp, ParamListBase } from "@react-navigation/native";
 
 import { functions } from "@feria-a-ti/common/firebase";
 import { messagesCode } from "@feria-a-ti/common/constants/errors";
-import { checkRegisterVendorFields } from "@feria-a-ti/common/checkRegisterFields";
+import { checkRegisterVendorFields } from "@feria-a-ti/common/check/checkRegisterFields";
 import {
     RegisterVendorFields,
     userStatus,
@@ -42,10 +42,10 @@ export const RegisterVendor = () => {
             let dataWithImage = data;
             dataWithImage.image = imageData;
             //Call firebase function to create user
-            const addUser = httpsCallable<RegisterVendorFields, ResponseData>(
-                functions,
-                "addVendor"
-            );
+            const addUser = httpsCallable<
+                RegisterVendorFields,
+                ResponseData<string>
+            >(functions, "addVendor");
             data.status = userStatus.registered;
             addUser(data)
                 .then((result) => {
@@ -66,23 +66,24 @@ export const RegisterVendor = () => {
     };
 
     return (
-        <ScrollView
-            style={styles.container}
-            contentContainerStyle={styles.innerContainer}
-        >
-            <RegisterVendorForm
-                onSubmit={onSubmitRegister}
-                canSubmit={canRegister}
-                setImageData={setImageData}
-            />
-
+        <>
+            <ScrollView
+                style={styles.container}
+                contentContainerStyle={styles.innerContainer}
+            >
+                <RegisterVendorForm
+                    onSubmit={onSubmitRegister}
+                    canSubmit={canRegister}
+                    setImageData={setImageData}
+                />
+            </ScrollView>
             <MessageAlert
                 open={showAlert}
                 title={"ESTADO DE ACCIÓN"}
                 message={alertMessage}
                 handleClose={closeAlert}
             />
-        </ScrollView>
+        </>
     );
 };
 

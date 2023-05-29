@@ -1,4 +1,4 @@
-import { UserToken, userType } from "./functionsTypes";
+import { UserToken, userType } from "@feria-a-ti/common/model/functionsTypes";
 
 export type SessionUserData = {
     type: userType;

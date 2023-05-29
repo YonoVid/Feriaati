@@ -6,7 +6,7 @@ import { Button, PaperProvider } from "react-native-paper";
 
 import { app, functions } from "@feria-a-ti/common/firebase";
 import { messagesCode } from "@feria-a-ti/common/constants/errors";
-import { checkRegisterFields } from "@feria-a-ti/common/checkRegisterFields";
+import { checkRegisterFields } from "@feria-a-ti/common/check/checkRegisterFields";
 import {
     ConfirmRegisterFields,
     RegisterConfirm,
@@ -45,7 +45,7 @@ export const RegisterClient = (props: RegisterClientProps) => {
 
         if (check) {
             //Call firebase function to create user
-            const addUser = httpsCallable<RegisterFields, ResponseData>(
+            const addUser = httpsCallable<RegisterFields, ResponseData<string>>(
                 functions,
                 "addUser"
             );
@@ -78,10 +78,10 @@ export const RegisterClient = (props: RegisterClientProps) => {
             code: data.code,
         };
         //Call firebase function to create user
-        const confirmRegister = httpsCallable<RegisterConfirm, ResponseData>(
-            functions,
-            "confirmRegister"
-        );
+        const confirmRegister = httpsCallable<
+            RegisterConfirm,
+            ResponseData<string>
+        >(functions, "confirmRegister");
         confirmRegister(formatedData)
             .then((result) => {
                 console.log(result);
@@ -95,41 +95,44 @@ export const RegisterClient = (props: RegisterClientProps) => {
             .catch((error) => {
                 console.log(error);
                 setAlertMessage(messagesCode["ERR00"]);
-            });
+            })
+            .finally(() => setShowAlert(true));
 
         console.log(data);
     };
 
     return (
-        <ScrollView
-            style={styles.container}
-            contentContainerStyle={styles.innerContainer}
-        >
-            {(!registerComplete && (
-                <RegisterForm
-                    onSubmit={onSubmitRegister}
-                    canSubmit={canRegister}
-                >
-                    <Button
-                        mode="text"
-                        onPress={() => navigation.navigate("loginClient")}
+        <>
+            <ScrollView
+                style={styles.container}
+                contentContainerStyle={styles.innerContainer}
+            >
+                {(!registerComplete && (
+                    <RegisterForm
+                        onSubmit={onSubmitRegister}
+                        canSubmit={canRegister}
                     >
-                        Ya tengo una cuenta
-                    </Button>
-                </RegisterForm>
-            )) || (
-                <ConfirmRegisterForm
-                    onSubmit={onSubmitConfirmRegister}
-                    canSubmit={canConfirmRegister}
-                />
-            )}
+                        <Button
+                            mode="text"
+                            onPress={() => navigation.navigate("loginClient")}
+                        >
+                            Ya tengo una cuenta
+                        </Button>
+                    </RegisterForm>
+                )) || (
+                    <ConfirmRegisterForm
+                        onSubmit={onSubmitConfirmRegister}
+                        canSubmit={canConfirmRegister}
+                    />
+                )}
+            </ScrollView>
             <MessageAlert
                 open={showAlert}
                 title={"ESTADO DE ACCIÓN"}
                 message={alertMessage}
                 handleClose={closeAlert}
             />
-        </ScrollView>
+        </>
     );
 };
 

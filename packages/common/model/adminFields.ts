@@ -1,4 +1,4 @@
-import { userStatus } from "./functionsTypes";
+import { userStatus } from "@feria-a-ti/common/model/functionsTypes";
 
 export type UpdateStateFields = {
     id: string;

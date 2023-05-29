@@ -24,7 +24,7 @@ export default function AppBar(props: NativeStackHeaderProps) {
             {!back ? (
                 <Menu
                     visible={visible}
-                    // onDismiss={closeMenu}
+                    onDismiss={closeMenu}
                     anchor={
                         <Appbar.Action
                             icon="dots-vertical"

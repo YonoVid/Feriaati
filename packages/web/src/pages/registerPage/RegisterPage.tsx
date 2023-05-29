@@ -1,7 +1,7 @@
-import "../../App.css";
 import { FieldValues } from "react-hook-form";
-import { httpsCallable } from "firebase/functions";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { httpsCallable } from "firebase/functions";
 import { functions } from "@feria-a-ti/common/firebase";
 import {
     RegisterConfirm,
@@ -10,11 +10,10 @@ import {
 } from "@feria-a-ti/common/model/registerFields";
 import { ResponseData } from "@feria-a-ti/common/model/functionsTypes";
 import { messagesCode } from "@feria-a-ti/common/constants/errors";
-import { checkRegisterFields } from "@feria-a-ti/common/checkRegisterFields";
-import RegisterUserForm from "../../components/registerUserForm/RegisterUserForm";
-import ConfirmRegisterForm from "../../components/confirmRegisterForm/ConfirmRegisterForm";
-import MessageAlert from "../../components/messageAlert/MessageAlert";
-import { useNavigate } from "react-router-dom";
+import { checkRegisterFields } from "@feria-a-ti/common/check/checkRegisterFields";
+import RegisterUserForm from "@feria-a-ti/web/src/components/registerUserForm/RegisterUserForm";
+import ConfirmRegisterForm from "@feria-a-ti/web/src/components/confirmRegisterForm/ConfirmRegisterForm";
+import MessageAlert from "@feria-a-ti/web/src/components/messageAlert/MessageAlert";
 import { Link } from "@mui/material";
 
 function RegisterPage() {
@@ -53,7 +52,7 @@ function RegisterPage() {
 
         if (check) {
             //Call firebase function to create user
-            const addUser = httpsCallable<RegisterFields, ResponseData<any>>(
+            const addUser = httpsCallable<RegisterFields, ResponseData<string>>(
                 functions,
                 "addUser"
             );
@@ -86,10 +85,10 @@ function RegisterPage() {
         };
 
         if (registerComplete) {
-            const addUser = httpsCallable<RegisterConfirm, ResponseData<any>>(
-                functions,
-                "confirmRegister"
-            );
+            const addUser = httpsCallable<
+                RegisterConfirm,
+                ResponseData<string>
+            >(functions, "confirmRegister");
             addUser(formatedData)
                 .then((result) => {
                     console.log(result);

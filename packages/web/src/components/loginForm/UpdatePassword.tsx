@@ -35,7 +35,7 @@ function UpdatePassForm(props: RUpdatepPassFormProps) {
                 <Box>
                     <InputComponentAlt
                         control={control}
-                        name="code"
+                        name="codigo"
                         label="Código de validación"
                         type="text"
                         rules={{
@@ -47,11 +47,6 @@ function UpdatePassForm(props: RUpdatepPassFormProps) {
                             maxLength: {
                                 value: 6,
                                 message: "El código debe tener 6 caracters",
-                            },
-                            pattern: {
-                                value: emailFormatRegex,
-                                message:
-                                    "El formato debe ser, por ejemplo: ejemplo@correo.cl",
                             },
                         }}
                         error={errors.password}

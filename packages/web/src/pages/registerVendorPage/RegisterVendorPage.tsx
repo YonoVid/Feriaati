@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { httpsCallable } from "firebase/functions";
 
 import { functions } from "@feria-a-ti/common/firebase";
-import { checkRegisterVendorFields } from "@feria-a-ti/common/checkRegisterFields";
+import { checkRegisterVendorFields } from "@feria-a-ti/common/check/checkRegisterFields";
 import { messagesCode } from "@feria-a-ti/common/constants/errors";
 import {
     RegisterVendorFields,

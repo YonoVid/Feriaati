@@ -1,10 +1,12 @@
 import { useForm } from "react-hook-form";
-import { controlValidInput } from "@feria-a-ti/common/inputControl";
-import "./RegisterUserForm.css";
-import { RRegisterFormProps } from "@feria-a-ti/common/model/registerFormProps";
 import { Box, Button, Card, Divider } from "@mui/material";
-import InputComponentAlt from "../inputComponent/InputComponentAlt";
-import { emailFormatRegex } from "@feria-a-ti/common/checkRegisterFields";
+
+import { controlValidInput } from "@feria-a-ti/common/inputControl";
+import { RRegisterFormProps } from "@feria-a-ti/common/model/registerFormProps";
+import { emailFormatRegex } from "@feria-a-ti/common/check/checkRegisterFields";
+
+import InputComponentAlt from "@feria-a-ti/web/src/components/inputComponent/InputComponentAlt";
+import "./RegisterUserForm.css";
 
 function RegisterUserForm(props: RRegisterFormProps) {
     const { children, onSubmit } = props;

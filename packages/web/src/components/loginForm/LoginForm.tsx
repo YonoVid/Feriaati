@@ -3,7 +3,7 @@ import "./LoginForm.css";
 import { RLoginFormProps } from "@feria-a-ti/common/model/loginFormProps";
 import { Box, Button, Card, Divider } from "@mui/material";
 import InputComponentAlt from "../inputComponent/InputComponentAlt";
-import { emailFormatRegex } from "@feria-a-ti/common/checkLoginFields";
+import { emailFormatRegex } from "@feria-a-ti/common/check/checkLoginFields";
 
 function LoginForm(props: RLoginFormProps) {
     const { label, color, children, onSubmit } = props;

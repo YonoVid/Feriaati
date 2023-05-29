@@ -7,31 +7,26 @@ import {
     LoginFields,
     UpdatePassFields,
     UserToken,
+    RecoveryFields,
 } from "../model/types";
 import {
     UserCollectionData,
     userStatus,
     userType,
 } from "../model/accountTypes";
-import Encryption, { generativeIvOfSize } from "../utilities/encryption";
 import { getRandomIntString } from "../utilities/random";
 import { messagesCode } from "../errors";
 
 import { checkRegisterFields } from "./checkRegister";
-import { checkUpdatePassFields } from "../utilities/checkUpdate";
-import { sendRecoveryMail, sendVerificationMail } from "../utilities/mail";
+import { sendVerificationMail } from "../utilities/mail";
 import { accountLoginVerification } from "../utilities/account";
 import { checkAccountFields } from "../utilities/checkAccount";
 
-//Setup encryption configuration
-//IF YOU USE .env first install dotenv (npm install dotenv --save)
-const config = {
-    algorithm: process.env.ENCRYPTION_ALGORITHM, //"aes-256-cbc"
-    encryptionKey: process.env.ENCRYPTION_KEY, //"KQIusXppu9dIj0JHa6yRtMOgqW7qUyJQ"
-    salt: process.env.ENCRYPTION_SALT, //"123" IRRELEVANTE
-    iv: generativeIvOfSize(16),
-};
-const encryption = new Encryption(config);
+import { encryption, config } from "../utilities/encryption";
+import {
+    updateAccountCode,
+    updateAccountPassword,
+} from "../utilities/updateAccount";
 
 /**
  * Function to log in user in the platform requires data of type LoginFields
@@ -199,29 +194,13 @@ export const confirmRegister = functions.https.onCall(
     }
 );
 
-export const passRecovery = functions.https.onCall(async (email: string) => {
-    const db = admin.firestore();
-    const codigo = getRandomIntString(999999);
-    sendRecoveryMail("", email, codigo);
-    db.collection("users").doc(email).update({ passwordCode: codigo });
-});
+export const passRecovery = functions.https.onCall(
+    async (data: RecoveryFields): Promise<ResponseData<any>> => {
+        return updateAccountCode("users", data);
+    }
+);
 export const passUpdate = functions.https.onCall(
     async (data: UpdatePassFields) => {
-        const db = admin.firestore();
-        let { msg } = checkUpdatePassFields(data);
-        const usersRef = db.collection("users");
-        const querySnapshot = usersRef.doc(data.email);
-        const userDocR = await querySnapshot.get();
-        const userDoc = userDocR.data();
-        //console.log(userDoc?.passwordCode);
-        functions.logger.info(data.codigo);
-        if (userDoc?.passwordCode === data.codigo) {
-            functions.logger.info("hola");
-            db.collection("users")
-                .doc(data.email)
-                .update({ password: encryption.encrypt(data.password) });
-            msg = "Contraseña actualizada con éxito";
-        }
-        return { mensaje: "data.codigo", msg: msg };
+        return updateAccountPassword("users", data);
     }
 );

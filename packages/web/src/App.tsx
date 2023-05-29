@@ -8,14 +8,12 @@ import ErrorPage from "@feria-a-ti/web/src/pages/errorPage/ErrorPage";
 import RegisterPage from "@feria-a-ti/web/src/pages/registerPage/RegisterPage";
 import LoginPage from "@feria-a-ti/web/src/pages/loginPage/LoginPage";
 import RecoveryPage from "@feria-a-ti/web/src/pages/loginPage/RecoveryPage";
-import UpdatePassPage from "@feria-a-ti/web/src/pages/loginPage/UpdatePassPage";
 import Home from "@feria-a-ti/web/src/pages/Home";
 import SessionPage from "@feria-a-ti/web/src/pages/SessionPage";
 import RegisterVendorPage from "@feria-a-ti/web/src/pages/registerVendorPage/RegisterVendorPage";
 import AdminLoginPage from "@feria-a-ti/web/src/pages/adminPage/AdminLoginPage";
 import VendorLoginPage from "@feria-a-ti/web/src/pages/vendorLoginPage/VendorLoginPage";
 import VendorRecoveryPage from "@feria-a-ti/web/src/pages/vendorLoginPage/VendorRecoveryPage";
-import VendorUpdatePassPage from "@feria-a-ti/web/src/pages/vendorLoginPage/VendorUpdatePassPage";
 import { HeaderLayout } from "@feria-a-ti/web/src/pages/HeaderLayout";
 import ActivateVendors from "@feria-a-ti/web/src/pages/adminPage/ActivateVendors";
 import { UserToken, userType } from "@feria-a-ti/common/model/functionsTypes";
@@ -43,10 +41,6 @@ const router = createBrowserRouter([
                 element: <RecoveryPage />,
             },
             {
-                path: "/updatePass",
-                element: <UpdatePassPage />,
-            },
-            {
                 path: "/session",
                 element: <SessionPage />,
             },
@@ -61,10 +55,6 @@ const router = createBrowserRouter([
             {
                 path: "/recoveryVendor",
                 element: <VendorRecoveryPage />,
-            },
-            {
-                path: "/updatePassVendor",
-                element: <VendorUpdatePassPage />,
             },
             {
                 path: "/registerVendor",

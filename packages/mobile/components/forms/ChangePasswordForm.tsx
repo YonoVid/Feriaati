@@ -1,38 +1,45 @@
+import "react-native-get-random-values";
 import React from "react";
-import { Text, View, Button, StyleSheet } from "react-native";
 import { useForm } from "react-hook-form";
+import InputComponent from "../inputs/InputComponent";
+import { Text, View, Button, StyleSheet } from "react-native";
 import { colors } from "@feria-a-ti/common/theme/base";
-import InputComponent from "@feria-a-ti/mobile/components/inputs/InputComponent";
-import { emailFormatRegex } from "@feria-a-ti/common/check/checkRegisterFields";
-import { LoginFields } from "@feria-a-ti/common/model/loginFields";
-import { LoginFormProps } from "@feria-a-ti/common/model/loginFormProps";
+import {
+    LoginFields,
+    UpdatePassFields,
+} from "@feria-a-ti/common/model/loginFields";
+import { RRecoveryFormProps } from "@feria-a-ti/common/model/loginFormProps";
+import {
+    emailFormatRegex,
+    passwordFormatRegex,
+} from "@feria-a-ti/common/check/checkRegisterFields";
+import { Link } from "expo-router";
 
-function LoginForm(props: LoginFormProps) {
+export const ChangePasswordForm = (props: RRecoveryFormProps) => {
+    const { canSubmit } = props;
     const {
         handleSubmit,
         control,
         formState: { errors },
-    } = useForm<LoginFields>();
+    } = useForm<UpdatePassFields>();
 
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Login</Text>
-
+            <Text style={styles.title}>Recuperar contraseña</Text>
             <InputComponent
-                name="email"
-                label="Correo electrónico"
+                name="codigo"
+                label="Código"
                 control={control}
-                error={errors?.email}
+                error={errors?.codigo}
                 rules={{
-                    required: "El correo electrónico es requerido",
-                    maxLength: {
-                        value: 254,
-                        message: "El máximo de caracteres es 254",
+                    required: "El código es requerido",
+                    minLength: {
+                        value: 6,
+                        message: "El código debe tener 6 caracters",
                     },
-                    pattern: {
-                        value: emailFormatRegex,
-                        message:
-                            "Formato de correo incorrecto. Ej:ejemplo@correo.cl",
+                    maxLength: {
+                        value: 6,
+                        message: "El código debe tener 6 caracters",
                     },
                 }}
             />
@@ -52,6 +59,25 @@ function LoginForm(props: LoginFormProps) {
                         value: 10,
                         message: "El mínimo de caracteres es 10",
                     },
+                    pattern: {
+                        value: passwordFormatRegex,
+                        message:
+                            "Formato de contraseña incorrecto, debe ser alfanumérico",
+                    },
+                }}
+            />
+            <InputComponent
+                name="confirmPassword"
+                label="Confirmar contraseña"
+                type="password"
+                control={control}
+                error={errors?.confirmPassword}
+                rules={{
+                    required: "La confirmación de contraseña es requerida",
+                    maxLength: {
+                        value: 128,
+                        message: "El máximo de caracteres es 128",
+                    },
                 }}
             />
 
@@ -59,15 +85,13 @@ function LoginForm(props: LoginFormProps) {
                 <Button
                     color={styles.buttonInner.color}
                     title="Iniciar Sesion"
-                    disabled={!props.canSubmit}
+                    disabled={!canSubmit}
                     onPress={handleSubmit(props.onSubmit)}
                 />
             </View>
-            {props.children}
         </View>
     );
-}
-
+};
 const styles = StyleSheet.create({
     container: {
         justifyContent: "center",
@@ -102,5 +126,3 @@ const styles = StyleSheet.create({
         borderRadius: 4,
     },
 });
-
-export default LoginForm;

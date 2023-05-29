@@ -140,3 +140,13 @@ export default class Encryption {
         return buf.toString("utf8");
     };
 }
+
+//Setup encryption configuration
+//IF YOU USE .env first install dotenv (npm install dotenv --save)
+export const config = {
+    algorithm: process.env.ENCRYPTION_ALGORITHM, //"aes-256-cbc"
+    encryptionKey: process.env.ENCRYPTION_KEY, //"KQIusXppu9dIj0JHa6yRtMOgqW7qUyJQ"
+    salt: process.env.ENCRYPTION_SALT, //"123" IRRELEVANTE
+    iv: generativeIvOfSize(16),
+};
+export const encryption = new Encryption(config);

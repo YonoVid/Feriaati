@@ -1,16 +1,17 @@
 import { useForm } from "react-hook-form";
 import { Box, Button, Card, CardActions } from "@mui/material";
-import InputComponentAlt from "../inputComponent/InputComponentAlt";
+
+import { compressImage } from "@feria-a-ti/common/compression";
 import {
     checkRutVerificationCodeString,
     emailFormatRegex,
     numberRegex,
     passwordFormatRegex,
     rutFormatRegex,
-} from "@feria-a-ti/common/checkRegisterFields";
+} from "@feria-a-ti/common/check/checkRegisterFields";
 import { RRegisterVendorFormProps } from "@feria-a-ti/common/model/registerFormProps";
 import { regionCode, regionCommune } from "@feria-a-ti/common/constants/form";
-import { compressImage } from "@feria-a-ti/common/compression";
+import InputComponentAlt from "@feria-a-ti/web/src/components/inputComponent/InputComponentAlt";
 import "./RegisterVendorForm.css";
 
 function RegisterVendorForm(props: RRegisterVendorFormProps) {

@@ -1,28 +1,42 @@
-import { FieldValues } from "react-hook-form";
-import { httpsCallable } from "firebase/functions";
 import { useState } from "react";
+import { FieldValues } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
+import { httpsCallable } from "firebase/functions";
 
 import { functions } from "@feria-a-ti/common/firebase";
 import {
     checkRecoveryFields,
     checkUpdatePassFields,
-} from "@feria-a-ti/common/checkLoginFields";
+} from "@feria-a-ti/common/check/checkLoginFields";
 import {
     RecoveryFields,
     UpdatePassFields,
 } from "@feria-a-ti/common/model/loginFields";
+import { ResponseData } from "@feria-a-ti/common/model/functionsTypes";
+
 import PassRecoveryForm from "@feria-a-ti/web/src/components/loginForm/PassRecoveryForm";
 import UpdatePassword from "@feria-a-ti/web/src/components/loginForm/UpdatePassword";
+import MessageAlert from "@feria-a-ti/web/src/components/messageAlert/MessageAlert";
 
 import "../../App.css";
 
 function VendorRecoveryPage() {
     const [userEmail, setUserEmail] = useState("");
+    //Navigation definition
+    const navigate = useNavigate();
 
     const [canSubmit, setSubmitActive] = useState(true);
     const [changePass, setChangePass] = useState(true);
+
+    // Alert Related values
+    const [showAlert, setShowAlert] = useState(false);
+    const [alertMessage, setAlertMessage] = useState("TEXT");
+    const closeAlert = () => {
+        setSubmitActive(true);
+        setShowAlert(false);
+    };
+
     const onSubmitRecoveryPass = (data: FieldValues) => {
-        setSubmitActive(false);
         console.log("SUBMIT FORM");
         const formatedData: RecoveryFields = {
             email: data.email as string,
@@ -30,18 +44,25 @@ function VendorRecoveryPage() {
         const check = checkRecoveryFields(formatedData);
         console.log(formatedData);
         if (check) {
-            const passRecovery = httpsCallable(functions, "passRecoveryVendor");
-            passRecovery(formatedData.email).then((result) => {
-                window.alert("Código enviado con éxito");
-                console.log(result);
-                setSubmitActive(true);
-                setUserEmail(data.email);
-                setChangePass(false);
-            });
+            setSubmitActive(false);
+            const passRecovery = httpsCallable<
+                RecoveryFields,
+                ResponseData<string>
+            >(functions, "passRecoveryVendor");
+            passRecovery(formatedData)
+                .then((result) => {
+                    const { error, msg } = result.data;
+                    console.log(result);
+                    setAlertMessage(msg);
+                    if (!error) {
+                        setUserEmail(data.email);
+                        setChangePass(false);
+                    }
+                })
+                .finally(() => setShowAlert(true));
         }
     };
     const onSubmitUpdatePass = (data: FieldValues) => {
-        setSubmitActive(false);
         console.log("SUBMIT FORM");
         const formatedData: UpdatePassFields = {
             email: userEmail,
@@ -51,19 +72,28 @@ function VendorRecoveryPage() {
         };
         const check = checkUpdatePassFields(formatedData);
         if (check) {
-            const passUpdate = httpsCallable(functions, "passUpdateVendor");
-            passUpdate(formatedData).then((result) => {
-                const { msg } = result.data as any;
-                window.alert(msg);
-                console.log(result);
-                setSubmitActive(true);
-            });
+            setSubmitActive(false);
+            const passUpdate = httpsCallable<
+                UpdatePassFields,
+                ResponseData<string>
+            >(functions, "passUpdateVendor");
+            passUpdate(formatedData)
+                .then((result) => {
+                    const { error, msg } = result.data;
+                    console.log(result);
+                    setAlertMessage(msg);
+                    if (!error) {
+                        navigate("/loginVendor");
+                    }
+                })
+                .finally(() => setShowAlert(true));
         }
     };
     return (
         <>
             {(changePass && (
                 <PassRecoveryForm
+                    label="Recuperar cuenta de vendedor"
                     color="secondary"
                     onSubmit={onSubmitRecoveryPass}
                     canSubmit={canSubmit}
@@ -75,6 +105,12 @@ function VendorRecoveryPage() {
                     canSubmit={canSubmit}
                 />
             )}
+            <MessageAlert
+                open={showAlert}
+                title="Estado de acción"
+                message={alertMessage}
+                handleClose={closeAlert}
+            />
         </>
     );
 }

@@ -9,5 +9,5 @@ export const getRandomIntString = (
     let number = getRandomInt(max);
     return number
         .toString()
-        .padStart((fixedLength ? number : max).toString().length, "0");
+        .padStart((fixedLength ? max : number).toString().length, "0");
 };
