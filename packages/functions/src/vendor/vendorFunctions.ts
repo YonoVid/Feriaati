@@ -9,12 +9,10 @@ import {
     UserToken,
 } from "../model/types";
 import { userType, VendorCollectionData } from "../model/accountTypes";
-import Encryption, { generativeIvOfSize } from "../utilities/encryption";
-import { getRandomIntString } from "../utilities/random";
-import { messagesCode } from "../errors";
 
 //import { sendVerificationMail } from "../utilities/mail";
-import { checkRegisterVendorFields } from "./checkRegister";
+import Encryption, { generativeIvOfSize } from "../utilities/encryption";
+import { getRandomIntString } from "../utilities/random";
 import { uploadRegisterImage } from "../utilities/storage";
 import { checkAccountFields } from "../utilities/checkAccount";
 import { accountLoginVerification } from "../utilities/account";
@@ -22,6 +20,10 @@ import {
     updateAccountCode,
     updateAccountPassword,
 } from "../utilities/updateAccount";
+
+import { errorCodes, messagesCode } from "../errors";
+import { collectionNames } from "../consts";
+import { checkRegisterVendorFields } from "./checkRegister";
 
 //Setup encryption configuration
 //IF YOU USE .env first install dotenv (npm install dotenv --save)
@@ -49,7 +51,7 @@ export const addVendor = functions.https.onCall(
             let error = false;
             //Get collection of email data
             const collectionDocReference = db
-                .collection("vendors")
+                .collection(collectionNames.VENDORS)
                 .doc(data.email);
             const collectionDoc = await collectionDocReference.get();
 
@@ -105,9 +107,9 @@ export const addVendor = functions.https.onCall(
                         //Creates document in collection of users
                         collectionDocReference.create(collectionData);
                     }
-                    code = "00000";
+                    code = errorCodes.SUCCESFULL;
                 } else if (collectionDoc.exists) {
-                    code = "ERD01";
+                    code = errorCodes.DOCUMENT_ALREADY_EXISTS_ERROR;
                     error = true;
                 }
             } else {
@@ -136,26 +138,29 @@ export const loginVendor = functions.https.onCall(
 
             if (check) {
                 let { token, code } = await accountLoginVerification(
-                    "vendor",
+                    collectionNames.VENDORS,
                     data.email,
                     data.password,
                     data.attempts
                 );
+                const error = code !== "00000";
                 return {
-                    msg: messagesCode[code],
+                    error: error,
                     code: code,
-                    error: false,
-                    extra: {
-                        userType: userType.vendor,
-                        email: data.email,
-                        token: token,
-                    },
+                    msg: messagesCode[code],
+                    extra: error
+                        ? {}
+                        : {
+                              type: userType.vendor,
+                              token: token,
+                              email: data.email,
+                          },
                 };
             }
             return {
                 msg: messagesCode[code],
                 code: code,
-                error: false,
+                error: true,
                 extra: {},
             };
         } catch (err) {
@@ -170,12 +175,12 @@ export const loginVendor = functions.https.onCall(
 //envío de codigo al correo de vendedor
 export const passRecoveryVendor = functions.https.onCall(
     async (data: RecoveryFields): Promise<ResponseData<string>> => {
-        return updateAccountCode("vendors", data);
+        return updateAccountCode(collectionNames.VENDORS, data);
     }
 );
 //actualización de contraseña con el código enviado al correo
 export const passUpdateVendor = functions.https.onCall(
     async (data: UpdatePassFields): Promise<ResponseData<string>> => {
-        return updateAccountPassword("vendors", data);
+        return updateAccountPassword(collectionNames.VENDORS, data);
     }
 );

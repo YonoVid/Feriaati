@@ -15,7 +15,7 @@ import {
     userType,
 } from "../model/accountTypes";
 import { getRandomIntString } from "../utilities/random";
-import { messagesCode } from "../errors";
+import { errorCodes, messagesCode } from "../errors";
 
 import { checkRegisterFields } from "./checkRegister";
 import { sendVerificationMail } from "../utilities/mail";
@@ -27,6 +27,7 @@ import {
     updateAccountCode,
     updateAccountPassword,
 } from "../utilities/updateAccount";
+import { collectionNames } from "../consts";
 
 /**
  * Function to log in user in the platform requires data of type LoginFields
@@ -39,27 +40,30 @@ export const login = functions.https.onCall(
 
             if (check) {
                 let { token, code } = await accountLoginVerification(
-                    "users",
+                    collectionNames.USERS,
                     data.email,
                     data.password,
                     data.attempts
                 );
+                const error = code !== errorCodes.SUCCESFULL;
                 return {
-                    error: code === "00000",
+                    error: error,
                     code: code,
                     msg: messagesCode[code],
-                    extra: {
-                        type: userType.user,
-                        token: token,
-                        email: data.email,
-                    },
+                    extra: error
+                        ? {}
+                        : {
+                              type: userType.user,
+                              token: token,
+                              email: data.email,
+                          },
                 };
             }
             return {
                 error: true,
                 msg: messagesCode[code],
                 code: code,
-                extra: { type: userType.user, token: "", email: data.email },
+                extra: {},
             };
         } catch (err) {
             functions.logger.error(err);
@@ -83,7 +87,7 @@ export const addUser = functions.https.onCall(
             let error = false;
             //Get collection of email data
             const collectionDocReference = db
-                .collection("users")
+                .collection(userType.user)
                 .doc(data.email);
             const collectionDoc = await collectionDocReference.get();
 
@@ -121,9 +125,9 @@ export const addUser = functions.https.onCall(
                         //Creates document in collection of users
                         collectionDocReference.create(collectionData);
                     }
-                    code = "00000";
+                    code = errorCodes.SUCCESFULL;
                 } else if (collectionDoc.exists) {
-                    code = "ERD01";
+                    code = errorCodes.DOCUMENT_ALREADY_EXISTS_ERROR;
                     error = true;
                 }
             } else {
@@ -153,12 +157,12 @@ export const confirmRegister = functions.https.onCall(
         try {
             const db = admin.firestore();
             //Store return message
-            let code = "";
+            let code = errorCodes.SUCCESFULL;
             let error = false;
             functions.logger.info("DATA", data);
             //Checks of data and database
             const collectionDocReference = db
-                .collection("users")
+                .collection(userType.user)
                 .doc(data.email);
 
             const collectionDoc = await collectionDocReference.get();
@@ -174,10 +178,10 @@ export const confirmRegister = functions.https.onCall(
                     status: userStatus.activated as string,
                 });
 
-                code = "00000";
+                code = errorCodes.SUCCESFULL;
             } else if (collectionDoc.exists) {
                 error = true;
-                code = "ERR04";
+                code = errorCodes.INCORRECT_CODE_ERROR;
             }
 
             // Returning results.

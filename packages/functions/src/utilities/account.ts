@@ -1,10 +1,12 @@
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
-import { userStatus } from "../model/accountTypes";
+import { userStatus, userType } from "../model/accountTypes";
 import Encryption, { getRandomBytes } from "./encryption";
+import { errorCodes } from "../errors";
+import { collectionNames } from "../consts";
 
 export const accountLoginVerification = async (
-    collection: string,
+    collection: collectionNames,
     id: string,
     password: string,
     attempt?: number
@@ -16,11 +18,11 @@ export const accountLoginVerification = async (
         const querySnapshot = usersRef.doc(id);
         const userDoc = await querySnapshot.get();
         let userData = userDoc.data();
+        functions.logger.info("DATA COLLECTION::", userData);
         if (
             userDoc.exists &&
             userData?.status === (userStatus.activated as string)
         ) {
-            functions.logger.info("DATA COLLECTION::", userData);
             const eConfig = {
                 algorithm: userData?.algorithm,
                 encryptionKey: process.env.ENCRYPTION_KEY,
@@ -31,35 +33,36 @@ export const accountLoginVerification = async (
 
             if (userData?.password !== desencryption.encrypt(password)) {
                 if (attempt && attempt >= 5) {
-                    code = "ERL02";
+                    code = errorCodes.BLOCKED_ACCOUNT_ERROR;
                 } else {
-                    code = "ERL03";
+                    code = errorCodes.INCORRECT_PASSWORD_ERROR;
                 }
             } else {
-                code = "00000";
+                code = errorCodes.SUCCESFULL;
             }
-        } else if (userData?.type === "temp") {
+        } else if (userData?.type === userType.temp) {
             if (userData?.password !== password) {
                 if (attempt && attempt >= 5) {
-                    code = "ERL02";
+                    code = errorCodes.BLOCKED_ACCOUNT_ERROR;
                 } else {
-                    code = "ERL03";
+                    code = errorCodes.INCORRECT_PASSWORD_ERROR;
                 }
             } else {
-                code = "00000";
+                code = errorCodes.SUCCESFULL;
             }
         } else {
             if (userData?.status === (userStatus.blocked as string)) {
-                code = "ERL02";
+                code = errorCodes.BLOCKED_ACCOUNT_ERROR;
             } else {
-                code = "ERL01";
+                code = errorCodes.USER_NOT_EXISTS_ERROR;
             }
         }
-        if ((code = "00000")) {
+        if (code === errorCodes.SUCCESFULL) {
             token = getRandomBytes(20).toString("hex");
-            querySnapshot.update({ token: token });
-        } else if ((code = "ERL02")) {
-            querySnapshot.update({ status: "blocked" });
+            await querySnapshot.update({ token: token });
+        } else if (code === errorCodes.BLOCKED_ACCOUNT_ERROR) {
+            accountLoginVerification;
+            querySnapshot.update({ status: userStatus.blocked });
         }
     } catch (e) {
         functions.logger.error("ERROR ON ACCOUNT LOGIN::", e);

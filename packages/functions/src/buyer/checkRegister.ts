@@ -1,3 +1,4 @@
+import { errorCodes } from "../errors";
 import { RegisterFields } from "../model/types";
 import { checkAccountFields } from "../utilities/checkAccount";
 
@@ -13,7 +14,7 @@ export const passwordFormatRegex = new RegExp(
 
 export const checkRegisterFields = (
     input: RegisterFields
-): { check: boolean; code: string } => {
+): { check: boolean; code: errorCodes } => {
     const { username, email, password, confirmPassword } = input;
 
     const { check: accountCheck, code: accountCode } = checkAccountFields({
@@ -26,14 +27,17 @@ export const checkRegisterFields = (
 
     const userCheck = username != null && username.length < 18;
     if (!userCheck) {
-        return { check: false, code: "ERR01" };
+        return { check: false, code: errorCodes.NAME_FORMAT_ERROR };
     }
     // console.log("Username check", userCheck);
     const passwordCheck = password === confirmPassword;
     if (!passwordCheck) {
-        return { check: false, code: "ERR03" };
+        return { check: false, code: errorCodes.CONFIRM_PASSWORD_ERROR };
     }
     // console.log("Password check", passwordCheck);
 
-    return { check: userCheck && accountCheck && passwordCheck, code: "" };
+    return {
+        check: userCheck && accountCheck && passwordCheck,
+        code: errorCodes.SUCCESFULL,
+    };
 };

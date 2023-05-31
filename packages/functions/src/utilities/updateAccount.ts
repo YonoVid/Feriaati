@@ -3,7 +3,7 @@ import * as admin from "firebase-admin";
 import { RecoveryFields, UpdatePassFields } from "../model/types";
 import { getRandomIntString } from "./random";
 import { sendRecoveryMail } from "./mail";
-import { messagesCode } from "../errors";
+import { errorCodes, messagesCode } from "../errors";
 import { checkUpdatePassFields } from "./checkUpdate";
 import { encryption } from "./encryption";
 import { userStatus } from "../model/accountTypes";
@@ -29,8 +29,8 @@ export const updateAccountCode = async (
                 return {
                     extra: data.email,
                     error: false,
-                    code: "00000",
-                    msg: messagesCode["00000"],
+                    code: errorCodes.SUCCESFULL,
+                    msg: messagesCode[errorCodes.SUCCESFULL],
                 };
             }
         } else {
@@ -74,16 +74,16 @@ export const updateAccountPassword = async (
                     return {
                         extra: data.email,
                         error: false,
-                        code: "00000",
-                        msg: messagesCode["00000"],
+                        code: errorCodes.SUCCESFULL,
+                        msg: messagesCode[errorCodes.SUCCESFULL],
                     };
                 }
                 // Returning results.
                 return {
                     extra: data.email,
                     error: false,
-                    code: "ERR05",
-                    msg: messagesCode["ERR05"],
+                    code: errorCodes.INCORRECT_CODE_ERROR,
+                    msg: messagesCode[errorCodes.INCORRECT_CODE_ERROR],
                 };
             }
         } else {

@@ -1,9 +1,10 @@
+import { errorCodes } from "../errors";
 import { RegisterVendorFields } from "../model/types";
 import { checkAccountFields } from "../utilities/checkAccount";
 
 export const checkRegisterVendorFields = (
     input: RegisterVendorFields
-): { check: boolean; code: string } => {
+): { check: boolean; code: errorCodes } => {
     const {
         name,
         surname,
@@ -31,7 +32,7 @@ export const checkRegisterVendorFields = (
 
     //Check account data rules
     if (!requiredCheck) {
-        return { check: false, code: "ERR09" };
+        return { check: false, code: errorCodes.MISSING_REQUIRED_DATA_ERROR };
     }
     const { check: accountCheck, code: accountCode } = checkAccountFields({
         email: email,
@@ -45,8 +46,11 @@ export const checkRegisterVendorFields = (
     const passwordCheck = password === confirmPassword;
     // console.log("Password check", passwordCheck);
     if (!passwordCheck) {
-        return { check: false, code: "ERR03" };
+        return { check: false, code: errorCodes.CONFIRM_PASSWORD_ERROR };
     }
 
-    return { check: requiredCheck && accountCheck && passwordCheck, code: "" };
+    return {
+        check: requiredCheck && accountCheck && passwordCheck,
+        code: errorCodes.SUCCESFULL,
+    };
 };

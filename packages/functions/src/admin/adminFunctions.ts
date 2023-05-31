@@ -9,8 +9,9 @@ import {
 import { userStatus, userType } from "../model/accountTypes";
 
 import { checkAccountFields } from "../utilities/checkAccount";
-import { messagesCode } from "../errors";
+import { errorCodes, messagesCode } from "../errors";
 import { accountLoginVerification } from "../utilities/account";
+import { collectionNames } from "../consts";
 
 // ?REFERENCE FUNCTION
 // export const helloWorld = functions.https.onRequest((request, response) => {
@@ -26,13 +27,13 @@ export const adminLogin = functions.https.onCall(
 
             if (check) {
                 let { token, code } = await accountLoginVerification(
-                    "admin",
+                    collectionNames.ADMINS,
                     email,
                     password,
                     attempts
                 );
                 return {
-                    error: code === "00000",
+                    error: code === errorCodes.SUCCESFULL,
                     code: code,
                     msg: messagesCode[code],
                     extra: {
@@ -62,7 +63,7 @@ export const adminLogin = functions.https.onCall(
 export const vendorList = functions.https.onCall(async () => {
     try {
         const db = admin.firestore();
-        const usersRef = db.collection("vendors");
+        const usersRef = db.collection(collectionNames.VENDORS);
         const querySnapshot = await usersRef.get();
         const vendors: any[] = [];
 
@@ -87,7 +88,7 @@ export const vendorStateUpdate = functions.https.onCall(
             const { id, status } = data;
 
             const db = admin.firestore();
-            const vendorRef = db.collection("vendors");
+            const vendorRef = db.collection(collectionNames.VENDORS);
             const querySnapshot = await vendorRef.doc(id);
 
             if (
@@ -100,14 +101,14 @@ export const vendorStateUpdate = functions.https.onCall(
 
                 return {
                     error: false,
-                    code: "00000",
-                    msg: messagesCode["00000"],
+                    code: errorCodes.SUCCESFULL,
+                    msg: messagesCode[errorCodes.SUCCESFULL],
                 };
             }
             return {
                 error: true,
-                code: "ERD02",
-                msg: messagesCode["ERD02"],
+                code: errorCodes.DOCUMENT_NOT_EXISTS_ERROR,
+                msg: messagesCode[errorCodes.DOCUMENT_NOT_EXISTS_ERROR],
             };
         } catch (error) {
             functions.logger.error(error);
