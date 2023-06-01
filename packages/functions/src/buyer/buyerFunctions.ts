@@ -9,17 +9,16 @@ import {
     UserToken,
     RecoveryFields,
 } from "../model/types";
-import {
-    UserCollectionData,
-    userStatus,
-    userType,
-} from "../model/accountTypes";
+import { UserCollectionData, userType } from "../model/accountTypes";
 import { getRandomIntString } from "../utilities/random";
 import { errorCodes, messagesCode } from "../errors";
 
 import { checkRegisterFields } from "./checkRegister";
 import { sendVerificationMail } from "../utilities/mail";
-import { accountLoginVerification } from "../utilities/account";
+import {
+    accountConfirmation,
+    accountLoginVerification,
+} from "../utilities/account";
 import { checkAccountFields } from "../utilities/checkAccount";
 
 import { encryption, config } from "../utilities/encryption";
@@ -87,7 +86,7 @@ export const addUser = functions.https.onCall(
             let error = false;
             //Get collection of email data
             const collectionDocReference = db
-                .collection(userType.user)
+                .collection(collectionNames.USERS)
                 .doc(data.email);
             const collectionDoc = await collectionDocReference.get();
 
@@ -155,35 +154,13 @@ export const addUser = functions.https.onCall(
 export const confirmRegister = functions.https.onCall(
     async (data: RegisterConfirm, context): Promise<ResponseData<string>> => {
         try {
-            const db = admin.firestore();
-            //Store return message
-            let code = errorCodes.SUCCESFULL;
-            let error = false;
-            functions.logger.info("DATA", data);
-            //Checks of data and database
-            const collectionDocReference = db
-                .collection(userType.user)
-                .doc(data.email);
+            const { code } = await accountConfirmation(
+                collectionNames.USERS,
+                data.email,
+                data.code
+            );
 
-            const collectionDoc = await collectionDocReference.get();
-
-            functions.logger.info("DATA COLLECTION::", collectionDoc);
-
-            if (
-                collectionDoc.exists &&
-                collectionDoc.get("code") === data.code
-            ) {
-                //Update document of user data
-                collectionDocReference.update({
-                    status: userStatus.activated as string,
-                });
-
-                code = errorCodes.SUCCESFULL;
-            } else if (collectionDoc.exists) {
-                error = true;
-                code = errorCodes.INCORRECT_CODE_ERROR;
-            }
-
+            const error = code !== errorCodes.SUCCESFULL;
             // Returning results.
             return {
                 extra: data.email,

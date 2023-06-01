@@ -7,7 +7,7 @@ export type ProductFields = {
     price: number;
     isPercentage: boolean;
     promotion: number;
-    image: string[3];
+    image: [string, string, string];
 };
 
 export type ProductAddFormProps = FormProps & {

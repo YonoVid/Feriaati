@@ -53,6 +53,8 @@ export const accountLoginVerification = async (
         } else {
             if (userData?.status === (userStatus.blocked as string)) {
                 code = errorCodes.BLOCKED_ACCOUNT_ERROR;
+            } else if (userData?.status === (userStatus.registered as string)) {
+                code = errorCodes.UNACTIVATED_ACCOUNT_ERROR;
             } else {
                 code = errorCodes.USER_NOT_EXISTS_ERROR;
             }
@@ -70,4 +72,43 @@ export const accountLoginVerification = async (
     }
 
     return { token: token, code: code };
+};
+
+export const accountConfirmation = async (
+    collection: collectionNames,
+    id: string,
+    confirmCode: string | undefined
+) => {
+    let code = errorCodes.SUCCESFULL;
+    try {
+        const db = admin.firestore();
+        const usersRef = db.collection(collection);
+        const querySnapshot = usersRef.doc(id);
+        const userDoc = await querySnapshot.get();
+        let userData = userDoc.data();
+        functions.logger.info("DATA COLLECTION::", userData);
+        if (!userDoc.exists) {
+            code = errorCodes.USER_NOT_EXISTS_ERROR;
+        } else if (userData?.status === userStatus.activated) {
+            code = errorCodes.ACTION_DONE_ERROR;
+        } else if (
+            (confirmCode === undefined || userData?.code !== confirmCode) &&
+            userData?.type === userType.user
+        ) {
+            code = errorCodes.INCORRECT_CODE_ERROR;
+        }
+
+        //Update document if error was not detected
+        if (code === errorCodes.SUCCESFULL) {
+            //Update document of user data
+            await querySnapshot.update({
+                status: userStatus.activated as string,
+            });
+        }
+    } catch (e) {
+        functions.logger.error("ERROR ON ACCOUNT LOGIN::", e);
+        throw e;
+    }
+
+    return { code: code };
 };
