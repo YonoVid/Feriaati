@@ -1,19 +1,15 @@
 import { useForm } from "react-hook-form";
 import { Box, Button, Card, Divider } from "@mui/material";
+import { RLoginFormProps } from "@feria-a-ti/common/model/loginFormProps";
+import { LoginFields } from "@feria-a-ti/common/model/loginFields";
+import { emailFormatRegex } from "@feria-a-ti/common/check/checkLoginFields";
 
-import { emailFormatRegex } from "@feria-a-ti/common/checkLoginFields";
-import { RUpdatepPassFormProps } from "@feria-a-ti/common/model/loginFormProps";
-import InputComponentAlt from "@feria-a-ti/web/src/components/inputComponent/InputComponentAlt";
-import "./LoginForm";
+import InputComponentAlt from "../../inputComponent/InputComponentAlt";
+import "./LoginForm.css";
 
-function UpdatePassForm(props: RUpdatepPassFormProps) {
+function LoginForm(props: RLoginFormProps) {
     const { label, color, children, onSubmit } = props;
-    const {
-        control,
-        formState: { errors },
-        watch,
-        handleSubmit,
-    } = useForm();
+    const { handleSubmit, control } = useForm<LoginFields>();
 
     const colorTheme =
         color != null && color === "secondary" ? "secondary" : "primary";
@@ -29,27 +25,27 @@ function UpdatePassForm(props: RUpdatepPassFormProps) {
             }}
         >
             <h1 style={{ maxWidth: "100%" }}>
-                {label != null ? label : "Intoduce una nueva contraseña"}
+                {label != null ? label : "Iniciar Sesion"}
             </h1>
             <form onSubmit={handleSubmit(onSubmit)}>
                 <Box>
                     <InputComponentAlt
                         control={control}
-                        name="codigo"
-                        label="Código de validación"
+                        name="email"
+                        label="Correo electrónico"
                         type="text"
                         rules={{
-                            required: "El código es requerido",
-                            minLength: {
-                                value: 6,
-                                message: "El código debe tener 6 caracters",
-                            },
+                            required: "El correo es requerido",
                             maxLength: {
-                                value: 6,
-                                message: "El código debe tener 6 caracters",
+                                value: 128,
+                                message: "El máximo de caracteres es 128",
+                            },
+                            pattern: {
+                                value: emailFormatRegex,
+                                message:
+                                    "El formato debe ser, por ejemplo: ejemplo@correo.cl",
                             },
                         }}
-                        error={errors.password}
                     />
                 </Box>
                 <Box>
@@ -66,22 +62,6 @@ function UpdatePassForm(props: RUpdatepPassFormProps) {
                                     "La contraseña tiene un mínimo de 10 caracteres",
                             },
                         }}
-                        error={errors.confirmPassword}
-                    />
-                    <InputComponentAlt
-                        control={control}
-                        name="confirmPassword"
-                        label="Confirmar contraseña"
-                        type="password"
-                        rules={{
-                            required: "Se debe confirmar la contraseña",
-                            validate: {
-                                confirmPassword: (value) =>
-                                    watch("password").toString() === value ||
-                                    "Las contraseñas deben ser iguales",
-                            },
-                        }}
-                        error={errors.confirmPassword}
                     />
                 </Box>
                 <Box sx={{ margin: "1em" }}>
@@ -93,7 +73,7 @@ function UpdatePassForm(props: RUpdatepPassFormProps) {
                             props.canSubmit != null ? !props.canSubmit : false
                         }
                     >
-                        Actualizar contraseña
+                        Iniciar sesión
                     </Button>
                 </Box>
             </form>
@@ -103,4 +83,4 @@ function UpdatePassForm(props: RUpdatepPassFormProps) {
     );
 }
 
-export default UpdatePassForm;
+export default LoginForm;

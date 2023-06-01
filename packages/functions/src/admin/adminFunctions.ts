@@ -1,11 +1,7 @@
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
-import {
-    LoginFields,
-    ResponseData,
-    UpdateStateFields,
-    UserToken,
-} from "../model/types";
+import { LoginFields, UpdateStateFields } from "../model/types";
+import { ResponseData, UserToken } from "../model/reponseFields";
 import { userStatus, userType } from "../model/accountTypes";
 
 import { checkAccountFields } from "../utilities/checkAccount";

@@ -1,4 +1,4 @@
-import { userStatus, userType } from "./accountTypes";
+import { userStatus } from "./accountTypes";
 
 export type AccountFields = {
     email: string;
@@ -53,21 +53,22 @@ export type UpdatePassFields = {
     confirmPassword: string;
 };
 
-export type ResponseData<T> = {
-    error: boolean;
-    code: string;
-    msg: string;
-    extra?: T | any;
-};
-
-export type UserToken = {
-    email: string;
-    token: string;
-    type: userType;
-};
-
 export type UpdateStateFields = {
     id: string;
     email: string;
     status: userStatus;
+};
+
+export type ProductFields = {
+    tokenVendor: string;
+    name: string;
+    description: string;
+    price: number;
+    isPercentage: boolean;
+    promotion: number;
+    image: [string, string, string];
+};
+
+export type UpdateProductFields = ProductFields & {
+    productId: string;
 };

@@ -1,35 +1,49 @@
 import { useForm } from "react-hook-form";
-import "./LoginForm.css";
-import { RLoginFormProps } from "@feria-a-ti/common/model/loginFormProps";
 import { Box, Button, Card, Divider } from "@mui/material";
-import InputComponentAlt from "../inputComponent/InputComponentAlt";
-import { emailFormatRegex } from "@feria-a-ti/common/check/checkLoginFields";
 
-function LoginForm(props: RLoginFormProps) {
-    const { label, color, children, onSubmit } = props;
-    const {
-        formState: { errors },
-        handleSubmit,
-        control,
-    } = useForm();
+import { controlValidInput } from "@feria-a-ti/common/inputControl";
+import { RRegisterFormProps } from "@feria-a-ti/common/model/registerFormProps";
+import { emailFormatRegex } from "@feria-a-ti/common/check/checkRegisterFields";
 
-    const colorTheme =
-        color != null && color === "secondary" ? "secondary" : "primary";
+import InputComponentAlt from "@feria-a-ti/web/src/components/inputComponent/InputComponentAlt";
+import "./RegisterUserForm.css";
+import { RegisterFields } from "@feria-a-ti/common/model/registerFields";
+
+function RegisterUserForm(props: RRegisterFormProps) {
+    const { children, onSubmit } = props;
+    const { watch, handleSubmit, control } = useForm<RegisterFields>();
 
     return (
         <Card
             className="inputContainer"
-            color={colorTheme}
             sx={{
                 maxWidth: "50%",
                 alignContent: "center",
                 borderRadius: "10%",
             }}
         >
-            <h1 style={{ maxWidth: "100%" }}>
-                {label != null ? label : "Iniciar Sesion"}
-            </h1>
+            <h1 style={{ maxWidth: "100%" }}>Registrarse</h1>
             <form onSubmit={handleSubmit(onSubmit)}>
+                <Box>
+                    <InputComponentAlt
+                        control={control}
+                        name="username"
+                        label="Nombre de usuario"
+                        type="text"
+                        onChange={controlValidInput}
+                        rules={{
+                            required: "El nombre de usuario es requerido",
+                            minLength: {
+                                value: 8,
+                                message: "El mínimo de caracteres es 8",
+                            },
+                            maxLength: {
+                                value: 25,
+                                message: "El máximo de caracteres es 128",
+                            },
+                        }}
+                    />
+                </Box>
                 <Box>
                     <InputComponentAlt
                         control={control}
@@ -48,7 +62,6 @@ function LoginForm(props: RLoginFormProps) {
                                     "El formato debe ser, por ejemplo: ejemplo@correo.cl",
                             },
                         }}
-                        error={errors.password}
                     />
                 </Box>
                 <Box>
@@ -65,19 +78,32 @@ function LoginForm(props: RLoginFormProps) {
                                     "La contraseña tiene un mínimo de 10 caracteres",
                             },
                         }}
-                        error={errors.confirmPassword}
+                    />
+                    <InputComponentAlt
+                        control={control}
+                        name="confirmPassword"
+                        label="Confirmar contraseña"
+                        type="password"
+                        rules={{
+                            required: "Se debe confirmar la contraseña",
+                            validate: {
+                                confirmPassword: (value) =>
+                                    watch("password").toString() === value ||
+                                    "Las contraseñas deben ser iguales",
+                            },
+                        }}
                     />
                 </Box>
                 <Box sx={{ margin: "1em" }}>
                     <Button
-                        color={colorTheme}
+                        color="primary"
                         type="submit"
                         variant="contained"
                         disabled={
                             props.canSubmit != null ? !props.canSubmit : false
                         }
                     >
-                        Iniciar sesión
+                        Registrar cuenta de comprador
                     </Button>
                 </Box>
             </form>
@@ -87,4 +113,4 @@ function LoginForm(props: RLoginFormProps) {
     );
 }
 
-export default LoginForm;
+export default RegisterUserForm;

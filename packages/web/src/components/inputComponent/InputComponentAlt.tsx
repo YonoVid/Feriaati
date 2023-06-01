@@ -1,23 +1,28 @@
-import { ChangeEvent, useState } from "react";
-import { RInputComponentProps } from "@feria-a-ti/common/model/inputProps";
-import "./InputComponent.css";
-import { Controller } from "react-hook-form";
+import { ChangeEvent } from "react";
+import { Controller, FieldValues, UseControllerProps } from "react-hook-form";
 import { MenuItem, TextField } from "@mui/material";
+import "./InputComponent.css";
 // import { Box, TextField } from "@mui/material";
 // import { Controller } from "react-hook-form";
 
-function InputComponentAlt(data: RInputComponentProps) {
-    const {
-        name,
-        label,
-        type,
-        selectOptions,
-        defaultValue,
-        rules,
-        control,
-        onChange,
-    } = data;
+interface Props<T> extends UseControllerProps<T> {
+    label: string;
+    type?: "text" | "password" | "email" | "file" | "select";
+    selectOptions?: (string | number)[][];
+    hidden?: boolean;
+    onChange?: React.ChangeEventHandler;
+}
 
+const InputComponentAlt = <T extends FieldValues>({
+    name,
+    label,
+    defaultValue,
+    selectOptions,
+    type,
+    control,
+    rules,
+    onChange,
+}: Props<T>) => {
     const inputLabel = label != null ? label : name;
 
     const onChangeWrapper = (
@@ -71,10 +76,10 @@ function InputComponentAlt(data: RInputComponentProps) {
                         )}
                     </TextField>
                 )}
-                name={name as string}
+                name={name}
             ></Controller>
         </>
     );
-}
+};
 
 export default InputComponentAlt;

@@ -1,6 +1,6 @@
 import { useContext, useState } from "react";
-import { Navigate, useNavigate, useOutletContext } from "react-router-dom";
 import { FieldValues } from "react-hook-form";
+import { Navigate, useNavigate } from "react-router-dom";
 import { httpsCallable } from "firebase/functions";
 
 import { functions } from "@feria-a-ti/common/firebase";
@@ -10,25 +10,30 @@ import {
     ResponseData,
     UserToken,
 } from "@feria-a-ti/common/model/functionsTypes";
-import LoginForm from "@feria-a-ti/web/src/components/forms/loginForm/LoginForm";
+import MessageAlert from "@feria-a-ti/web/src/components/messageAlert/MessageAlert";
+import ProductAddForm from "@feria-a-ti/web/src/components/forms/productAddForm/ProductAddForm";
+import ProductList from "@feria-a-ti/web/src/components/productList/ProductList";
 
 import { UserContext } from "@feria-a-ti/web/src/App";
-import { useHeaderContext } from "../HeaderLayout";
 import "../../App.css";
 
-function AdminLoginPage() {
-    //Global UI context
-    const { setMessage } = useHeaderContext();
+function VendorLoginPage() {
     //Global state variable
     const { setSession, type } = useContext(UserContext);
-    //Navigation definition
+    //Router dom
     const navigate = useNavigate();
-    // Form related variables
-    const [canSubmit, setSubmitActive] = useState(true);
     const [attempt, setAttempt] = useState(0);
-    //ON SUBMIT Action
+    //const [isLogged, setIsLogged] = useState(false);
+    // Form related variables;
+    const [canSubmit, setSubmitActive] = useState(true);
+    // Alert Related values
+    const [showAlert, setShowAlert] = useState(false);
+    const [alertMessage, setAlertMessage] = useState("TEXT");
+    const closeAlert = () => {
+        setSubmitActive(true);
+        setShowAlert(false);
+    };
     const onSubmit = (data: FieldValues) => {
-        setSubmitActive(false);
         console.log("SUBMIT FORM");
         setAttempt(attempt + 1);
         const formatedData: LoginFields = {
@@ -38,39 +43,42 @@ function AdminLoginPage() {
         };
         const check = checkLoginFields(formatedData);
         if (check) {
-            const login = httpsCallable(functions, "adminLogin");
+            setSubmitActive(false);
+            const login = httpsCallable(functions, "loginVendor");
             login(formatedData)
                 .then((result) => {
                     const {
                         msg,
-                        error,
-                        extra: { email, token, type },
+                        extra: { token, email, type },
                     } = result.data as ResponseData<UserToken>;
+                    localStorage.setItem("token", token);
                     console.log(result);
                     console.log(attempt);
                     setSubmitActive(true);
                     //setIsLogged(result.data as any);
                     if (msg !== "") {
-                        setMessage({ msg, isError: error });
+                        setAlertMessage(msg);
                     }
-                    console.log("TOKEN::", token);
                     if (token != null && token !== "") {
                         setSession && setSession({ token, type, email });
-                        navigate("/admin");
+                        navigate("/session");
                     }
                 })
-                .finally(() => setSubmitActive(true));
+                .finally(() => setShowAlert(true));
         }
     };
     return (
         <>
-            {type === "admin" && <Navigate to="/admin" replace={true} />}
-            <LoginForm
-                label="Acceso de administración"
-                onSubmit={onSubmit}
-                canSubmit={canSubmit}
+            {type !== "vendor" && <Navigate to="/session" replace={true} />}
+            <ProductList label="" onSubmit={onSubmit} />
+            <ProductAddForm onSubmit={onSubmit} canSubmit={canSubmit} />
+            <MessageAlert
+                open={showAlert}
+                title="Estado de acción"
+                message={alertMessage}
+                handleClose={closeAlert}
             />
         </>
     );
 }
-export default AdminLoginPage;
+export default VendorLoginPage;
