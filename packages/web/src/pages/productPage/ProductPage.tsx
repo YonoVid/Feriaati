@@ -1,6 +1,7 @@
 import { httpsCallable } from "firebase/functions";
-import { Card, CardContent, Typography } from "@mui/material";
+import { Card, CardContent, Pagination, Typography } from "@mui/material";
 import { functions } from "@feria-a-ti/common/firebase";
+import React from "react";
 
 const productListFunction = httpsCallable(functions, "productList");
 productListFunction()
@@ -20,10 +21,18 @@ productListFunction()
         </CardContent>
       </Card>
     ));
+    export default function PaginationControlled() {
+      const [page, setPage] = React.useState(1);
+      const [count, setCount] = React.useState(1);
+      const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
+        setPage(value);
+      };
 
     // retorna las cards con los productos
-    return <div>{productCards}</div>;
-  })
+    return<><div>{productCards}
+    <Pagination count={10} page={page} onChange={handleChange} />
+    </div>;</> 
+  }) 
   .catch((error) => {
     // Manejar errores
     console.error(error);
