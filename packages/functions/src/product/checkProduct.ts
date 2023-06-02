@@ -12,7 +12,12 @@ export const checkAddProductFields = (
         return { check: false, code: errorCodes.MISSING_REQUIRED_DATA_ERROR };
     }
     const discountCheck =
-        discount === "none" || (discount != null && promotion != null);
+        discount === "none" ||
+        (discount != null &&
+            promotion != null &&
+            (promotion as number) > 0 &&
+            ((discount === "percentage" && promotion <= 100) ||
+                (discount === "value" && (promotion as number) <= price)));
     if (!discountCheck) {
         return { check: false, code: errorCodes.MISSING_REQUIRED_DATA_ERROR };
     }

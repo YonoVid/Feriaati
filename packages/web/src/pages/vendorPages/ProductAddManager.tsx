@@ -69,6 +69,8 @@ function ProductAddManager() {
     return (
         <>
             <ProductAddForm
+                label="Nuevo producto"
+                buttonLabel="Agregar producto"
                 imageData={imageData}
                 setImageData={setImageData}
                 onSubmit={onSubmit}

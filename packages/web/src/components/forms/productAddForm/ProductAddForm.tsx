@@ -284,10 +284,17 @@ function ProductAddForm(props: RProductAddFormProps) {
                                             value != "" &&
                                             value != null) ||
                                         "El descuento debe tener un valor numérico",
+
+                                    lessThanTotal: (value) =>
+                                        (watch("discount") !== "none" &&
+                                            (watch("discount") === "percentage"
+                                                ? (watch(
+                                                      "promotion"
+                                                  ) as number) < 100
+                                                : (value as number) <=
+                                                  watch("price"))) ||
+                                        "El descuento no puede ser mayor al precio",
                                 },
-                                //     lessThanPrice: (value)=> (watch("discount") !== "none" &&
-                                //     (watch("discount") === "percentage"?watch("promotion")<100: value <= watch("price"))) ||
-                                // "El descuento no puede ser mayor al precio",}
                             }}
                         />
                     )}

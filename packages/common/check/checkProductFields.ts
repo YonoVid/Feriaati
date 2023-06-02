@@ -12,7 +12,12 @@ export const checkAddProductFields = (input: ProductFields): boolean => {
     console.log("Required check", requiredCheck);
 
     const discountCheck =
-        discount === "none" || (discount != null && promotion != null);
+        discount === "none" ||
+        (discount != null &&
+            promotion != null &&
+            (promotion as number) > 0 &&
+            ((discount === "percentage" && promotion <= 100) ||
+                (discount === "value" && (promotion as number) <= price)));
     console.log("Discount check", requiredCheck);
 
     // console.log("Username check", userCheck);

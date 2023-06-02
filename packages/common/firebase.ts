@@ -29,7 +29,7 @@ export const functions = getFunctions(app);
 export const storage = getStorage(app);
 
 if (location.hostname === "localhost") {
-    const localAddress = "192.168.0.12" || "localhost";
+    const localAddress = "10.42.33.151" || "localhost";
 
     // Point to function emulator on localhost.
     connectFunctionsEmulator(functions, localAddress, 5001);
