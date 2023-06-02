@@ -187,6 +187,13 @@ export const productList = functions.https.onCall(
       let counter = 0;
       querySnapshot.forEach((doc: any) => {
         if (counter >= startIndex && counter < endIndex) {
+          if (doc.discount === "value") {
+            doc.price = doc.price - doc.discount;
+          } else if (doc.discount == "percentage") {
+            doc.price = doc.price - doc.price * doc.discount;
+          } else {
+            doc.price = doc.price;
+          }
           const productData = doc.data();
           product.push({ ...productData, id: doc.id });
         }
