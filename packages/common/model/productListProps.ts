@@ -6,9 +6,12 @@ import { ProductFields } from "./productAddFormProps";
 export type ProductListProps = FormProps & {
     label: string;
     products: Array<ProductData>;
-    onSubmit: (data: ProductFields) => void;
+    isEditable: boolean;
+    onSubmit?: (data: ProductFields) => void;
+    onEdit?: (data: ProductData) => void;
+    onDelete?: (id: string) => void;
 };
 
 export type RProductListProps = ProductListProps & {
-    onSubmit: (data: FieldValues) => void;
+    onSubmit?: (data: FieldValues) => void;
 };

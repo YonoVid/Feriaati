@@ -1,7 +1,8 @@
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 
 import {
+    Avatar,
     Box,
     Button,
     Card,
@@ -9,6 +10,7 @@ import {
     FormControl,
     FormControlLabel,
     FormLabel,
+    Grid,
     LinearProgress,
     Radio,
     RadioGroup,
@@ -23,10 +25,31 @@ import InputComponentAlt from "@feria-a-ti/web/src/components/inputComponent/Inp
 import "./ProductAddForm.css";
 import { compressImage } from "@feria-a-ti/common/compression";
 function ProductAddForm(props: RProductAddFormProps) {
-    const { label, color, children, imageData, setImageData, onSubmit } = props;
-    const { handleSubmit, watch, control } = useForm<ProductFields>({
+    const {
+        buttonLabel,
+        label,
+        color,
+        children,
+        imageData,
+        editableState,
+        setImageData,
+        onSubmit,
+    } = props;
+    const { setValue, handleSubmit, watch, control } = useForm<ProductFields>({
         defaultValues: { discount: "none" },
     });
+
+    useEffect(() => {
+        if (editableState) {
+            setValue("name", editableState.name);
+            setValue("price", editableState.price);
+            setValue("discount", editableState.discount);
+            setValue("description", editableState.description);
+            setValue("promotion", editableState.promotion);
+            setLocalImageData(editableState.image);
+            setImageData(editableState.image);
+        }
+    }, [editableState]);
 
     const [localImageData, setLocalImageData] = useState<
         [string, string, string]
@@ -86,40 +109,88 @@ function ProductAddForm(props: RProductAddFormProps) {
             <form onSubmit={handleSubmit(onSubmit)}>
                 <Box>
                     {isLoading && <LinearProgress />}
-                    <InputComponentAlt
-                        control={control}
-                        name="image"
-                        label="Imagenes"
-                        type="file"
-                        rules={{
-                            required: "La imagen es requerida",
-                            validate: () =>
-                                !isLoading ||
-                                "Hay imagenes que se están procesando",
-                        }}
-                        onChange={async (e) => {
-                            await fileStore(e, 0);
-                        }}
-                    />
+                    <Grid container>
+                        <Grid item xs={10}>
+                            <InputComponentAlt
+                                control={control}
+                                name="image"
+                                label="Imagenes"
+                                type="file"
+                                rules={
+                                    editableState
+                                        ? {
+                                              validate: () =>
+                                                  !isLoading ||
+                                                  "Hay imagenes que se están procesando",
+                                          }
+                                        : {
+                                              required:
+                                                  "La imagen es requerida",
+                                              validate: () =>
+                                                  !isLoading ||
+                                                  "Hay imagenes que se están procesando",
+                                          }
+                                }
+                                onChange={async (e) => {
+                                    await fileStore(e, 0);
+                                }}
+                            />
+                        </Grid>
+                        <Grid item xs={2}>
+                            <Avatar
+                                alt="Image Preview 1"
+                                src={localImageData[0]}
+                                sx={{ width: 56, height: 56 }}
+                            >
+                                1
+                            </Avatar>
+                        </Grid>
+                    </Grid>
                     {imageData[0] !== "" && (
-                        <InputComponentAlt
-                            name="image"
-                            label="Imagenes"
-                            type="file"
-                            onChange={async (e) => {
-                                await fileStore(e, 1);
-                            }}
-                        />
+                        <Grid container>
+                            <Grid item xs={10}>
+                                <InputComponentAlt
+                                    name="image"
+                                    label="Imagenes"
+                                    type="file"
+                                    onChange={async (e) => {
+                                        await fileStore(e, 1);
+                                    }}
+                                />
+                            </Grid>
+                            <Grid item xs={2}>
+                                <Avatar
+                                    alt="Image Preview 2"
+                                    src={localImageData[1]}
+                                    sx={{ width: 56, height: 56 }}
+                                >
+                                    2
+                                </Avatar>
+                            </Grid>
+                        </Grid>
                     )}
                     {imageData[1] !== "" && (
-                        <InputComponentAlt
-                            name="image"
-                            label="Imagenes"
-                            type="file"
-                            onChange={async (e) => {
-                                await fileStore(e, 2);
-                            }}
-                        />
+                        <Grid container>
+                            <Grid item xs={10}>
+                                <InputComponentAlt
+                                    name="image"
+                                    label="Imagenes"
+                                    type="file"
+                                    onChange={async (e) => {
+                                        await fileStore(e, 2);
+                                    }}
+                                />
+                            </Grid>
+                            <Grid item xs={2}>
+                                <Avatar
+                                    alt="Image Preview 2"
+                                    src={localImageData[1]}
+                                    sx={{ width: 56, height: 56 }}
+                                >
+                                    3
+                                </Avatar>
+                            </Grid>
+                        </Grid>
                     )}
                 </Box>
                 <Box>
@@ -225,7 +296,7 @@ function ProductAddForm(props: RProductAddFormProps) {
                             props.canSubmit != null ? !props.canSubmit : false
                         }
                     >
-                        Iniciar sesión
+                        {buttonLabel ? buttonLabel : "Agregar Producto"}
                     </Button>
                 </Box>
             </form>

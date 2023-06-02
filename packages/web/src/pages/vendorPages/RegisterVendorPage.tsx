@@ -16,6 +16,7 @@ import RegisterVendorForm from "@feria-a-ti/web/src/components/forms/registerVen
 
 import { useHeaderContext } from "../HeaderLayout";
 import "@feria-a-ti/web/src/App.css";
+import { Link } from "@mui/material";
 
 function RegisterVendorPage() {
     //Global UI context
@@ -82,7 +83,14 @@ function RegisterVendorPage() {
                 onSubmit={onSubmitRegister}
                 canSubmit={canSubmit}
                 setImageData={setImageData}
-            />
+            >
+                <Link
+                    component="button"
+                    onClick={() => navigate("/loginVendor")}
+                >
+                    Ya tengo una cuenta
+                </Link>
+            </RegisterVendorForm>
         </>
     );
 }

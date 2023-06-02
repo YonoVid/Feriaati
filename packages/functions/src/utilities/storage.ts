@@ -9,7 +9,8 @@ import * as mime from "mime";
 export const uploadImage = async (
     id: string,
     location: string,
-    image: string
+    image: string,
+    privateAccess?: boolean
 ) => {
     if (image == null) {
         throw new functions.https.HttpsError("invalid-argument", "ERR00");
@@ -33,11 +34,15 @@ export const uploadImage = async (
     await file.save(imageBuffer, {
         contentType: mimeType ? mimeType[1] : "image/jpeg",
     });
-    const photoURL = await file
-        .getSignedUrl({ action: "read", expires: "03-09-2491" })
-        .then((urls) => urls[0]);
+    if (privateAccess) {
+        const photoURL = await file
+            .getSignedUrl({ action: "read", expires: "03-09-2491" })
+            .then((urls) => urls[0]);
+        return photoURL;
+    }
 
-    return photoURL;
+    file.makePublic();
+    return file.publicUrl();
 };
 
 export const uploadRegisterImage = async (email: string, image: string) =>

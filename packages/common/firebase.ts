@@ -26,7 +26,7 @@ const firebaseConfig = {
 // Initialize Firebase for deploy
 export const app = initializeApp(firebaseConfig);
 export const functions = getFunctions(app);
-const storage = getStorage(app);
+export const storage = getStorage(app);
 
 if (location.hostname === "localhost") {
     const localAddress = "192.168.0.12" || "localhost";
@@ -36,6 +36,7 @@ if (location.hostname === "localhost") {
     // Point to the Storage emulator running on localhost.
     connectStorageEmulator(storage, localAddress, 9199);
 }
+console.log(storage.app.options.databaseURL);
 
 export const actionCodeSettings = {
     // URL you want to redirect back to. The domain (www.example.com) for this

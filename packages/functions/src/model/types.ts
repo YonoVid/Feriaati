@@ -74,6 +74,10 @@ export type ProductListFields = {
     idVendor?: string;
 };
 
-export type UpdateProductFields = ProductFields & {
+export type ProductDeleteFields = ProductListFields & {
     productId: string;
+};
+
+export type ProductEditFields = ProductFields & {
+    id: string;
 };

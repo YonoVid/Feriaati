@@ -71,3 +71,41 @@ export const accountLoginVerification = async (
 
     return { token: token, code: code };
 };
+
+export const getAccount = async (
+    collection: collectionNames,
+    identificator: {
+        id?: string;
+        token?: string;
+    }
+): Promise<{ code: errorCodes; doc: admin.firestore.DocumentSnapshot }> => {
+    const db = admin.firestore();
+    let docReference;
+    if (
+        identificator.id &&
+        identificator.id !== null &&
+        identificator.id !== ""
+    ) {
+        functions.logger.info("ACCOUNT FROM ID");
+        docReference = await db
+            .collection(collection)
+            .doc(identificator.id as string)
+            .get();
+    } else {
+        functions.logger.info("ACCOUNT FROM TOKEN");
+        const queryAccount = db
+            .collection(collection)
+            .where("token", "==", identificator.token);
+        docReference = (await queryAccount.get()).docs[0];
+    }
+
+    functions.logger.info("ACCOUNT DOC::", docReference);
+
+    if (!docReference.exists) {
+        return {
+            doc: docReference,
+            code: errorCodes.DOCUMENT_NOT_EXISTS_ERROR,
+        };
+    }
+    return { doc: docReference, code: errorCodes.SUCCESFULL };
+};

@@ -1,10 +1,10 @@
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
-import { collection, query, where, getDocs } from "firebase/firestore";
 import {
+    ProductDeleteFields,
+    ProductEditFields,
     ProductFields,
     ProductListFields,
-    UpdateProductFields,
 } from "../model/types";
 
 import { checkAddProductFields, checkProductListFields } from "./checkProduct";
@@ -17,6 +17,7 @@ import {
 import { collectionNames } from "../consts";
 import { errorCodes, messagesCode } from "../errors";
 import { uploadProductImage } from "../utilities/storage";
+import { getAccount } from "../utilities/account";
 
 //funciones crud producto
 export const addProduct = functions.https.onCall(
@@ -117,16 +118,51 @@ export const addProduct = functions.https.onCall(
 );
 
 export const deleteProduct = functions.https.onCall(
-    async (data: any, context: any) => {
+    async (
+        data: ProductDeleteFields,
+        context
+    ): Promise<ResponseData<string>> => {
         try {
             const db = admin.firestore();
             const { productId } = data;
 
-            // Eliminar el producto de la base de datos
-            await db.collection("product").doc(productId).delete();
+            const { doc, code } = await getAccount(collectionNames.VENDORS, {
+                token: data.tokenVendor,
+                id: data.idVendor,
+            });
 
-            // Retornar una respuesta indicando que el producto se eliminó correctamente
-            return { message: "Producto eliminado correctamente" };
+            if (doc.exists) {
+                // Eliminar el producto de la base de datos
+                const vendorProducts = (
+                    await db
+                        .collection(collectionNames.VENDORPRODUCTS)
+                        .where("vendorId", "==", doc.id)
+                        .get()
+                ).docs[0];
+                if (vendorProducts.exists) {
+                    await db
+                        .collection(collectionNames.VENDORPRODUCTS)
+                        .doc(vendorProducts.id)
+                        .collection(collectionNames.PRODUCTS)
+                        .doc(productId)
+                        .delete();
+
+                    // Retornar una respuesta indicando que el producto se eliminó correctamente
+                    return {
+                        msg: messagesCode[errorCodes.SUCCESFULL],
+                        code: errorCodes.SUCCESFULL,
+                        error: false,
+                        extra: productId,
+                    };
+                }
+                return {
+                    msg: messagesCode[errorCodes.DOCUMENT_NOT_EXISTS_ERROR],
+                    code: errorCodes.DOCUMENT_NOT_EXISTS_ERROR,
+                    error: true,
+                };
+            }
+
+            return { msg: messagesCode[code], code, error: true };
         } catch (error) {
             functions.logger.error(error);
             throw new functions.https.HttpsError(
@@ -137,66 +173,124 @@ export const deleteProduct = functions.https.onCall(
     }
 );
 
-export const updateProduct = functions.https.onCall(
+export const editProduct = functions.https.onCall(
     async (
-        data: UpdateProductFields,
+        data: ProductEditFields,
         context: any
     ): Promise<ResponseData<string>> => {
         try {
             const db = admin.firestore();
             // Validar los datos recibidos y verificar la base de datos
             const { check, code } = checkAddProductFields(data);
-            let error = false;
 
             if (check) {
-                // Obtener la referencia del producto a editar
-                const productRef = db.collection("product").doc(data.productId);
+                const { doc, code } = await getAccount(
+                    collectionNames.VENDORS,
+                    { token: data.tokenVendor }
+                );
+                if (doc.exists) {
+                    // Obtener la referencia del producto a editar
+                    const productVendorRef = await db
+                        .collection(collectionNames.VENDORPRODUCTS)
+                        .where("vendorId", "==", doc.id)
+                        .get();
+                    const productVendorId = productVendorRef.docs[0].id || "";
+                    const productRef = db
+                        .collection(collectionNames.VENDORPRODUCTS)
+                        .doc(productVendorId)
+                        .collection(collectionNames.PRODUCTS)
+                        .doc(data.id);
 
-                // Verificar si el producto existe
-                const productDoc = await productRef.get();
-                if (!productDoc.exists) {
-                    error = true;
+                    // Verificar si el producto existe
+                    const productDoc = await productRef.get();
+                    if (!productDoc.exists) {
+                        return {
+                            extra: "",
+                            error: true,
+                            code: errorCodes.DOCUMENT_NOT_EXISTS_ERROR,
+                            msg: messagesCode[
+                                errorCodes.DOCUMENT_NOT_EXISTS_ERROR
+                            ],
+                        };
+                    }
+
+                    // Store images data
+                    let imageData: [string, string, string] = ["", "", ""];
+                    if (typeof data.image === "string") {
+                        imageData[0] =
+                            data.image[0] != "" &&
+                            !data.image[0].includes("https")
+                                ? await uploadProductImage(
+                                      doc.id,
+                                      data.image[0]
+                                  )
+                                : data.image[0];
+                    } else {
+                        imageData[0] =
+                            data.image[0] != "" &&
+                            !data.image[0].includes("https")
+                                ? await uploadProductImage(
+                                      doc.id,
+                                      data.image[0]
+                                  )
+                                : data.image[0];
+                        imageData[1] =
+                            data.image[1] != "" &&
+                            !data.image[1].includes("https")
+                                ? await uploadProductImage(
+                                      doc.id,
+                                      data.image[1]
+                                  )
+                                : data.image[1];
+                        imageData[2] =
+                            data.image[2] != "" &&
+                            !data.image[2].includes("https")
+                                ? await uploadProductImage(
+                                      doc.id,
+                                      data.image[2]
+                                  )
+                                : data.image[2];
+                    }
+
+                    // Configurar los datos actualizados del producto
+                    const updatedProductData: Partial<ProductCollectionData> = {
+                        name: data.name,
+                        description: data.description,
+                        price: data.price,
+                        discount: data.discount,
+                        promotion: data.promotion as number,
+                        image:
+                            typeof data.image === "string"
+                                ? [data.image, "", ""]
+                                : data.image,
+                    };
+
+                    // Actualizar el producto en la base de datos
+                    await productRef.update(updatedProductData);
+
+                    // Retornar el ID del producto editado
                     return {
-                        extra: "",
-                        error: error,
-                        code: "",
-                        msg: "",
+                        extra: data.id,
+                        error: false,
+                        code: errorCodes.SUCCESFULL,
+                        msg: messagesCode[errorCodes.SUCCESFULL],
                     };
                 }
-
-                // Configurar los datos actualizados del producto
-                const updatedProductData: Partial<ProductCollectionData> = {
-                    name: data.name,
-                    description: data.description,
-                    price: data.price,
-                    discount: data.discount,
-                    promotion: data.promotion as number,
-                    image:
-                        typeof data.image === "string"
-                            ? [data.image, "", ""]
-                            : data.image,
-                };
-
-                // Actualizar el producto en la base de datos
-                await productRef.update(updatedProductData);
-
-                // Retornar el ID del producto editado
+                // Retornar los resultados
                 return {
-                    extra: data.productId,
-                    error: error,
+                    extra: "",
+                    error: true,
                     code: code,
-                    msg: "",
+                    msg: messagesCode[code],
                 };
-            } else {
-                error = true;
             }
 
             // Retornar los resultados
             return {
                 extra: "",
-                error: error,
+                error: true,
                 code: code,
-                msg: "",
+                msg: messagesCode[code],
             };
         } catch (err) {
             functions.logger.error(err);
@@ -216,7 +310,11 @@ export const listProduct = functions.https.onCall(
             if (check) {
                 const db = admin.firestore();
                 let docReference;
-                if (data.idVendor !== null && data.idVendor !== "") {
+                if (
+                    data.idVendor &&
+                    data.idVendor !== null &&
+                    data.idVendor !== ""
+                ) {
                     functions.logger.info("LIST FROM VENDOR ID");
                     docReference = await db
                         .collection(collectionNames.VENDORS)

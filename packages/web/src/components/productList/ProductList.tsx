@@ -8,7 +8,16 @@ import "./ProductList.css";
 import { ProductData } from "@feria-a-ti/common/model/functionsTypes";
 
 function ProductList(props: RProductListProps) {
-    const { label, color, children, products, onSubmit } = props;
+    const {
+        label,
+        color,
+        children,
+        products,
+        isEditable,
+        onEdit,
+        onDelete,
+        onSubmit,
+    } = props;
 
     const colorTheme =
         color != null && color === "secondary" ? "secondary" : "primary";
@@ -32,15 +41,15 @@ function ProductList(props: RProductListProps) {
                 "",
             ],
         };
-        products.push(mockupProduct);
-    }, [products]);
+        products.length === 0 && products.push(mockupProduct);
+    }, []);
 
     return (
         <Card
             className="inputContainer"
             color={colorTheme}
             sx={{
-                maxWidth: "50%",
+                maxWidth: "80%",
                 alignContent: "center",
                 borderRadius: "10%",
             }}
@@ -50,11 +59,26 @@ function ProductList(props: RProductListProps) {
             </h1>
             <Box>
                 {products.map((product, index) => (
-                    <ProductView key={product.name + index} product={product} />
+                    <ProductView
+                        onEdit={onEdit}
+                        onDelete={onDelete}
+                        isEditable={isEditable}
+                        key={product.name + index}
+                        product={product}
+                    />
                 ))}
             </Box>
             <Divider />
-            <Pagination count={10} page={page} onChange={handleChange} />
+            <Pagination
+                count={10}
+                page={page}
+                onChange={handleChange}
+                sx={{
+                    maxWidth: "100%",
+                    alignContent: "center",
+                    borderRadius: "10%",
+                }}
+            />
             <Box sx={{ margin: "1em" }}>{children}</Box>
         </Card>
     );

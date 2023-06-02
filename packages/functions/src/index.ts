@@ -36,7 +36,7 @@ export {
 export {
     addProduct,
     deleteProduct,
-    updateProduct,
+    editProduct,
     listProduct,
     productListPagination,
 } from "./product/productFunctions";

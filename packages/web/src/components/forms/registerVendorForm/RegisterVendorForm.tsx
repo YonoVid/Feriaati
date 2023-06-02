@@ -1,5 +1,5 @@
 import { useForm } from "react-hook-form";
-import { Box, Button, Card, CardActions } from "@mui/material";
+import { Box, Button, Card, CardActions, Divider } from "@mui/material";
 
 import { compressImage } from "@feria-a-ti/common/compression";
 import {
@@ -17,7 +17,7 @@ import InputComponentAlt from "@feria-a-ti/web/src/components/inputComponent/Inp
 import "./RegisterVendorForm.css";
 
 function RegisterVendorForm(props: RRegisterVendorFormProps) {
-    const { setImageData, onSubmit } = props;
+    const { children, setImageData, onSubmit } = props;
     const { watch, handleSubmit, setValue, control } =
         useForm<RegisterVendorFields>();
 
@@ -278,6 +278,8 @@ function RegisterVendorForm(props: RRegisterVendorFormProps) {
                         </Button>
                     </CardActions>
                 </form>
+                <Divider />
+                <Box sx={{ margin: "1em" }}>{children}</Box>
             </Card>
         </>
     );
