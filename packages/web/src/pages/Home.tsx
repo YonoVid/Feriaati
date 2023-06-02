@@ -23,6 +23,9 @@ function Home() {
             {type === userType.vendor && (
                 <Navigate to="/managerVendor" replace={true} />
             )}
+            {type === userType.user && (
+                <Navigate to="/productVendor" replace={true} />
+            )}
             <h1>¡Bienvenido!</h1>
             <button onClick={handleLogout}>Cerrar sesión</button>
         </>

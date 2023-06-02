@@ -22,6 +22,7 @@ import { HeaderLayout } from "@feria-a-ti/web/src/pages/HeaderLayout";
 import ActivateVendors from "@feria-a-ti/web/src/pages/adminPage/ActivateVendors";
 import ManagerVendorPage from "@feria-a-ti/web/src/pages/vendorPages/ManagerVendorPage";
 import ProductAddManager from "./pages/vendorPages/ProductAddManager";
+import UserVendorSelect from "./pages/userPages/UserVendorSelect";
 
 const router = createBrowserRouter([
     {
@@ -51,6 +52,10 @@ const router = createBrowserRouter([
             {
                 path: "/product",
                 element: <ProductPage />,
+            },
+            {
+                path: "/productVendor",
+                element: <UserVendorSelect />,
             },
             {
                 path: "/home",

@@ -86,7 +86,7 @@ export const addUser = functions.https.onCall(
             let error = false;
             //Get collection of email data
             const collectionDocReference = db
-                .collection(userType.user)
+                .collection(collectionNames.USERS)
                 .doc(data.email);
             const collectionDoc = await collectionDocReference.get();
 
@@ -161,7 +161,7 @@ export const confirmRegister = functions.https.onCall(
             functions.logger.info("DATA", data);
             //Checks of data and database
             const collectionDocReference = db
-                .collection(userType.user)
+                .collection(collectionNames.USERS)
                 .doc(data.email);
 
             const collectionDoc = await collectionDocReference.get();

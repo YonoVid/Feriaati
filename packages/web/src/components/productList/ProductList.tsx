@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 
-import { Box, Card, Divider, Pagination } from "@mui/material";
+import { Box, Card, Divider, Pagination, Stack } from "@mui/material";
 import { RProductListProps } from "@feria-a-ti/common/model/productListProps";
+import { ProductData } from "@feria-a-ti/common/model/functionsTypes";
 
 import ProductView from "./ProductView";
 import "./ProductList.css";
-import { ProductData } from "@feria-a-ti/common/model/functionsTypes";
 
 function ProductList(props: RProductListProps) {
     const {
@@ -57,20 +57,8 @@ function ProductList(props: RProductListProps) {
             <h1 style={{ maxWidth: "100%" }}>
                 {label != null ? label : "Iniciar Sesion"}
             </h1>
-            <Box>
-                {products.map((product, index) => (
-                    <ProductView
-                        onEdit={onEdit}
-                        onDelete={onDelete}
-                        isEditable={isEditable}
-                        key={product.name + index}
-                        product={product}
-                    />
-                ))}
-            </Box>
-            <Divider />
             <Pagination
-                count={10}
+                count={Math.floor(products.length / 3) + 1}
                 page={page}
                 onChange={handleChange}
                 sx={{
@@ -79,6 +67,29 @@ function ProductList(props: RProductListProps) {
                     borderRadius: "10%",
                 }}
             />
+            <Divider />
+            <Stack
+                direction={{ xs: "column", sm: "row" }}
+                spacing={{ xs: 1, sm: 2, md: 4 }}
+                sx={{
+                    marginLeft: "auto",
+                    marginRight: "auto",
+                    justifyContent: "center",
+                    alignContent: "center",
+                }}
+            >
+                {products
+                    .slice((page - 1) * 3, page * 3)
+                    .map((product, index) => (
+                        <ProductView
+                            onEdit={onEdit}
+                            onDelete={onDelete}
+                            isEditable={isEditable}
+                            key={product.name + index}
+                            product={product}
+                        />
+                    ))}
+            </Stack>
             <Box sx={{ margin: "1em" }}>{children}</Box>
         </Card>
     );

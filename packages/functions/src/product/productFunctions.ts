@@ -52,22 +52,36 @@ export const addProduct = functions.https.onCall(
                     } else {
                         id = products.docs[0].id;
                     }
+
+                    await productsRef
+                        .doc(id)
+                        .collection(collectionNames.PRODUCTS)
+                        .doc();
                     // Store images data
                     let imageData: [string, string, string] = ["", "", ""];
                     if (typeof data.image === "string") {
-                        imageData[0] = await uploadProductImage(id, data.image);
+                        imageData[0] = await uploadProductImage(
+                            productsRef.id + "_0",
+                            data.image
+                        );
                     } else {
                         imageData[0] = await uploadProductImage(
-                            id,
+                            productsRef.id + "_0",
                             data.image[0]
                         );
                         imageData[1] =
                             data.image[1] != ""
-                                ? await uploadProductImage(id, data.image[1])
+                                ? await uploadProductImage(
+                                      productsRef.id + "_1",
+                                      data.image[1]
+                                  )
                                 : "";
                         imageData[2] =
                             data.image[2] != ""
-                                ? await uploadProductImage(id, data.image[2])
+                                ? await uploadProductImage(
+                                      productsRef.id + "_2",
+                                      data.image[2]
+                                  )
                                 : "";
                     }
 
@@ -81,10 +95,7 @@ export const addProduct = functions.https.onCall(
                         image: imageData,
                     };
 
-                    await productsRef
-                        .doc(id)
-                        .collection(collectionNames.PRODUCTS)
-                        .add(productData);
+                    await productsRef.add(productData);
 
                     // Retornar el ID del producto creado
                     return {
@@ -221,7 +232,7 @@ export const editProduct = functions.https.onCall(
                             data.image[0] != "" &&
                             !data.image[0].includes("https")
                                 ? await uploadProductImage(
-                                      doc.id,
+                                      productRef.id + "_0",
                                       data.image[0]
                                   )
                                 : data.image[0];
@@ -230,7 +241,7 @@ export const editProduct = functions.https.onCall(
                             data.image[0] != "" &&
                             !data.image[0].includes("https")
                                 ? await uploadProductImage(
-                                      doc.id,
+                                      productRef.id + "_0",
                                       data.image[0]
                                   )
                                 : data.image[0];
@@ -238,7 +249,7 @@ export const editProduct = functions.https.onCall(
                             data.image[1] != "" &&
                             !data.image[1].includes("https")
                                 ? await uploadProductImage(
-                                      doc.id,
+                                      productRef.id + "_1",
                                       data.image[1]
                                   )
                                 : data.image[1];
@@ -246,7 +257,7 @@ export const editProduct = functions.https.onCall(
                             data.image[2] != "" &&
                             !data.image[2].includes("https")
                                 ? await uploadProductImage(
-                                      doc.id,
+                                      productRef.id + "_2",
                                       data.image[2]
                                   )
                                 : data.image[2];

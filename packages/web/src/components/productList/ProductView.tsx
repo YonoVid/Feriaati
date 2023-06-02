@@ -54,13 +54,15 @@ export const ProductView = (props: ProductViewProps) => {
         setExpanded(!expanded);
     };
 
-    setInterval(() => {
-        let newIndex = imageIndex + 1;
-        while (!image[newIndex] || image[newIndex] === "") {
-            newIndex = newIndex + 1 > image.length - 1 ? 0 : newIndex + 1;
-        }
-        setImageIndex(newIndex);
-    }, 2000);
+    useEffect(() => {
+        setInterval(() => {
+            let newIndex = imageIndex + 1;
+            while (!image[newIndex] || image[newIndex] === "") {
+                newIndex = newIndex + 1 > image.length - 1 ? 0 : newIndex + 1;
+            }
+            setImageIndex(newIndex);
+        }, 3000);
+    }, []);
 
     const finalPrice =
         price -

@@ -2,6 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import { FieldValues } from "react-hook-form";
 import { Navigate, useNavigate } from "react-router-dom";
 import { httpsCallable } from "firebase/functions";
+import { Button } from "@mui/material";
 
 import { functions } from "@feria-a-ti/common/firebase";
 import {
@@ -15,7 +16,6 @@ import {
 import {
     ProductDeleteFields,
     ProductEditFields,
-    ProductFields,
     ProductListFields,
 } from "@feria-a-ti/common/model/productAddFormProps";
 import ProductAddForm from "@feria-a-ti/web/src/components/forms/productAddForm/ProductAddForm";
@@ -24,7 +24,6 @@ import ProductList from "@feria-a-ti/web/src/components/productList/ProductList"
 import { UserContext } from "@feria-a-ti/web/src/App";
 import { useHeaderContext } from "../HeaderLayout";
 import "../../App.css";
-import { Link } from "@mui/material";
 
 function ManagerVendorPage() {
     //Global UI context
@@ -162,12 +161,14 @@ function ManagerVendorPage() {
                         }}
                         onDelete={onDelete}
                     />
-                    <Link
-                        component="button"
+                    <Button
+                        color="secondary"
+                        type="button"
+                        variant="contained"
                         onClick={() => navigate("/addProduct")}
                     >
                         Agregar producto
-                    </Link>
+                    </Button>
                 </>
             ) : (
                 <ProductAddForm
