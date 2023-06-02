@@ -60,12 +60,12 @@ export type UpdateStateFields = {
 };
 
 export type ProductFields = {
-    tokenVendor: string;
+    tokenVendor?: string;
     name: string;
     description: string;
     price: number;
-    isPercentage: boolean;
-    promotion: number;
+    discount: "none" | "percentage" | "value";
+    promotion?: number;
     image: [string, string, string];
 };
 

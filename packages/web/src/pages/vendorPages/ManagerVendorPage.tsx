@@ -4,79 +4,78 @@ import { Navigate, useNavigate } from "react-router-dom";
 import { httpsCallable } from "firebase/functions";
 
 import { functions } from "@feria-a-ti/common/firebase";
-import { checkLoginFields } from "@feria-a-ti/common/check/checkLoginFields";
-import { LoginFields } from "@feria-a-ti/common/model/loginFields";
+import { checkAddProductFields } from "@feria-a-ti/common/check/checkProductFields";
 import {
     ResponseData,
     UserToken,
 } from "@feria-a-ti/common/model/functionsTypes";
-import MessageAlert from "@feria-a-ti/web/src/components/messageAlert/MessageAlert";
 import ProductAddForm from "@feria-a-ti/web/src/components/forms/productAddForm/ProductAddForm";
 import ProductList from "@feria-a-ti/web/src/components/productList/ProductList";
 
 import { UserContext } from "@feria-a-ti/web/src/App";
+import { useHeaderContext } from "../HeaderLayout";
 import "../../App.css";
+import { ProductFields } from "@feria-a-ti/common/model/productAddFormProps";
 
 function VendorLoginPage() {
+    //Global UI context
+    const { setMessage } = useHeaderContext();
     //Global state variable
-    const { setSession, type } = useContext(UserContext);
-    //Router dom
-    const navigate = useNavigate();
-    const [attempt, setAttempt] = useState(0);
+    const { authToken, type } = useContext(UserContext);
+    // //Router dom
+    // const navigate = useNavigate();
+    const [products, setProducts] = useState<Array<ProductFields>>([]);
+
+    const [imageData, setImageData] = useState<[string, string, string]>([
+        "",
+        "",
+        "",
+    ]);
     //const [isLogged, setIsLogged] = useState(false);
     // Form related variables;
-    const [canSubmit, setSubmitActive] = useState(true);
-    // Alert Related values
-    const [showAlert, setShowAlert] = useState(false);
-    const [alertMessage, setAlertMessage] = useState("TEXT");
-    const closeAlert = () => {
-        setSubmitActive(true);
-        setShowAlert(false);
-    };
+    const [canSubmit, setCanSubmit] = useState(true);
+
     const onSubmit = (data: FieldValues) => {
         console.log("SUBMIT FORM");
-        setAttempt(attempt + 1);
-        const formatedData: LoginFields = {
-            email: data.email as string,
-            password: data.password as string,
-            attempts: attempt,
+        const formatedData: ProductFields = {
+            tokenVendor: authToken as string,
+            name: data.name as string,
+            description: data.description as string,
+            price: data.price as number,
+            discount: data.discount,
+            promotion: data.promotion as number,
+            image: imageData,
         };
-        const check = checkLoginFields(formatedData);
+        const check = checkAddProductFields(formatedData);
         if (check) {
-            setSubmitActive(false);
-            const login = httpsCallable(functions, "loginVendor");
-            login(formatedData)
+            setCanSubmit(false);
+            const addProduct = httpsCallable<
+                ProductFields,
+                ResponseData<string>
+            >(functions, "addProduct");
+            addProduct(formatedData)
                 .then((result) => {
-                    const {
-                        msg,
-                        extra: { token, email, type },
-                    } = result.data as ResponseData<UserToken>;
-                    localStorage.setItem("token", token);
-                    console.log(result);
-                    console.log(attempt);
-                    setSubmitActive(true);
+                    const { msg, error } = result.data as ResponseData<string>;
+                    console.log(result.data);
+
+                    setProducts(products.concat(formatedData));
                     //setIsLogged(result.data as any);
                     if (msg !== "") {
-                        setAlertMessage(msg);
-                    }
-                    if (token != null && token !== "") {
-                        setSession && setSession({ token, type, email });
-                        navigate("/session");
+                        setMessage({ msg, isError: error });
                     }
                 })
-                .finally(() => setShowAlert(true));
+                .finally(() => setCanSubmit(true));
         }
     };
     return (
         <>
             {type !== "vendor" && <Navigate to="/session" replace={true} />}
-            <ProductList label="" onSubmit={onSubmit} />
-            <ProductAddForm onSubmit={onSubmit} canSubmit={canSubmit} />
-            <MessageAlert
-                open={showAlert}
-                title="Estado de acción"
-                message={alertMessage}
-                handleClose={closeAlert}
+            <ProductList label="" products={products} onSubmit={onSubmit} />
+            <ProductAddForm
+                imageData={imageData}
+                setImageData={setImageData}
+                onSubmit={onSubmit}
+                canSubmit={canSubmit}
             />
         </>
     );

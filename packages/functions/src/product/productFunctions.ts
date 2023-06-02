@@ -30,8 +30,8 @@ export const addProduct = functions.https.onCall(
                         name: data.name,
                         description: data.description,
                         price: data.price,
-                        isPercentage: data.isPercentage,
-                        promotion: data.promotion,
+                        discount: data.discount,
+                        promotion: data.promotion as number,
                         image: data.image,
                     };
                     // Get product list reference
@@ -138,8 +138,8 @@ export const updateProduct = functions.https.onCall(
                     name: data.name,
                     description: data.description,
                     price: data.price,
-                    isPercentage: data.isPercentage,
-                    promotion: data.promotion,
+                    discount: data.discount,
+                    promotion: data.promotion as number,
                     image: data.image,
                 };
 

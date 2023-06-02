@@ -7,7 +7,7 @@ import "./InputComponent.css";
 
 interface Props<T> extends UseControllerProps<T> {
     label: string;
-    type?: "text" | "password" | "email" | "file" | "select";
+    type?: "text" | "number" | "password" | "email" | "file" | "select";
     selectOptions?: (string | number)[][];
     hidden?: boolean;
     onChange?: React.ChangeEventHandler;
@@ -37,47 +37,90 @@ const InputComponentAlt = <T extends FieldValues>({
 
     return (
         <>
-            <Controller
-                control={control}
-                rules={rules}
-                render={({
-                    field: { onChange, onBlur, value },
-                    fieldState: { error },
-                }) => (
-                    <TextField
-                        sx={{ flex: 1, minWidth: "10em", maxWidth: "20em" }}
-                        InputLabelProps={{
-                            shrink: type === "file" ? true : undefined,
-                        }}
-                        select={type === "select"}
-                        label={inputLabel}
-                        margin="dense"
-                        type={type}
-                        color="secondary"
-                        error={error != null}
-                        variant="filled"
-                        value={value || ""}
-                        placeholder={inputLabel}
-                        defaultValue={defaultValue}
-                        onChange={(value) => {
-                            onChangeWrapper(onChange, value);
-                        }}
-                        onBlur={onBlur}
-                        helperText={error?.message || ""}
-                    >
-                        {type === "select" && selectOptions ? (
-                            selectOptions?.map((value) => (
-                                <MenuItem key={value[0]} value={value[0]}>
-                                    {value[1]}
-                                </MenuItem>
-                            ))
-                        ) : (
-                            <MenuItem>{defaultValue}</MenuItem>
-                        )}
-                    </TextField>
-                )}
-                name={name}
-            ></Controller>
+            {control ? (
+                <Controller
+                    control={control}
+                    rules={rules}
+                    render={({
+                        field: { onChange, onBlur, value },
+                        fieldState: { error },
+                    }) => (
+                        <TextField
+                            sx={{ flex: 1, minWidth: "10em", maxWidth: "20em" }}
+                            InputLabelProps={{
+                                shrink: type === "file" ? true : undefined,
+                            }}
+                            inputProps={
+                                type === "number"
+                                    ? {
+                                          inputMode: "numeric",
+                                          pattern: "[0-9]*",
+                                      }
+                                    : {}
+                            }
+                            select={type === "select"}
+                            label={inputLabel}
+                            margin="dense"
+                            type={type === "number" ? "text" : type}
+                            color="secondary"
+                            error={error != null}
+                            variant="filled"
+                            value={value || ""}
+                            placeholder={inputLabel}
+                            defaultValue={defaultValue}
+                            onChange={(value) => {
+                                onChangeWrapper(onChange, value);
+                            }}
+                            onBlur={onBlur}
+                            helperText={error?.message || ""}
+                        >
+                            {type === "select" && selectOptions ? (
+                                selectOptions?.map((value) => (
+                                    <MenuItem key={value[0]} value={value[0]}>
+                                        {value[1]}
+                                    </MenuItem>
+                                ))
+                            ) : (
+                                <MenuItem>{defaultValue}</MenuItem>
+                            )}
+                        </TextField>
+                    )}
+                    name={name}
+                ></Controller>
+            ) : (
+                <TextField
+                    sx={{ flex: 1, minWidth: "10em", maxWidth: "20em" }}
+                    InputLabelProps={{
+                        shrink: type === "file" ? true : undefined,
+                    }}
+                    inputProps={
+                        type === "number"
+                            ? { inputMode: "numeric", pattern: "[0-9]*" }
+                            : {}
+                    }
+                    select={type === "select"}
+                    label={inputLabel}
+                    margin="dense"
+                    type={type === "number" ? "text" : type}
+                    color="secondary"
+                    variant="filled"
+                    placeholder={inputLabel}
+                    defaultValue={defaultValue}
+                    onChange={(value) => {
+                        onChange && onChange(value);
+                    }}
+                >
+                    {type === "select" && selectOptions ? (
+                        selectOptions?.map((value) => (
+                            <MenuItem key={value[0]} value={value[0]}>
+                                {value[1]}
+                            </MenuItem>
+                        ))
+                    ) : (
+                        <MenuItem>{defaultValue}</MenuItem>
+                    )}
+                </TextField>
+            )}
         </>
     );
 };

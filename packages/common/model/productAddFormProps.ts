@@ -2,13 +2,13 @@ import { FormProps } from "@feria-a-ti/common/model/sharedProps";
 import { FieldValues } from "react-hook-form";
 
 export type ProductFields = {
-    tokenVendor: string;
+    tokenVendor?: string;
     name: string;
     description: string;
     price: number;
-    isPercentage: boolean;
-    promotion: number;
-    image: [string, string, string];
+    discount: "none" | "percentage" | "value";
+    promotion?: number;
+    image: [string, string, string] | string;
 };
 
 export type ProductAddFormProps = FormProps & {
@@ -16,6 +16,8 @@ export type ProductAddFormProps = FormProps & {
 };
 
 export type RProductAddFormProps = FormProps & {
+    imageData: [string, string, string];
+    setImageData: (data: [string, string, string]) => void;
     onSubmit: (data: FieldValues) => void;
 };
 

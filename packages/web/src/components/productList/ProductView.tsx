@@ -40,7 +40,7 @@ const ExpandMore = styled((props: ExpandMoreProps) => {
 }));
 
 export const ProductView = (props: ProductViewProps) => {
-    const { name, description, price, isPercentage, promotion, image } =
+    const { name, description, price, discount, promotion, image } =
         props.product;
 
     const [expanded, setExpanded] = useState(false);

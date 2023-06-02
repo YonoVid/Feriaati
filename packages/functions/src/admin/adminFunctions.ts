@@ -29,7 +29,7 @@ export const adminLogin = functions.https.onCall(
                     attempts
                 );
                 return {
-                    error: code === errorCodes.SUCCESFULL,
+                    error: code !== errorCodes.SUCCESFULL,
                     code: code,
                     msg: messagesCode[code],
                     extra: {

@@ -4,6 +4,7 @@ import { ProductFields } from "./productAddFormProps";
 
 export type ProductListProps = FormProps & {
     label: string;
+    products: Array<ProductFields>;
     onSubmit: (data: ProductFields) => void;
 };
 
