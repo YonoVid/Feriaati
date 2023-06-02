@@ -1,10 +1,14 @@
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
 import { collection, query, where, getDocs } from "firebase/firestore";
-import { ProductFields, UpdateProductFields } from "../model/types";
+import {
+    ProductFields,
+    ProductListFields,
+    UpdateProductFields,
+} from "../model/types";
 
-import { checkAddProductFields } from "./checkProduct";
-import { ResponseData } from "../model/reponseFields";
+import { checkAddProductFields, checkProductListFields } from "./checkProduct";
+import { ProductData, ResponseData } from "../model/reponseFields";
 
 import {
     ProductCollectionData,
