@@ -2,7 +2,14 @@ import { useContext, useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 import { httpsCallable } from "firebase/functions";
 
-import { List, ListItem, ListItemText, Card, Divider } from "@mui/material";
+import {
+    List,
+    ListItem,
+    ListItemText,
+    Card,
+    Divider,
+    TextField,
+} from "@mui/material";
 // import DeleteIcon from "@mui/icons-material/Delete";
 
 import { functions } from "@feria-a-ti/common/firebase"; // Importa la configuración de Firebase, incluyendo las funciones
@@ -23,6 +30,8 @@ const UserVendorSelect = () => {
     //Global state variable
     const { type } = useContext(UserContext);
 
+    // Selection of vendor
+    const [filterVendor, setFilterVendor] = useState<string | null>();
     // Selection of vendor
     const [selectedVendor, setSelectedVendor] =
         useState<VendorCollectionData | null>();
@@ -75,7 +84,23 @@ const UserVendorSelect = () => {
         <>
             {type !== "user" && <Navigate to="/login" replace={true} />}
             {selectedVendor ? (
-                <ProductList isEditable={false} label="" products={products} />
+                <>
+                    <Card>
+                        <TextField
+                            label="Filtro"
+                            variant="outlined"
+                            onChange={(event) =>
+                                setFilterVendor(event.target.value)
+                            }
+                        ></TextField>
+                    </Card>
+                    <ProductList
+                        filter={filterVendor as string}
+                        isEditable={false}
+                        label=""
+                        products={products}
+                    />
+                </>
             ) : (
                 <Card
                     className="inputContainer"

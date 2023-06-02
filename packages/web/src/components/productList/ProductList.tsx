@@ -13,6 +13,7 @@ function ProductList(props: RProductListProps) {
         color,
         children,
         products,
+        filter,
         isEditable,
         onEdit,
         onDelete,
@@ -43,6 +44,15 @@ function ProductList(props: RProductListProps) {
         };
         products.length === 0 && products.push(mockupProduct);
     }, []);
+
+    const getList = (): ProductData[] => {
+        if (filter && filter != null && filter != "") {
+            return products.filter((value) =>
+                value.name.toUpperCase().includes(filter.toUpperCase())
+            );
+        }
+        return products;
+    };
 
     return (
         <Card
@@ -78,7 +88,7 @@ function ProductList(props: RProductListProps) {
                     alignContent: "center",
                 }}
             >
-                {products
+                {getList()
                     .slice((page - 1) * 3, page * 3)
                     .map((product, index) => (
                         <ProductView

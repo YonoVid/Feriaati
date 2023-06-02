@@ -7,6 +7,7 @@ export type ProductListProps = FormProps & {
     label: string;
     products: Array<ProductData>;
     isEditable: boolean;
+    filter?: string;
     onSubmit?: (data: ProductFields) => void;
     onEdit?: (data: ProductData) => void;
     onDelete?: (id: string) => void;
