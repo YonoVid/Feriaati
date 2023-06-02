@@ -1,7 +1,7 @@
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
 import {
-  ProductAddFormProps,
+  //ProductAddFormProps,
   ProductFields,
   UpdateProductFields,
 } from "../../../common/model/productAddFormProps";
@@ -118,7 +118,7 @@ export const updateProduct = functions.https.onCall(
           extra: data.productId,
           error: error,
           code: code,
-          msg: "",
+          msg: "Producto editado",
         };
       } else {
         error = true;
@@ -138,19 +138,30 @@ export const updateProduct = functions.https.onCall(
   }
 );
 
-export const productList = functions.https.onCall(async () => {
+export const productList = functions.https.onCall(async (data, context) => {
   try {
+    const { page } = data; // obtiene numero de pagina actual
+    const pageSize = 10; // cantidad de productos que se mostraran por cada pagina
     const db = admin.firestore();
-    const usersRef = db.collection("product");
-    const querySnapshot = await usersRef.get();
+    const productRef = db.collection("product");
+    // Calcula el índice de inicio y fin para la consulta de la página actual
+    const startIndex = (page - 1) * pageSize;
+    const endIndex = startIndex + pageSize;
+    const querySnapshot = await productRef.limit(endIndex).get();
     const product: any[] = [];
-
+    let counter = 0;
     querySnapshot.forEach((doc) => {
-      const productData = doc.data();
-      product.push({ ...productData, id: doc.id });
+      if (counter >= startIndex && counter < endIndex) {
+        const productData = doc.data();
+        if (productData.isPercentage) {
+          productData.price == productData.price * productData.promotion;
+        }
+        product.push({ ...productData, id: doc.id });
+      }
+      counter++;
     });
 
-    return product;
+    return { products: product, pageSize: pageSize };
   } catch (error) {
     functions.logger.error(error);
     throw new functions.https.HttpsError(

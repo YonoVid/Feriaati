@@ -70,7 +70,7 @@ const router = createBrowserRouter([
         element: <ActivateVendors />,
       },
       {
-        path: "/product",
+        path: "/productPage",
         element: <ProductPage />,
       },
     ],
