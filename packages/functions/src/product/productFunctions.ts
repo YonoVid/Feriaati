@@ -53,7 +53,7 @@ export const addProduct = functions.https.onCall(
                         id = products.docs[0].id;
                     }
 
-                    await productsRef
+                    const productRef = await productsRef
                         .doc(id)
                         .collection(collectionNames.PRODUCTS)
                         .doc();
@@ -61,25 +61,25 @@ export const addProduct = functions.https.onCall(
                     let imageData: [string, string, string] = ["", "", ""];
                     if (typeof data.image === "string") {
                         imageData[0] = await uploadProductImage(
-                            productsRef.id + "_0",
+                            productRef.id + "_0",
                             data.image
                         );
                     } else {
                         imageData[0] = await uploadProductImage(
-                            productsRef.id + "_0",
+                            productRef.id + "_0",
                             data.image[0]
                         );
                         imageData[1] =
                             data.image[1] != ""
                                 ? await uploadProductImage(
-                                      productsRef.id + "_1",
+                                      productRef.id + "_1",
                                       data.image[1]
                                   )
                                 : "";
                         imageData[2] =
                             data.image[2] != ""
                                 ? await uploadProductImage(
-                                      productsRef.id + "_2",
+                                      productRef.id + "_2",
                                       data.image[2]
                                   )
                                 : "";
@@ -95,7 +95,7 @@ export const addProduct = functions.https.onCall(
                         image: imageData,
                     };
 
-                    await productsRef.add(productData);
+                    await productRef.create(productData);
 
                     // Retornar el ID del producto creado
                     return {

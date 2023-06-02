@@ -278,11 +278,16 @@ function ProductAddForm(props: RProductAddFormProps) {
                             label="Descuento"
                             type="number"
                             rules={{
-                                validate: (value) =>
-                                    (watch("discount") !== "none" &&
-                                        value != "" &&
-                                        value != null) ||
-                                    "El descuento debe tener un valor numérico",
+                                validate: {
+                                    isNumeric: (value) =>
+                                        (watch("discount") !== "none" &&
+                                            value != "" &&
+                                            value != null) ||
+                                        "El descuento debe tener un valor numérico",
+                                },
+                                //     lessThanPrice: (value)=> (watch("discount") !== "none" &&
+                                //     (watch("discount") === "percentage"?watch("promotion")<100: value <= watch("price"))) ||
+                                // "El descuento no puede ser mayor al precio",}
                             }}
                         />
                     )}
