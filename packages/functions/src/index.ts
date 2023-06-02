@@ -38,4 +38,5 @@ export {
     deleteProduct,
     updateProduct,
     listProduct,
+    productListPagination,
 } from "./product/productFunctions";

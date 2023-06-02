@@ -1,12 +1,11 @@
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
-import {
-    ProductFields,
-    ProductListFields,
-    UpdateProductFields,
-} from "../model/types";
-import { checkAddProductFields, checkProductListFields } from "./checkProduct";
-import { ProductData, ResponseData } from "../model/reponseFields";
+import { collection, query, where, getDocs } from "firebase/firestore";
+import { ProductFields, UpdateProductFields } from "../model/types";
+
+import { checkAddProductFields } from "./checkProduct";
+import { ResponseData } from "../model/reponseFields";
+
 import {
     ProductCollectionData,
     ProductListCollectionData,
@@ -113,29 +112,31 @@ export const addProduct = functions.https.onCall(
     }
 );
 
-export const deleteProduct = functions.https.onCall(async (data, context) => {
-    try {
-        const db = admin.firestore();
-        const { productId } = data;
+export const deleteProduct = functions.https.onCall(
+    async (data: any, context: any) => {
+        try {
+            const db = admin.firestore();
+            const { productId } = data;
 
-        // Eliminar el producto de la base de datos
-        await db.collection("product").doc(productId).delete();
+            // Eliminar el producto de la base de datos
+            await db.collection("product").doc(productId).delete();
 
-        // Retornar una respuesta indicando que el producto se eliminó correctamente
-        return { message: "Producto eliminado correctamente" };
-    } catch (error) {
-        functions.logger.error(error);
-        throw new functions.https.HttpsError(
-            "internal",
-            "Error al eliminar el producto."
-        );
+            // Retornar una respuesta indicando que el producto se eliminó correctamente
+            return { message: "Producto eliminado correctamente" };
+        } catch (error) {
+            functions.logger.error(error);
+            throw new functions.https.HttpsError(
+                "internal",
+                "Error al eliminar el producto."
+            );
+        }
     }
-});
+);
 
 export const updateProduct = functions.https.onCall(
     async (
         data: UpdateProductFields,
-        context
+        context: any
     ): Promise<ResponseData<string>> => {
         try {
             const db = admin.firestore();
@@ -280,9 +281,42 @@ export const listProduct = functions.https.onCall(
     }
 );
 
+export const productListPagination = functions.https.onCall(
+    async (data: any, context: any) => {
+        try {
+            const { page } = data; // obtiene numero de pagina actual
+            const pageSize = 10; // cantidad de productos que se mostraran por cada pagina
+            const db = admin.firestore();
+            const usersRef = db.collection("product");
+            // Calcula el índice de inicio y fin para la consulta de la página actual
+            const startIndex = (page - 1) * pageSize;
+            const endIndex = startIndex + pageSize;
+            const querySnapshot = await usersRef.get();
+            const product: any[] = [];
+            let counter = 0;
+            querySnapshot.forEach((doc: any) => {
+                if (counter >= startIndex && counter < endIndex) {
+                    const productData = doc.data();
+                    product.push({ ...productData, id: doc.id });
+                }
+                counter++;
+            });
+
+            return { products: product, pageSize: pageSize };
+        } catch (error) {
+            functions.logger.error(error);
+            throw new functions.https.HttpsError(
+                "internal",
+                "Error al obtener datos de productos"
+            );
+        }
+    }
+);
+
 //funcion para filtrar productos
+
 export const filterProductList = functions.https.onCall(
-    async (data: any, context) => {
+    async (data: any, context: any) => {
         try {
             const { productName } = data;
             const db = admin.firestore();
@@ -295,7 +329,7 @@ export const filterProductList = functions.https.onCall(
 
             const product: any[] = [];
 
-            querySnapshot.forEach((doc) => {
+            querySnapshot.forEach((doc: any) => {
                 const productData = doc.data();
                 product.push({ ...productData, id: doc.id });
             });
