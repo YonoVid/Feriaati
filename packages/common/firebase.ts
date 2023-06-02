@@ -28,7 +28,7 @@ export const app = initializeApp(firebaseConfig);
 export const functions = getFunctions(app);
 export const storage = getStorage(app);
 
-if (location.hostname === "localhost") {
+if (location.hostname === "localhost" || location.hostname === "127.0.0.1") {
     const localAddress = "10.42.33.151" || "localhost";
 
     // Point to function emulator on localhost.
