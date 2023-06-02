@@ -11,6 +11,10 @@ export type ProductFields = {
     image: [string, string, string] | string;
 };
 
+export type ProductListFields = {
+    tokenVendor: string;
+};
+
 export type ProductAddFormProps = FormProps & {
     onSubmit: (data: ProductFields) => void;
 };

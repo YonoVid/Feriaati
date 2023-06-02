@@ -4,7 +4,6 @@
 
 export type ProductListCollectionData = {
     vendorId: string;
-    products: Array<ProductCollectionData>;
 };
 
 export type ProductCollectionData = {

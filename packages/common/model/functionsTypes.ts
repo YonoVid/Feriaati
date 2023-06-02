@@ -65,7 +65,11 @@ export type ProductCollectionData = {
     name: string;
     description: string;
     price: number;
-    isPercentage: boolean;
+    discount: "none" | "percentage" | "value";
     promotion: number;
     image: [string, string, string];
+};
+
+export type ProductData = ProductCollectionData & {
+    id: string;
 };

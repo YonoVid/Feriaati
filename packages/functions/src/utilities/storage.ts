@@ -2,7 +2,15 @@ import * as admin from "firebase-admin";
 import * as functions from "firebase-functions";
 import * as mime from "mime";
 
-export const uploadRegisterImage = async (email: string, image: string) => {
+/**
+ * Function to upload a image to firebase cloud storage
+ * @location string - Should be of format 'location/sublocation'
+ */
+export const uploadImage = async (
+    id: string,
+    location: string,
+    image: string
+) => {
     if (image == null) {
         throw new functions.https.HttpsError("invalid-argument", "ERR00");
     }
@@ -18,7 +26,7 @@ export const uploadRegisterImage = async (email: string, image: string) => {
     );
     const imageBuffer = Buffer.from(base64EncodedImageString, "base64");
 
-    const filename = `register/vendor/${email}.${mime.getExtension(
+    const filename = `${location + "/" + id}.${mime.getExtension(
         mimeType != null ? mimeType[1] : ""
     )}`;
     const file = admin.storage().bucket().file(filename);
@@ -31,3 +39,9 @@ export const uploadRegisterImage = async (email: string, image: string) => {
 
     return photoURL;
 };
+
+export const uploadRegisterImage = async (email: string, image: string) =>
+    uploadImage(email, "register/vendor", image);
+
+export const uploadProductImage = async (id: string, image: string) =>
+    uploadImage(id, "vendor/products", image);

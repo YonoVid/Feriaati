@@ -1,4 +1,5 @@
 import { userStatus, userType } from "./accountTypes";
+import { ProductCollectionData } from "./productTypes";
 
 export type ResponseData<T> = {
     error: boolean;
@@ -17,4 +18,8 @@ export type UpdateStateFields = {
     id: string;
     email: string;
     status: userStatus;
+};
+
+export type ProductData = ProductCollectionData & {
+    id: string;
 };

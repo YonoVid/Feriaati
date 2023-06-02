@@ -1,14 +1,19 @@
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
-import { ProductFields, UpdateProductFields } from "../model/types";
-import { checkAddProductFields } from "./checkProduct";
-import { ResponseData } from "../model/reponseFields";
+import {
+    ProductFields,
+    ProductListFields,
+    UpdateProductFields,
+} from "../model/types";
+import { checkAddProductFields, checkProductListFields } from "./checkProduct";
+import { ProductData, ResponseData } from "../model/reponseFields";
 import {
     ProductCollectionData,
     ProductListCollectionData,
 } from "../model/productTypes";
 import { collectionNames } from "../consts";
 import { errorCodes, messagesCode } from "../errors";
+import { uploadProductImage } from "../utilities/storage";
 
 //funciones crud producto
 export const addProduct = functions.https.onCall(
@@ -17,7 +22,6 @@ export const addProduct = functions.https.onCall(
             const db = admin.firestore();
             // Validar los datos recibidos y verificar la base de datos
             const { check, code } = checkAddProductFields(data);
-            let error = false;
 
             if (check) {
                 const queryVendor = db
@@ -25,6 +29,44 @@ export const addProduct = functions.https.onCall(
                     .where("token", "==", data.tokenVendor);
                 const vendor = await queryVendor.get();
                 if (!vendor.empty) {
+                    // Get product list reference
+                    const productsRef = db.collection(
+                        collectionNames.VENDORPRODUCTS
+                    );
+
+                    const products = await productsRef
+                        .where("vendorId", "==", vendor.docs[0].id)
+                        .get();
+                    // Store document id
+                    let id;
+                    // Create new collection if not exists
+                    if (products.empty) {
+                        let collection: ProductListCollectionData = {
+                            vendorId: vendor.docs[0].id,
+                        };
+                        id = (await productsRef.add(collection)).id;
+                    } else {
+                        id = products.docs[0].id;
+                    }
+                    // Store images data
+                    let imageData: [string, string, string] = ["", "", ""];
+                    if (typeof data.image === "string") {
+                        imageData[0] = await uploadProductImage(id, data.image);
+                    } else {
+                        imageData[0] = await uploadProductImage(
+                            id,
+                            data.image[0]
+                        );
+                        imageData[1] =
+                            data.image[1] != ""
+                                ? await uploadProductImage(id, data.image[1])
+                                : "";
+                        imageData[2] =
+                            data.image[2] != ""
+                                ? await uploadProductImage(id, data.image[2])
+                                : "";
+                    }
+
                     // Configurar los datos del producto
                     const productData: ProductCollectionData = {
                         name: data.name,
@@ -32,29 +74,13 @@ export const addProduct = functions.https.onCall(
                         price: data.price,
                         discount: data.discount,
                         promotion: data.promotion as number,
-                        image: data.image,
+                        image: imageData,
                     };
-                    // Get product list reference
-                    const productsRef = db.collection(collectionNames.PRODUCTS);
 
-                    const products = await productsRef
-                        .where("vendor", "==", vendor.docs[0].id)
-                        .get();
-                    // Create new collection if not exists
-                    if (products.empty) {
-                        let collection: ProductListCollectionData = {
-                            vendorId: vendor.docs[0].id,
-                            products: [productData],
-                        };
-                        await productsRef.add(collection);
-                    } else {
-                        await productsRef.doc(products.docs[0].id).update({
-                            products:
-                                admin.firestore.FieldValue.arrayUnion(
-                                    productData
-                                ),
-                        });
-                    }
+                    await productsRef
+                        .doc(id)
+                        .collection(collectionNames.PRODUCTS)
+                        .add(productData);
 
                     // Retornar el ID del producto creado
                     return {
@@ -76,7 +102,7 @@ export const addProduct = functions.https.onCall(
             // Retornar los resultados
             return {
                 extra: "",
-                error: error,
+                error: true,
                 code: code,
                 msg: messagesCode[code],
             };
@@ -140,7 +166,10 @@ export const updateProduct = functions.https.onCall(
                     price: data.price,
                     discount: data.discount,
                     promotion: data.promotion as number,
-                    image: data.image,
+                    image:
+                        typeof data.image === "string"
+                            ? [data.image, "", ""]
+                            : data.image,
                 };
 
                 // Actualizar el producto en la base de datos
@@ -171,27 +200,85 @@ export const updateProduct = functions.https.onCall(
     }
 );
 
-export const productList = functions.https.onCall(async () => {
-    try {
-        const db = admin.firestore();
-        const usersRef = db.collection("product");
-        const querySnapshot = await usersRef.get();
-        const product: any[] = [];
+export const listProduct = functions.https.onCall(
+    async (
+        data: ProductListFields,
+        context
+    ): Promise<ResponseData<ProductData[]>> => {
+        try {
+            functions.logger.info("DATA::", data);
+            const { check, code } = checkProductListFields(data);
+            if (check) {
+                const db = admin.firestore();
+                let docReference;
+                if (data.idVendor !== null && data.idVendor !== "") {
+                    functions.logger.info("LIST FROM VENDOR ID");
+                    docReference = await db
+                        .collection(collectionNames.VENDORS)
+                        .doc(data.idVendor as string)
+                        .get();
+                } else {
+                    functions.logger.info("LIST FROM VENDOR TOKEN");
+                    const queryVendor = db
+                        .collection(collectionNames.VENDORS)
+                        .where("token", "==", data.tokenVendor);
+                    docReference = (await queryVendor.get()).docs[0];
+                }
 
-        querySnapshot.forEach((doc) => {
-            const productData = doc.data();
-            product.push({ ...productData, id: doc.id });
-        });
+                functions.logger.info("VENDOR DOC::", docReference);
 
-        return product;
-    } catch (error) {
-        functions.logger.error(error);
-        throw new functions.https.HttpsError(
-            "internal",
-            "Error al obtener datos de productos"
-        );
+                if (docReference.exists) {
+                    const vendorProductsRef = (
+                        await db
+                            .collection(collectionNames.VENDORPRODUCTS)
+                            .where("vendorId", "==", docReference.id)
+                            .get()
+                    ).docs[0];
+
+                    functions.logger.info("VENDOR PRODUCTS DOC", docReference);
+
+                    const productsRef = await db
+                        .collection(collectionNames.VENDORPRODUCTS)
+                        .doc(vendorProductsRef.id)
+                        .collection(collectionNames.PRODUCTS)
+                        .get();
+
+                    const products: ProductData[] = [];
+
+                    productsRef.forEach((doc) => {
+                        const productData = doc.data() as ProductCollectionData;
+                        products.push({ id: doc.id, ...productData });
+                    });
+
+                    return {
+                        code: errorCodes.SUCCESFULL,
+                        msg: messagesCode[errorCodes.SUCCESFULL],
+                        error: false,
+                        extra: products,
+                    };
+                }
+                return {
+                    code: errorCodes.USER_NOT_EXISTS_ERROR,
+                    msg: messagesCode[errorCodes.USER_NOT_EXISTS_ERROR],
+                    error: true,
+                    extra: [],
+                };
+            }
+            return {
+                code: code,
+                msg: messagesCode[code],
+                error: true,
+                extra: [],
+            };
+        } catch (error) {
+            functions.logger.error(error);
+            throw new functions.https.HttpsError(
+                "internal",
+                "Error al obtener datos de productos"
+            );
+        }
     }
-});
+);
 
 //funcion para filtrar productos
 export const filterProductList = functions.https.onCall(

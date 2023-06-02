@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 
 import { Box, Card, Divider, Pagination } from "@mui/material";
-import { ProductFields } from "@feria-a-ti/common/model/productAddFormProps";
 import { RProductListProps } from "@feria-a-ti/common/model/productListProps";
 
 import ProductView from "./ProductView";
 import "./ProductList.css";
+import { ProductData } from "@feria-a-ti/common/model/functionsTypes";
 
 function ProductList(props: RProductListProps) {
     const { label, color, children, products, onSubmit } = props;
@@ -19,7 +19,8 @@ function ProductList(props: RProductListProps) {
     };
 
     useEffect(() => {
-        const mockupProduct: ProductFields = {
+        const mockupProduct: ProductData = {
+            id: "mockup",
             name: "Test",
             description: "Is a test of product views",
             price: 1000,

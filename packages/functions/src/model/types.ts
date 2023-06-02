@@ -66,7 +66,12 @@ export type ProductFields = {
     price: number;
     discount: "none" | "percentage" | "value";
     promotion?: number;
-    image: [string, string, string];
+    image: [string, string, string] | string;
+};
+
+export type ProductListFields = {
+    tokenVendor?: string;
+    idVendor?: string;
 };
 
 export type UpdateProductFields = ProductFields & {

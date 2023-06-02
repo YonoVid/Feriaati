@@ -1,18 +1,17 @@
 import { ChangeEvent, useState } from "react";
-import { Controller, useForm, useFieldArray } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 
 import {
     Box,
     Button,
     Card,
-    Checkbox,
     Divider,
     FormControl,
     FormControlLabel,
     FormLabel,
+    LinearProgress,
     Radio,
     RadioGroup,
-    TextField,
 } from "@mui/material";
 
 import {
@@ -25,23 +24,32 @@ import "./ProductAddForm.css";
 import { compressImage } from "@feria-a-ti/common/compression";
 function ProductAddForm(props: RProductAddFormProps) {
     const { label, color, children, imageData, setImageData, onSubmit } = props;
-    const { handleSubmit, watch, control } = useForm<ProductFields>();
+    const { handleSubmit, watch, control } = useForm<ProductFields>({
+        defaultValues: { discount: "none" },
+    });
+
+    const [localImageData, setLocalImageData] = useState<
+        [string, string, string]
+    >(["", "", ""]);
+
+    const [isLoading, setIsLoading] = useState(false);
 
     //Image reader
     const fileReader = new FileReader();
 
     let fileIndex = 0;
-    // eslint-disable-next-line prefer-const
-    let localImageData: [string, string, string] = ["", "", ""];
 
     if (fileReader != null && setImageData != null) {
         fileReader.onload = (ev: ProgressEvent<FileReader>) => {
-            localImageData[fileIndex] = ev.target?.result as string;
-            setImageData(localImageData);
+            const newValue: [string, string, string] = [...localImageData];
+            newValue[fileIndex] = ev.target?.result as string;
+            setLocalImageData(newValue);
+            setImageData(newValue);
         };
     }
 
     const fileStore = async (e: ChangeEvent<Element>, index: number) => {
+        setIsLoading(true);
         const target = e.target as HTMLInputElement;
         fileIndex = index;
         if (
@@ -56,6 +64,7 @@ function ProductAddForm(props: RProductAddFormProps) {
             const img = await compressImage(target!.files![0]);
             fileReader?.readAsDataURL(img as File);
         }
+        setIsLoading(false);
     };
 
     const colorTheme =
@@ -76,6 +85,7 @@ function ProductAddForm(props: RProductAddFormProps) {
             </h1>
             <form onSubmit={handleSubmit(onSubmit)}>
                 <Box>
+                    {isLoading && <LinearProgress />}
                     <InputComponentAlt
                         control={control}
                         name="image"
@@ -83,6 +93,9 @@ function ProductAddForm(props: RProductAddFormProps) {
                         type="file"
                         rules={{
                             required: "La imagen es requerida",
+                            validate: () =>
+                                !isLoading ||
+                                "Hay imagenes que se están procesando",
                         }}
                         onChange={async (e) => {
                             await fileStore(e, 0);

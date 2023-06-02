@@ -32,3 +32,10 @@ export {
     vendorList,
     vendorStateUpdate,
 } from "./admin/adminFunctions";
+
+export {
+    addProduct,
+    deleteProduct,
+    updateProduct,
+    listProduct,
+} from "./product/productFunctions";
