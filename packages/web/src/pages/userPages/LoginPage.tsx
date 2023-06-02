@@ -12,13 +12,15 @@ import {
 } from "@feria-a-ti/common/model/functionsTypes";
 import { LoginFields } from "@feria-a-ti/common/model/loginFields";
 
-import LoginForm from "@feria-a-ti/web/src/components/loginForm/LoginForm";
-import MessageAlert from "@feria-a-ti/web/src/components/messageAlert/MessageAlert";
+import LoginForm from "@feria-a-ti/web/src/components/forms/loginForm/LoginForm";
 import { UserContext } from "@feria-a-ti/web/src/App";
 
+import { useHeaderContext } from "../HeaderLayout";
 import "../../App.css";
 
 function LoginPage() {
+    //Global UI context
+    const { setMessage } = useHeaderContext();
     //Global state variable
     const { setSession, type } = useContext(UserContext);
     //Navigation definition
@@ -26,13 +28,6 @@ function LoginPage() {
     const [attempt, setAttempt] = useState(0);
     // Form variables
     const [canSubmit, setSubmitActive] = useState(true);
-    // Alert Related values
-    const [showAlert, setShowAlert] = useState(false);
-    const [alertMessage, setAlertMessage] = useState("TEXT");
-    const closeAlert = () => {
-        setSubmitActive(true);
-        setShowAlert(false);
-    };
 
     const onSubmit = (data: FieldValues) => {
         setSubmitActive(false);
@@ -50,6 +45,7 @@ function LoginPage() {
                 .then((result) => {
                     const {
                         msg,
+                        error,
                         extra: { email, type, token },
                     } = result.data as ResponseData<UserToken>;
                     console.log(result);
@@ -57,14 +53,14 @@ function LoginPage() {
                     setSubmitActive(true);
                     //setIsLogged(result.data as any);
                     if (msg !== "") {
-                        setAlertMessage(msg);
+                        setMessage({ msg, isError: error });
                     }
                     if (token != null && token !== "") {
                         setSession && setSession({ email, type, token });
                         navigate("/session");
                     }
                 })
-                .finally(() => setShowAlert(true));
+                .finally(() => setSubmitActive(true));
         }
     };
     return (
@@ -83,12 +79,6 @@ function LoginPage() {
                     ¿Olvidaste tu contraseña?
                 </Link>
             </LoginForm>
-            <MessageAlert
-                open={showAlert}
-                title="Estado de acción"
-                message={alertMessage}
-                handleClose={closeAlert}
-            />
         </>
     );
 }

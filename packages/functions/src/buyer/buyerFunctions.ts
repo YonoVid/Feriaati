@@ -1,14 +1,13 @@
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
 import {
-    ResponseData,
     RegisterConfirm,
     RegisterFields,
     LoginFields,
     UpdatePassFields,
-    UserToken,
     RecoveryFields,
 } from "../model/types";
+import { ResponseData, UserToken } from "../model/reponseFields";
 import {
     UserCollectionData,
     userStatus,

@@ -1,17 +1,15 @@
 import { useForm } from "react-hook-form";
-import "./LoginForm.css";
-import { RLoginFormProps } from "@feria-a-ti/common/model/loginFormProps";
 import { Box, Button, Card, Divider } from "@mui/material";
-import InputComponentAlt from "../inputComponent/InputComponentAlt";
+import { RLoginFormProps } from "@feria-a-ti/common/model/loginFormProps";
+import { LoginFields } from "@feria-a-ti/common/model/loginFields";
 import { emailFormatRegex } from "@feria-a-ti/common/check/checkLoginFields";
+
+import InputComponentAlt from "../../inputComponent/InputComponentAlt";
+import "./LoginForm.css";
 
 function LoginForm(props: RLoginFormProps) {
   const { label, color, children, onSubmit } = props;
-  const {
-    formState: { errors },
-    handleSubmit,
-    control,
-  } = useForm();
+  const { handleSubmit, control } = useForm<LoginFields>();
 
   const colorTheme =
     color != null && color === "secondary" ? "secondary" : "primary";
@@ -47,7 +45,6 @@ function LoginForm(props: RLoginFormProps) {
                 message: "El formato debe ser, por ejemplo: ejemplo@correo.cl",
               },
             }}
-            error={errors.password}
           />
         </Box>
         <Box>
@@ -63,7 +60,6 @@ function LoginForm(props: RLoginFormProps) {
                 message: "La contraseña tiene un mínimo de 10 caracteres",
               },
             }}
-            error={errors.confirmPassword}
           />
         </Box>
         <Box sx={{ margin: "1em" }}>

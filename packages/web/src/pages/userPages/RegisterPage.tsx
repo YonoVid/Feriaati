@@ -2,6 +2,8 @@ import { FieldValues } from "react-hook-form";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { httpsCallable } from "firebase/functions";
+import { Link } from "@mui/material";
+
 import { functions } from "@feria-a-ti/common/firebase";
 import {
     RegisterConfirm,
@@ -11,32 +13,23 @@ import {
 import { ResponseData } from "@feria-a-ti/common/model/functionsTypes";
 import { messagesCode } from "@feria-a-ti/common/constants/errors";
 import { checkRegisterFields } from "@feria-a-ti/common/check/checkRegisterFields";
-import RegisterUserForm from "@feria-a-ti/web/src/components/registerUserForm/RegisterUserForm";
-import ConfirmRegisterForm from "@feria-a-ti/web/src/components/confirmRegisterForm/ConfirmRegisterForm";
-import MessageAlert from "@feria-a-ti/web/src/components/messageAlert/MessageAlert";
-import { Link } from "@mui/material";
+import RegisterUserForm from "@feria-a-ti/web/src/components/forms/registerUserForm/RegisterUserForm";
+import ConfirmRegisterForm from "@feria-a-ti/web/src/components/forms/confirmRegisterForm/ConfirmRegisterForm";
+
+import { useHeaderContext } from "../HeaderLayout";
 
 function RegisterPage() {
+    //Global UI context
+    const { setMessage } = useHeaderContext();
     // Dom redirection variable
     const navigate = useNavigate();
     // Action to do on sucesfull form submit
     const [emailRegistered, setEmailRegistered] = useState("");
 
-    const [canRegister, setCanRegister] = useState(true);
-    const [canConfirmRegister, setCanConfirmRegister] = useState(true);
+    const [canSubmit, setCanSubmit] = useState(true);
     const [registerComplete, setRegisterComplete] = useState(false);
 
-    // Alert Related values
-    const [showAlert, setShowAlert] = useState(false);
-    const [alertMessage, setAlertMessage] = useState("TEXT");
-    const closeAlert = () => {
-        registerComplete ? setCanConfirmRegister(true) : setCanRegister(true);
-        setShowAlert(false);
-    };
-
     const onSubmitRegister = (data: FieldValues) => {
-        //Lock register button
-        setCanRegister(false);
         console.log("SUBMIT FORM");
         //Format data to send to server
         const formatedData: RegisterFields = {
@@ -51,6 +44,8 @@ function RegisterPage() {
         console.log("ERROR CHECK::", check);
 
         if (check) {
+            //Lock register button
+            setCanSubmit(false);
             //Call firebase function to create user
             const addUser = httpsCallable<RegisterFields, ResponseData<string>>(
                 functions,
@@ -58,26 +53,24 @@ function RegisterPage() {
             );
             addUser(formatedData)
                 .then((result) => {
+                    const { msg, error } = result.data;
                     console.log(result);
-                    //Unlock register button
-                    setCanRegister(true);
                     //Set registered email
                     setEmailRegistered(data.email);
                     //Set register complete
                     setRegisterComplete(true);
                     //Show alert message
-                    setAlertMessage(result.data?.msg);
+                    setMessage({ msg, isError: error });
                 })
                 .catch((error) => {
                     console.log(error);
-                    setAlertMessage(messagesCode["ERR00"]);
+                    setMessage({ msg: messagesCode["ERR00"], isError: true });
                 })
-                .finally(() => setShowAlert(true));
+                .finally(() => setCanSubmit(true)); //Unlock register button
         }
     };
 
     const onSubmitConfirmRegister = (data: FieldValues) => {
-        setCanConfirmRegister(false);
         console.log("SUBMIT FORM");
         const formatedData: RegisterConfirm = {
             email: emailRegistered as string,
@@ -85,22 +78,24 @@ function RegisterPage() {
         };
 
         if (registerComplete) {
-            const addUser = httpsCallable<
+            setCanSubmit(false);
+            const confirmRegister = httpsCallable<
                 RegisterConfirm,
                 ResponseData<string>
             >(functions, "confirmRegister");
-            addUser(formatedData)
+            confirmRegister(formatedData)
                 .then((result) => {
+                    const { msg, error } = result.data;
                     console.log(result);
-                    setCanConfirmRegister(true);
                     //Show alert message
-                    setAlertMessage(result.data?.msg);
+                    setMessage({ msg, isError: error });
                     navigate("/login");
                 })
                 .catch((error) => {
                     console.log(error);
-                    setAlertMessage(messagesCode["ERR00"]);
-                });
+                    setMessage({ msg: messagesCode["ERR00"], isError: error });
+                })
+                .finally(() => setCanSubmit(true)); //Unlock register button
         }
     };
 
@@ -109,24 +104,18 @@ function RegisterPage() {
             {(registerComplete && (
                 <ConfirmRegisterForm
                     onSubmit={onSubmitConfirmRegister}
-                    canSubmit={canConfirmRegister}
+                    canSubmit={canSubmit}
                 />
             )) || (
                 <RegisterUserForm
                     onSubmit={onSubmitRegister}
-                    canSubmit={canRegister}
+                    canSubmit={canSubmit}
                 >
                     <Link component="button" onClick={() => navigate("/login")}>
                         Ya tengo una cuenta
                     </Link>
                 </RegisterUserForm>
             )}
-            <MessageAlert
-                open={showAlert}
-                title="Estado de acción"
-                message={alertMessage}
-                handleClose={closeAlert}
-            />
         </>
     );
 }

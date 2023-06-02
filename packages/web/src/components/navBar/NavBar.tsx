@@ -16,11 +16,12 @@ import MenuIcon from "@mui/icons-material/Menu";
 import AdbIcon from "@mui/icons-material/Adb";
 import AccountCircle from "@mui/icons-material/AccountCircle";
 // import "./NavBar.css";
+import { userType } from "@feria-a-ti/common/model/functionsTypes";
 import { UserContext } from "@feria-a-ti/web/src/App";
 
 function NavBar() {
     //Context variables
-    const { authUser, resetSession } = useContext(UserContext);
+    const { authUser, type, resetSession } = useContext(UserContext);
     //Navigation definition
     const navigate = useNavigate();
 
@@ -28,7 +29,15 @@ function NavBar() {
         resetSession && resetSession();
     };
 
-    const pages = ["HOME"];
+    const pages = [
+        {
+            label: "HOME",
+            action: () => {
+                console.log("HOME ACTION");
+                navigate(type === "vendor" ? "managerVendor" : "home");
+            },
+        },
+    ];
     const settings = [
         {
             label: "Profile",
@@ -54,7 +63,8 @@ function NavBar() {
     const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
     const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
 
-    const isVendorPage = window.location.pathname.includes("Vendor");
+    const isVendorPage =
+        window.location.pathname.includes("Vendor") || type === userType.vendor;
 
     const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorElNav(event.currentTarget);
@@ -138,11 +148,14 @@ function NavBar() {
                             >
                                 {pages.map((page) => (
                                     <MenuItem
-                                        key={page}
-                                        onClick={handleCloseNavMenu}
+                                        key={page.label}
+                                        onClick={() => {
+                                            handleCloseNavMenu();
+                                            page.action();
+                                        }}
                                     >
                                         <Typography textAlign="center">
-                                            {page}
+                                            {page.label}
                                         </Typography>
                                     </MenuItem>
                                 ))}
@@ -182,15 +195,18 @@ function NavBar() {
                             >
                                 {pages.map((page) => (
                                     <Button
-                                        key={page}
-                                        onClick={handleCloseNavMenu}
+                                        key={page.label}
+                                        onClick={() => {
+                                            handleCloseNavMenu();
+                                            page.action();
+                                        }}
                                         sx={{
                                             my: 2,
                                             color: "white",
                                             display: "block",
                                         }}
                                     >
-                                        {page}
+                                        {page.label}
                                     </Button>
                                 ))}
                             </Box>

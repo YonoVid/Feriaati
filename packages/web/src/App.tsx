@@ -1,24 +1,26 @@
 import React, { useState } from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
+import { CircularProgress } from "@mui/material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
+
 import { themeOptions } from "@feria-a-ti/common/theme/base";
 import { SessionUserData } from "@feria-a-ti/common/model/sessionType";
+import { UserToken, userType } from "@feria-a-ti/common/model/functionsTypes";
 import ErrorPage from "@feria-a-ti/web/src/pages/errorPage/ErrorPage";
-import RegisterPage from "@feria-a-ti/web/src/pages/registerPage/RegisterPage";
-import LoginPage from "@feria-a-ti/web/src/pages/loginPage/LoginPage";
-import RecoveryPage from "@feria-a-ti/web/src/pages/loginPage/RecoveryPage";
+import RegisterPage from "@feria-a-ti/web/src/pages/userPages/RegisterPage";
+import LoginPage from "@feria-a-ti/web/src/pages/userPages/LoginPage";
+import RecoveryPage from "@feria-a-ti/web/src/pages/userPages/RecoveryPage";
 import Home from "@feria-a-ti/web/src/pages/Home";
 import SessionPage from "@feria-a-ti/web/src/pages/SessionPage";
-import RegisterVendorPage from "@feria-a-ti/web/src/pages/registerVendorPage/RegisterVendorPage";
+import RegisterVendorPage from "@feria-a-ti/web/src/pages/vendorPages/RegisterVendorPage";
 import AdminLoginPage from "@feria-a-ti/web/src/pages/adminPage/AdminLoginPage";
-import VendorLoginPage from "@feria-a-ti/web/src/pages/vendorLoginPage/VendorLoginPage";
-import VendorRecoveryPage from "@feria-a-ti/web/src/pages/vendorLoginPage/VendorRecoveryPage";
 import ProductPage from "@feria-a-ti/web/src/pages/productPage/ProductPage";
+import VendorLoginPage from "@feria-a-ti/web/src/pages/vendorPages/VendorLoginPage";
+import VendorRecoveryPage from "@feria-a-ti/web/src/pages/vendorPages/VendorRecoveryPage";
 import { HeaderLayout } from "@feria-a-ti/web/src/pages/HeaderLayout";
 import ActivateVendors from "@feria-a-ti/web/src/pages/adminPage/ActivateVendors";
-import { UserToken, userType } from "@feria-a-ti/common/model/functionsTypes";
-import { CircularProgress } from "@mui/material";
+import ManagerVendorPage from "@feria-a-ti/web/src/pages/vendorPages/ManagerVendorPage";
 
 const router = createBrowserRouter([
   {
@@ -26,7 +28,7 @@ const router = createBrowserRouter([
     children: [
       {
         path: "/",
-        element: <LoginPage />,
+        element: <Home />,
         errorElement: <ErrorPage />,
       },
       {
@@ -46,6 +48,10 @@ const router = createBrowserRouter([
         element: <SessionPage />,
       },
       {
+        path: "/product",
+        element: <ProductPage />,
+      },
+      {
         path: "/home",
         element: <Home />,
       },
@@ -60,6 +66,10 @@ const router = createBrowserRouter([
       {
         path: "/registerVendor",
         element: <RegisterVendorPage />,
+      },
+      {
+        path: "/managerVendor",
+        element: <ManagerVendorPage />,
       },
       {
         path: "/adminLogin",
@@ -78,7 +88,16 @@ const router = createBrowserRouter([
 ]);
 
 const theme = createTheme(themeOptions);
-export const UserContext = React.createContext<SessionUserData>({});
+export const UserContext = React.createContext<SessionUserData>({
+  authUser: "",
+  authToken: "",
+  type: userType.undefined,
+  setSession: (data: UserToken) => {
+    data;
+  },
+  resetSession: () => false,
+  checkSession: () => false,
+});
 
 function App() {
   const [user, setUser] = useState(localStorage.getItem("email") || "");
@@ -88,6 +107,7 @@ function App() {
   );
 
   const setSessionData = (user: UserToken) => {
+    console.log("SET SESSION::", user);
     setUser(user.email);
     setToken(user.token);
     setType(user.type);

@@ -12,31 +12,23 @@ import {
 } from "@feria-a-ti/common/model/registerFields";
 import { ResponseData } from "@feria-a-ti/common/model/functionsTypes";
 import MessageAlert from "@feria-a-ti/web/src/components/messageAlert/MessageAlert";
-import RegisterVendorForm from "@feria-a-ti/web/src/components/registerVendorForm/RegisterVendorForm";
+import RegisterVendorForm from "@feria-a-ti/web/src/components/forms/registerVendorForm/RegisterVendorForm";
+
+import { useHeaderContext } from "../HeaderLayout";
 import "@feria-a-ti/web/src/App.css";
 
 function RegisterVendorPage() {
+    //Global UI context
+    const { setMessage } = useHeaderContext();
     // Dom redirection variable
     const navigate = useNavigate();
-    // Action to do on sucesfull form submit
-    //const [emailRegistered, setEmailRegistered] = useState("");
 
     //Image data
     const [imageData, setImageData] = useState<string | ArrayBuffer>("");
 
-    const [canRegister, setCanRegister] = useState(true);
-
-    // Alert Related values
-    const [showAlert, setShowAlert] = useState(false);
-    const [alertMessage, setAlertMessage] = useState("TEXT");
-    const closeAlert = () => {
-        setCanRegister(true);
-        setShowAlert(false);
-    };
+    const [canSubmit, setCanSubmit] = useState(true);
 
     const onSubmitRegister = (data: FieldValues) => {
-        //Lock register button
-        setCanRegister(false);
         console.log("SUBMIT FORM");
         //Format data to send to server
         const formatedData: RegisterVendorFields = {
@@ -61,6 +53,8 @@ function RegisterVendorPage() {
         console.log("ERROR CHECK::", data);
 
         if (check) {
+            //Lock register button
+            setCanSubmit(false);
             //Call firebase function to create user
             const addVendor = httpsCallable<
                 RegisterVendorFields,
@@ -68,18 +62,17 @@ function RegisterVendorPage() {
             >(functions, "addVendor");
             addVendor(formatedData)
                 .then((result) => {
+                    const { msg, error } = result.data;
                     console.log(result);
-                    //Unlock register button
-                    setCanRegister(true);
                     //Show alert message
-                    setAlertMessage(result.data?.msg);
+                    setMessage({ msg, isError: error });
                     navigate("/loginVendor");
                 })
                 .catch((error) => {
                     console.log(error);
-                    setAlertMessage(messagesCode["ERR00"]);
+                    setMessage({ msg: messagesCode["ERR00"], isError: error });
                 })
-                .finally(() => setShowAlert(true));
+                .finally(() => setCanSubmit(true)); //Unlock register button
         }
     };
 
@@ -87,14 +80,8 @@ function RegisterVendorPage() {
         <>
             <RegisterVendorForm
                 onSubmit={onSubmitRegister}
-                canSubmit={canRegister}
+                canSubmit={canSubmit}
                 setImageData={setImageData}
-            />
-            <MessageAlert
-                open={showAlert}
-                title="Estado de acción"
-                message={alertMessage}
-                handleClose={closeAlert}
             />
         </>
     );

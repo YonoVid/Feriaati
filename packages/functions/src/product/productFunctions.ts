@@ -1,17 +1,20 @@
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
-import {
-  //ProductAddFormProps,
-  ProductFields,
-  UpdateProductFields,
-} from "../../../common/model/productAddFormProps";
+import { collection, query, where, getDocs } from "firebase/firestore";
+import { ProductFields, UpdateProductFields } from "../model/types";
+
 import { checkAddProductFields } from "./checkProduct";
-import { ResponseData } from "../model/types";
-import { ProductCollectionData } from "../../../../packages/common/model/functionsTypes";
+import { ResponseData } from "../model/reponseFields";
+import {
+  ProductCollectionData,
+  ProductListCollectionData,
+} from "../model/productTypes";
+import { collectionNames } from "../consts";
+import { errorCodes, messagesCode } from "../errors";
 
 //funciones crud producto
 export const addProduct = functions.https.onCall(
-  async (data: ProductFields, context): Promise<ResponseData<string>> => {
+  async (data: ProductFields, context: any): Promise<ResponseData<string>> => {
     try {
       const db = admin.firestore();
       // Validar los datos recibidos y verificar la base de datos
@@ -19,28 +22,54 @@ export const addProduct = functions.https.onCall(
       let error = false;
 
       if (check) {
-        // Configurar los datos del producto
-        const productData: ProductCollectionData = {
-          name: data.name,
-          description: data.description,
-          price: data.price,
-          isPercentage: data.isPercentage,
-          promotion: data.promotion,
-          image: data.image,
-        };
+        const queryVendor = db
+          .collection(collectionNames.VENDORS)
+          .where("token", "==", data.tokenVendor);
+        const vendor = await queryVendor.get();
+        if (!vendor.empty) {
+          // Configurar los datos del producto
+          const productData: ProductCollectionData = {
+            name: data.name,
+            description: data.description,
+            price: data.price,
+            discount: data.discount,
+            promotion: data.promotion as number,
+            image: data.image,
+          };
+          // Get product list reference
+          const productsRef = db.collection(collectionNames.PRODUCTS);
 
-        // Agregar el producto a la colección de productos
-        const productRef = await db.collection("product").add(productData);
+          const products = await productsRef
+            .where("vendor", "==", vendor.docs[0].id)
+            .get();
+          // Create new collection if not exists
+          if (products.empty) {
+            let collection: ProductListCollectionData = {
+              vendorId: vendor.docs[0].id,
+              products: [productData],
+            };
+            await productsRef.add(collection);
+          } else {
+            await productsRef.doc(products.docs[0].id).update({
+              products: admin.firestore.FieldValue.arrayUnion(productData),
+            });
+          }
 
-        // Retornar el ID del producto creado
-        return {
-          extra: productRef.id,
-          error: error,
-          code: code,
-          msg: "",
-        };
-      } else {
-        error = true;
+          // Retornar el ID del producto creado
+          return {
+            extra: products.docs[0].id,
+            error: false,
+            code: errorCodes.SUCCESFULL,
+            msg: messagesCode[errorCodes.SUCCESFULL],
+          };
+        } else {
+          return {
+            extra: "",
+            error: true,
+            code: errorCodes.USER_NOT_EXISTS_ERROR,
+            msg: messagesCode[errorCodes.USER_NOT_EXISTS_ERROR],
+          };
+        }
       }
 
       // Retornar los resultados
@@ -48,7 +77,7 @@ export const addProduct = functions.https.onCall(
         extra: "",
         error: error,
         code: code,
-        msg: "",
+        msg: messagesCode[code],
       };
     } catch (err) {
       functions.logger.error(err);
@@ -57,27 +86,32 @@ export const addProduct = functions.https.onCall(
   }
 );
 
-export const deleteProduct = functions.https.onCall(async (data, context) => {
-  try {
-    const db = admin.firestore();
-    const { productId } = data;
+export const deleteProduct = functions.https.onCall(
+  async (data: any, context: any) => {
+    try {
+      const db = admin.firestore();
+      const { productId } = data;
 
-    // Eliminar el producto de la base de datos
-    await db.collection("product").doc(productId).delete();
+      // Eliminar el producto de la base de datos
+      await db.collection("product").doc(productId).delete();
 
-    // Retornar una respuesta indicando que el producto se eliminó correctamente
-    return { message: "Producto eliminado correctamente" };
-  } catch (error) {
-    functions.logger.error(error);
-    throw new functions.https.HttpsError(
-      "internal",
-      "Error al eliminar el producto."
-    );
+      // Retornar una respuesta indicando que el producto se eliminó correctamente
+      return { message: "Producto eliminado correctamente" };
+    } catch (error) {
+      functions.logger.error(error);
+      throw new functions.https.HttpsError(
+        "internal",
+        "Error al eliminar el producto."
+      );
+    }
   }
-});
+);
 
 export const updateProduct = functions.https.onCall(
-  async (data: UpdateProductFields, context): Promise<ResponseData<string>> => {
+  async (
+    data: UpdateProductFields,
+    context: any
+  ): Promise<ResponseData<string>> => {
     try {
       const db = admin.firestore();
       // Validar los datos recibidos y verificar la base de datos
@@ -105,8 +139,8 @@ export const updateProduct = functions.https.onCall(
           name: data.name,
           description: data.description,
           price: data.price,
-          isPercentage: data.isPercentage,
-          promotion: data.promotion,
+          discount: data.discount,
+          promotion: data.promotion as number,
           image: data.image,
         };
 
@@ -118,7 +152,7 @@ export const updateProduct = functions.https.onCall(
           extra: data.productId,
           error: error,
           code: code,
-          msg: "Producto editado",
+          msg: "",
         };
       } else {
         error = true;
@@ -138,42 +172,42 @@ export const updateProduct = functions.https.onCall(
   }
 );
 
-export const productList = functions.https.onCall(async (data, context) => {
-  try {
-    const { page } = data; // obtiene numero de pagina actual
-    const pageSize = 10; // cantidad de productos que se mostraran por cada pagina
-    const db = admin.firestore();
-    const productRef = db.collection("product");
-    // Calcula el índice de inicio y fin para la consulta de la página actual
-    const startIndex = (page - 1) * pageSize;
-    const endIndex = startIndex + pageSize;
-    const querySnapshot = await productRef.limit(endIndex).get();
-    const product: any[] = [];
-    let counter = 0;
-    querySnapshot.forEach((doc) => {
-      if (counter >= startIndex && counter < endIndex) {
-        const productData = doc.data();
-        if (productData.isPercentage) {
-          productData.price == productData.price * productData.promotion;
+export const productList = functions.https.onCall(
+  async (data: any, context: any) => {
+    try {
+      const { page } = data; // obtiene numero de pagina actual
+      const pageSize = 10; // cantidad de productos que se mostraran por cada pagina
+      const db = admin.firestore();
+      const usersRef = db.collection("product");
+      // Calcula el índice de inicio y fin para la consulta de la página actual
+      const startIndex = (page - 1) * pageSize;
+      const endIndex = startIndex + pageSize;
+      const querySnapshot = await usersRef.get();
+      const product: any[] = [];
+      let counter = 0;
+      querySnapshot.forEach((doc: any) => {
+        if (counter >= startIndex && counter < endIndex) {
+          const productData = doc.data();
+          product.push({ ...productData, id: doc.id });
         }
-        product.push({ ...productData, id: doc.id });
-      }
-      counter++;
-    });
+        counter++;
+      });
 
-    return { products: product, pageSize: pageSize };
-  } catch (error) {
-    functions.logger.error(error);
-    throw new functions.https.HttpsError(
-      "internal",
-      "Error al obtener datos de productos"
-    );
+      return { products: product, pageSize: pageSize };
+    } catch (error) {
+      functions.logger.error(error);
+      throw new functions.https.HttpsError(
+        "internal",
+        "Error al obtener datos de productos"
+      );
+    }
   }
-});
+);
 
 //funcion para filtrar productos
+
 export const filterProductList = functions.https.onCall(
-  async (data: any, context) => {
+  async (data: any, context: any) => {
     try {
       const { productName } = data;
       const db = admin.firestore();
@@ -186,7 +220,7 @@ export const filterProductList = functions.https.onCall(
 
       const product: any[] = [];
 
-      querySnapshot.forEach((doc) => {
+      querySnapshot.forEach((doc: any) => {
         const productData = doc.data();
         product.push({ ...productData, id: doc.id });
       });

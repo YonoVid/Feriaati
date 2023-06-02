@@ -1,12 +1,12 @@
-import { ProductFields } from "../model/productAddFormProps";
+import { ProductFields } from "@feria-a-ti/common/model/productAddFormProps";
 
 export const checkAddProductFields = (input: ProductFields): boolean => {
-  const { name, price, isPercentage, promotion, image } = input;
+  const { name, price, discount, promotion, image } = input;
 
   const productCheck =
     name != null &&
     price != null &&
-    isPercentage != null &&
+    discount != null &&
     promotion != null &&
     image != null;
 

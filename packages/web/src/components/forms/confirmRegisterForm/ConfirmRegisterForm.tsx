@@ -3,16 +3,14 @@ import { Box, Button, Card, Divider } from "@mui/material";
 
 import { controlValidInput } from "@feria-a-ti/common/inputControl";
 import { RFormProps } from "@feria-a-ti/common/model/registerFormProps";
+import { ConfirmRegisterFields } from "@feria-a-ti/common/model/registerFields";
+
 import InputComponentAlt from "@feria-a-ti/web/src/components/inputComponent/InputComponentAlt";
 import "./ConfirmRegisterForm.css";
 
 function ConfirmRegisterForm(props: RFormProps) {
     const { children, onSubmit } = props;
-    const {
-        control,
-        formState: { errors },
-        handleSubmit,
-    } = useForm();
+    const { control, handleSubmit } = useForm<ConfirmRegisterFields>();
 
     return (
         <Card
@@ -35,7 +33,7 @@ function ConfirmRegisterForm(props: RFormProps) {
                         rules={{
                             required: "El código es requerido",
                             minLength: {
-                                value: 8,
+                                value: 6,
                                 message: "El código posee 6 caracteres",
                             },
                             maxLength: {
@@ -43,7 +41,6 @@ function ConfirmRegisterForm(props: RFormProps) {
                                 message: "El código posee 6 caracteres",
                             },
                         }}
-                        error={errors.code}
                     />
                 </Box>
                 <Box sx={{ margin: "1em" }}>
