@@ -3,7 +3,14 @@ import { Appbar, Menu } from "react-native-paper";
 import { getHeaderTitle } from "@react-navigation/elements";
 import { NativeStackHeaderProps } from "@react-navigation/native-stack";
 
+import { useAppContext } from "../app/AppContext";
+import { userType } from "@feria-a-ti/common/model/functionsTypes";
+
 export default function AppBar(props: NativeStackHeaderProps) {
+    //Session context data
+    // Context variables
+    const { authToken, type, resetSession } = useAppContext();
+
     const { navigation, route, options, back } = props;
     const [visible, setVisible] = React.useState(false);
     const openMenu = () => {
@@ -32,22 +39,38 @@ export default function AppBar(props: NativeStackHeaderProps) {
                         />
                     }
                 >
-                    <Menu.Item
-                        onPress={() => {
-                            console.log("LAST SCREEN NAME::", route.name);
-                            navigation.replace(
+                    {type === userType.undefined ||
+                    authToken === null ||
+                    authToken === "" ? (
+                        <Menu.Item
+                            onPress={() => {
+                                console.log("LAST SCREEN NAME::", route.name);
+                                navigation.replace(
+                                    route.name == "loginClient"
+                                        ? "loginVendor"
+                                        : "loginClient"
+                                );
+                                closeMenu();
+                            }}
+                            title={
                                 route.name == "loginClient"
-                                    ? "loginVendor"
-                                    : "loginClient"
-                            );
-                            closeMenu();
-                        }}
-                        title={
-                            route.name == "loginClient"
-                                ? "Ir a acceso de vendedor"
-                                : "Ir a acceso de comprador"
-                        }
-                    />
+                                    ? "Ir a acceso de vendedor"
+                                    : "Ir a acceso de comprador"
+                            }
+                        />
+                    ) : (
+                        <Menu.Item
+                            onPress={() => {
+                                console.log("LAST SCREEN NAME::", route.name);
+                                resetSession();
+                                navigation.replace("session");
+                                console.log("TOKEN::", authToken);
+                                console.log("TYPE::", type);
+                                closeMenu();
+                            }}
+                            title={"Logout"}
+                        />
+                    )}
                 </Menu>
             ) : null}
         </Appbar.Header>

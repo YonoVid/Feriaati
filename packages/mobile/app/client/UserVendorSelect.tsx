@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { HttpsCallableResult } from "firebase/functions";
-import { Alert, ScrollView, StyleSheet, Text, View } from "react-native";
+import { ScrollView, StyleSheet } from "react-native";
 import { NavigationProp, ParamListBase } from "@react-navigation/native";
 
 import { checkLoginFields } from "@feria-a-ti/common/check/checkLoginFields";
@@ -13,14 +13,13 @@ import {
     ResponseData,
     UserToken,
 } from "@feria-a-ti/common/model/functionsTypes";
-import { MessageAlert } from "@feria-a-ti/mobile/components/MessageAlert";
 import { useAppContext } from "../AppContext";
 
-export interface LoginVendorProps {
+export interface UserVendorSelectProps {
     navigation: NavigationProp<ParamListBase>;
 }
 
-export const LoginVendor = (props: LoginVendorProps) => {
+export const UserVendorSelect = (props: UserVendorSelectProps) => {
     // Context variables
     const { setSession, setMessage } = useAppContext();
     // Navigation
@@ -31,10 +30,11 @@ export const LoginVendor = (props: LoginVendorProps) => {
     const onSubmit = (data: LoginFields) => {
         //  setSubmitActive(false);
         console.log("SUBMIT FORM");
+        setSubmitActive(false);
 
         const check = checkLoginFields(data);
         if (check) {
-            const login = httpsCallable(functions, "loginVendor");
+            const login = httpsCallable(functions, "login");
             login(data)
                 .then(
                     (result: HttpsCallableResult<ResponseData<UserToken>>) => {
@@ -67,13 +67,13 @@ export const LoginVendor = (props: LoginVendorProps) => {
                 <LoginForm onSubmit={onSubmit} canSubmit={submitActive}>
                     <Button
                         mode="text"
-                        onPress={() => navigation.navigate("registerVendor")}
+                        onPress={() => navigation.navigate("registerClient")}
                     >
                         No tengo una cuenta
                     </Button>
                     <Button
                         mode="text"
-                        onPress={() => navigation.navigate("recoveryVendor")}
+                        onPress={() => navigation.navigate("recoveryClient")}
                     >
                         He olvidado mi contraseña
                     </Button>

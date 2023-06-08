@@ -39,6 +39,14 @@ export const getSessionType = async () => {
     }
 };
 
+export const getSession = async (): Promise<UserToken> => {
+    return {
+        email: await getSessionEmail(),
+        token: await getSessionToken(),
+        type: await getSessionType(),
+    };
+};
+
 export const setSession = async (data: UserToken) => {
     try {
         await SecureStore.setItemAsync(dataKey.authUser, data.email);
@@ -63,14 +71,14 @@ export const checkSession = async (): Promise<boolean> => {
         const authToken = await getSessionToken();
         const type = await getSessionType();
         if (
-            authUser == null &&
-            authUser == "" &&
-            authToken == null &&
-            authToken != "" &&
-            type != null &&
+            authUser == null ||
+            authUser == "" ||
+            authToken == null ||
+            authToken == "" ||
+            type != null ||
             type != userType.undefined
         ) {
-            resetSession();
+            await resetSession();
             return false;
         }
         return true;

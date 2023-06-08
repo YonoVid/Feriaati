@@ -49,7 +49,7 @@ function ProductAddForm(props: RProductAddFormProps) {
             setLocalImageData(editableState.image);
             setImageData(editableState.image);
         }
-    }, [editableState]);
+    }, [editableState, setImageData, setValue]);
 
     const [localImageData, setLocalImageData] = useState<
         [string, string, string]

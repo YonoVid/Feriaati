@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction, useCallback, useState } from "react";
+ncimport React, { Dispatch, SetStateAction, useCallback, useState } from "react";
 import {
     Controller,
     FieldError,
@@ -7,7 +7,7 @@ import {
     UseControllerProps,
     UseFormSetValue,
 } from "react-hook-form";
-import { Image, Text, StyleSheet, Keyboard, View } from "react-native";
+import { Image, Text, StyleSheet, Keyboard } from "react-native";
 import { Avatar, Button } from "react-native-paper";
 import * as DocumentPicker from "expo-document-picker";
 import * as ExpoImageManipulator from "expo-image-manipulator";
@@ -76,32 +76,25 @@ const FileInputComponent = <T extends FieldValues>({
 
     return (
         <>
-            <View style={{ flexDirection: "row" }}>
-                <Controller
-                    name={name}
-                    control={control}
-                    rules={rules}
-                    render={({ field: { value }, fieldState: { error } }) => (
-                        <Button
-                            style={{ flex: 1 }}
-                            mode="elevated"
-                            icon={icon}
-                            onPress={handleDocumentSelection}
-                        >
-                            {(shownValue &&
-                                (shownValue.length > 25
-                                    ? shownValue.substring(0, 25) + "..."
-                                    : shownValue)) ||
-                                labelText}
-                        </Button>
-                    )}
-                />
-                {preview !== "" ? (
-                    <Avatar.Image size={32} source={{ uri: preview }} />
-                ) : (
-                    <Avatar.Icon size={32} icon="image" />
+            <Controller
+                name={name}
+                control={control}
+                rules={rules}
+                render={({ field: { value }, fieldState: { error } }) => (
+                    <Button
+                        mode="elevated"
+                        icon={icon}
+                        onPress={handleDocumentSelection}
+                    >
+                        {(shownValue &&
+                            (shownValue.length > 25
+                                ? shownValue.substring(0, 25) + "..."
+                                : shownValue)) ||
+                            labelText}
+                    </Button>
                 )}
-            </View>
+            />
+            <Avatar.Image size={24} source={() => preview} />
             {error && <Text>{error?.message || "ERROR"}</Text>}
         </>
     );

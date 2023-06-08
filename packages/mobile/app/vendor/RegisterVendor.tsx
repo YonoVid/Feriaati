@@ -11,28 +11,24 @@ import {
     userStatus,
 } from "@feria-a-ti/common/model/registerFields";
 import { ResponseData } from "@feria-a-ti/common/model/functionsTypes";
-import { MessageAlert } from "@feria-a-ti/mobile/components/MessageAlert";
 import RegisterVendorForm from "@feria-a-ti/mobile/components/forms/RegisterVendorForm";
+import { useAppContext } from "../AppContext";
 
 export interface RegisterVendorProps {
     navigation: NavigationProp<ParamListBase>;
 }
 
 export const RegisterVendor = () => {
+    // Context variables
+    const { setSession, setMessage } = useAppContext();
+
+    //Account data
     const [emailRegistered, setEmailRegistered] = useState("");
 
     const [canRegister, setCanRegister] = useState(true);
 
     //Store user file data
     const [imageData, setImageData] = useState<string | ArrayBuffer>("");
-
-    // Alert Related values
-    const [showAlert, setShowAlert] = useState(false);
-    const [alertMessage, setAlertMessage] = useState("TEXT");
-    const closeAlert = () => {
-        setCanRegister(true);
-        setShowAlert(false);
-    };
 
     const onSubmitRegister = async (data: RegisterVendorFields) => {
         setCanRegister(false);
@@ -49,18 +45,17 @@ export const RegisterVendor = () => {
             data.status = userStatus.registered;
             addUser(data)
                 .then((result) => {
+                    const { msg, error } = result.data;
                     console.log(result);
-                    //Unlock register button
-                    setCanRegister(true);
                     //Set registered email
                     setEmailRegistered(data.email);
-                    setAlertMessage(result.data?.msg);
+                    setMessage({ msg, isError: error });
                 })
                 .catch((error) => {
                     console.log(error);
-                    setAlertMessage(messagesCode["ERR00"]);
+                    setMessage({ msg: messagesCode["ERR00"], isError: true });
                 })
-                .finally(() => setShowAlert(true));
+                .finally(() => setCanRegister(true));
         }
         console.log(data, check);
     };
@@ -77,12 +72,6 @@ export const RegisterVendor = () => {
                     setImageData={setImageData}
                 />
             </ScrollView>
-            <MessageAlert
-                open={showAlert}
-                title={"ESTADO DE ACCIÓN"}
-                message={alertMessage}
-                handleClose={closeAlert}
-            />
         </>
     );
 };

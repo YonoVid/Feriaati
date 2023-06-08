@@ -1,6 +1,6 @@
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import { HttpsCallableResult } from "firebase/functions";
-import { Alert, ScrollView, StyleSheet, Text, View } from "react-native";
+import { ScrollView, StyleSheet } from "react-native";
 import { NavigationProp, ParamListBase } from "@react-navigation/native";
 
 import { checkLoginFields } from "@feria-a-ti/common/check/checkLoginFields";
@@ -13,26 +13,19 @@ import {
     ResponseData,
     UserToken,
 } from "@feria-a-ti/common/model/functionsTypes";
-import { MessageAlert } from "@feria-a-ti/mobile/components/MessageAlert";
-import { ComponentContext } from "..";
-import { setSession } from "@feria-a-ti/mobile/utilities/sessionData";
+import { useAppContext } from "../AppContext";
 
 export interface LoginClientProps {
     navigation: NavigationProp<ParamListBase>;
 }
 
 export const LoginClient = (props: LoginClientProps) => {
-    //Navigation
+    // Context variables
+    const { setSession, setMessage } = useAppContext();
+    // Navigation
     const { navigation } = props;
     // Form variables
     const [submitActive, setSubmitActive] = useState(true);
-    // Alert Related values
-    const [showAlert, setShowAlert] = useState(false);
-    const [alertMessage, setAlertMessage] = useState("ERROR");
-    const closeAlert = () => {
-        setSubmitActive(true);
-        setShowAlert(false);
-    };
 
     const onSubmit = (data: LoginFields) => {
         //  setSubmitActive(false);
@@ -47,10 +40,11 @@ export const LoginClient = (props: LoginClientProps) => {
                     (result: HttpsCallableResult<ResponseData<UserToken>>) => {
                         const {
                             msg,
+                            error,
                             extra: { token, type, email },
                         } = result.data;
                         console.log(result);
-                        setAlertMessage(msg);
+                        setMessage({ msg, isError: error });
                         if (token != null && token != "") {
                             setSession({ token, type, email });
                             navigation.navigate("session");
@@ -60,7 +54,7 @@ export const LoginClient = (props: LoginClientProps) => {
                 .catch((error: any) => {
                     console.log(error);
                 })
-                .finally(() => setShowAlert(true));
+                .finally(() => setSubmitActive(true));
         }
     };
 
@@ -85,12 +79,6 @@ export const LoginClient = (props: LoginClientProps) => {
                     </Button>
                 </LoginForm>
             </ScrollView>
-            <MessageAlert
-                open={showAlert}
-                title={"ESTADO DE ACCIÓN"}
-                message={alertMessage}
-                handleClose={closeAlert}
-            />
         </>
     );
 };

@@ -1,49 +1,34 @@
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import { HttpsCallableResult } from "firebase/functions";
-import { Alert, ScrollView, StyleSheet, Text, View } from "react-native";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { NavigationProp, ParamListBase } from "@react-navigation/native";
 
-import {
-    checkLoginFields,
-    checkUpdatePassFields,
-} from "@feria-a-ti/common/check/checkLoginFields";
+import { checkUpdatePassFields } from "@feria-a-ti/common/check/checkLoginFields";
 import {
     LoginFields,
     RecoveryFields,
     UpdatePassFields,
 } from "@feria-a-ti/common/model/loginFields";
 import { functions } from "@feria-a-ti/common/firebase";
-import LoginForm from "@feria-a-ti/mobile/components/forms/LoginForm";
 import { httpsCallable } from "@firebase/functions";
-import { Button } from "react-native-paper";
-import {
-    ResponseData,
-    UserToken,
-} from "@feria-a-ti/common/model/functionsTypes";
-import { MessageAlert } from "@feria-a-ti/mobile/components/MessageAlert";
-import { ComponentContext } from "..";
-import { setSession } from "@feria-a-ti/mobile/utilities/sessionData";
+import { ResponseData } from "@feria-a-ti/common/model/functionsTypes";
 import RecoveryForm from "@feria-a-ti/mobile/components/forms/RecoveryForm";
 import { ChangePasswordForm } from "../../components/forms/ChangePasswordForm";
+import { useAppContext } from "../AppContext";
 
 export interface LoginClientProps {
     navigation: NavigationProp<ParamListBase>;
 }
 
 export const RecoveryVendor = (props: LoginClientProps) => {
-    //Navigation
+    // Context variables
+    const { setMessage } = useAppContext();
+    // Navigation
     const { navigation } = props;
     // Form variables
     const [submitActive, setSubmitActive] = useState(true);
     const [recoveryApproved, setRecoveryApproved] = useState(false);
     const [recoveryEmail, setRecoveryEmail] = useState("");
-    // Alert Related values
-    const [showAlert, setShowAlert] = useState(false);
-    const [alertMessage, setAlertMessage] = useState("ERROR");
-    const closeAlert = () => {
-        setSubmitActive(true);
-        setShowAlert(false);
-    };
 
     const onSubmitRecovery = (data: RecoveryFields) => {
         console.log("SUBMIT FORM");
@@ -60,7 +45,7 @@ export const RecoveryVendor = (props: LoginClientProps) => {
                         extra: { token, type, email },
                     } = result.data;
                     console.log(result);
-                    setAlertMessage(msg);
+                    setMessage({ msg, isError: error });
                     if (!error) {
                         setRecoveryEmail(data.email);
                         setRecoveryApproved(true);
@@ -69,7 +54,7 @@ export const RecoveryVendor = (props: LoginClientProps) => {
                 .catch((error: any) => {
                     console.log(error);
                 })
-                .finally(() => setShowAlert(true));
+                .finally(() => setSubmitActive(true));
         }
     };
 
@@ -89,7 +74,7 @@ export const RecoveryVendor = (props: LoginClientProps) => {
                         extra: { token, type, email },
                     } = result.data;
                     console.log(result);
-                    setAlertMessage(msg);
+                    setMessage({ msg, isError: error });
                     if (!error) {
                         navigation.navigate("loginClient");
                     }
@@ -97,7 +82,7 @@ export const RecoveryVendor = (props: LoginClientProps) => {
                 .catch((error: any) => {
                     console.log(error);
                 })
-                .finally(() => setShowAlert(true));
+                .finally(() => setSubmitActive(true));
         }
     };
 
@@ -119,12 +104,6 @@ export const RecoveryVendor = (props: LoginClientProps) => {
                     />
                 )}
             </ScrollView>
-            <MessageAlert
-                open={showAlert}
-                title={"ESTADO DE ACCIÓN"}
-                message={alertMessage}
-                handleClose={closeAlert}
-            />
         </>
     );
 };
