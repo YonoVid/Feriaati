@@ -183,6 +183,7 @@ export const confirmRegister = functions.https.onCall(
                 code = errorCodes.INCORRECT_CODE_ERROR;
             }
 
+            error = code !== errorCodes.SUCCESFULL;
             // Returning results.
             return {
                 extra: data.email,

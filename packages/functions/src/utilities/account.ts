@@ -53,6 +53,8 @@ export const accountLoginVerification = async (
         } else {
             if (userData?.status === (userStatus.blocked as string)) {
                 code = errorCodes.BLOCKED_ACCOUNT_ERROR;
+            } else if (userData?.status === (userStatus.registered as string)) {
+                code = errorCodes.UNACTIVATED_ACCOUNT_ERROR;
             } else {
                 code = errorCodes.USER_NOT_EXISTS_ERROR;
             }
