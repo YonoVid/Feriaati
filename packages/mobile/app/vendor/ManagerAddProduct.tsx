@@ -48,7 +48,7 @@ export const ManagerAddProduct = (props: ManagerAddProductProps) => {
                 .then((result) => {
                     const { msg, error } = result.data as ResponseData<string>;
                     console.log(result.data);
-                    !error && navigation.navigate("ManagerAddProduct");
+                    !error && navigation.navigate("managerVendor");
                     //setIsLogged(result.data as any);
                     if (msg !== "") {
                         setMessage({ msg, isError: error });
@@ -67,6 +67,7 @@ export const ManagerAddProduct = (props: ManagerAddProductProps) => {
                 <ProductAddForm
                     buttonLabel="Añadir producto"
                     onSubmit={onSubmit}
+                    onCancel={() => navigation.navigate("managerVendor")}
                     canSubmit={canSubmit}
                     setImageData={setImageData}
                     imageData={imageData}

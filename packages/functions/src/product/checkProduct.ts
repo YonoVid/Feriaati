@@ -1,5 +1,6 @@
 import { ProductFields, ProductListFields } from "../model/types";
 import { errorCodes } from "../errors";
+// import { numberRegex } from "../utilities/checkDataType";
 
 export const checkAddProductFields = (
     input: ProductFields
@@ -11,6 +12,14 @@ export const checkAddProductFields = (
     if (!requiredCheck) {
         return { check: false, code: errorCodes.MISSING_REQUIRED_DATA_ERROR };
     }
+    // !TODO Fix numeric check of price
+    // let stringPrice: string = price.toString();
+    // const stringTest: string = stringPrice.replace(/["']+/g, "");
+    // const priceCheck =
+    //     price === null || price === 0 || numberRegex.test(stringTest);
+    // if (!priceCheck) {
+    //     return { check: false, code: errorCodes.INCORRECT_INTEGER_FORMAT };
+    // }
     const discountCheck =
         discount === "none" ||
         (discount != null &&

@@ -15,6 +15,7 @@ import { RecoveryVendor } from "@feria-a-ti/mobile/app/vendor/RecoveryVendor";
 import HomeLayout from "./_layout";
 import { ManagerAddProduct } from "./vendor/ManagerAddProduct";
 import { ManagerVendor } from "./vendor/ManagerVendor";
+import { UserVendorSelect } from "./client/UserVendorSelect";
 
 const Stack = createNativeStackNavigator();
 
@@ -44,6 +45,11 @@ export default function App() {
                         options={{ title: "Recuperar cuenta de usuario " }}
                     />
                     <Stack.Screen
+                        name="userVendorSelect"
+                        component={UserVendorSelect}
+                        options={{ title: "Productos de vendedores " }}
+                    />
+                    <Stack.Screen
                         name="loginVendor"
                         component={LoginVendor}
                         options={{ title: "Inicio de sesión de vendedor " }}
@@ -61,7 +67,7 @@ export default function App() {
                     <Stack.Screen
                         name="managerVendor"
                         component={ManagerVendor}
-                        options={{ title: "Añadir producto " }}
+                        options={{ title: "Gestionar productos " }}
                     />
                     <Stack.Screen
                         name="managerAddProduct"

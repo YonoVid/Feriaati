@@ -36,6 +36,7 @@ export type RProductAddFormProps = ProductAddFormProps & {
     editableState?: ProductData | null;
     setImageData: (data: [string, string, string]) => void;
     onSubmit: (data: FieldValues) => void;
+    onCancel?: () => void;
 };
 
 export type UpdateProductFields = ProductFields & {

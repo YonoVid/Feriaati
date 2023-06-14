@@ -110,3 +110,6 @@ dist
 # Expo prebuild files
 packages/mobile/ios/*
 packages/mobile/android/*
+
+#Firestore emulator data
+exported-dev-data/*

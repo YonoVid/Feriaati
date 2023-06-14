@@ -1,7 +1,12 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Text, View, StyleSheet } from "react-native";
 import { useForm } from "react-hook-form";
-import { Button, RadioButton } from "react-native-paper";
+import {
+    Button,
+    IconButton,
+    ProgressBar,
+    RadioButton,
+} from "react-native-paper";
 
 import { Controller } from "react-hook-form";
 
@@ -12,9 +17,17 @@ import {
 } from "@feria-a-ti/common/model/productAddFormProps";
 import InputComponent from "@feria-a-ti/mobile/components/inputs/InputComponent";
 import FileInputComponent from "../inputs/FileInputComponent";
+import { numberRegex } from "@feria-a-ti/common/check/checkRegisterFields";
 
 function ProductAddForm(props: RProductAddFormProps) {
-    const { buttonLabel, canSubmit, setImageData, onSubmit } = props;
+    const {
+        buttonLabel,
+        canSubmit,
+        editableState,
+        setImageData,
+        onSubmit,
+        onCancel,
+    } = props;
     const {
         setValue,
         handleSubmit,
@@ -42,14 +55,30 @@ function ProductAddForm(props: RProductAddFormProps) {
         setImageData(newValue);
     };
 
+    useEffect(() => {
+        if (editableState) {
+            setValue("name", editableState.name);
+            setValue("price", editableState.price);
+            setValue("discount", editableState.discount);
+            setValue("description", editableState.description);
+            setValue("promotion", editableState.promotion);
+            setLocalImageData(editableState.image);
+            setImageData(editableState.image);
+            console.log("Image data loaded::", editableState.image);
+            console.log("Replaced image data to::", localImageData);
+        }
+    }, [editableState, setImageData, setValue]);
+
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Nuevo producto</Text>
+            {isLoading && <ProgressBar indeterminate={true} />}
             <FileInputComponent
                 name="image.0"
                 type="image"
                 control={control}
                 label="Ingresar foto de local"
+                defaultPreview={localImageData[0]}
                 error={errors?.image}
                 rules={{
                     required: "La imagen del local es requerida",
@@ -64,6 +93,7 @@ function ProductAddForm(props: RProductAddFormProps) {
                     type="image"
                     control={control}
                     label="Ingresar foto de local"
+                    defaultPreview={localImageData[1]}
                     error={null}
                     icon="camera"
                     setData={(data: string | ArrayBuffer) => fileStore(data, 1)}
@@ -76,6 +106,7 @@ function ProductAddForm(props: RProductAddFormProps) {
                     type="image"
                     control={control}
                     label="Ingresar foto de local"
+                    defaultPreview={localImageData[2]}
                     error={null}
                     icon="camera"
                     setData={(data: string | ArrayBuffer) => fileStore(data, 2)}
@@ -115,6 +146,10 @@ function ProductAddForm(props: RProductAddFormProps) {
                 error={errors?.price}
                 rules={{
                     required: "El precio es requerido",
+                    pattern: {
+                        value: numberRegex,
+                        message: "El precio debe ser un valor numérico",
+                    },
                 }}
             />
 
@@ -123,7 +158,10 @@ function ProductAddForm(props: RProductAddFormProps) {
                 name="discount"
                 render={({ field: { onChange, value } }) => (
                     <RadioButton.Group
-                        onValueChange={(value) => onChange(value)}
+                        onValueChange={(value) => {
+                            onChange(value);
+                            setValue("promotion", 0);
+                        }}
                         value={value}
                     >
                         <RadioButton.Item label="Sin descuento" value="none" />
@@ -144,18 +182,17 @@ function ProductAddForm(props: RProductAddFormProps) {
                     type="number"
                     error={errors?.price}
                     rules={{
-                        validate: {
-                            isNumeric: (value) =>
-                                (watch("discount") !== "none" &&
-                                    value != "" &&
-                                    value != null) ||
+                        pattern: {
+                            value: numberRegex,
+                            message:
                                 "El descuento debe tener un valor numérico",
-
+                        },
+                        validate: {
                             lessThanTotal: (value) =>
                                 (watch("discount") !== "none" &&
                                     (watch("discount") === "percentage"
-                                        ? (watch("promotion") as number) < 100
-                                        : (value as number) <=
+                                        ? (watch("promotion") as number) <= 100
+                                        : parseInt(value as string) <=
                                           watch("price"))) ||
                                 "El descuento no puede ser mayor al precio",
                         },
@@ -164,6 +201,7 @@ function ProductAddForm(props: RProductAddFormProps) {
             )}
             <View style={styles.button}>
                 <Button
+                    style={{ flex: 4 }}
                     mode="contained-tonal"
                     color={styles.buttonInner.color}
                     disabled={!canSubmit}
@@ -171,6 +209,15 @@ function ProductAddForm(props: RProductAddFormProps) {
                 >
                     {buttonLabel || "Agregar producto"}
                 </Button>
+                {onCancel && (
+                    <IconButton
+                        style={{ flex: 1 }}
+                        containerColor={colors.light}
+                        icon="cancel"
+                        size={20}
+                        onPress={onCancel}
+                    />
+                )}
             </View>
         </View>
     );
@@ -191,6 +238,7 @@ const styles = StyleSheet.create({
         marginTop: 35,
         alignContent: "center",
         color: colors.light,
+        flexDirection: "row",
         height: 40,
         backgroundColor: colors.secondaryShadow,
         borderRadius: 20,

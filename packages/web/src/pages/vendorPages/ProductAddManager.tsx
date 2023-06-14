@@ -56,11 +56,11 @@ function ProductAddManager() {
                 .then((result) => {
                     const { msg, error } = result.data as ResponseData<string>;
                     console.log(result.data);
-                    !error && navigate("/managerVendor");
                     //setIsLogged(result.data as any);
                     if (msg !== "") {
                         setMessage({ msg, isError: error });
                     }
+                    !error && navigate("/managerVendor");
                 })
                 .finally(() => setCanSubmit(true));
         }

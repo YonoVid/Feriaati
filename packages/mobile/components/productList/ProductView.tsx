@@ -1,11 +1,11 @@
 import "react-native-get-random-values";
 import React, { useEffect, useState } from "react";
 
-import { Text, Image, View, StyleSheet } from "react-native";
+import { Image, View, StyleSheet } from "react-native";
 import { colors } from "@feria-a-ti/common/theme/base";
 
 import { ProductData } from "@feria-a-ti/common/model/functionsTypes";
-import { Avatar } from "react-native-paper";
+import { Avatar, Text, Button, Card, IconButton } from "react-native-paper";
 
 export type ProductViewProps = {
     product: ProductData;
@@ -15,7 +15,7 @@ export type ProductViewProps = {
 };
 
 export const ProductView = (props: ProductViewProps) => {
-    const { isEditable, onEdit, onDelete } = props;
+    const { product, isEditable, onEdit, onDelete } = props;
     const { id, name, description, price, discount, promotion, image } =
         props.product;
 
@@ -34,6 +34,11 @@ export const ProductView = (props: ProductViewProps) => {
             }
             setImageIndex(newIndex);
         }, 3000);
+        console.log("IMAGES::", image);
+        console.log(
+            "TEST REPLACE::",
+            image[imageIndex].replace("127.0.0.1", "192.168.0.12")
+        );
     }, []);
 
     const finalPrice =
@@ -44,18 +49,67 @@ export const ProductView = (props: ProductViewProps) => {
                 : promotion
             : 0);
 
-    console.log("IMAGES::", image);
-
     return (
-        <View style={styles.container}>
-            <Text style={styles.title}>
-                {name != null ? name : "Productos"}
-            </Text>
-            <Image
-                source={{ uri: "https://reactnative.dev/img/tiny_logo.png" }}
-            ></Image>
-            <Avatar.Image source={{ uri: image[imageIndex] }}></Avatar.Image>
-        </View>
+        <Card>
+            <Card.Title
+                title={name}
+                subtitle={"$" + finalPrice}
+                left={(props) => (
+                    <Avatar.Image
+                        {...props}
+                        size={50}
+                        source={{
+                            uri: image[imageIndex].replace(
+                                "127.0.0.1",
+                                "192.168.0.12"
+                            ),
+                        }}
+                    />
+                )}
+            />
+            {expanded && (
+                <Card.Content>
+                    <Text>
+                        {discount !== "none" &&
+                            "Descuento de " +
+                                (discount === "percentage"
+                                    ? promotion + "%"
+                                    : "$" + promotion)}
+                    </Text>
+                    <Text>{description}</Text>
+                </Card.Content>
+            )}
+            <Card.Actions>
+                <IconButton
+                    icon={expanded ? "chevron-up" : "chevron-down"}
+                    size={20}
+                    onPress={() => handleExpandClick()}
+                />
+                {isEditable ? (
+                    <>
+                        <IconButton
+                            icon="pencil"
+                            size={20}
+                            onPress={() => onEdit(product)}
+                        />
+                        <IconButton
+                            icon="delete"
+                            size={20}
+                            onPress={() => onDelete(product.id)}
+                        />
+                    </>
+                ) : (
+                    <>
+                        <IconButton icon="heart" size={20} onPress={() => {}} />
+                        <IconButton
+                            icon="share-variant-outline"
+                            size={20}
+                            onPress={() => {}}
+                        />
+                    </>
+                )}
+            </Card.Actions>
+        </Card>
     );
 };
 const styles = StyleSheet.create({

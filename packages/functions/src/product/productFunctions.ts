@@ -24,6 +24,9 @@ export const addProduct = functions.https.onCall(
     async (data: ProductFields, context): Promise<ResponseData<string>> => {
         try {
             const db = admin.firestore();
+            if (data.discount === "none") {
+                data.promotion = 0;
+            }
             // Validar los datos recibidos y verificar la base de datos
             const { check, code } = checkAddProductFields(data);
 

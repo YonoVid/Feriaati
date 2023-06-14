@@ -10,6 +10,7 @@ export type ProductListProps = FormProps & {
     filter?: string;
     onSubmit?: (data: ProductFields) => void;
     onEdit?: (data: ProductData) => void;
+    onReload?: () => void;
     onDelete?: (id: string) => void;
 };
 

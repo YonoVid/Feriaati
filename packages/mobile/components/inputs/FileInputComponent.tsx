@@ -1,4 +1,10 @@
-import React, { Dispatch, SetStateAction, useCallback, useState } from "react";
+import React, {
+    Dispatch,
+    SetStateAction,
+    useCallback,
+    useEffect,
+    useState,
+} from "react";
 import {
     Controller,
     FieldError,
@@ -19,6 +25,7 @@ interface Props<T> extends UseControllerProps<T> {
     label: string;
     icon: string;
     type: "image";
+    defaultPreview?: string;
     error: FieldError | undefined;
     setData: Dispatch<SetStateAction<string | ArrayBuffer>>;
     setIsLoading?: Dispatch<SetStateAction<boolean>>;
@@ -31,14 +38,17 @@ const FileInputComponent = <T extends FieldValues>({
     control,
     rules,
     error,
+    defaultPreview,
+    setIsLoading,
     setData,
 }: Props<T>) => {
     //const { name, label, control, rules, error } = props;
     const [shownValue, setShownValue] = useState("");
-    const [preview, setPreview] = useState("");
+    const [preview, setPreview] = useState(defaultPreview || "");
     const labelText = label != null ? label : name;
 
     const handleDocumentSelection = useCallback(async () => {
+        setIsLoading(true);
         try {
             const response = await DocumentPicker.getDocumentAsync({
                 type: "image/*",
@@ -72,7 +82,10 @@ const FileInputComponent = <T extends FieldValues>({
         } catch (err) {
             console.warn(err);
         }
+        setIsLoading(false);
     }, []);
+
+    useEffect(() => console.log("PREVIEW EXISTS::", defaultPreview != null));
 
     return (
         <>

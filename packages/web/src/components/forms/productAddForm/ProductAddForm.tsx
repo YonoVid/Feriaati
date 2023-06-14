@@ -304,6 +304,7 @@ function ProductAddForm(props: RProductAddFormProps) {
                         color={colorTheme}
                         type="submit"
                         variant="contained"
+                        onClick={onSubmit}
                         disabled={
                             props.canSubmit != null ? !props.canSubmit : false
                         }

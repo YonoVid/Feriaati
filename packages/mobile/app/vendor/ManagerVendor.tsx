@@ -5,19 +5,27 @@ import { httpsCallable } from "@firebase/functions";
 
 import { functions } from "@feria-a-ti/common/firebase";
 
-import { checkAddProductFields } from "@feria-a-ti/common/check/checkProductFields";
+import {
+    checkAddProductFields,
+    checkDeleteProductFields,
+} from "@feria-a-ti/common/check/checkProductFields";
 import {
     ProductData,
     ResponseData,
+    userType,
 } from "@feria-a-ti/common/model/functionsTypes";
 import { useAppContext } from "../AppContext";
 import ProductAddForm from "../../components/forms/ProductAddForm";
 import {
+    ProductDeleteFields,
+    ProductEditFields,
     ProductFields,
     ProductListFields,
 } from "@feria-a-ti/common/model/productAddFormProps";
 import { ProductList } from "../../components/productList/ProductList";
 import { Button } from "react-native-paper";
+import { useFocusEffect } from "expo-router";
+import { checkSession } from "../../utilities/sessionData";
 
 export interface ManagerVendorProps {
     navigation: NavigationProp<ParamListBase>;
@@ -25,7 +33,7 @@ export interface ManagerVendorProps {
 
 export const ManagerVendor = (props: ManagerVendorProps) => {
     // Context variables
-    const { authToken, setMessage } = useAppContext();
+    const { type, authToken, setMessage } = useAppContext();
     // Navigation
     const { navigation } = props;
     // Server data
@@ -48,6 +56,7 @@ export const ManagerVendor = (props: ManagerVendorProps) => {
         const formatedData: ProductListFields = {
             tokenVendor: authToken as string,
         };
+        console.log(formatedData);
         const check = authToken != null && authToken != "";
         console.log("SUBMIT FORM::", check);
         if (check) {
@@ -67,8 +76,9 @@ export const ManagerVendor = (props: ManagerVendorProps) => {
         }
     };
 
-    const onSubmit = (data: ProductFields) => {
-        const formatedData: ProductFields = {
+    const onEdit = (data: ProductFields) => {
+        const formatedData: ProductEditFields = {
+            id: productEditable?.id,
             ...data,
             tokenVendor: authToken,
             image: imageData,
@@ -77,15 +87,52 @@ export const ManagerVendor = (props: ManagerVendorProps) => {
         console.log("SUBMIT FORM::", check);
         if (check) {
             setCanSubmit(false);
-            const addProduct = httpsCallable<
-                ProductFields,
+            const editProduct = httpsCallable<
+                ProductEditFields,
                 ResponseData<string>
-            >(functions, "addProduct");
-            addProduct(formatedData)
+            >(functions, "editProduct");
+            editProduct(formatedData)
                 .then((result) => {
                     const { msg, error } = result.data as ResponseData<string>;
                     console.log(result.data);
-                    !error && navigation.navigate("managerVendor");
+                    //setIsLogged(result.data as any);
+                    if (!error) {
+                        setProductEditable(null);
+                        loadProducts();
+                    }
+                    if (msg !== "") {
+                        setMessage({ msg, isError: error });
+                    }
+                })
+                .finally(() => setCanSubmit(true));
+        }
+    };
+
+    const onDelete = (id: string) => {
+        const formatedData: ProductDeleteFields = {
+            tokenVendor: authToken as string,
+            productId: id,
+        };
+        const check = checkDeleteProductFields(formatedData);
+        console.log("SUBMIT FORM::", check);
+        if (check) {
+            setCanSubmit(false);
+            const addProduct = httpsCallable<
+                ProductDeleteFields,
+                ResponseData<string>
+            >(functions, "deleteProduct");
+            addProduct(formatedData)
+                .then((result) => {
+                    const { msg, error } = result.data;
+                    console.log(result.data);
+
+                    !error &&
+                        setProducts(
+                            products.filter(
+                                (product) =>
+                                    product.id !== formatedData.productId
+                            )
+                        );
                     //setIsLogged(result.data as any);
                     if (msg !== "") {
                         setMessage({ msg, isError: error });
@@ -99,6 +146,17 @@ export const ManagerVendor = (props: ManagerVendorProps) => {
         loadProducts();
     }, []);
 
+    useFocusEffect(() => {
+        if (checkSession()) {
+            if (type !== userType.vendor) {
+                navigation.reset({
+                    index: 0,
+                    routes: [{ name: "session" }],
+                });
+            }
+        }
+    });
+
     return (
         <>
             <ScrollView
@@ -111,6 +169,11 @@ export const ManagerVendor = (props: ManagerVendorProps) => {
                             label="Productos"
                             products={products}
                             isEditable={true}
+                            onEdit={(data: ProductData | null) => {
+                                setProductEditable(data);
+                            }}
+                            onReload={() => loadProducts()}
+                            onDelete={onDelete}
                         />
                         <Button
                             mode="contained-tonal"
@@ -125,8 +188,10 @@ export const ManagerVendor = (props: ManagerVendorProps) => {
                 ) : (
                     <ProductAddForm
                         buttonLabel="Añadir producto"
-                        onSubmit={onSubmit}
+                        onSubmit={onEdit}
+                        onCancel={() => setProductEditable(null)}
                         canSubmit={canSubmit}
+                        editableState={productEditable}
                         setImageData={setImageData}
                         imageData={imageData}
                     />

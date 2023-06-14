@@ -6,7 +6,7 @@ import { colors } from "@feria-a-ti/common/theme/base";
 import { RProductListProps } from "@feria-a-ti/common/model/productListProps";
 import { Link } from "expo-router";
 import { ProductData } from "@feria-a-ti/common/model/functionsTypes";
-import { Avatar, DataTable } from "react-native-paper";
+import { Avatar, DataTable, IconButton } from "react-native-paper";
 import { ProductView } from "./ProductView";
 
 export const ProductList = (props: RProductListProps) => {
@@ -19,13 +19,14 @@ export const ProductList = (props: RProductListProps) => {
         isEditable,
         onEdit,
         onDelete,
+        onReload,
         onSubmit,
     } = props;
 
     const colorTheme =
         color != null && color === "secondary" ? "secondary" : "primary";
 
-    const [page, setPage] = useState(1);
+    const [page, setPage] = useState(0);
     const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
         setPage(value);
     };
@@ -58,12 +59,33 @@ export const ProductList = (props: RProductListProps) => {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>
-                {label != null ? label : "Productos"}
-            </Text>
+            <View style={{ flexDirection: "row" }}>
+                <Text style={{ ...styles.title, flex: 6 }}>
+                    {label != null ? label : "Productos"}
+                </Text>
+                {onReload && (
+                    <IconButton
+                        style={{ flex: 1 }}
+                        containerColor={colors.light}
+                        icon="refresh"
+                        size={20}
+                        onPress={onReload}
+                    />
+                )}
+            </View>
+            <DataTable.Pagination
+                page={page}
+                numberOfPages={Math.floor(products.length / 3) + 1}
+                onPageChange={(page) => page >= 0 && setPage(page)}
+                label={`${page * 3 + 1}-${(page + 1) * 3} of ${
+                    products.length
+                }`}
+                showFastPaginationControls
+                numberOfItemsPerPage={3}
+            />
             <View style={{ flexDirection: "column" }}>
                 {getList()
-                    .slice((page - 1) * 3, page * 3)
+                    .slice(page * 3, (page + 1) * 3)
                     .map((product, index) => (
                         <ProductView
                             onEdit={onEdit}
@@ -74,14 +96,6 @@ export const ProductList = (props: RProductListProps) => {
                         />
                     ))}
             </View>
-            <DataTable.Pagination
-                page={page}
-                numberOfPages={Math.floor(products.length / 3) + 1}
-                onPageChange={(page) => setPage(page)}
-                label={`${page * 3}-${page + 1 * 3} of ${products.length}`}
-                showFastPaginationControls
-                numberOfItemsPerPage={3}
-            />
         </View>
     );
 };

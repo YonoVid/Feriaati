@@ -32,7 +32,7 @@ export const Session = (props: SessionProps) => {
             } else if (type === userType.user) {
                 navigation.reset({
                     index: 0,
-                    routes: [{ name: "managerVendor" }],
+                    routes: [{ name: "userVendorSelect" }],
                 });
             }
         } else {
