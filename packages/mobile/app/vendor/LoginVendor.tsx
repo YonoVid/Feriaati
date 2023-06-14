@@ -14,22 +14,19 @@ import {
     UserToken,
 } from "@feria-a-ti/common/model/functionsTypes";
 import { MessageAlert } from "@feria-a-ti/mobile/components/MessageAlert";
+import { useAppContext } from "../AppContext";
 
 export interface LoginVendorProps {
     navigation: NavigationProp<ParamListBase>;
 }
 
 export const LoginVendor = (props: LoginVendorProps) => {
+    // Context variables
+    const { setSession, setMessage } = useAppContext();
+    // Navigation
     const { navigation } = props;
     // Form variables
     const [submitActive, setSubmitActive] = useState(true);
-    // Alert Related values
-    const [showAlert, setShowAlert] = useState(false);
-    const [alertMessage, setAlertMessage] = useState("ERROR");
-    const closeAlert = () => {
-        setSubmitActive(true);
-        setShowAlert(false);
-    };
 
     const onSubmit = (data: LoginFields) => {
         //  setSubmitActive(false);
@@ -37,27 +34,27 @@ export const LoginVendor = (props: LoginVendorProps) => {
 
         const check = checkLoginFields(data);
         if (check) {
-            const login = httpsCallable(functions, "login");
+            const login = httpsCallable(functions, "loginVendor");
             login(data)
                 .then(
                     (result: HttpsCallableResult<ResponseData<UserToken>>) => {
                         const {
                             msg,
+                            error,
                             extra: { token, type, email },
                         } = result.data;
                         console.log(result);
-                        setAlertMessage(msg);
+                        setMessage({ msg, isError: error });
                         if (token != null && token != "") {
-                            // setSession({ token, type, email });
+                            setSession({ token, type, email });
                             navigation.navigate("session");
                         }
-                        setSubmitActive(true);
                     }
                 )
                 .catch((error: any) => {
                     console.log(error);
                 })
-                .finally(() => setShowAlert(true));
+                .finally(() => setSubmitActive(true));
         }
     };
 
@@ -82,12 +79,6 @@ export const LoginVendor = (props: LoginVendorProps) => {
                     </Button>
                 </LoginForm>
             </ScrollView>
-            <MessageAlert
-                open={showAlert}
-                title={"ESTADO DE ACCIÓN"}
-                message={alertMessage}
-                handleClose={closeAlert}
-            />
         </>
     );
 };

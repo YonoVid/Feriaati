@@ -1,4 +1,10 @@
-import React, { Dispatch, SetStateAction, useCallback, useState } from "react";
+import React, {
+    Dispatch,
+    SetStateAction,
+    useCallback,
+    useEffect,
+    useState,
+} from "react";
 import {
     Controller,
     FieldError,
@@ -7,8 +13,8 @@ import {
     UseControllerProps,
     UseFormSetValue,
 } from "react-hook-form";
-import { Image, Text, StyleSheet, Keyboard } from "react-native";
-import { Button } from "react-native-paper";
+import { Image, Text, StyleSheet, Keyboard, View } from "react-native";
+import { Avatar, Button } from "react-native-paper";
 import * as DocumentPicker from "expo-document-picker";
 import * as ExpoImageManipulator from "expo-image-manipulator";
 
@@ -19,8 +25,10 @@ interface Props<T> extends UseControllerProps<T> {
     label: string;
     icon: string;
     type: "image";
+    defaultPreview?: string;
     error: FieldError | undefined;
     setData: Dispatch<SetStateAction<string | ArrayBuffer>>;
+    setIsLoading?: Dispatch<SetStateAction<boolean>>;
 }
 
 const FileInputComponent = <T extends FieldValues>({
@@ -30,13 +38,17 @@ const FileInputComponent = <T extends FieldValues>({
     control,
     rules,
     error,
+    defaultPreview,
+    setIsLoading,
     setData,
 }: Props<T>) => {
     //const { name, label, control, rules, error } = props;
     const [shownValue, setShownValue] = useState("");
+    const [preview, setPreview] = useState(defaultPreview || "");
     const labelText = label != null ? label : name;
 
     const handleDocumentSelection = useCallback(async () => {
+        setIsLoading(true);
         try {
             const response = await DocumentPicker.getDocumentAsync({
                 type: "image/*",
@@ -62,6 +74,7 @@ const FileInputComponent = <T extends FieldValues>({
                     { compress: 0.75, base64: true }
                 ).then((value) => {
                     setData(value.base64);
+                    setPreview(value.uri);
                     console.log(value.base64 != null);
                     console.log(value.width);
                 });
@@ -69,28 +82,39 @@ const FileInputComponent = <T extends FieldValues>({
         } catch (err) {
             console.warn(err);
         }
+        setIsLoading(false);
     }, []);
+
+    useEffect(() => console.log("PREVIEW EXISTS::", defaultPreview != null));
 
     return (
         <>
-            <Controller
-                name={name}
-                control={control}
-                rules={rules}
-                render={({ field: { value }, fieldState: { error } }) => (
-                    <Button
-                        mode="elevated"
-                        icon={icon}
-                        onPress={handleDocumentSelection}
-                    >
-                        {(shownValue &&
-                            (shownValue.length > 25
-                                ? shownValue.substring(0, 25) + "..."
-                                : shownValue)) ||
-                            labelText}
-                    </Button>
+            <View style={{ flexDirection: "row" }}>
+                <Controller
+                    name={name}
+                    control={control}
+                    rules={rules}
+                    render={({ field: { value }, fieldState: { error } }) => (
+                        <Button
+                            style={{ flex: 1 }}
+                            mode="elevated"
+                            icon={icon}
+                            onPress={handleDocumentSelection}
+                        >
+                            {(shownValue &&
+                                (shownValue.length > 25
+                                    ? shownValue.substring(0, 25) + "..."
+                                    : shownValue)) ||
+                                labelText}
+                        </Button>
+                    )}
+                />
+                {preview !== "" ? (
+                    <Avatar.Image size={32} source={{ uri: preview }} />
+                ) : (
+                    <Avatar.Icon size={32} icon="image" />
                 )}
-            />
+            </View>
             {error && <Text>{error?.message || "ERROR"}</Text>}
         </>
     );

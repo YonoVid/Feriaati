@@ -1,5 +1,9 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
+
+// Import the functions you need from the SDKs you need
+import { getStorage, connectStorageEmulator } from "firebase/storage";
+
 // Import for local emulator
 //import { getApp } from "firebase/app";
 import { getFunctions, connectFunctionsEmulator } from "firebase/functions";
@@ -22,8 +26,20 @@ const firebaseConfig = {
 // Initialize Firebase for deploy
 export const app = initializeApp(firebaseConfig);
 export const functions = getFunctions(app);
+export const storage = getStorage(app);
 
-connectFunctionsEmulator(functions, "192.168.0.12", 5001);
+if (
+    (navigator.product == "ReactNative" && __DEV__) ||
+    location.hostname === "localhost" ||
+    location.hostname === "127.0.0.1"
+) {
+    const localAddress = "192.168.0.12" || "localhost";
+    // Point to function emulator on localhost.
+    connectFunctionsEmulator(functions, localAddress, 5001);
+    // Point to the Storage emulator running on localhost.
+    connectStorageEmulator(storage, localAddress, 9199);
+}
+console.log(storage.app.options.databaseURL);
 
 export const actionCodeSettings = {
     // URL you want to redirect back to. The domain (www.example.com) for this

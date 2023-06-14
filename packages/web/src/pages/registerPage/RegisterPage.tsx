@@ -1,6 +1,5 @@
-import { FieldValues } from "react-hook-form";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { FieldValues } from "react-hook-form";
 import { httpsCallable } from "firebase/functions";
 import { functions } from "@feria-a-ti/common/firebase";
 import {
@@ -8,31 +7,21 @@ import {
     RegisterFields,
     userStatus,
 } from "@feria-a-ti/common/model/registerFields";
-import { ResponseData } from "@feria-a-ti/common/model/functionsTypes";
-import { messagesCode } from "@feria-a-ti/common/constants/errors";
 import { checkRegisterFields } from "@feria-a-ti/common/check/checkRegisterFields";
-import RegisterUserForm from "@feria-a-ti/web/src/components/registerUserForm/RegisterUserForm";
+import RegisterForm from "@feria-a-ti/web/src/components/forms/registerUserForm/RegisterUserForm";
 import ConfirmRegisterForm from "@feria-a-ti/web/src/components/confirmRegisterForm/ConfirmRegisterForm";
-import MessageAlert from "@feria-a-ti/web/src/components/messageAlert/MessageAlert";
-import { Link } from "@mui/material";
+import { DialogMessage } from "@feria-a-ti/web/src/components/dialogMessage/DialogMessage";
+import "../../App.css";
 
 function RegisterPage() {
-    // Dom redirection variable
-    const navigate = useNavigate();
-    // Action to do on sucesfull form submit
+    //Import and prepare firebase data and reference
+    //const auth = getAuth(app);
+    //Action to do on sucesfull form submit
     const [emailRegistered, setEmailRegistered] = useState("");
 
     const [canRegister, setCanRegister] = useState(true);
     const [canConfirmRegister, setCanConfirmRegister] = useState(true);
     const [registerComplete, setRegisterComplete] = useState(false);
-
-    // Alert Related values
-    const [showAlert, setShowAlert] = useState(false);
-    const [alertMessage, setAlertMessage] = useState("TEXT");
-    const closeAlert = () => {
-        registerComplete ? setCanConfirmRegister(true) : setCanRegister(true);
-        setShowAlert(false);
-    };
 
     const onSubmitRegister = (data: FieldValues) => {
         //Lock register button
@@ -52,27 +41,16 @@ function RegisterPage() {
 
         if (check) {
             //Call firebase function to create user
-            const addUser = httpsCallable<RegisterFields, ResponseData<string>>(
-                functions,
-                "addUser"
-            );
-            addUser(formatedData)
-                .then((result) => {
-                    console.log(result);
-                    //Unlock register button
-                    setCanRegister(true);
-                    //Set registered email
-                    setEmailRegistered(data.email);
-                    //Set register complete
-                    setRegisterComplete(true);
-                    //Show alert message
-                    setAlertMessage(result.data?.msg);
-                })
-                .catch((error) => {
-                    console.log(error);
-                    setAlertMessage(messagesCode["ERR00"]);
-                })
-                .finally(() => setShowAlert(true));
+            const addUser = httpsCallable(functions, "addUser");
+            addUser(formatedData).then((result) => {
+                console.log(result);
+                //Unlock register button
+                setCanRegister(true);
+                //Set registered email
+                setEmailRegistered(data.email);
+                //Set register complete
+                setRegisterComplete(true);
+            });
         }
     };
 
@@ -85,22 +63,11 @@ function RegisterPage() {
         };
 
         if (registerComplete) {
-            const addUser = httpsCallable<
-                RegisterConfirm,
-                ResponseData<string>
-            >(functions, "confirmRegister");
-            addUser(formatedData)
-                .then((result) => {
-                    console.log(result);
-                    setCanConfirmRegister(true);
-                    //Show alert message
-                    setAlertMessage(result.data?.msg);
-                    navigate("/login");
-                })
-                .catch((error) => {
-                    console.log(error);
-                    setAlertMessage(messagesCode["ERR00"]);
-                });
+            const addUser = httpsCallable(functions, "confirmRegister");
+            addUser(formatedData).then((result) => {
+                console.log(result);
+                setCanConfirmRegister(true);
+            });
         }
     };
 
@@ -112,21 +79,12 @@ function RegisterPage() {
                     canSubmit={canConfirmRegister}
                 />
             )) || (
-                <RegisterUserForm
+                <RegisterForm
                     onSubmit={onSubmitRegister}
                     canSubmit={canRegister}
-                >
-                    <Link component="button" onClick={() => navigate("/login")}>
-                        Ya tengo una cuenta
-                    </Link>
-                </RegisterUserForm>
+                />
             )}
-            <MessageAlert
-                open={showAlert}
-                title="Estado de acción"
-                message={alertMessage}
-                handleClose={closeAlert}
-            />
+            <DialogMessage trigger={registerComplete} />
         </>
     );
 }

@@ -74,41 +74,40 @@ export const accountLoginVerification = async (
     return { token: token, code: code };
 };
 
-export const accountConfirmation = async (
+export const getAccount = async (
     collection: collectionNames,
-    id: string,
-    confirmCode: string | undefined
-) => {
-    let code = errorCodes.SUCCESFULL;
-    try {
-        const db = admin.firestore();
-        const usersRef = db.collection(collection);
-        const querySnapshot = usersRef.doc(id);
-        const userDoc = await querySnapshot.get();
-        let userData = userDoc.data();
-        functions.logger.info("DATA COLLECTION::", userData);
-        if (!userDoc.exists) {
-            code = errorCodes.USER_NOT_EXISTS_ERROR;
-        } else if (userData?.status === userStatus.activated) {
-            code = errorCodes.ACTION_DONE_ERROR;
-        } else if (
-            (confirmCode === undefined || userData?.code !== confirmCode) &&
-            userData?.type === userType.user
-        ) {
-            code = errorCodes.INCORRECT_CODE_ERROR;
-        }
-
-        //Update document if error was not detected
-        if (code === errorCodes.SUCCESFULL) {
-            //Update document of user data
-            await querySnapshot.update({
-                status: userStatus.activated as string,
-            });
-        }
-    } catch (e) {
-        functions.logger.error("ERROR ON ACCOUNT LOGIN::", e);
-        throw e;
+    identificator: {
+        id?: string;
+        token?: string;
+    }
+): Promise<{ code: errorCodes; doc: admin.firestore.DocumentSnapshot }> => {
+    const db = admin.firestore();
+    let docReference;
+    if (
+        identificator.id &&
+        identificator.id !== null &&
+        identificator.id !== ""
+    ) {
+        functions.logger.info("ACCOUNT FROM ID");
+        docReference = await db
+            .collection(collection)
+            .doc(identificator.id as string)
+            .get();
+    } else {
+        functions.logger.info("ACCOUNT FROM TOKEN");
+        const queryAccount = db
+            .collection(collection)
+            .where("token", "==", identificator.token);
+        docReference = (await queryAccount.get()).docs[0];
     }
 
-    return { code: code };
+    functions.logger.info("ACCOUNT DOC::", docReference);
+
+    if (!docReference.exists) {
+        return {
+            doc: docReference,
+            code: errorCodes.DOCUMENT_NOT_EXISTS_ERROR,
+        };
+    }
+    return { doc: docReference, code: errorCodes.SUCCESFULL };
 };

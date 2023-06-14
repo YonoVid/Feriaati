@@ -1,73 +1,49 @@
 import { useForm } from "react-hook-form";
 import { Box, Button, Card, Divider } from "@mui/material";
 
-import { controlValidInput } from "@feria-a-ti/common/inputControl";
-import { RRegisterFormProps } from "@feria-a-ti/common/model/registerFormProps";
-import { emailFormatRegex } from "@feria-a-ti/common/check/checkRegisterFields";
-
+import { RUpdatepPassFormProps } from "@feria-a-ti/common/model/loginFormProps";
 import InputComponentAlt from "@feria-a-ti/web/src/components/inputComponent/InputComponentAlt";
-import "./RegisterUserForm.css";
+import "./LoginForm";
+import { UpdatePassFields } from "@feria-a-ti/common/model/loginFields";
 
-function RegisterUserForm(props: RRegisterFormProps) {
-    const { children, onSubmit } = props;
-    const {
-        formState: { errors },
-        watch,
-        handleSubmit,
-        control,
-    } = useForm();
+function UpdatePassForm(props: RUpdatepPassFormProps) {
+    const { label, color, children, onSubmit } = props;
+    const { control, watch, handleSubmit } = useForm<UpdatePassFields>();
+
+    const colorTheme =
+        color != null && color === "secondary" ? "secondary" : "primary";
 
     return (
         <Card
             className="inputContainer"
+            color={colorTheme}
             sx={{
                 maxWidth: "50%",
                 alignContent: "center",
                 borderRadius: "10%",
             }}
         >
-            <h1 style={{ maxWidth: "100%" }}>Registrarse</h1>
+            <h1 style={{ maxWidth: "100%" }}>
+                {label != null ? label : "Intoduce una nueva contraseña"}
+            </h1>
             <form onSubmit={handleSubmit(onSubmit)}>
                 <Box>
                     <InputComponentAlt
                         control={control}
-                        name="username"
-                        label="Nombre de usuario"
+                        name="codigo"
+                        label="Código de validación"
                         type="text"
-                        onChange={controlValidInput}
                         rules={{
-                            required: "El nombre de usuario es requerido",
+                            required: "El código es requerido",
                             minLength: {
-                                value: 8,
-                                message: "El mínimo de caracteres es 8",
+                                value: 6,
+                                message: "El código debe tener 6 caracters",
                             },
                             maxLength: {
-                                value: 25,
-                                message: "El máximo de caracteres es 128",
+                                value: 6,
+                                message: "El código debe tener 6 caracters",
                             },
                         }}
-                        error={errors.name}
-                    />
-                </Box>
-                <Box>
-                    <InputComponentAlt
-                        control={control}
-                        name="email"
-                        label="Correo electrónico"
-                        type="text"
-                        rules={{
-                            required: "El correo es requerido",
-                            maxLength: {
-                                value: 128,
-                                message: "El máximo de caracteres es 128",
-                            },
-                            pattern: {
-                                value: emailFormatRegex,
-                                message:
-                                    "El formato debe ser, por ejemplo: ejemplo@correo.cl",
-                            },
-                        }}
-                        error={errors.password}
                     />
                 </Box>
                 <Box>
@@ -84,7 +60,6 @@ function RegisterUserForm(props: RRegisterFormProps) {
                                     "La contraseña tiene un mínimo de 10 caracteres",
                             },
                         }}
-                        error={errors.confirmPassword}
                     />
                     <InputComponentAlt
                         control={control}
@@ -99,19 +74,18 @@ function RegisterUserForm(props: RRegisterFormProps) {
                                     "Las contraseñas deben ser iguales",
                             },
                         }}
-                        error={errors.confirmPassword}
                     />
                 </Box>
                 <Box sx={{ margin: "1em" }}>
                     <Button
-                        color="primary"
+                        color={colorTheme}
                         type="submit"
                         variant="contained"
                         disabled={
                             props.canSubmit != null ? !props.canSubmit : false
                         }
                     >
-                        Registrar cuenta de comprador
+                        Actualizar contraseña
                     </Button>
                 </Box>
             </form>
@@ -121,4 +95,4 @@ function RegisterUserForm(props: RRegisterFormProps) {
     );
 }
 
-export default RegisterUserForm;
+export default UpdatePassForm;

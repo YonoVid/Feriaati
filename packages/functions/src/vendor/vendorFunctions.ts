@@ -4,10 +4,9 @@ import {
     LoginFields,
     RecoveryFields,
     RegisterVendorFields,
-    ResponseData,
     UpdatePassFields,
-    UserToken,
 } from "../model/types";
+import { ResponseData, UserToken } from "../model/reponseFields";
 import { userType, VendorCollectionData } from "../model/accountTypes";
 
 //import { sendVerificationMail } from "../utilities/mail";

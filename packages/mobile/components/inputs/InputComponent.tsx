@@ -6,12 +6,12 @@ import {
     UseControllerProps,
 } from "react-hook-form";
 import { View, Text, StyleSheet, Keyboard } from "react-native";
-import { TextInput } from "react-native-paper";
+import { HelperText, TextInput } from "react-native-paper";
 import { colors } from "@feria-a-ti/common/theme/base";
 
 interface Props<T> extends UseControllerProps<T> {
     label: string;
-    type?: "text" | "password" | "email";
+    type?: "text" | "password" | "email" | "number";
     hidden?: boolean;
     error: FieldError | undefined;
 }
@@ -59,45 +59,47 @@ const InputComponent = <T extends FieldValues>({
                     field: { onChange, onBlur, value },
                     fieldState: { error },
                 }) => (
-                    <TextInput
-                        autoCapitalize="none"
-                        secureTextEntry={type == "password" ? true : false}
-                        //style={styles.input}
-                        placeholder={labelText}
-                        label={labelText}
-                        // placeholderTextColor={
-                        //     isFocused
-                        //         ? styles.input.backgroundColor
-                        //         : styles.input.borderColor
-                        // }
-                        selectionColor={styles.input.color}
-                        mode="flat"
-                        onFocus={() => {
-                            setFocusState(true);
-                        }}
-                        onEndEditing={() => {
-                            setFocusState(false);
-                        }}
-                        onBlur={onBlur}
-                        onChangeText={(text) => {
-                            onChangeWrapper(onChange, text);
-                            console.log(error);
-                        }}
-                        onSubmitEditing={() => {
-                            Keyboard.dismiss();
-                        }}
-                        value={"" || value}
-                        error={error != null}
-                    />
+                    <>
+                        <TextInput
+                            autoCapitalize="none"
+                            secureTextEntry={type == "password" ? true : false}
+                            //style={styles.input}
+                            placeholder={labelText}
+                            label={labelText}
+                            // placeholderTextColor={
+                            //     isFocused
+                            //         ? styles.input.backgroundColor
+                            //         : styles.input.borderColor
+                            // }
+                            selectionColor={styles.input.color}
+                            mode="flat"
+                            onFocus={() => {
+                                setFocusState(true);
+                            }}
+                            onEndEditing={() => {
+                                setFocusState(false);
+                            }}
+                            onBlur={onBlur}
+                            onChangeText={(text) => {
+                                onChangeWrapper(onChange, text);
+                                console.log(error);
+                            }}
+                            onSubmitEditing={() => {
+                                Keyboard.dismiss();
+                            }}
+                            value={"" || value}
+                            error={error != null}
+                        />
+                        <HelperText
+                            type="error"
+                            visible={error && error != null}
+                        >
+                            {(error && error.message) || ""}
+                        </HelperText>
+                    </>
                 )}
                 name={name}
             />
-            {/* {(isFocused || inputText !== "") && (
-                <View style={styles.labelWrapper}>
-                    <Text style={styles.label}>{labelText}</Text>
-                </View>
-            )} */}
-            {error && <Text>{error?.message || "ERROR"}</Text>}
         </>
     );
 };

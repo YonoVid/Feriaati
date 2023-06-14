@@ -1,5 +1,5 @@
 import { useForm } from "react-hook-form";
-import { Box, Button, Card, CardActions } from "@mui/material";
+import { Box, Button, Card, CardActions, Divider } from "@mui/material";
 
 import { compressImage } from "@feria-a-ti/common/compression";
 import {
@@ -9,20 +9,17 @@ import {
     passwordFormatRegex,
     rutFormatRegex,
 } from "@feria-a-ti/common/check/checkRegisterFields";
+import { RegisterVendorFields } from "@feria-a-ti/common/model/registerFields";
 import { RRegisterVendorFormProps } from "@feria-a-ti/common/model/registerFormProps";
 import { regionCode, regionCommune } from "@feria-a-ti/common/constants/form";
+
 import InputComponentAlt from "@feria-a-ti/web/src/components/inputComponent/InputComponentAlt";
 import "./RegisterVendorForm.css";
 
 function RegisterVendorForm(props: RRegisterVendorFormProps) {
-    const { setImageData, onSubmit } = props;
-    const {
-        formState: { errors },
-        watch,
-        handleSubmit,
-        setValue,
-        control,
-    } = useForm();
+    const { children, setImageData, onSubmit } = props;
+    const { watch, handleSubmit, setValue, control } =
+        useForm<RegisterVendorFields>();
 
     //Image reader
     const fileReader = new FileReader();
@@ -59,7 +56,6 @@ function RegisterVendorForm(props: RRegisterVendorFormProps) {
                                     message: "El máximo de caracteres es 128",
                                 },
                             }}
-                            error={errors.enterpriseName}
                         />
                         <InputComponentAlt
                             control={control}
@@ -77,7 +73,6 @@ function RegisterVendorForm(props: RRegisterVendorFormProps) {
                                     message: "Valor debe ser numérico",
                                 },
                             }}
-                            error={errors.enterpriseName}
                         />
                     </Box>
                     <Box>
@@ -88,11 +83,10 @@ function RegisterVendorForm(props: RRegisterVendorFormProps) {
                             type="select"
                             selectOptions={regionCode}
                             defaultValue="Elige tú región"
-                            onChange={() => setValue("commune", "")}
+                            onChange={() => setValue("commune", NaN)}
                             rules={{
                                 required: "La región es requerida",
                             }}
-                            error={errors.region}
                         />
                         <InputComponentAlt
                             control={control}
@@ -104,7 +98,6 @@ function RegisterVendorForm(props: RRegisterVendorFormProps) {
                             rules={{
                                 required: "La comuna es requerida",
                             }}
-                            error={errors.commune}
                         />
                     </Box>
                     <Box>
@@ -120,7 +113,6 @@ function RegisterVendorForm(props: RRegisterVendorFormProps) {
                                     message: "El máximo de caracteres es 128",
                                 },
                             }}
-                            error={errors.street}
                         />
                         <InputComponentAlt
                             control={control}
@@ -138,7 +130,6 @@ function RegisterVendorForm(props: RRegisterVendorFormProps) {
                                     message: "Valor debe ser numérico",
                                 },
                             }}
-                            error={errors.streetNumber}
                         />
                     </Box>
                     <InputComponentAlt
@@ -166,7 +157,6 @@ function RegisterVendorForm(props: RRegisterVendorFormProps) {
                                 fileReader?.readAsDataURL(img as File);
                             }
                         }}
-                        error={errors.name}
                     />
                     <Box>
                         <InputComponentAlt
@@ -186,10 +176,11 @@ function RegisterVendorForm(props: RRegisterVendorFormProps) {
                                         "El formato debe ser, por ejemplo: 11111111-1",
                                 },
                                 validate: (value) =>
-                                    checkRutVerificationCodeString(value) ||
+                                    checkRutVerificationCodeString(
+                                        value as string
+                                    ) ||
                                     "El formato debe ser, por ejemplo: 11111111-1",
                             }}
-                            error={errors.enterpriseName}
                         />
                         <InputComponentAlt
                             control={control}
@@ -199,7 +190,6 @@ function RegisterVendorForm(props: RRegisterVendorFormProps) {
                             rules={{
                                 required: "Los nombres son requeridos",
                             }}
-                            error={errors.name}
                         />
                         <InputComponentAlt
                             control={control}
@@ -209,7 +199,6 @@ function RegisterVendorForm(props: RRegisterVendorFormProps) {
                             rules={{
                                 required: "Los apellidos son requeridos",
                             }}
-                            error={errors.surname}
                         />
                     </Box>
                     <InputComponentAlt
@@ -229,7 +218,6 @@ function RegisterVendorForm(props: RRegisterVendorFormProps) {
                                     "El formato debe ser, por ejemplo: ejemplo@correo.cl",
                             },
                         }}
-                        error={errors.password}
                     />
                     <Box>
                         <InputComponentAlt
@@ -253,7 +241,6 @@ function RegisterVendorForm(props: RRegisterVendorFormProps) {
                                         "La contraseña debe ser alfanumérica\n(contener una letra y un número)",
                                 },
                             }}
-                            error={errors.password}
                         />
                         <InputComponentAlt
                             control={control}
@@ -269,7 +256,6 @@ function RegisterVendorForm(props: RRegisterVendorFormProps) {
                                         "Las contraseñas deben ser iguales",
                                 },
                             }}
-                            error={errors.confirmPassword}
                         />
                     </Box>
                     <CardActions>
@@ -292,6 +278,8 @@ function RegisterVendorForm(props: RRegisterVendorFormProps) {
                         </Button>
                     </CardActions>
                 </form>
+                <Divider />
+                <Box sx={{ margin: "1em" }}>{children}</Box>
             </Card>
         </>
     );

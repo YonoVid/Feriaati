@@ -5,14 +5,11 @@ import { emailFormatRegex } from "@feria-a-ti/common/check/checkLoginFields";
 import { RRecoveryFormProps } from "@feria-a-ti/common/model/loginFormProps";
 import InputComponentAlt from "@feria-a-ti/web/src/components/inputComponent/InputComponentAlt";
 import "./LoginForm.css";
+import { RecoveryFields } from "@feria-a-ti/common/model/loginFields";
 
 function RecoveryForm(props: RRecoveryFormProps) {
     const { label, color, children, onSubmit } = props;
-    const {
-        control,
-        formState: { errors },
-        handleSubmit,
-    } = useForm();
+    const { control, handleSubmit } = useForm<RecoveryFields>();
 
     const colorTheme =
         color != null && color === "secondary" ? "secondary" : "primary";
@@ -49,7 +46,6 @@ function RecoveryForm(props: RRecoveryFormProps) {
                                     "El formato debe ser, por ejemplo: ejemplo@correo.cl",
                             },
                         }}
-                        error={errors.password}
                     />
                 </Box>
                 <Box sx={{ margin: "1em" }}>

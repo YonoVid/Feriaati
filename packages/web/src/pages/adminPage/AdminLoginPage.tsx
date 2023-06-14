@@ -1,5 +1,5 @@
 import { useContext, useState } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
+import { Navigate, useNavigate, useOutletContext } from "react-router-dom";
 import { FieldValues } from "react-hook-form";
 import { httpsCallable } from "firebase/functions";
 
@@ -10,13 +10,15 @@ import {
     ResponseData,
     UserToken,
 } from "@feria-a-ti/common/model/functionsTypes";
-import LoginForm from "@feria-a-ti/web/src/components/loginForm/LoginForm";
-import MessageAlert from "@feria-a-ti/web/src/components/messageAlert/MessageAlert";
+import LoginForm from "@feria-a-ti/web/src/components/forms/loginForm/LoginForm";
 
 import { UserContext } from "@feria-a-ti/web/src/App";
+import { useHeaderContext } from "../HeaderLayout";
 import "../../App.css";
 
 function AdminLoginPage() {
+    //Global UI context
+    const { setMessage } = useHeaderContext();
     //Global state variable
     const { setSession, type } = useContext(UserContext);
     //Navigation definition
@@ -24,13 +26,6 @@ function AdminLoginPage() {
     // Form related variables
     const [canSubmit, setSubmitActive] = useState(true);
     const [attempt, setAttempt] = useState(0);
-    // Alert Related values
-    const [showAlert, setShowAlert] = useState(false);
-    const [alertMessage, setAlertMessage] = useState("TEXT");
-    const closeAlert = () => {
-        setSubmitActive(true);
-        setShowAlert(false);
-    };
     //ON SUBMIT Action
     const onSubmit = (data: FieldValues) => {
         setSubmitActive(false);
@@ -48,6 +43,7 @@ function AdminLoginPage() {
                 .then((result) => {
                     const {
                         msg,
+                        error,
                         extra: { email, token, type },
                     } = result.data as ResponseData<UserToken>;
                     console.log(result);
@@ -55,7 +51,7 @@ function AdminLoginPage() {
                     setSubmitActive(true);
                     //setIsLogged(result.data as any);
                     if (msg !== "") {
-                        setAlertMessage(msg);
+                        setMessage({ msg, isError: error });
                     }
                     console.log("TOKEN::", token);
                     if (token != null && token !== "") {
@@ -63,7 +59,7 @@ function AdminLoginPage() {
                         navigate("/admin");
                     }
                 })
-                .finally(() => setShowAlert(true));
+                .finally(() => setSubmitActive(true));
         }
     };
     return (
@@ -73,12 +69,6 @@ function AdminLoginPage() {
                 label="Acceso de administración"
                 onSubmit={onSubmit}
                 canSubmit={canSubmit}
-            />
-            <MessageAlert
-                open={showAlert}
-                title="Estado de acción"
-                message={alertMessage}
-                handleClose={closeAlert}
             />
         </>
     );

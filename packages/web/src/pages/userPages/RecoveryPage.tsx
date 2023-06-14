@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { FieldValues } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
+import { FieldValues } from "react-hook-form";
 import { httpsCallable } from "firebase/functions";
 
 import { functions } from "@feria-a-ti/common/firebase";
@@ -14,27 +14,22 @@ import {
 } from "@feria-a-ti/common/model/loginFields";
 import { ResponseData } from "@feria-a-ti/common/model/functionsTypes";
 
-import PassRecoveryForm from "@feria-a-ti/web/src/components/loginForm/PassRecoveryForm";
-import UpdatePassword from "@feria-a-ti/web/src/components/loginForm/UpdatePassword";
+import PassRecoveryForm from "@feria-a-ti/web/src/components/forms/loginForm/PassRecoveryForm";
+import UpdatePassword from "@feria-a-ti/web/src/components/forms/loginForm/UpdatePassword";
 import MessageAlert from "@feria-a-ti/web/src/components/messageAlert/MessageAlert";
 
+import { useHeaderContext } from "../HeaderLayout";
 import "../../App.css";
 
-function VendorRecoveryPage() {
-    const [userEmail, setUserEmail] = useState("");
+function RecoveryPage() {
+    //Global UI context
+    const { setMessage } = useHeaderContext();
     //Navigation definition
     const navigate = useNavigate();
-
+    //Form variables
+    const [userEmail, setUserEmail] = useState("");
     const [canSubmit, setSubmitActive] = useState(true);
     const [changePass, setChangePass] = useState(true);
-
-    // Alert Related values
-    const [showAlert, setShowAlert] = useState(false);
-    const [alertMessage, setAlertMessage] = useState("TEXT");
-    const closeAlert = () => {
-        setSubmitActive(true);
-        setShowAlert(false);
-    };
 
     const onSubmitRecoveryPass = (data: FieldValues) => {
         console.log("SUBMIT FORM");
@@ -48,22 +43,21 @@ function VendorRecoveryPage() {
             const passRecovery = httpsCallable<
                 RecoveryFields,
                 ResponseData<string>
-            >(functions, "passRecoveryVendor");
+            >(functions, "passRecovery");
             passRecovery(formatedData)
                 .then((result) => {
                     const { error, msg } = result.data;
                     console.log(result);
-                    setAlertMessage(msg);
+                    setMessage({ msg, isError: error });
                     if (!error) {
                         setUserEmail(data.email);
                         setChangePass(false);
                     }
                 })
-                .finally(() => setShowAlert(true));
+                .finally(() => setSubmitActive(true));
         }
     };
     const onSubmitUpdatePass = (data: FieldValues) => {
-        console.log("SUBMIT FORM");
         const formatedData: UpdatePassFields = {
             email: userEmail,
             codigo: data.codigo as string,
@@ -71,47 +65,39 @@ function VendorRecoveryPage() {
             confirmPassword: data.confirmPassword as string,
         };
         const check = checkUpdatePassFields(formatedData);
+        console.log("SUBMIT FORM::", formatedData);
         if (check) {
             setSubmitActive(false);
             const passUpdate = httpsCallable<
                 UpdatePassFields,
                 ResponseData<string>
-            >(functions, "passUpdateVendor");
+            >(functions, "passUpdate");
             passUpdate(formatedData)
                 .then((result) => {
                     const { error, msg } = result.data;
                     console.log(result);
-                    setAlertMessage(msg);
+                    setMessage({ msg, isError: error });
                     if (!error) {
-                        navigate("/loginVendor");
+                        navigate("/login");
                     }
                 })
-                .finally(() => setShowAlert(true));
+                .finally(() => setSubmitActive(true));
         }
     };
     return (
         <>
-            {(changePass && (
+            {changePass ? (
                 <PassRecoveryForm
-                    label="Recuperar cuenta de vendedor"
-                    color="secondary"
                     onSubmit={onSubmitRecoveryPass}
                     canSubmit={canSubmit}
                 />
-            )) || (
+            ) : (
                 <UpdatePassword
-                    color="secondary"
                     onSubmit={onSubmitUpdatePass}
                     canSubmit={canSubmit}
                 />
             )}
-            <MessageAlert
-                open={showAlert}
-                title="Estado de acción"
-                message={alertMessage}
-                handleClose={closeAlert}
-            />
         </>
     );
 }
-export default VendorRecoveryPage;
+export default RecoveryPage;

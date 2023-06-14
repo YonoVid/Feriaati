@@ -11,13 +11,15 @@ import {
     ResponseData,
     UserToken,
 } from "@feria-a-ti/common/model/functionsTypes";
-import LoginForm from "@feria-a-ti/web/src/components/loginForm/LoginForm";
-import MessageAlert from "@feria-a-ti/web/src/components/messageAlert/MessageAlert";
+import LoginForm from "@feria-a-ti/web/src/components/forms/loginForm/LoginForm";
 
 import { UserContext } from "@feria-a-ti/web/src/App";
+import { useHeaderContext } from "../HeaderLayout";
 import "../../App.css";
 
 function VendorLoginPage() {
+    //Global UI context
+    const { setMessage } = useHeaderContext();
     //Global state variable
     const { setSession, type } = useContext(UserContext);
     //Router dom
@@ -25,16 +27,9 @@ function VendorLoginPage() {
     const [attempt, setAttempt] = useState(0);
     //const [isLogged, setIsLogged] = useState(false);
     // Form related variables;
-    const [canSubmit, setSubmitActive] = useState(true);
-    // Alert Related values
-    const [showAlert, setShowAlert] = useState(false);
-    const [alertMessage, setAlertMessage] = useState("TEXT");
-    const closeAlert = () => {
-        setSubmitActive(true);
-        setShowAlert(false);
-    };
+    const [canSubmit, setCanSubmit] = useState(true);
+
     const onSubmit = (data: FieldValues) => {
-        setSubmitActive(false);
         console.log("SUBMIT FORM");
         setAttempt(attempt + 1);
         const formatedData: LoginFields = {
@@ -44,27 +39,29 @@ function VendorLoginPage() {
         };
         const check = checkLoginFields(formatedData);
         if (check) {
+            //Lock button
+            setCanSubmit(false);
             const login = httpsCallable(functions, "loginVendor");
             login(formatedData)
                 .then((result) => {
                     const {
                         msg,
+                        error,
                         extra: { token, email, type },
                     } = result.data as ResponseData<UserToken>;
                     localStorage.setItem("token", token);
                     console.log(result);
                     console.log(attempt);
-                    setSubmitActive(true);
                     //setIsLogged(result.data as any);
                     if (msg !== "") {
-                        setAlertMessage(msg);
+                        setMessage({ msg, isError: error });
                     }
                     if (token != null && token !== "") {
                         setSession && setSession({ token, type, email });
                         navigate("/session");
                     }
                 })
-                .finally(() => setShowAlert(true));
+                .finally(() => setCanSubmit(true));
         }
     };
     return (
@@ -90,12 +87,6 @@ function VendorLoginPage() {
                     Olvidaste tu contraseña?
                 </Link>
             </LoginForm>
-            <MessageAlert
-                open={showAlert}
-                title="Estado de acción"
-                message={alertMessage}
-                handleClose={closeAlert}
-            />
         </>
     );
 }

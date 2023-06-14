@@ -1,10 +1,10 @@
 import React, { useState } from "react";
-import { httpsCallable, FunctionsError } from "firebase/functions";
-import { Alert, ScrollView, StyleSheet, Text, View } from "react-native";
+import { httpsCallable } from "firebase/functions";
+import { ScrollView, StyleSheet } from "react-native";
 import { NavigationProp, ParamListBase } from "@react-navigation/native";
-import { Button, PaperProvider } from "react-native-paper";
+import { Button } from "react-native-paper";
 
-import { app, functions } from "@feria-a-ti/common/firebase";
+import { functions } from "@feria-a-ti/common/firebase";
 import { messagesCode } from "@feria-a-ti/common/constants/errors";
 import { checkRegisterFields } from "@feria-a-ti/common/check/checkRegisterFields";
 import {
@@ -16,31 +16,25 @@ import {
 import { ResponseData } from "@feria-a-ti/common/model/functionsTypes";
 import RegisterForm from "@feria-a-ti/mobile/components/forms/RegisterForm";
 import ConfirmRegisterForm from "@feria-a-ti/mobile/components/forms/ConfirmRegisterForm";
-import { MessageAlert } from "@feria-a-ti/mobile/components/MessageAlert";
+import { useAppContext } from "../AppContext";
 
 export interface RegisterClientProps {
     navigation: NavigationProp<ParamListBase>;
 }
 
 export const RegisterClient = (props: RegisterClientProps) => {
+    // Context variables
+    const { setMessage } = useAppContext();
+    // Navigation
     const { navigation } = props;
 
     const [emailRegistered, setEmailRegistered] = useState("");
 
-    const [canRegister, setCanRegister] = useState(true);
-    const [canConfirmRegister, setCanConfirmRegister] = useState(true);
+    const [canSubmit, setCanSubmit] = useState(true);
     const [registerComplete, setRegisterComplete] = useState(false);
 
-    // Alert Related values
-    const [showAlert, setShowAlert] = useState(false);
-    const [alertMessage, setAlertMessage] = useState("TEXT");
-    const closeAlert = () => {
-        registerComplete ? setCanConfirmRegister(true) : setCanRegister(true);
-        setShowAlert(false);
-    };
-
     const onSubmitRegister = async (data: RegisterFields) => {
-        setCanRegister(false);
+        setCanSubmit(false);
         const check = checkRegisterFields(data);
 
         if (check) {
@@ -52,26 +46,25 @@ export const RegisterClient = (props: RegisterClientProps) => {
             data.status = userStatus.registered;
             addUser(data)
                 .then((result) => {
+                    const { msg, error } = result.data;
                     console.log(result);
-                    //Unlock register button
-                    setCanRegister(true);
                     //Set registered email
                     setEmailRegistered(data.email);
                     //Set register complete
                     setRegisterComplete(true);
-                    setAlertMessage(result.data?.msg);
+                    setMessage({ msg, isError: error });
                 })
                 .catch((error) => {
                     console.log(error);
-                    setAlertMessage(messagesCode["ERR00"]);
+                    setMessage({ msg: messagesCode["ERR00"], isError: true });
                 })
-                .finally(() => setShowAlert(true));
+                .finally(() => setCanSubmit(true));
         }
         console.log(data, check);
     };
 
     const onSubmitConfirmRegister = async (data: ConfirmRegisterFields) => {
-        setCanConfirmRegister(false);
+        setCanSubmit(false);
         //Format data
         const formatedData: RegisterConfirm = {
             email: emailRegistered,
@@ -84,19 +77,19 @@ export const RegisterClient = (props: RegisterClientProps) => {
         >(functions, "confirmRegister");
         confirmRegister(formatedData)
             .then((result) => {
+                const { msg, error } = result.data;
                 console.log(result);
 
-                setCanConfirmRegister(true);
-                setAlertMessage(messagesCode["00000"]);
+                setMessage({ msg, isError: error });
                 navigation.navigate("loginClient", {
                     email: { emailRegistered },
                 });
             })
             .catch((error) => {
                 console.log(error);
-                setAlertMessage(messagesCode["ERR00"]);
+                setMessage({ msg: messagesCode["ERR00"], isError: true });
             })
-            .finally(() => setShowAlert(true));
+            .finally(() => setCanSubmit(true));
 
         console.log(data);
     };
@@ -110,7 +103,7 @@ export const RegisterClient = (props: RegisterClientProps) => {
                 {(!registerComplete && (
                     <RegisterForm
                         onSubmit={onSubmitRegister}
-                        canSubmit={canRegister}
+                        canSubmit={canSubmit}
                     >
                         <Button
                             mode="text"
@@ -122,16 +115,10 @@ export const RegisterClient = (props: RegisterClientProps) => {
                 )) || (
                     <ConfirmRegisterForm
                         onSubmit={onSubmitConfirmRegister}
-                        canSubmit={canConfirmRegister}
+                        canSubmit={canSubmit}
                     />
                 )}
             </ScrollView>
-            <MessageAlert
-                open={showAlert}
-                title={"ESTADO DE ACCIÓN"}
-                message={alertMessage}
-                handleClose={closeAlert}
-            />
         </>
     );
 };

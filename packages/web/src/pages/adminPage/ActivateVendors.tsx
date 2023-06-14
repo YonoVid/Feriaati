@@ -15,19 +15,14 @@ import {
 } from "@feria-a-ti/common/model/functionsTypes";
 import { UpdateStateFields } from "@feria-a-ti/common/model/adminFields";
 import { userStatus } from "@feria-a-ti/common/model/registerFields";
-import MessageAlert from "@feria-a-ti/web/src/components/messageAlert/MessageAlert";
 import { UserContext } from "@feria-a-ti/web/src/App";
+import { useHeaderContext } from "../HeaderLayout";
 
 const AdminStatePage = () => {
+    //Global UI context
+    const { setMessage } = useHeaderContext();
     //Global state variable
     const { type } = useContext(UserContext);
-
-    // Alert Related values
-    const [showAlert, setShowAlert] = useState(false);
-    const [alertMessage, setAlertMessage] = useState("TEXT");
-    const closeAlert = () => {
-        setShowAlert(false);
-    };
 
     // Data of vendors stored
     const [vendors, setVendors] = useState<VendorCollectionData[]>([]);
@@ -51,12 +46,12 @@ const AdminStatePage = () => {
                 UpdateStateFields,
                 ResponseData<null>
             >(functions, "vendorStateUpdate");
-            updateState({ id, email: id, status })
-                .then((response) => {
-                    console.log(response.data);
-                    setAlertMessage(response.data.msg);
-                })
-                .finally(() => setShowAlert(true));
+            updateState({ id, email: id, status }).then((response) => {
+                const { msg, error } = response.data;
+                console.log(response.data);
+                setMessage({ msg, isError: error });
+            });
+            // .finally(() => setShowAlert(true));
         } catch (error) {
             console.error("Error al actualizar el estado del vendedor:", error);
         }
@@ -115,12 +110,6 @@ const AdminStatePage = () => {
                     ))}
                 </List>
             </Card>
-            <MessageAlert
-                open={showAlert}
-                title="Estado de acción"
-                message={alertMessage}
-                handleClose={closeAlert}
-            />
         </>
     );
 };

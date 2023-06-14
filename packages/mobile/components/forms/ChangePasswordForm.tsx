@@ -4,16 +4,9 @@ import { useForm } from "react-hook-form";
 import InputComponent from "../inputs/InputComponent";
 import { Text, View, Button, StyleSheet } from "react-native";
 import { colors } from "@feria-a-ti/common/theme/base";
-import {
-    LoginFields,
-    UpdatePassFields,
-} from "@feria-a-ti/common/model/loginFields";
+import { UpdatePassFields } from "@feria-a-ti/common/model/loginFields";
 import { RRecoveryFormProps } from "@feria-a-ti/common/model/loginFormProps";
-import {
-    emailFormatRegex,
-    passwordFormatRegex,
-} from "@feria-a-ti/common/check/checkRegisterFields";
-import { Link } from "expo-router";
+import { passwordFormatRegex } from "@feria-a-ti/common/check/checkRegisterFields";
 
 export const ChangePasswordForm = (props: RRecoveryFormProps) => {
     const { canSubmit } = props;

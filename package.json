@@ -1,19 +1,19 @@
 {
-    "private": true,
-    "name": "feria-a-ti",
-    "version": "1.0.0",
-    "workspaces": [
-        "packages/**"
-    ],
-    "nohoist": [
-        "**/firebase-admin",
-        "**/firebase-admin/**",
-        "**/firebase-functions",
-        "**/firebase-functions/**"
-    ],
-    "dependencies": {
-        "firebase-tools": "^10.9.2",
-        "react-hook-form": "^7.43.9",
-        "react-router-dom": "^6.11.1"
-    }
+  "private": true,
+  "name": "feria-a-ti",
+  "version": "1.0.0",
+  "workspaces": [
+    "packages/**"
+  ],
+  "nohoist": [
+    "**/firebase-admin",
+    "**/firebase-admin/**",
+    "**/firebase-functions",
+    "**/firebase-functions/**"
+  ],
+  "dependencies": {
+    "firebase-tools": "^10.9.2",
+    "react-hook-form": "^7.43.9",
+    "react-router-dom": "^6.11.1"
+  }
 }

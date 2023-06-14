@@ -55,3 +55,21 @@ export type VendorCollectionData = AccountCollectionData & {
     surname: string;
     image: string;
 };
+
+export type ProductListCollectionData = {
+    vendorId: string;
+    products: Array<ProductCollectionData>;
+};
+
+export type ProductCollectionData = {
+    name: string;
+    description: string;
+    price: number;
+    discount: "none" | "percentage" | "value";
+    promotion: number;
+    image: [string, string, string];
+};
+
+export type ProductData = ProductCollectionData & {
+    id: string;
+};
