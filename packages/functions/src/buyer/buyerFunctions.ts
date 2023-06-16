@@ -204,7 +204,16 @@ export const passRecovery = functions.https.onCall(
     }
 );
 export const passUpdate = functions.https.onCall(
-    async (data: UpdatePassFields) => {
-        return updateAccountPassword("users", data);
+    async (data: UpdatePassFields): Promise<ResponseData<string>> => {
+        const { email, code } = await updateAccountPassword(
+            collectionNames.USERS,
+            data
+        );
+        return {
+            msg: messagesCode[code],
+            code: code,
+            error: code !== errorCodes.SUCCESFULL,
+            extra: email,
+        };
     }
 );

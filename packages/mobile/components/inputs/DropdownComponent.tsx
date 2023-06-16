@@ -14,19 +14,21 @@ import { colors } from "@feria-a-ti/common/theme/base";
 interface Props<T> extends UseControllerProps<T> {
     label: string;
     list: (string | number)[][];
-    error: FieldError | undefined;
+    defaultValue?: any;
+    error?: FieldError | undefined;
 }
 
 const InputComponent = <T extends FieldValues>({
     name,
     label,
+    defaultValue,
     list,
     control,
     rules,
     error,
 }: Props<T>) => {
     //const { name, label, control, rules, error } = props;
-    const [valueDropdown, setValueDropdown] = useState(null);
+    const [valueDropdown, setValueDropdown] = useState(defaultValue || null);
     const [showDropdown, setShowDropdown] = useState(false);
     const labelText = label != null ? label : name;
 

@@ -16,6 +16,7 @@ import HomeLayout from "./_layout";
 import { ManagerAddProduct } from "./vendor/ManagerAddProduct";
 import { ManagerVendor } from "./vendor/ManagerVendor";
 import { UserVendorSelect } from "./client/UserVendorSelect";
+import { AccountManager } from "./account/AccountManager";
 
 const Stack = createNativeStackNavigator();
 
@@ -73,6 +74,11 @@ export default function App() {
                         name="managerAddProduct"
                         component={ManagerAddProduct}
                         options={{ title: "Añadir producto " }}
+                    />
+                    <Stack.Screen
+                        name="accountManager"
+                        component={AccountManager}
+                        options={{ title: "Gestionar cuenta" }}
                     />
                     <Stack.Screen
                         name="session"

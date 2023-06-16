@@ -13,7 +13,7 @@ interface Props<T> extends UseControllerProps<T> {
     label: string;
     type?: "text" | "password" | "email" | "number";
     hidden?: boolean;
-    error: FieldError | undefined;
+    error?: FieldError | undefined;
 }
 
 const InputComponent = <T extends FieldValues>({

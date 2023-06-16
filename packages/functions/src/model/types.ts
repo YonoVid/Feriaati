@@ -1,9 +1,20 @@
-import { userStatus } from "./accountTypes";
+import { AccountData, userStatus, userType } from "./accountTypes";
 
 export type AccountFields = {
     email: string;
     password: string;
     status?: userStatus;
+};
+
+export type GetAccountFields = {
+    token?: string;
+    id?: string;
+    type: userType;
+};
+
+export type EditAccountFields = Partial<AccountData> & {
+    token?: string;
+    id?: string;
 };
 
 export type UserFields = AccountFields & {
