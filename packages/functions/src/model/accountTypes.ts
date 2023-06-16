@@ -12,10 +12,24 @@ export enum userStatus {
     blocked = "blocked",
 }
 
-export type AccountCollectionData = {
+export type AccountDirection = {
+    type?: "house" | "department" | "";
+    region: number;
+    commune: number;
+    street: string;
+    streetNumber: number;
+    extra?: string;
+};
+
+export type AccountData = {
     type: userType;
     email: string;
     password: string;
+    phone?: string;
+    direction?: Array<AccountDirection>;
+};
+
+export type AccountCollectionData = AccountData & {
     algorithm: string;
     status: string;
     iv: ArrayBuffer;

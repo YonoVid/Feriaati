@@ -11,7 +11,6 @@ import {
     userStatus,
 } from "@feria-a-ti/common/model/registerFields";
 import { ResponseData } from "@feria-a-ti/common/model/functionsTypes";
-import MessageAlert from "@feria-a-ti/web/src/components/messageAlert/MessageAlert";
 import RegisterVendorForm from "@feria-a-ti/web/src/components/forms/registerVendorForm/RegisterVendorForm";
 
 import { useHeaderContext } from "../HeaderLayout";

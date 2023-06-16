@@ -40,15 +40,15 @@ function NavBar() {
     ];
     const settings = [
         {
-            label: "Profile",
+            label: "Home",
             action: () => {
-                1 + 1;
+                navigate("/session");
             },
         },
         {
             label: "Account",
             action: () => {
-                1 + 1;
+                navigate("/accountPage");
             },
         },
         {

@@ -9,6 +9,8 @@ export enum errorCodes {
     PASSWORD_FORMAT_ERROR = "ERR03",
     CONFIRM_PASSWORD_ERROR = "ERR04",
     INCORRECT_CODE_ERROR = "ERR05",
+    PHONE_FORMAT_ERROR = "ERR06",
+    DIRECTION_FORMAT_ERROR = "ERR07",
     MISSING_REQUIRED_DATA_ERROR = "ERR09",
     USER_NOT_EXISTS_ERROR = "ERL01",
     BLOCKED_ACCOUNT_ERROR = "ERL02",
@@ -33,6 +35,10 @@ export const messagesCode: { [code in errorCodes]: string } = {
         "La contraseña del usuario tiene un formato incorrecto, debe ser alfanumérica",
     [errorCodes.CONFIRM_PASSWORD_ERROR]: "Las contraseñas no son iguales",
     [errorCodes.INCORRECT_CODE_ERROR]: "Código incorrecto",
+    [errorCodes.PHONE_FORMAT_ERROR]:
+        "El formato del teléfono es incorrecto. Ej:+11111111111",
+    [errorCodes.DIRECTION_FORMAT_ERROR]:
+        "El formato de la dirección es incorrecto o falta información",
     [errorCodes.MISSING_REQUIRED_DATA_ERROR]: "Faltan datos requeridos ",
     [errorCodes.USER_NOT_EXISTS_ERROR]: "El usuario no existe",
     [errorCodes.BLOCKED_ACCOUNT_ERROR]:

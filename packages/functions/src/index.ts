@@ -40,3 +40,5 @@ export {
     listProduct,
     productListPagination,
 } from "./product/productFunctions";
+
+export { getAccountUser, editAccountUser } from "./account/accountFunctions";
