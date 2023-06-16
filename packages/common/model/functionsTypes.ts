@@ -12,6 +12,22 @@ export type UserToken = {
 };
 
 //
+// VENDOR PAGE TYPES
+//
+
+export type UserComment = {
+    id?: string;
+    userId: string;
+    username?: string;
+    comment: string;
+};
+
+export type CommentCollectionData = UserComment & {
+    date: Date;
+    reports?: number;
+};
+
+//
 // ACCOUNTS RELATED TYPES
 //
 

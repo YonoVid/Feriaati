@@ -24,6 +24,7 @@ import ProductList from "@feria-a-ti/web/src/components/productList/ProductList"
 import { UserContext } from "@feria-a-ti/web/src/App";
 import { useHeaderContext } from "../HeaderLayout";
 import "../../App.css";
+import CommentList from "../../components/commentList/CommentList";
 
 function ManagerVendorPage() {
     //Global UI context
@@ -169,6 +170,7 @@ function ManagerVendorPage() {
                     >
                         Agregar producto
                     </Button>
+                    <CommentList commentsVendor="" isUser={false} />
                 </>
             ) : (
                 <ProductAddForm

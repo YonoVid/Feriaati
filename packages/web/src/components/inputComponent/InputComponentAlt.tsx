@@ -8,6 +8,8 @@ import "./InputComponent.css";
 interface Props<T> extends UseControllerProps<T> {
     sx?: SxProps<Theme>;
     label: string;
+    multiline?: boolean;
+    rows?: number;
     type?: "text" | "number" | "password" | "email" | "file" | "select";
     selectOptions?: (string | number)[][];
     hidden?: boolean;
@@ -18,6 +20,8 @@ const InputComponentAlt = <T extends FieldValues>({
     sx,
     name,
     label,
+    multiline,
+    rows,
     defaultValue,
     selectOptions,
     type,
@@ -54,6 +58,8 @@ const InputComponentAlt = <T extends FieldValues>({
                                 maxWidth: "20em",
                                 ...sx,
                             }}
+                            multiline={multiline ? true : false}
+                            rows={multiline ? rows : undefined}
                             InputLabelProps={{
                                 shrink: type === "file" ? true : undefined,
                             }}
