@@ -1,12 +1,15 @@
 import { ChangeEvent } from "react";
 import { Controller, FieldValues, UseControllerProps } from "react-hook-form";
-import { MenuItem, TextField } from "@mui/material";
+import { MenuItem, SxProps, TextField, Theme } from "@mui/material";
 import "./InputComponent.css";
 // import { Box, TextField } from "@mui/material";
 // import { Controller } from "react-hook-form";
 
 interface Props<T> extends UseControllerProps<T> {
+    sx?: SxProps<Theme>;
     label: string;
+    multiline?: boolean;
+    rows?: number;
     type?: "text" | "number" | "password" | "email" | "file" | "select";
     selectOptions?: (string | number)[][];
     hidden?: boolean;
@@ -14,8 +17,11 @@ interface Props<T> extends UseControllerProps<T> {
 }
 
 const InputComponentAlt = <T extends FieldValues>({
+    sx,
     name,
     label,
+    multiline,
+    rows,
     defaultValue,
     selectOptions,
     type,
@@ -46,7 +52,14 @@ const InputComponentAlt = <T extends FieldValues>({
                         fieldState: { error },
                     }) => (
                         <TextField
-                            sx={{ flex: 1, minWidth: "10em", maxWidth: "20em" }}
+                            sx={{
+                                flex: 1,
+                                minWidth: "10em",
+                                maxWidth: "20em",
+                                ...sx,
+                            }}
+                            multiline={multiline ? true : false}
+                            rows={multiline ? rows : undefined}
                             InputLabelProps={{
                                 shrink: type === "file" ? true : undefined,
                             }}
@@ -66,7 +79,7 @@ const InputComponentAlt = <T extends FieldValues>({
                             error={error != null}
                             variant="filled"
                             value={value || ""}
-                            placeholder={inputLabel}
+                            placeholder={defaultValue || inputLabel}
                             defaultValue={defaultValue}
                             onChange={(value) => {
                                 onChangeWrapper(onChange, value);

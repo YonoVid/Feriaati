@@ -52,8 +52,9 @@ export const updateAccountCode = async (
 
 export const updateAccountPassword = async (
     collection: string,
-    data: UpdatePassFields
-) => {
+    data: UpdatePassFields,
+    checkCode: boolean = true
+): Promise<{ code: errorCodes; email: string }> => {
     const db = admin.firestore();
     functions.logger.info(data);
 
@@ -66,39 +67,31 @@ export const updateAccountPassword = async (
         if (check) {
             const userDoc = collectionDoc.data();
             if (userDoc?.status === userStatus.activated) {
-                if (userDoc?.passwordCode === data.codigo) {
+                if (!checkCode || userDoc?.passwordCode === data.codigo) {
                     collectionDocReference.update({
                         password: encryption.encrypt(data.password),
                     });
                     // Returning results.
                     return {
-                        extra: data.email,
-                        error: false,
+                        email: data.email,
                         code: errorCodes.SUCCESFULL,
-                        msg: messagesCode[errorCodes.SUCCESFULL],
                     };
                 }
                 // Returning results.
                 return {
-                    extra: data.email,
-                    error: false,
+                    email: data.email,
                     code: errorCodes.INCORRECT_CODE_ERROR,
-                    msg: messagesCode[errorCodes.INCORRECT_CODE_ERROR],
                 };
             }
         } else {
             return {
-                extra: data.email,
-                error: true,
+                email: data.email,
                 code: code,
-                msg: messagesCode[code],
             };
         }
     }
     return {
-        extra: data.email,
-        error: true,
-        code: "ERD02",
-        msg: messagesCode["ERD02"],
+        email: data.email,
+        code: errorCodes.DOCUMENT_NOT_EXISTS_ERROR,
     };
 };

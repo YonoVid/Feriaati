@@ -20,11 +20,12 @@ import {
 } from "@feria-a-ti/common/model/productAddFormProps";
 import ProductAddForm from "@feria-a-ti/web/src/components/forms/productAddForm/ProductAddForm";
 import ProductVendorPage from "@feria-a-ti/web/src/components/productPage/ProductPage";
+import ProductVendorUpdateForm from "@feria-a-ti/web/src/components/forms/productVendorUpdateForm/ProductVendorUpdateForm";
+import CommentList from "@feria-a-ti/web/src/components/commentList/CommentList";
 
 import { UserContext } from "@feria-a-ti/web/src/App";
 import { useHeaderContext } from "../HeaderLayout";
 import "../../App.css";
-import ProductVendorUpdateForm from "../../components/forms/productVendorUpdateForm/ProductVendorUpdateForm";
 
 function ManagerVendorPage() {
     //Global UI context
@@ -187,15 +188,18 @@ function ManagerVendorPage() {
             {type !== "vendor" && <Navigate to="/session" replace={true} />}
             {!productEditable ? (
                 !updateVendorPage ? (
-                    <ProductVendorPage
-                        vendorData={productVendor || {}}
-                        isEditable={true}
-                        products={products}
-                        onAdd={() => navigate("/addProduct")}
-                        onEdit={onEdit}
-                        onDelete={onDelete}
-                        onUpdatePage={() => setUpdateVendorPage(true)}
-                    />
+                    <>
+                        <ProductVendorPage
+                            vendorData={productVendor || {}}
+                            isEditable={true}
+                            products={products}
+                            onAdd={() => navigate("/addProduct")}
+                            onEdit={onEdit}
+                            onDelete={onDelete}
+                            onUpdatePage={() => setUpdateVendorPage(true)}
+                        />
+                        <CommentList commentsVendor="" isUser={false} />
+                    </>
                 ) : (
                     <ProductVendorUpdateForm
                         imageData={productVendor?.image as string}

@@ -3,5 +3,6 @@ export enum collectionNames {
     USERS = "users",
     ADMINS = "admins",
     VENDORPRODUCTS = "vendorProducts",
+    COMMENTPRODUCTS = "commentProducts",
     PRODUCTS = "products",
 }

@@ -180,6 +180,15 @@ export const passRecoveryVendor = functions.https.onCall(
 //actualización de contraseña con el código enviado al correo
 export const passUpdateVendor = functions.https.onCall(
     async (data: UpdatePassFields): Promise<ResponseData<string>> => {
-        return updateAccountPassword(collectionNames.VENDORS, data);
+        const { email, code } = await updateAccountPassword(
+            collectionNames.VENDORS,
+            data
+        );
+        return {
+            msg: messagesCode[code],
+            code: code,
+            error: code !== errorCodes.SUCCESFULL,
+            extra: email,
+        };
     }
 );

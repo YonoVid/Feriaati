@@ -59,17 +59,36 @@ export default function AppBar(props: NativeStackHeaderProps) {
                             }
                         />
                     ) : (
-                        <Menu.Item
-                            onPress={() => {
-                                console.log("LAST SCREEN NAME::", route.name);
-                                resetSession();
-                                navigation.replace("session");
-                                console.log("TOKEN::", authToken);
-                                console.log("TYPE::", type);
-                                closeMenu();
-                            }}
-                            title={"Logout"}
-                        />
+                        <>
+                            <Menu.Item
+                                onPress={() => {
+                                    navigation.replace("session");
+                                    closeMenu();
+                                }}
+                                title={"HOME"}
+                            />
+                            <Menu.Item
+                                onPress={() => {
+                                    navigation.replace("accountManager");
+                                    closeMenu();
+                                }}
+                                title={"Account"}
+                            />
+                            <Menu.Item
+                                onPress={() => {
+                                    console.log(
+                                        "LAST SCREEN NAME::",
+                                        route.name
+                                    );
+                                    resetSession();
+                                    navigation.replace("session");
+                                    console.log("TOKEN::", authToken);
+                                    console.log("TYPE::", type);
+                                    closeMenu();
+                                }}
+                                title={"Logout"}
+                            />
+                        </>
                     )}
                 </Menu>
             ) : null}

@@ -16,6 +16,7 @@ import { functions } from "@feria-a-ti/common/firebase"; // Importa la configura
 import {
     ProductData,
     ResponseData,
+    UserComment,
     VendorCollectionData,
 } from "@feria-a-ti/common/model/functionsTypes";
 import { ProductListFields } from "@feria-a-ti/common/model/productAddFormProps";
@@ -23,6 +24,7 @@ import ProductList from "@feria-a-ti/web/src/components/productList/ProductList"
 
 import { UserContext } from "@feria-a-ti/web/src/App";
 import { useHeaderContext } from "../HeaderLayout";
+import CommentList from "../../components/commentList/CommentList";
 
 const UserVendorSelect = () => {
     //Global UI context
@@ -30,6 +32,8 @@ const UserVendorSelect = () => {
     //Global state variable
     const { type } = useContext(UserContext);
 
+    // Page comments
+    const [pageComments, setPageComments] = useState<Array<UserComment>>();
     // Selection of vendor
     const [selectedVendor, setSelectedVendor] =
         useState<VendorCollectionData | null>();
@@ -87,6 +91,10 @@ const UserVendorSelect = () => {
                         isEditable={false}
                         label=""
                         products={products}
+                    />
+                    <CommentList
+                        commentsVendor={selectedVendor.email}
+                        isUser={true}
                     />
                 </>
             ) : (

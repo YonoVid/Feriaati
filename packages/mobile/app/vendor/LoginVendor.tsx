@@ -22,7 +22,8 @@ export interface LoginVendorProps {
 
 export const LoginVendor = (props: LoginVendorProps) => {
     // Context variables
-    const { setSession, setMessage } = useAppContext();
+    const { authUser, authToken, type, setSession, setMessage } =
+        useAppContext();
     // Navigation
     const { navigation } = props;
     // Form variables
@@ -47,6 +48,7 @@ export const LoginVendor = (props: LoginVendorProps) => {
                         setMessage({ msg, isError: error });
                         if (token != null && token != "") {
                             setSession({ token, type, email });
+                            console.log("SESSION::", token, type, email);
                             navigation.navigate("session");
                         }
                     }
