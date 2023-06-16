@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import {
     Box,
@@ -10,27 +11,26 @@ import {
 import AddIcon from "@mui/icons-material/Add";
 import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
 
+import { regionCode, regionCommune } from "@feria-a-ti/common/constants/form";
+import { REditAccountFormProps } from "@feria-a-ti/common/model/account/editAccountFormProps";
+import {
+    AccountDirection,
+    EditFormAccountFields,
+} from "@feria-a-ti/common/model/account/editAccountFields";
 import {
     emailFormatRegex,
     numberRegex,
     passwordFormatRegex,
 } from "@feria-a-ti/common/check/checkRegisterFields";
-import { REditAccountFormProps } from "@feria-a-ti/common/model/account/editAccountFormProps";
-import {
-    AccountDirection,
-    EditVendorAccountFields,
-} from "@feria-a-ti/common/model/account/editAccountFields";
+import { phoneFormatRegex } from "@feria-a-ti/common/check/checkAccountFields";
 
 import InputComponentAlt from "@feria-a-ti/web/src/components/inputComponent/InputComponentAlt";
 import "./EditAccountForm.css";
-import { useEffect, useState } from "react";
-import { regionCode, regionCommune } from "@feria-a-ti/common/constants/form";
-import { phoneFormatRegex } from "@feria-a-ti/common/check/checkAccountFields";
 
 function EditAccountForm(props: REditAccountFormProps) {
     const { account, children, onSubmit } = props;
     const { watch, handleSubmit, setValue, control } =
-        useForm<EditVendorAccountFields>();
+        useForm<EditFormAccountFields>();
 
     const [userDirections, setUserDirections] = useState<
         Array<AccountDirection>
@@ -62,7 +62,7 @@ function EditAccountForm(props: REditAccountFormProps) {
                 setUserDirections(account.direction);
             }
         }
-    });
+    }, [account, setValue]);
 
     return (
         <>

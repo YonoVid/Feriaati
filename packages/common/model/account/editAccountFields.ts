@@ -14,7 +14,7 @@ export type EditAccountFields = Partial<AccountData> & {
     id?: string;
 };
 
-export type EditVendorAccountFields = EditAccountFields & {
+export type EditFormAccountFields = EditAccountFields & {
     confirmPassword: string;
     type: userType;
 };

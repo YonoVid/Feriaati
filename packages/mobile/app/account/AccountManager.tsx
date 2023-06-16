@@ -1,30 +1,32 @@
-import { useContext, useEffect, useState } from "react";
-import { FieldValues } from "react-hook-form";
-import { httpsCallable } from "firebase/functions";
+import React, { useEffect, useState } from "react";
+import { httpsCallable, FunctionsError } from "firebase/functions";
+import { Alert, ScrollView, StyleSheet, Text, View } from "react-native";
+import { NavigationProp, ParamListBase } from "@react-navigation/native";
 
 import { functions } from "@feria-a-ti/common/firebase";
 import { messagesCode } from "@feria-a-ti/common/constants/errors";
-import {
-    AccountData,
-    ResponseData,
-} from "@feria-a-ti/common/model/functionsTypes";
 import { GetAccountFields } from "@feria-a-ti/common/model/account/getAccountFields";
 import { EditAccountFields } from "@feria-a-ti/common/model/account/editAccountFields";
 import {
     checkEditAccountFields,
     checkGetAccountFields,
 } from "@feria-a-ti/common/check/checkAccountFields";
-import EditAccountForm from "@feria-a-ti/web/src/components/forms/editAccountForm/EditAccountForm";
 
-import { useHeaderContext } from "../HeaderLayout";
-import { UserContext } from "../../App";
-import "@feria-a-ti/web/src/App.css";
+import {
+    AccountData,
+    ResponseData,
+} from "@feria-a-ti/common/model/functionsTypes";
+import { useAppContext } from "../AppContext";
+import EditAccountForm from "../../components/forms/EditAccountForm";
+import { Button } from "react-native-paper";
 
-function AccountPage() {
-    //Global UI context
-    const { setMessage } = useHeaderContext();
-    //Global state variable
-    const { authToken, type } = useContext(UserContext);
+export interface AccountManagerProps {
+    navigation: NavigationProp<ParamListBase>;
+}
+
+export const AccountManager = () => {
+    // Context variables
+    const { authToken, type, setMessage } = useAppContext();
 
     const [accountData, setAccountData] = useState<AccountData | "loading">();
 
@@ -65,7 +67,7 @@ function AccountPage() {
         }
     };
 
-    const onEditAccount = (data: FieldValues) => {
+    const onEditAccount = (data: EditAccountFields) => {
         console.log("SUBMIT FORM");
         //Format data to send to server
         const formatedData: EditAccountFields = {
@@ -79,6 +81,7 @@ function AccountPage() {
         const check = checkEditAccountFields(formatedData);
 
         console.log("ERROR CHECK::", check);
+        console.log("DATA CHECKED::", formatedData);
 
         if (check) {
             //Lock register button
@@ -113,17 +116,33 @@ function AccountPage() {
 
     return (
         <>
-            <EditAccountForm
-                account={
-                    accountData && accountData !== "loading"
-                        ? accountData
-                        : undefined
-                }
-                onSubmit={onEditAccount}
-                canSubmit={canSubmit}
-            ></EditAccountForm>
+            <ScrollView
+                style={styles.container}
+                contentContainerStyle={styles.innerContainer}
+            >
+                <EditAccountForm
+                    account={
+                        accountData && accountData !== "loading"
+                            ? accountData
+                            : undefined
+                    }
+                    onSubmit={onEditAccount}
+                    canSubmit={canSubmit}
+                />
+            </ScrollView>
         </>
     );
-}
+};
 
-export default AccountPage;
+const styles = StyleSheet.create({
+    innerContainer: {
+        flexGrow: 1,
+        alignContent: "center",
+        justifyContent: "center",
+    },
+    container: {
+        flex: 1,
+        padding: 8,
+        backgroundColor: "#EEEAE0",
+    },
+});

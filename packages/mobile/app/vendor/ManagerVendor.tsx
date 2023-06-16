@@ -25,7 +25,6 @@ import {
 import { ProductList } from "../../components/productList/ProductList";
 import { Button } from "react-native-paper";
 import { useFocusEffect } from "expo-router";
-import { checkSession } from "../../utilities/sessionData";
 
 export interface ManagerVendorProps {
     navigation: NavigationProp<ParamListBase>;
@@ -33,7 +32,7 @@ export interface ManagerVendorProps {
 
 export const ManagerVendor = (props: ManagerVendorProps) => {
     // Context variables
-    const { type, authToken, setMessage } = useAppContext();
+    const { type, authToken, checkSession, setMessage } = useAppContext();
     // Navigation
     const { navigation } = props;
     // Server data
@@ -147,13 +146,12 @@ export const ManagerVendor = (props: ManagerVendorProps) => {
     }, []);
 
     useFocusEffect(() => {
-        if (checkSession()) {
-            if (type !== userType.vendor) {
-                navigation.reset({
-                    index: 0,
-                    routes: [{ name: "session" }],
-                });
-            }
+        console.log("CHECK SESSION TYPE::", type);
+        if (!checkSession() || type !== userType.vendor) {
+            navigation.reset({
+                index: 0,
+                routes: [{ name: "session" }],
+            });
         }
     });
 

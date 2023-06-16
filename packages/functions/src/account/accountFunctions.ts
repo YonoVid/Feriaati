@@ -10,6 +10,7 @@ import { checkEditAccountFields, checkGetAccountFields } from "./checkAccount";
 import { EditAccountFields, GetAccountFields } from "../model/types";
 import { collectionNames } from "../consts";
 import { getAccount } from "../utilities/account";
+import { updateAccountPassword } from "../utilities/updateAccount";
 
 export const getAccountUser = functions.https.onCall(
     async (
@@ -75,24 +76,47 @@ export const editAccountUser = functions.https.onCall(
             let { check, code } = checkEditAccountFields(data);
 
             if (check) {
-                let { doc, code } = await getAccount(
+                const accountCollection =
                     data.type === userType.vendor
                         ? collectionNames.VENDORS
-                        : collectionNames.USERS,
-                    { id: data.id, token: data.token }
-                );
+                        : collectionNames.USERS;
+                let { doc, code } = await getAccount(accountCollection, {
+                    id: data.id,
+                    token: data.token,
+                });
                 let accountData: AccountData | undefined;
                 if (code === errorCodes.SUCCESFULL) {
                     const docData: AccountCollectionData =
                         doc.data() as AccountCollectionData;
+                    if (data.password && data.password != null) {
+                        const { code: codePassword } =
+                            await updateAccountPassword(
+                                accountCollection,
+                                {
+                                    email: docData.email,
+                                    codigo: "",
+                                    password: data.password,
+                                    confirmPassword: data.password,
+                                },
+                                false
+                            );
+                        code = codePassword;
+                    }
                     accountData = {
                         type: docData.type,
                         email: data.email ? data.email : docData.email,
-                        password: data.password
-                            ? data.password
-                            : docData.password,
+                        password: docData.password,
                     };
-                    data.direction && (accountData.direction = data.direction);
+                    if (data.direction) {
+                        accountData.direction = data.direction;
+                    } else if (
+                        docData.direction &&
+                        docData.direction != null &&
+                        docData.direction.length > 0
+                    ) {
+                        accountData.direction = [];
+                    }
+
                     data.phone && (accountData.phone = data.phone);
 
                     if (docData !== accountData) {
