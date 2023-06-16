@@ -42,3 +42,9 @@ export {
 } from "./product/productFunctions";
 
 export { getAccountUser, editAccountUser } from "./account/accountFunctions";
+
+export {
+    getComments,
+    reportComment,
+    addComment,
+} from "./comment/commentFunctions";

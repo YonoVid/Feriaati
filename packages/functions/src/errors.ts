@@ -16,6 +16,7 @@ export enum errorCodes {
     BLOCKED_ACCOUNT_ERROR = "ERL02",
     UNACTIVATED_ACCOUNT_ERROR = "ERL03",
     INCORRECT_PASSWORD_ERROR = "ERL04",
+    VENDOR_NOT_EXISTS_ERROR = "ERL05",
     ACTION_DONE_ERROR = "ERL09",
     INCORRECT_INTEGER_FORMAT = "ERS00",
 }
@@ -46,6 +47,8 @@ export const messagesCode: { [code in errorCodes]: string } = {
     [errorCodes.UNACTIVATED_ACCOUNT_ERROR]:
         "La cuenta no ha sido activada, contacte con soporte",
     [errorCodes.INCORRECT_PASSWORD_ERROR]: "Contraseña incorrecta",
+
+    [errorCodes.VENDOR_NOT_EXISTS_ERROR]: "El vendedor no existe",
     [errorCodes.INCORRECT_INTEGER_FORMAT]:
         "El número debe ser un entero. Ej: 100",
     [errorCodes.ACTION_DONE_ERROR]:

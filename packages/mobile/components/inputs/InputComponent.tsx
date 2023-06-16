@@ -11,6 +11,9 @@ import { colors } from "@feria-a-ti/common/theme/base";
 
 interface Props<T> extends UseControllerProps<T> {
     label: string;
+    multiline?: boolean;
+    style?: any;
+    rows?: number;
     type?: "text" | "password" | "email" | "number";
     hidden?: boolean;
     error?: FieldError | undefined;
@@ -19,6 +22,9 @@ interface Props<T> extends UseControllerProps<T> {
 const InputComponent = <T extends FieldValues>({
     name,
     label,
+    style,
+    multiline,
+    rows,
     type,
     control,
     rules,
@@ -61,8 +67,11 @@ const InputComponent = <T extends FieldValues>({
                 }) => (
                     <>
                         <TextInput
+                            style={style}
                             autoCapitalize="none"
                             secureTextEntry={type == "password" ? true : false}
+                            multiline={multiline ? multiline : undefined}
+                            numberOfLines={multiline ? rows : undefined}
                             //style={styles.input}
                             placeholder={labelText}
                             label={labelText}
