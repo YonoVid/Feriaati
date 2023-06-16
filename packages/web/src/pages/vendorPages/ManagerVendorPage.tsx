@@ -2,7 +2,6 @@ import { useContext, useEffect, useState } from "react";
 import { FieldValues } from "react-hook-form";
 import { Navigate, useNavigate } from "react-router-dom";
 import { httpsCallable } from "firebase/functions";
-import { Button } from "@mui/material";
 
 import { functions } from "@feria-a-ti/common/firebase";
 import {
@@ -11,6 +10,7 @@ import {
 } from "@feria-a-ti/common/check/checkProductFields";
 import {
     ProductData,
+    ProductListCollectionData,
     ResponseData,
 } from "@feria-a-ti/common/model/functionsTypes";
 import {
@@ -19,11 +19,12 @@ import {
     ProductListFields,
 } from "@feria-a-ti/common/model/productAddFormProps";
 import ProductAddForm from "@feria-a-ti/web/src/components/forms/productAddForm/ProductAddForm";
-import ProductList from "@feria-a-ti/web/src/components/productList/ProductList";
+import ProductVendorPage from "@feria-a-ti/web/src/components/productPage/ProductPage";
 
 import { UserContext } from "@feria-a-ti/web/src/App";
 import { useHeaderContext } from "../HeaderLayout";
 import "../../App.css";
+import ProductVendorUpdateForm from "../../components/forms/productVendorUpdateForm/ProductVendorUpdateForm";
 
 function ManagerVendorPage() {
     //Global UI context
@@ -33,6 +34,9 @@ function ManagerVendorPage() {
     // Dom redirection variable
     const navigate = useNavigate();
 
+    //Page stored data
+    const [productVendor, setProductVendor] =
+        useState<ProductListCollectionData>();
     const [products, setProducts] = useState<Array<ProductData>>([]);
 
     const [imageData, setImageData] = useState<[string, string, string]>([
@@ -46,7 +50,33 @@ function ManagerVendorPage() {
     );
 
     // Form related variables;
+    const [updateVendorPage, setUpdateVendorPage] = useState(false);
+
     const [canSubmit, setCanSubmit] = useState(true);
+
+    const loadVendor = () => {
+        const formatedData: ProductListFields = {
+            tokenVendor: authToken as string,
+        };
+        const check = authToken != null && authToken != "";
+        console.log("SUBMIT FORM::", check);
+        if (check) {
+            const addProduct = httpsCallable<
+                ProductListFields,
+                ResponseData<ProductListCollectionData>
+            >(functions, "getProductVendor");
+            addProduct(formatedData).then((result) => {
+                const { msg, error, extra } = result.data;
+                console.log(result.data);
+
+                setProductVendor(extra);
+                //setIsLogged(result.data as any);
+                if (error && msg !== "") {
+                    setMessage({ msg, isError: error });
+                }
+            });
+        }
+    };
 
     const loadProducts = () => {
         const formatedData: ProductListFields = {
@@ -67,7 +97,7 @@ function ManagerVendorPage() {
 
                 setProducts(extra);
                 //setIsLogged(result.data as any);
-                if (msg !== "") {
+                if (error && msg !== "") {
                     setMessage({ msg, isError: error });
                 }
             });
@@ -145,37 +175,43 @@ function ManagerVendorPage() {
     };
 
     useEffect(() => {
-        loadProducts();
+        if (!productVendor || productVendor == null) {
+            loadVendor();
+            loadProducts();
+        } else if (!products || products == null) {
+            loadProducts();
+        }
     }, []);
     return (
         <>
             {type !== "vendor" && <Navigate to="/session" replace={true} />}
             {!productEditable ? (
-                <>
-                    <ProductList
+                !updateVendorPage ? (
+                    <ProductVendorPage
+                        vendorData={productVendor || {}}
                         isEditable={true}
-                        label=""
                         products={products}
-                        onEdit={(value: ProductData | null) => {
-                            setProductEditable(value);
-                        }}
+                        onAdd={() => navigate("/addProduct")}
+                        onEdit={onEdit}
                         onDelete={onDelete}
+                        onUpdatePage={() => setUpdateVendorPage(true)}
                     />
-                    <Button
-                        color="secondary"
-                        type="button"
-                        variant="contained"
-                        onClick={() => navigate("/addProduct")}
-                    >
-                        Agregar producto
-                    </Button>
-                </>
+                ) : (
+                    <ProductVendorUpdateForm
+                        imageData={productVendor?.image as string}
+                        buttonLabel="Actualizar local"
+                        editedVendor={productVendor}
+                        onSubmit={(data) => onEdit(data)}
+                        onCancel={() => setUpdateVendorPage(false)}
+                    />
+                )
             ) : (
                 <ProductAddForm
                     editableState={productEditable}
                     imageData={imageData}
                     setImageData={setImageData}
                     onSubmit={onEdit}
+                    onCancel={() => setProductEditable(null)}
                     canSubmit={canSubmit}
                     buttonLabel={"Editar producto"}
                 />

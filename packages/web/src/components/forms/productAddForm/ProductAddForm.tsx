@@ -34,6 +34,7 @@ function ProductAddForm(props: RProductAddFormProps) {
         editableState,
         setImageData,
         onSubmit,
+        onCancel,
     } = props;
     const { setValue, handleSubmit, watch, control } = useForm<ProductFields>({
         defaultValues: { discount: "none" },
@@ -310,6 +311,16 @@ function ProductAddForm(props: RProductAddFormProps) {
                         }
                     >
                         {buttonLabel ? buttonLabel : "Agregar Producto"}
+                    </Button>
+                    <Button
+                        color="error"
+                        variant="contained"
+                        onClick={onCancel}
+                        disabled={
+                            props.canSubmit != null ? !props.canSubmit : false
+                        }
+                    >
+                        Cancelar
                     </Button>
                 </Box>
             </form>

@@ -74,6 +74,7 @@ function ProductAddManager() {
                 imageData={imageData}
                 setImageData={setImageData}
                 onSubmit={onSubmit}
+                onCancel={() => navigate("/managerVendor")}
                 canSubmit={canSubmit}
             />
         </>

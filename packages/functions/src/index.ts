@@ -39,4 +39,5 @@ export {
     editProduct,
     listProduct,
     productListPagination,
+    getProductVendor,
 } from "./product/productFunctions";

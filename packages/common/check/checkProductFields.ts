@@ -13,7 +13,9 @@ export const checkAddProductFields = (input: ProductFields): boolean => {
     console.log("Required check", requiredCheck);
 
     const priceCheck =
-        price !== null && price !== 0 && numberRegex.test(price.toString());
+        price === null ||
+        price == undefined ||
+        (price !== 0 && numberRegex.test(price.toString()));
     console.log("Price check::%d = %b", price, priceCheck);
 
     const discountCheck =

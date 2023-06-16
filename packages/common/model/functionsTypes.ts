@@ -58,7 +58,18 @@ export type VendorCollectionData = AccountCollectionData & {
 
 export type ProductListCollectionData = {
     vendorId: string;
+    enterpriseName: string;
+    rut: string;
+    localNumber: number;
+    region: number;
+    commune: number;
+    street: string;
+    streetNumber: number;
+    image: string;
     products: Array<ProductCollectionData>;
+    serviceTime?: [string, string];
+    serviceZone?: string;
+    contact?: string;
 };
 
 export type ProductCollectionData = {
