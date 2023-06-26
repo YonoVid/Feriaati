@@ -11,12 +11,11 @@ import {
 import {
     RecoveryFields,
     UpdatePassFields,
-} from "@feria-a-ti/common/model/loginFields";
+} from "@feria-a-ti/common/model/fields/loginFields";
 import { ResponseData } from "@feria-a-ti/common/model/functionsTypes";
 
 import PassRecoveryForm from "@feria-a-ti/web/src/components/forms/loginForm/PassRecoveryForm";
 import UpdatePassword from "@feria-a-ti/web/src/components/forms/loginForm/UpdatePassword";
-import MessageAlert from "@feria-a-ti/web/src/components/messageAlert/MessageAlert";
 
 import { useHeaderContext } from "../HeaderLayout";
 import "../../App.css";

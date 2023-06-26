@@ -35,8 +35,6 @@ const UserVendorSelect = () => {
     // Page comments
     const [pageComments, setPageComments] = useState<Array<UserComment>>();
     // Selection of vendor
-    const [filterVendor, setFilterVendor] = useState<string | null>();
-    // Selection of vendor
     const [selectedVendor, setSelectedVendor] =
         useState<VendorCollectionData | null>();
     // Product stored data
@@ -89,17 +87,7 @@ const UserVendorSelect = () => {
             {type !== "user" && <Navigate to="/login" replace={true} />}
             {selectedVendor ? (
                 <>
-                    <Card>
-                        <TextField
-                            label="Filtro"
-                            variant="outlined"
-                            onChange={(event) =>
-                                setFilterVendor(event.target.value)
-                            }
-                        ></TextField>
-                    </Card>
                     <ProductList
-                        filter={filterVendor as string}
                         isEditable={false}
                         label=""
                         products={products}

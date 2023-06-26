@@ -9,7 +9,7 @@ import { checkRegisterVendorFields } from "@feria-a-ti/common/check/checkRegiste
 import {
     RegisterVendorFields,
     userStatus,
-} from "@feria-a-ti/common/model/registerFields";
+} from "@feria-a-ti/common/model/fields/registerFields";
 import { ResponseData } from "@feria-a-ti/common/model/functionsTypes";
 import RegisterVendorForm from "@feria-a-ti/mobile/components/forms/RegisterVendorForm";
 import { useAppContext } from "../AppContext";

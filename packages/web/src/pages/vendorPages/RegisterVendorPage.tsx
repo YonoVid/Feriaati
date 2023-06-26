@@ -9,7 +9,7 @@ import { messagesCode } from "@feria-a-ti/common/constants/errors";
 import {
     RegisterVendorFields,
     userStatus,
-} from "@feria-a-ti/common/model/registerFields";
+} from "@feria-a-ti/common/model/fields/registerFields";
 import { ResponseData } from "@feria-a-ti/common/model/functionsTypes";
 import RegisterVendorForm from "@feria-a-ti/web/src/components/forms/registerVendorForm/RegisterVendorForm";
 

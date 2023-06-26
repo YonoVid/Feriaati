@@ -11,7 +11,7 @@ import {
 import {
     RecoveryFields,
     UpdatePassFields,
-} from "@feria-a-ti/common/model/loginFields";
+} from "@feria-a-ti/common/model/fields/loginFields";
 import { ResponseData } from "@feria-a-ti/common/model/functionsTypes";
 
 import PassRecoveryForm from "@feria-a-ti/web/src/components/forms/loginForm/PassRecoveryForm";

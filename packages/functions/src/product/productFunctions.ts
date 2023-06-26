@@ -18,6 +18,7 @@ import { collectionNames } from "../consts";
 import { errorCodes, messagesCode } from "../errors";
 import { uploadProductImage } from "../utilities/storage";
 import { getAccount } from "../utilities/account";
+import { VendorCollectionData } from "../model/accountTypes";
 
 //funciones crud producto
 export const addProduct = functions.https.onCall(
@@ -48,8 +49,18 @@ export const addProduct = functions.https.onCall(
                     let id;
                     // Create new collection if not exists
                     if (products.empty) {
+                        const vendorData =
+                            (await vendor.docs[0].data()) as VendorCollectionData;
                         let collection: ProductListCollectionData = {
                             vendorId: vendor.docs[0].id,
+                            enterpriseName: vendorData.enterpriseName,
+                            localNumber: vendorData.localNumber,
+                            rut: vendorData.rut,
+                            street: vendorData.street,
+                            streetNumber: vendorData.streetNumber,
+                            region: vendorData.region,
+                            commune: vendorData.commune,
+                            image: vendorData.image,
                         };
                         id = (await productsRef.add(collection)).id;
                     } else {
@@ -373,6 +384,88 @@ export const listProduct = functions.https.onCall(
                         error: false,
                         extra: products,
                     };
+                }
+                return {
+                    code: errorCodes.USER_NOT_EXISTS_ERROR,
+                    msg: messagesCode[errorCodes.USER_NOT_EXISTS_ERROR],
+                    error: true,
+                    extra: [],
+                };
+            }
+            return {
+                code: code,
+                msg: messagesCode[code],
+                error: true,
+                extra: [],
+            };
+        } catch (error) {
+            functions.logger.error(error);
+            throw new functions.https.HttpsError(
+                "internal",
+                "Error al obtener datos de productos"
+            );
+        }
+    }
+);
+
+export const getProductVendor = functions.https.onCall(
+    async (
+        data: ProductListFields,
+        context
+    ): Promise<ResponseData<ProductListCollectionData>> => {
+        try {
+            functions.logger.info("DATA::", data);
+            const { check, code } = checkProductListFields(data);
+            if (check) {
+                const db = admin.firestore();
+                let docReference;
+                if (
+                    data.idVendor &&
+                    data.idVendor !== null &&
+                    data.idVendor !== ""
+                ) {
+                    functions.logger.info("GET VENDOR BY ID");
+                    docReference = await db
+                        .collection(collectionNames.VENDORS)
+                        .doc(data.idVendor as string)
+                        .get();
+                } else {
+                    functions.logger.info("GET VENDOR BY TOKEN");
+                    const queryVendor = db
+                        .collection(collectionNames.VENDORS)
+                        .where("token", "==", data.tokenVendor);
+                    docReference = (await queryVendor.get()).docs[0];
+                }
+
+                functions.logger.info("VENDOR DOC::", docReference.id);
+
+                if (docReference.exists) {
+                    const vendorProductsRef = (
+                        await db
+                            .collection(collectionNames.VENDORPRODUCTS)
+                            .where("vendorId", "==", docReference.id)
+                            .get()
+                    ).docs[0];
+
+                    if (vendorProductsRef.exists) {
+                        const productVendorDoc = await vendorProductsRef.data();
+
+                        functions.logger.info(
+                            "PRODUCT VENDOR DOC::",
+                            productVendorDoc.id
+                        );
+                        functions.logger.info(
+                            "PRODUCT VENDOR DOC P SIZE::",
+                            productVendorDoc.product
+                        );
+
+                        return {
+                            code: errorCodes.SUCCESFULL,
+                            msg: messagesCode[errorCodes.SUCCESFULL],
+                            error: false,
+                            extra: productVendorDoc,
+                        };
+                    }
                 }
                 return {
                     code: errorCodes.USER_NOT_EXISTS_ERROR,

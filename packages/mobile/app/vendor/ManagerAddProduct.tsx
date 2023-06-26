@@ -9,7 +9,7 @@ import { checkAddProductFields } from "@feria-a-ti/common/check/checkProductFiel
 import { ResponseData } from "@feria-a-ti/common/model/functionsTypes";
 import { useAppContext } from "../AppContext";
 import ProductAddForm from "../../components/forms/ProductAddForm";
-import { ProductFields } from "@feria-a-ti/common/model/productAddFormProps";
+import { ProductFields } from "@feria-a-ti/common/model/props/productAddFormProps";
 
 export interface ManagerAddProductProps {
     navigation: NavigationProp<ParamListBase>;

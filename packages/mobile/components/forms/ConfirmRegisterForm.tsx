@@ -3,8 +3,8 @@ import { Text, View, Button, StyleSheet } from "react-native";
 import { useForm } from "react-hook-form";
 import { colors } from "@feria-a-ti/common/theme/base";
 import InputComponent from "@feria-a-ti/mobile/components/inputs/InputComponent";
-import { ConfirmRegisterFields } from "@feria-a-ti/common/model/registerFields";
-import { ConfirmRegisterFormProps } from "@feria-a-ti/common/model/registerFormProps";
+import { ConfirmRegisterFields } from "@feria-a-ti/common/model/fields/registerFields";
+import { ConfirmRegisterFormProps } from "@feria-a-ti/common/model/props/registerFormProps";
 
 function ConfirmRegisterForm(props: ConfirmRegisterFormProps) {
     const {

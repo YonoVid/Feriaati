@@ -9,8 +9,8 @@ import {
     passwordFormatRegex,
     rutFormatRegex,
 } from "@feria-a-ti/common/check/checkRegisterFields";
-import { RegisterVendorFields } from "@feria-a-ti/common/model/registerFields";
-import { RRegisterVendorFormProps } from "@feria-a-ti/common/model/registerFormProps";
+import { RegisterVendorFields } from "@feria-a-ti/common/model/fields/registerFields";
+import { RRegisterVendorFormProps } from "@feria-a-ti/common/model/props/registerFormProps";
 import { regionCode, regionCommune } from "@feria-a-ti/common/constants/form";
 
 import InputComponentAlt from "@feria-a-ti/web/src/components/inputComponent/InputComponentAlt";

@@ -10,7 +10,7 @@ import {
     ResponseData,
     UserToken,
 } from "@feria-a-ti/common/model/functionsTypes";
-import { LoginFields } from "@feria-a-ti/common/model/loginFields";
+import { LoginFields } from "@feria-a-ti/common/model/fields/loginFields";
 
 import LoginForm from "@feria-a-ti/web/src/components/forms/loginForm/LoginForm";
 import { UserContext } from "@feria-a-ti/web/src/App";

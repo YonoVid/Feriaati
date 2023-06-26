@@ -1,11 +1,11 @@
 import { useContext, useState } from "react";
-import { Navigate, useNavigate, useOutletContext } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import { FieldValues } from "react-hook-form";
 import { httpsCallable } from "firebase/functions";
 
 import { functions } from "@feria-a-ti/common/firebase";
 import { checkLoginFields } from "@feria-a-ti/common/check/checkLoginFields";
-import { LoginFields } from "@feria-a-ti/common/model/loginFields";
+import { LoginFields } from "@feria-a-ti/common/model/fields/loginFields";
 import {
     ResponseData,
     UserToken,

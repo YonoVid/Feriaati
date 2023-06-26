@@ -39,7 +39,10 @@ export {
     editProduct,
     listProduct,
     productListPagination,
+    getProductVendor,
 } from "./product/productFunctions";
+
+export { productVendorUpdate } from "./product/productVendorFunctions";
 
 export { getAccountUser, editAccountUser } from "./account/accountFunctions";
 

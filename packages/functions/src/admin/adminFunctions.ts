@@ -2,12 +2,17 @@ import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
 import { LoginFields, UpdateStateFields } from "../model/types";
 import { ResponseData, UserToken } from "../model/reponseFields";
-import { userStatus, userType } from "../model/accountTypes";
+import {
+    userStatus,
+    userType,
+    VendorCollectionData,
+} from "../model/accountTypes";
 
 import { checkAccountFields } from "../utilities/checkAccount";
 import { errorCodes, messagesCode } from "../errors";
 import { accountLoginVerification } from "../utilities/account";
 import { collectionNames } from "../consts";
+import { ProductListCollectionData } from "../model/productTypes";
 
 // ?REFERENCE FUNCTION
 // export const helloWorld = functions.https.onRequest((request, response) => {
@@ -86,15 +91,112 @@ export const vendorStateUpdate = functions.https.onCall(
             const db = admin.firestore();
             const vendorRef = db.collection(collectionNames.VENDORS);
             const querySnapshot = await vendorRef.doc(id);
+            const vendorDoc = await querySnapshot.get();
 
             if (
-                (await querySnapshot.get()).exists &&
+                vendorDoc.exists &&
                 (status === userStatus.activated ||
                     status === userStatus.blocked)
             ) {
                 // Update vendor account state
                 await vendorRef.doc(id).update({ status: status });
 
+                if (status === userStatus.activated) {
+                    // Get product list reference
+                    const productsRef = db.collection(
+                        collectionNames.VENDORPRODUCTS
+                    );
+
+                    const products = await productsRef
+                        .where("vendorId", "==", id)
+                        .get();
+
+                    // Create new collection if not exists
+                    if (products.empty) {
+                        const vendorData =
+                            (await vendorDoc.data()) as VendorCollectionData;
+                        let collection: ProductListCollectionData = {
+                            vendorId: id,
+                            enterpriseName: vendorData.enterpriseName,
+                            localNumber: vendorData.localNumber,
+                            rut: vendorData.rut,
+                            street: vendorData.street,
+                            streetNumber: vendorData.streetNumber,
+                            region: vendorData.region,
+                            commune: vendorData.commune,
+                            image: vendorData.image,
+                        };
+                        await productsRef.add(collection);
+                    }
+                }
+                return {
+                    error: false,
+                    code: errorCodes.SUCCESFULL,
+                    msg: messagesCode[errorCodes.SUCCESFULL],
+                };
+            }
+            return {
+                error: true,
+                code: errorCodes.DOCUMENT_NOT_EXISTS_ERROR,
+                msg: messagesCode[errorCodes.DOCUMENT_NOT_EXISTS_ERROR],
+            };
+        } catch (error) {
+            functions.logger.error(error);
+            throw new functions.https.HttpsError(
+                "internal",
+                "Error al actualizar el estado del vendedor"
+            );
+        }
+    }
+);
+
+export const deleteUser = functions.https.onCall(
+    async (data: UpdateStateFields, context): Promise<ResponseData<null>> => {
+        try {
+            // obtiene id del usuario y el estado al que se desea alterar
+            const { id, status } = data;
+
+            const db = admin.firestore();
+            const vendorRef = db.collection(collectionNames.VENDORS);
+            const querySnapshot = await vendorRef.doc(id);
+            const vendorDoc = await querySnapshot.get();
+
+            if (
+                vendorDoc.exists &&
+                (status === userStatus.activated ||
+                    status === userStatus.blocked)
+            ) {
+                // Update vendor account state
+                await vendorRef.doc(id).update({ status: status });
+
+                if (status === userStatus.activated) {
+                    // Get product list reference
+                    const productsRef = db.collection(
+                        collectionNames.VENDORPRODUCTS
+                    );
+
+                    const products = await productsRef
+                        .where("vendorId", "==", id)
+                        .get();
+
+                    // Create new collection if not exists
+                    if (products.empty) {
+                        const vendorData =
+                            (await vendorDoc.data()) as VendorCollectionData;
+                        let collection: ProductListCollectionData = {
+                            vendorId: id,
+                            enterpriseName: vendorData.enterpriseName,
+                            localNumber: vendorData.localNumber,
+                            rut: vendorData.rut,
+                            street: vendorData.street,
+                            streetNumber: vendorData.streetNumber,
+                            region: vendorData.region,
+                            commune: vendorData.commune,
+                            image: vendorData.image,
+                        };
+                        await productsRef.add(collection);
+                    }
+                }
                 return {
                     error: false,
                     code: errorCodes.SUCCESFULL,

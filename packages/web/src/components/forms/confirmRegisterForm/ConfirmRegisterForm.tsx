@@ -2,8 +2,8 @@ import { useForm } from "react-hook-form";
 import { Box, Button, Card, Divider } from "@mui/material";
 
 import { controlValidInput } from "@feria-a-ti/common/inputControl";
-import { RFormProps } from "@feria-a-ti/common/model/registerFormProps";
-import { ConfirmRegisterFields } from "@feria-a-ti/common/model/registerFields";
+import { RFormProps } from "@feria-a-ti/common/model/props/registerFormProps";
+import { ConfirmRegisterFields } from "@feria-a-ti/common/model/fields/registerFields";
 
 import InputComponentAlt from "@feria-a-ti/web/src/components/inputComponent/InputComponentAlt";
 import "./ConfirmRegisterForm.css";

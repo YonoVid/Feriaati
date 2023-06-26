@@ -50,3 +50,6 @@ export const uploadRegisterImage = async (email: string, image: string) =>
 
 export const uploadProductImage = async (id: string, image: string) =>
     uploadImage(id, "vendor/products", image);
+
+export const uploadVendorProductImage = async (id: string, image: string) =>
+    uploadImage(id, "vendor", image);

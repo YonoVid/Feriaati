@@ -7,8 +7,8 @@ import {
     emailFormatRegex,
     passwordFormatRegex,
 } from "@feria-a-ti/common/check/checkRegisterFields";
-import { RegisterFields } from "@feria-a-ti/common/model/registerFields";
-import { RegisterFormProps } from "@feria-a-ti/common/model/registerFormProps";
+import { RegisterFields } from "@feria-a-ti/common/model/fields/registerFields";
+import { RegisterFormProps } from "@feria-a-ti/common/model/props/registerFormProps";
 import InputComponent from "@feria-a-ti/mobile/components/inputs/InputComponent";
 
 function RegisterForm(props: RegisterFormProps) {

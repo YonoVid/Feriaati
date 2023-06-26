@@ -2,7 +2,7 @@ import {
     LoginFields,
     RecoveryFields,
     UpdatePassFields,
-} from "@feria-a-ti/common/model/loginFields";
+} from "@feria-a-ti/common/model/fields/loginFields";
 
 export const emailFormatRegex = new RegExp(
     "^([\\w-]+(?:\\.[\\w-]+)*)@((?:[\\w-]+\\.)*\\w[\\w-]{0,66})\\.([a-z]{2,6}(?:\\.[a-z]{2})?)$",

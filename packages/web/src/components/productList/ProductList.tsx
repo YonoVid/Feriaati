@@ -1,6 +1,16 @@
 import { useEffect, useState } from "react";
 
-import { Box, Card, Divider, Pagination, Stack } from "@mui/material";
+import {
+    Box,
+    Button,
+    Card,
+    Divider,
+    IconButton,
+    Pagination,
+    Stack,
+    TextField,
+} from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
 import { RProductListProps } from "@feria-a-ti/common/model/productListProps";
 import { ProductData } from "@feria-a-ti/common/model/functionsTypes";
 
@@ -15,13 +25,15 @@ function ProductList(props: RProductListProps) {
         products,
         filter,
         isEditable,
+        onAdd,
         onEdit,
         onDelete,
-        onSubmit,
     } = props;
 
     const colorTheme =
         color != null && color === "secondary" ? "secondary" : "primary";
+
+    const [filterVendor, setFilterVendor] = useState<string | null>();
 
     const [page, setPage] = useState(1);
     const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
@@ -46,9 +58,9 @@ function ProductList(props: RProductListProps) {
     }, []);
 
     const getList = (): ProductData[] => {
-        if (filter && filter != null && filter != "") {
+        if (filterVendor && filterVendor != null && filter != "") {
             return products.filter((value) =>
-                value.name.toUpperCase().includes(filter.toUpperCase())
+                value.name.toUpperCase().includes(filterVendor.toUpperCase())
             );
         }
         return products;
@@ -67,16 +79,25 @@ function ProductList(props: RProductListProps) {
             <h1 style={{ maxWidth: "100%" }}>
                 {label != null ? label : "Iniciar Sesion"}
             </h1>
-            <Pagination
-                count={Math.floor(products.length / 3) + 1}
-                page={page}
-                onChange={handleChange}
-                sx={{
-                    maxWidth: "100%",
-                    alignContent: "center",
-                    borderRadius: "10%",
-                }}
-            />
+            <Box sx={{ display: "flex", flexDirection: "row" }}>
+                <Pagination
+                    count={Math.floor(products.length / 3) + 1}
+                    page={page}
+                    onChange={handleChange}
+                    sx={{
+                        flex: 2,
+                        maxWidth: "100%",
+                        alignContent: "center",
+                        borderRadius: "10%",
+                    }}
+                />
+                <TextField
+                    sx={{ flex: 1 }}
+                    label="Filtro"
+                    variant="outlined"
+                    onChange={(event) => setFilterVendor(event.target.value)}
+                />
+            </Box>
             <Divider />
             <Stack
                 direction={{ xs: "column", sm: "row" }}
@@ -92,13 +113,22 @@ function ProductList(props: RProductListProps) {
                     .slice((page - 1) * 3, page * 3)
                     .map((product, index) => (
                         <ProductView
-                            onEdit={onEdit}
-                            onDelete={onDelete}
+                            onEdit={() => onEdit && onEdit(product)}
+                            onDelete={() => onDelete && onDelete(product.id)}
                             isEditable={isEditable}
                             key={product.name + index}
                             product={product}
                         />
                     ))}
+                <Button
+                    color="secondary"
+                    type="button"
+                    variant="contained"
+                    onClick={onAdd}
+                    startIcon={<AddIcon />}
+                >
+                    Agregar producto
+                </Button>
             </Stack>
             <Box sx={{ margin: "1em" }}>{children}</Box>
         </Card>

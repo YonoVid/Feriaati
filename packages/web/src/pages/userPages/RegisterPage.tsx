@@ -9,7 +9,7 @@ import {
     RegisterConfirm,
     RegisterFields,
     userStatus,
-} from "@feria-a-ti/common/model/registerFields";
+} from "@feria-a-ti/common/model/fields/registerFields";
 import { ResponseData } from "@feria-a-ti/common/model/functionsTypes";
 import { messagesCode } from "@feria-a-ti/common/constants/errors";
 import { checkRegisterFields } from "@feria-a-ti/common/check/checkRegisterFields";

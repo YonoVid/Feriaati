@@ -13,8 +13,9 @@ import {
     ResponseData,
     VendorCollectionData,
 } from "@feria-a-ti/common/model/functionsTypes";
-import { UpdateStateFields } from "@feria-a-ti/common/model/adminFields";
-import { userStatus } from "@feria-a-ti/common/model/registerFields";
+import { UpdateStateFields } from "@feria-a-ti/common/model/fields/adminFields";
+import { userStatus } from "@feria-a-ti/common/model/fields/registerFields";
+
 import { UserContext } from "@feria-a-ti/web/src/App";
 import { useHeaderContext } from "../HeaderLayout";
 

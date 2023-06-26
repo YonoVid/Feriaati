@@ -8,6 +8,7 @@ import "./InputComponent.css";
 interface Props<T> extends UseControllerProps<T> {
     sx?: SxProps<Theme>;
     label: string;
+    disabled?: boolean;
     multiline?: boolean;
     rows?: number;
     type?: "text" | "number" | "password" | "email" | "file" | "select";
@@ -20,6 +21,7 @@ const InputComponentAlt = <T extends FieldValues>({
     sx,
     name,
     label,
+    disabled,
     multiline,
     rows,
     defaultValue,
@@ -60,6 +62,7 @@ const InputComponentAlt = <T extends FieldValues>({
                             }}
                             multiline={multiline ? true : false}
                             rows={multiline ? rows : undefined}
+                            disabled={disabled || false}
                             InputLabelProps={{
                                 shrink: type === "file" ? true : undefined,
                             }}
@@ -103,6 +106,7 @@ const InputComponentAlt = <T extends FieldValues>({
             ) : (
                 <TextField
                     sx={{ flex: 1, minWidth: "10em", maxWidth: "20em" }}
+                    disabled={disabled || false}
                     InputLabelProps={{
                         shrink: type === "file" ? true : undefined,
                     }}

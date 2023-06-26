@@ -1,13 +1,9 @@
 import { GetAccountFields } from "@feria-a-ti/common/model/account/getAccountFields";
 import { AccountData, userType } from "../model/functionsTypes";
-import {
-    emailFormatRegex,
-    numberRegex,
-    passwordFormatRegex,
-} from "./checkRegisterFields";
+import { emailFormatRegex, passwordFormatRegex } from "./checkRegisterFields";
 
 export const phoneFormatRegex = new RegExp(
-    /\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}/g
+    /\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}/
 );
 
 export const checkGetAccountFields = (input: GetAccountFields): boolean => {

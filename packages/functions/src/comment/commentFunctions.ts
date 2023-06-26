@@ -17,6 +17,7 @@ import { collectionNames } from "../consts";
 import { errorCodes, messagesCode } from "../errors";
 import { ProductListCollectionData } from "../model/productTypes";
 import { getAccount } from "../utilities/account";
+import { VendorCollectionData } from "../model/accountTypes";
 
 export const getComments = functions.https.onCall(
     async (
@@ -135,8 +136,18 @@ export const addComment = functions.https.onCall(
                         let id;
                         // Create new collection if not exists
                         if (products.empty) {
+                            const vendorData =
+                                docVendorProduct.data() as VendorCollectionData;
                             let collection: ProductListCollectionData = {
                                 vendorId: docVendorProduct.id,
+                                enterpriseName: vendorData.enterpriseName,
+                                localNumber: vendorData.localNumber,
+                                rut: vendorData.rut,
+                                street: vendorData.street,
+                                streetNumber: vendorData.streetNumber,
+                                region: vendorData.region,
+                                commune: vendorData.commune,
+                                image: vendorData.image,
                             };
                             id = (await productsRef.add(collection)).id;
                         } else {

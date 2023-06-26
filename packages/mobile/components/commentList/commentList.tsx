@@ -44,6 +44,7 @@ export const CommentList = (props: RListCommentsProps) => {
 
     const getComments = () => {
         try {
+            setCanSubmit(false);
             const formatedData: GetCommentsFields = {
                 token: authToken,
                 id: commentsVendor ? commentsVendor : authUser,
@@ -53,15 +54,17 @@ export const CommentList = (props: RListCommentsProps) => {
                 GetCommentsFields,
                 ResponseData<Array<UserComment>>
             >(functions, "getComments");
-            get(formatedData).then((result) => {
-                const { extra, msg, error } = result.data;
-                console.log(result);
-                if (error) {
-                    setMessage({ msg: msg, isError: true });
-                } else {
-                    setComments(extra);
-                }
-            });
+            get(formatedData)
+                .then((result) => {
+                    const { extra, msg, error } = result.data;
+                    console.log(result);
+                    if (error) {
+                        setMessage({ msg: msg, isError: true });
+                    } else {
+                        setComments(extra);
+                    }
+                })
+                .finally(() => setCanSubmit(true));
         } catch (error) {
             console.error("Error al obtener los comentarios:", error);
         }
@@ -69,6 +72,7 @@ export const CommentList = (props: RListCommentsProps) => {
 
     const reportComment = (id: string) => {
         try {
+            setCanSubmit(false);
             console.log("REPORT COMMENT::", id);
             const report = httpsCallable<
                 ReportCommentFields,
@@ -78,11 +82,13 @@ export const CommentList = (props: RListCommentsProps) => {
                 userToken: authToken as string,
                 commentId: id,
                 vendorId: commentsVendor,
-            }).then((result) => {
-                const { msg, error } = result.data;
-                console.log(result);
-                setMessage({ msg: msg, isError: error });
-            });
+            })
+                .then((result) => {
+                    const { msg, error } = result.data;
+                    console.log(result);
+                    setMessage({ msg: msg, isError: error });
+                })
+                .finally(() => setCanSubmit(true));
         } catch (error) {
             console.error("Error al obtener los vendedores:", error);
         }
@@ -90,6 +96,7 @@ export const CommentList = (props: RListCommentsProps) => {
 
     const uploadComment = (data: CommentFields) => {
         try {
+            setCanSubmit(false);
             const formatedData: CommentFields = {
                 comment: data.comment,
                 userToken: authToken,
@@ -100,13 +107,15 @@ export const CommentList = (props: RListCommentsProps) => {
                 ResponseData<UserComment>
             >(functions, "addComment");
             console.log("UPLOAD COMMENT::", formatedData);
-            upload(formatedData).then((result) => {
-                const { msg, error, extra } = result.data;
-                console.log(result);
+            upload(formatedData)
+                .then((result) => {
+                    const { msg, error, extra } = result.data;
+                    console.log(result);
 
-                setMessage({ msg: msg, isError: error });
-                !error && setComments([extra, ...comments]);
-            });
+                    setMessage({ msg: msg, isError: error });
+                    !error && setComments([extra, ...comments]);
+                })
+                .finally(() => setCanSubmit(true));
         } catch (error) {
             console.error("Error al obtener los vendedores:", error);
         }

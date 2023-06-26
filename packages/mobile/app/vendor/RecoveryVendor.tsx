@@ -8,7 +8,7 @@ import {
     LoginFields,
     RecoveryFields,
     UpdatePassFields,
-} from "@feria-a-ti/common/model/loginFields";
+} from "@feria-a-ti/common/model/fields/loginFields";
 import { functions } from "@feria-a-ti/common/firebase";
 import { httpsCallable } from "@firebase/functions";
 import { ResponseData } from "@feria-a-ti/common/model/functionsTypes";

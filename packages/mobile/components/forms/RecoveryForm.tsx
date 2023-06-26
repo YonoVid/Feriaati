@@ -4,8 +4,8 @@ import { useForm } from "react-hook-form";
 import InputComponent from "../inputs/InputComponent";
 import { Text, View, Button, StyleSheet } from "react-native";
 import { colors } from "@feria-a-ti/common/theme/base";
-import { RecoveryFields } from "@feria-a-ti/common/model/loginFields";
-import { RRecoveryFormProps } from "@feria-a-ti/common/model/loginFormProps";
+import { RecoveryFields } from "@feria-a-ti/common/model/fields/loginFields";
+import { RRecoveryFormProps } from "@feria-a-ti/common/model/props/loginFormProps";
 import { emailFormatRegex } from "@feria-a-ti/common/check/checkRegisterFields";
 import { Link } from "expo-router";
 
