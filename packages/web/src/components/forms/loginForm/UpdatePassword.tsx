@@ -1,10 +1,10 @@
 import { useForm } from "react-hook-form";
 import { Box, Button, Card, Divider } from "@mui/material";
 
-import { RUpdatepPassFormProps } from "@feria-a-ti/common/model/loginFormProps";
+import { RUpdatepPassFormProps } from "@feria-a-ti/common/model/props/loginFormProps";
 import InputComponentAlt from "@feria-a-ti/web/src/components/inputComponent/InputComponentAlt";
 import "./LoginForm";
-import { UpdatePassFields } from "@feria-a-ti/common/model/loginFields";
+import { UpdatePassFields } from "@feria-a-ti/common/model/fields/loginFields";
 
 function UpdatePassForm(props: RUpdatepPassFormProps) {
     const { label, color, children, onSubmit } = props;

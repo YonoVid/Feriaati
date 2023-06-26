@@ -4,19 +4,21 @@ export enum errorCodes {
     DOCUMENT_ALREADY_EXISTS_ERROR = "ERD01",
     DOCUMENT_NOT_EXISTS_ERROR = "ERD02",
     UNEXPECTED_ERROR = "ERR00",
-    NAME_FORMAT_ERROR = "ERR01",
-    EMAIL_FORMAT_ERROR = "ERR02",
-    PASSWORD_FORMAT_ERROR = "ERR03",
-    CONFIRM_PASSWORD_ERROR = "ERR04",
-    INCORRECT_CODE_ERROR = "ERR05",
-    PHONE_FORMAT_ERROR = "ERR06",
-    DIRECTION_FORMAT_ERROR = "ERR07",
-    MISSING_REQUIRED_DATA_ERROR = "ERR09",
+    MISSING_REQUIRED_DATA_ERROR = "ERR1",
+    NAME_FORMAT_ERROR = "ERR02",
+    EMAIL_FORMAT_ERROR = "ERR03",
+    PASSWORD_FORMAT_ERROR = "ERR04",
+    CONFIRM_PASSWORD_ERROR = "ERR05",
+    INCORRECT_CODE_ERROR = "ERR06",
+    PHONE_FORMAT_ERROR = "ERR07",
+    DIRECTION_FORMAT_ERROR = "ERR08",
+    TIME_FORMAT_ERROR = "ERR09",
     USER_NOT_EXISTS_ERROR = "ERL01",
     BLOCKED_ACCOUNT_ERROR = "ERL02",
     UNACTIVATED_ACCOUNT_ERROR = "ERL03",
     INCORRECT_PASSWORD_ERROR = "ERL04",
     VENDOR_NOT_EXISTS_ERROR = "ERL05",
+    VENDOR_PERMISSION_ERROR = "ERL06",
     ACTION_DONE_ERROR = "ERL09",
     INCORRECT_INTEGER_FORMAT = "ERS00",
 }
@@ -28,6 +30,7 @@ export const messagesCode: { [code in errorCodes]: string } = {
     [errorCodes.DOCUMENT_ALREADY_EXISTS_ERROR]: "El documento ya existe",
     [errorCodes.DOCUMENT_NOT_EXISTS_ERROR]: "El documento no existe",
     [errorCodes.UNEXPECTED_ERROR]: "UNEXPECTED INTERNAL ERROR",
+    [errorCodes.MISSING_REQUIRED_DATA_ERROR]: "Faltan datos requeridos ",
     [errorCodes.NAME_FORMAT_ERROR]:
         "El nombre de usuario tiene un formato incorrecto",
     [errorCodes.EMAIL_FORMAT_ERROR]:
@@ -40,15 +43,17 @@ export const messagesCode: { [code in errorCodes]: string } = {
         "El formato del teléfono es incorrecto. Ej:+11111111111",
     [errorCodes.DIRECTION_FORMAT_ERROR]:
         "El formato de la dirección es incorrecto o falta información",
-    [errorCodes.MISSING_REQUIRED_DATA_ERROR]: "Faltan datos requeridos ",
+    [errorCodes.TIME_FORMAT_ERROR]:
+        "El formato del horario es incorrecto o falta información",
     [errorCodes.USER_NOT_EXISTS_ERROR]: "El usuario no existe",
     [errorCodes.BLOCKED_ACCOUNT_ERROR]:
         "La cuenta está bloqueada, contacte con soporte",
     [errorCodes.UNACTIVATED_ACCOUNT_ERROR]:
         "La cuenta no ha sido activada, contacte con soporte",
     [errorCodes.INCORRECT_PASSWORD_ERROR]: "Contraseña incorrecta",
-
     [errorCodes.VENDOR_NOT_EXISTS_ERROR]: "El vendedor no existe",
+    [errorCodes.VENDOR_PERMISSION_ERROR]:
+        "El vendedor no tiene los permisos adecuados",
     [errorCodes.INCORRECT_INTEGER_FORMAT]:
         "El número debe ser un entero. Ej: 100",
     [errorCodes.ACTION_DONE_ERROR]:

@@ -6,7 +6,7 @@ import { Link } from "@mui/material";
 
 import { functions } from "@feria-a-ti/common/firebase";
 import { checkLoginFields } from "@feria-a-ti/common/check/checkLoginFields";
-import { LoginFields } from "@feria-a-ti/common/model/loginFields";
+import { LoginFields } from "@feria-a-ti/common/model/fields/loginFields";
 import {
     ResponseData,
     UserToken,

@@ -4,7 +4,7 @@ import { ScrollView, StyleSheet } from "react-native";
 import { NavigationProp, ParamListBase } from "@react-navigation/native";
 
 import { checkLoginFields } from "@feria-a-ti/common/check/checkLoginFields";
-import { LoginFields } from "@feria-a-ti/common/model/loginFields";
+import { LoginFields } from "@feria-a-ti/common/model/fields/loginFields";
 import { functions } from "@feria-a-ti/common/firebase";
 import LoginForm from "@feria-a-ti/mobile/components/forms/LoginForm";
 import { httpsCallable } from "@firebase/functions";
@@ -16,7 +16,7 @@ import {
     VendorCollectionData,
 } from "@feria-a-ti/common/model/functionsTypes";
 import { useAppContext } from "../AppContext";
-import { ProductListFields } from "@feria-a-ti/common/model/productAddFormProps";
+import { ProductListFields } from "@feria-a-ti/common/model/props/productAddFormProps";
 import { ProductList } from "../../components/productList/ProductList";
 import { colors } from "@feria-a-ti/common/theme/base";
 import { CommentList } from "../../components/commentList/commentList";

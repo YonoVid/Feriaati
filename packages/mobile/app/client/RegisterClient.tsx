@@ -12,7 +12,7 @@ import {
     RegisterConfirm,
     RegisterFields,
     userStatus,
-} from "@feria-a-ti/common/model/registerFields";
+} from "@feria-a-ti/common/model/fields/registerFields";
 import { ResponseData } from "@feria-a-ti/common/model/functionsTypes";
 import RegisterForm from "@feria-a-ti/mobile/components/forms/RegisterForm";
 import ConfirmRegisterForm from "@feria-a-ti/mobile/components/forms/ConfirmRegisterForm";

@@ -1,10 +1,11 @@
 import { ChangeEvent, useState } from "react";
-import { RInputComponentProps } from "@feria-a-ti/common/model/inputProps";
+import { RInputComponentProps } from "@feria-a-ti/common/model/props/inputProps";
 import {
     emailFormatRegex,
     passwordFormatRegex,
-} from "@feria-a-ti/common/checkRegisterFields";
+} from "@feria-a-ti/common/check/checkRegisterFields";
 import { colors } from "@feria-a-ti/common/theme/base";
+
 import "./InputComponent.css";
 
 function InputComponent(data: RInputComponentProps) {

@@ -2,12 +2,12 @@ import { useForm } from "react-hook-form";
 import { Box, Button, Card, Divider } from "@mui/material";
 
 import { controlValidInput } from "@feria-a-ti/common/inputControl";
-import { RRegisterFormProps } from "@feria-a-ti/common/model/registerFormProps";
+import { RRegisterFormProps } from "@feria-a-ti/common/model/props/registerFormProps";
+import { RegisterFields } from "@feria-a-ti/common/model/fields/registerFields";
 import { emailFormatRegex } from "@feria-a-ti/common/check/checkRegisterFields";
 
 import InputComponentAlt from "@feria-a-ti/web/src/components/inputComponent/InputComponentAlt";
 import "./RegisterUserForm.css";
-import { RegisterFields } from "@feria-a-ti/common/model/registerFields";
 
 function RegisterUserForm(props: RRegisterFormProps) {
     const { children, onSubmit } = props;

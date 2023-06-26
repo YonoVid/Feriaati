@@ -17,15 +17,14 @@ import {
     ProductDeleteFields,
     ProductEditFields,
     ProductListFields,
-} from "@feria-a-ti/common/model/productAddFormProps";
+} from "@feria-a-ti/common/model/props/productAddFormProps";
 import ProductAddForm from "@feria-a-ti/web/src/components/forms/productAddForm/ProductAddForm";
-import ProductVendorPage from "@feria-a-ti/web/src/components/productPage/ProductPage";
-import ProductVendorUpdateForm from "@feria-a-ti/web/src/components/forms/productVendorUpdateForm/ProductVendorUpdateForm";
 import CommentList from "@feria-a-ti/web/src/components/commentList/CommentList";
 
 import { UserContext } from "@feria-a-ti/web/src/App";
 import { useHeaderContext } from "../HeaderLayout";
 import "../../App.css";
+import ManagerProductList from "./ManagerProductList";
 
 function ManagerVendorPage() {
     //Global UI context
@@ -51,8 +50,6 @@ function ManagerVendorPage() {
     );
 
     // Form related variables;
-    const [updateVendorPage, setUpdateVendorPage] = useState(false);
-
     const [canSubmit, setCanSubmit] = useState(true);
 
     const loadVendor = () => {
@@ -60,7 +57,7 @@ function ManagerVendorPage() {
             tokenVendor: authToken as string,
         };
         const check = authToken != null && authToken != "";
-        console.log("SUBMIT FORM::", check);
+        console.log("SUBMIT FORM LOAD VENDOR::", check);
         if (check) {
             const addProduct = httpsCallable<
                 ProductListFields,
@@ -84,7 +81,7 @@ function ManagerVendorPage() {
             tokenVendor: authToken as string,
         };
         const check = authToken != null && authToken != "";
-        console.log("SUBMIT FORM::", check);
+        console.log("SUBMIT FORM LOAD PRODUCTS::", check);
         if (check) {
             const addProduct = httpsCallable<
                 ProductListFields,
@@ -117,7 +114,7 @@ function ManagerVendorPage() {
             image: imageData,
         };
         const check = checkAddProductFields(formatedData);
-        console.log("SUBMIT FORM::", check);
+        console.log("SUBMIT FORM ON EDIT::", check);
         if (check) {
             setCanSubmit(false);
             const editProduct = httpsCallable<
@@ -147,7 +144,7 @@ function ManagerVendorPage() {
             productId: id,
         };
         const check = checkDeleteProductFields(formatedData);
-        console.log("SUBMIT FORM::", check);
+        console.log("SUBMIT FORM ON DELETE::", check);
         if (check) {
             setCanSubmit(false);
             const addProduct = httpsCallable<
@@ -187,28 +184,20 @@ function ManagerVendorPage() {
         <>
             {type !== "vendor" && <Navigate to="/session" replace={true} />}
             {!productEditable ? (
-                !updateVendorPage ? (
-                    <>
-                        <ProductVendorPage
-                            vendorData={productVendor || {}}
-                            isEditable={true}
-                            products={products}
-                            onAdd={() => navigate("/addProduct")}
-                            onEdit={onEdit}
-                            onDelete={onDelete}
-                            onUpdatePage={() => setUpdateVendorPage(true)}
-                        />
-                        <CommentList commentsVendor="" isUser={false} />
-                    </>
-                ) : (
-                    <ProductVendorUpdateForm
-                        imageData={productVendor?.image as string}
-                        buttonLabel="Actualizar local"
-                        editedVendor={productVendor}
-                        onSubmit={(data) => onEdit(data)}
-                        onCancel={() => setUpdateVendorPage(false)}
+                <ManagerProductList
+                    productVendor={productVendor}
+                    products={products}
+                    canSubmit={canSubmit}
+                    loadVendor={loadVendor}
+                    setProductEditable={setProductEditable}
+                    setCanSubmit={setCanSubmit}
+                    onDelete={onDelete}
+                >
+                    <CommentList
+                        commentsVendor={productVendor?.vendorId || ""}
+                        isUser={false}
                     />
-                )
+                </ManagerProductList>
             ) : (
                 <ProductAddForm
                     editableState={productEditable}

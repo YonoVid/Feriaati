@@ -113,8 +113,8 @@ function ProductList(props: RProductListProps) {
                     .slice((page - 1) * 3, page * 3)
                     .map((product, index) => (
                         <ProductView
-                            onEdit={onEdit}
-                            onDelete={onDelete}
+                            onEdit={() => onEdit && onEdit(product)}
+                            onDelete={() => onDelete && onDelete(product.id)}
                             isEditable={isEditable}
                             key={product.name + index}
                             product={product}

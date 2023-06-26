@@ -1,12 +1,6 @@
 import { errorCodes } from "../errors";
 import { UpdatePassFields } from "../model/types";
 
-export const emailFormatRegex = new RegExp(
-    "^([\\w-]+(?:\\.[\\w-]+)*)@((?:[\\w-]+\\.)" +
-        "*\\w[\\w-]{0,66})\\.([a-z]{2,6}(?:\\.[a-z]{2})?)$",
-    "i"
-);
-
 export const checkUpdatePassFields = (
     input: UpdatePassFields
 ): { check: boolean; code: errorCodes } => {

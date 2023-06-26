@@ -1,6 +1,6 @@
 import { FieldValues } from "react-hook-form";
 import { FormProps } from "react-router-dom";
-import { ProductData } from "./functionsTypes";
+import { ProductData } from "@feria-a-ti/common/model/functionsTypes";
 import { ProductFields } from "./productAddFormProps";
 
 export type ProductListProps = FormProps & {

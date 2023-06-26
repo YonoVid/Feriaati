@@ -1,3 +1,5 @@
+import { DayTime } from "./baseTypes";
+
 export type ResponseData<T> = {
     error: boolean;
     code: string;
@@ -97,9 +99,8 @@ export type ProductListCollectionData = {
     streetNumber: number;
     image: string;
     products: Array<ProductCollectionData>;
-    serviceTime?: [string, string];
-    serviceZone?: string;
-    contact?: string;
+    serviceTime?: { start: DayTime; end: DayTime };
+    contact?: { phone: string; email: string };
 };
 
 export type ProductCollectionData = {

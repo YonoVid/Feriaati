@@ -2,10 +2,11 @@ import { useForm } from "react-hook-form";
 import { Box, Button, Card, Divider } from "@mui/material";
 
 import { emailFormatRegex } from "@feria-a-ti/common/check/checkLoginFields";
-import { RRecoveryFormProps } from "@feria-a-ti/common/model/loginFormProps";
+import { RRecoveryFormProps } from "@feria-a-ti/common/model/props/loginFormProps";
+import { RecoveryFields } from "@feria-a-ti/common/model/fields/loginFields";
+
 import InputComponentAlt from "@feria-a-ti/web/src/components/inputComponent/InputComponentAlt";
 import "./LoginForm.css";
-import { RecoveryFields } from "@feria-a-ti/common/model/loginFields";
 
 function RecoveryForm(props: RRecoveryFormProps) {
     const { label, color, children, onSubmit } = props;

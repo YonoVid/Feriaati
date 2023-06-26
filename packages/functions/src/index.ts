@@ -42,6 +42,8 @@ export {
     getProductVendor,
 } from "./product/productFunctions";
 
+export { productVendorUpdate } from "./product/productVendorFunctions";
+
 export { getAccountUser, editAccountUser } from "./account/accountFunctions";
 
 export {

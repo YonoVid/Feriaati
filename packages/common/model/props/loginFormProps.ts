@@ -3,8 +3,8 @@ import {
     LoginFields,
     RecoveryFields,
     UpdatePassFields,
-} from "@feria-a-ti/common/model/loginFields";
-import { FormProps } from "@feria-a-ti/common/model/sharedProps";
+} from "@feria-a-ti/common/model/fields/loginFields";
+import { FormProps } from "./sharedProps";
 
 export type LoginFormProps = FormProps & {
     onSubmit: (data: LoginFields) => void;

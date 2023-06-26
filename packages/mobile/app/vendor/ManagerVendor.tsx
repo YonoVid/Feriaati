@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { ScrollView, StyleSheet } from "react-native";
+import { useFocusEffect } from "expo-router";
 import { NavigationProp, ParamListBase } from "@react-navigation/native";
 import { httpsCallable } from "@firebase/functions";
 
@@ -11,20 +12,21 @@ import {
 } from "@feria-a-ti/common/check/checkProductFields";
 import {
     ProductData,
+    ProductListCollectionData,
     ResponseData,
     userType,
 } from "@feria-a-ti/common/model/functionsTypes";
 import { useAppContext } from "../AppContext";
-import ProductAddForm from "../../components/forms/ProductAddForm";
+import ProductAddForm from "@feria-a-ti/mobile/components/forms/ProductAddForm";
 import {
     ProductDeleteFields,
     ProductEditFields,
     ProductFields,
     ProductListFields,
-} from "@feria-a-ti/common/model/productAddFormProps";
-import { ProductList } from "../../components/productList/ProductList";
-import { Button } from "react-native-paper";
-import { useFocusEffect } from "expo-router";
+} from "@feria-a-ti/common/model/props/productAddFormProps";
+
+import { ManagerProductList } from "./ManagerProductList";
+import { CommentList } from "../../components/commentList/commentList";
 
 export interface ManagerVendorProps {
     navigation: NavigationProp<ParamListBase>;
@@ -36,6 +38,8 @@ export const ManagerVendor = (props: ManagerVendorProps) => {
     // Navigation
     const { navigation } = props;
     // Server data
+    const [productVendor, setProductVendor] =
+        useState<ProductListCollectionData>();
     const [products, setProducts] = useState<Array<ProductData>>([]);
 
     // Form variables
@@ -50,6 +54,30 @@ export const ManagerVendor = (props: ManagerVendorProps) => {
     //const [isLogged, setIsLogged] = useState(false);
     // Form related variables;
     const [canSubmit, setCanSubmit] = useState(true);
+
+    const loadVendor = () => {
+        const formatedData: ProductListFields = {
+            tokenVendor: authToken as string,
+        };
+        const check = authToken != null && authToken != "";
+        console.log("SUBMIT FORM LOAD VENDOR::", check);
+        if (check) {
+            const addProduct = httpsCallable<
+                ProductListFields,
+                ResponseData<ProductListCollectionData>
+            >(functions, "getProductVendor");
+            addProduct(formatedData).then((result) => {
+                const { msg, error, extra } = result.data;
+                console.log(result.data);
+
+                setProductVendor(extra as ProductListCollectionData);
+                //setIsLogged(result.data as any);
+                if (error && msg !== "") {
+                    setMessage({ msg, isError: error });
+                }
+            });
+        }
+    };
 
     const loadProducts = () => {
         const formatedData: ProductListFields = {
@@ -142,7 +170,12 @@ export const ManagerVendor = (props: ManagerVendorProps) => {
     };
 
     useEffect(() => {
-        loadProducts();
+        if (!productVendor || productVendor == null) {
+            loadVendor();
+            loadProducts();
+        } else if (!products || products == null) {
+            loadProducts();
+        }
     }, []);
 
     useFocusEffect(() => {
@@ -163,25 +196,25 @@ export const ManagerVendor = (props: ManagerVendorProps) => {
             >
                 {!productEditable ? (
                     <>
-                        <ProductList
-                            label="Productos"
+                        <ManagerProductList
+                            navigation={navigation}
+                            productVendor={productVendor}
                             products={products}
+                            canSubmit={canSubmit}
                             isEditable={true}
-                            onEdit={(data: ProductData | null) => {
-                                setProductEditable(data);
-                            }}
-                            onReload={() => loadProducts()}
+                            loadProducts={loadProducts}
+                            loadVendor={loadVendor}
+                            setProductEditable={setProductEditable}
+                            setCanSubmit={setCanSubmit}
                             onDelete={onDelete}
-                        />
-                        <Button
-                            mode="contained-tonal"
-                            disabled={!canSubmit}
-                            onPress={() =>
-                                navigation.navigate("managerAddProduct")
-                            }
                         >
-                            {"Añadir producto"}
-                        </Button>
+                            <CommentList
+                                commentsVendor={
+                                    productVendor ? productVendor.vendorId : ""
+                                }
+                                isUser={false}
+                            />
+                        </ManagerProductList>
                     </>
                 ) : (
                     <ProductAddForm

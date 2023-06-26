@@ -22,7 +22,7 @@ import {
 
 import { errorCodes, messagesCode } from "../errors";
 import { collectionNames } from "../consts";
-import { checkRegisterVendorFields } from "./checkRegister";
+import { checkRegisterVendorFields } from "./checkVendor";
 
 //Setup encryption configuration
 //IF YOU USE .env first install dotenv (npm install dotenv --save)

@@ -1,6 +1,7 @@
 import { Box, Button, Card } from "@mui/material";
 
-import { ProductVendorPageProps } from "@feria-a-ti/common/model/productVendorPageProps";
+import { regionCode, regionCommune } from "@feria-a-ti/common/constants/form";
+import { ProductVendorPageProps } from "@feria-a-ti/common/model/props/productVendorPageProps";
 
 import ProductList from "@feria-a-ti/web/src/components/productList/ProductList";
 
@@ -10,7 +11,16 @@ import "../../App.css";
 function ProductVendorPage(props: ProductVendorPageProps) {
     const { vendorData, products, onAdd, onEdit, onDelete, onUpdatePage } =
         props;
-    const { enterpriseName, street, streetNumber, image } = vendorData;
+    const {
+        enterpriseName,
+        street,
+        streetNumber,
+        commune,
+        region,
+        serviceTime,
+        contact,
+        image,
+    } = vendorData;
     return (
         <>
             <Card
@@ -34,13 +44,37 @@ function ProductVendorPage(props: ProductVendorPageProps) {
                             Dirección de local:{street} {streetNumber}
                         </h3>
                         <h3>
-                            Zona de atención:{street} {streetNumber}
+                            Zona de atención:
+                            {(region ? regionCode[region - 1][1] : "") +
+                                ", " +
+                                (region && commune
+                                    ? regionCommune[region].find(
+                                          (el: string | number[]) =>
+                                              el[0] === commune
+                                      )[1]
+                                    : "")}
                         </h3>
                         <h5>
-                            Horario de atención:{street} {streetNumber}
+                            Horario de atención:
+                            {(serviceTime?.start.hours
+                                .toString()
+                                .padStart(2, "0") +
+                                ":" +
+                                serviceTime?.start.minutes
+                                    .toString()
+                                    .padStart(2, "0") || "") +
+                                "-" +
+                                (serviceTime?.end.hours
+                                    .toString()
+                                    .padStart(2, "0") +
+                                    ":" +
+                                    serviceTime?.end.minutes
+                                        .toString()
+                                        .padStart(2, "0") || "")}
                         </h5>
                         <h5>
-                            Método de contacto:{street} {streetNumber}
+                            Método de contacto:
+                            {contact?.phone + "-" + contact?.email || "-"}
                         </h5>
                         <Button onClick={onUpdatePage} variant="contained">
                             Actualizar información

@@ -1,9 +1,10 @@
 import "react-native-get-random-values";
 import React, { useEffect, useState } from "react";
-import { Text, View, Button, StyleSheet } from "react-native";
+import { Text, View, StyleSheet } from "react-native";
+import { Button } from "react-native-paper";
 
 import { colors } from "@feria-a-ti/common/theme/base";
-import { RProductListProps } from "@feria-a-ti/common/model/productListProps";
+import { RProductListProps } from "@feria-a-ti/common/model/props/productListProps";
 import { Link } from "expo-router";
 import { ProductData } from "@feria-a-ti/common/model/functionsTypes";
 import { Avatar, DataTable, IconButton } from "react-native-paper";
@@ -17,6 +18,7 @@ export const ProductList = (props: RProductListProps) => {
         products,
         filter,
         isEditable,
+        onAdd,
         onEdit,
         onDelete,
         onReload,
@@ -60,9 +62,17 @@ export const ProductList = (props: RProductListProps) => {
     return (
         <View style={styles.container}>
             <View style={{ flexDirection: "row" }}>
-                <Text style={{ ...styles.title, flex: 6 }}>
-                    {label != null ? label : "Productos"}
-                </Text>
+                <DataTable.Pagination
+                    style={{ flex: 10 }}
+                    page={page}
+                    numberOfPages={Math.floor(products.length / 3) + 1}
+                    onPageChange={(page) => page >= 0 && setPage(page)}
+                    label={`${page * 3 + 1}-${(page + 1) * 3} of ${
+                        products.length
+                    }`}
+                    showFastPaginationControls
+                    numberOfItemsPerPage={3}
+                />
                 {onReload && (
                     <IconButton
                         style={{ flex: 1 }}
@@ -73,16 +83,9 @@ export const ProductList = (props: RProductListProps) => {
                     />
                 )}
             </View>
-            <DataTable.Pagination
-                page={page}
-                numberOfPages={Math.floor(products.length / 3) + 1}
-                onPageChange={(page) => page >= 0 && setPage(page)}
-                label={`${page * 3 + 1}-${(page + 1) * 3} of ${
-                    products.length
-                }`}
-                showFastPaginationControls
-                numberOfItemsPerPage={3}
-            />
+            <Button mode="contained-tonal" onPress={onAdd}>
+                {"Añadir producto"}
+            </Button>
             <View style={{ flexDirection: "column" }}>
                 {getList()
                     .slice(page * 3, (page + 1) * 3)

@@ -14,7 +14,7 @@ import { colors } from "@feria-a-ti/common/theme/base";
 import {
     ProductFields,
     RProductAddFormProps,
-} from "@feria-a-ti/common/model/productAddFormProps";
+} from "@feria-a-ti/common/model/props/productAddFormProps";
 import InputComponent from "@feria-a-ti/mobile/components/inputs/InputComponent";
 import FileInputComponent from "../inputs/FileInputComponent";
 import { numberRegex } from "@feria-a-ti/common/check/checkRegisterFields";

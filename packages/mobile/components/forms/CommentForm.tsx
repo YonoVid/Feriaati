@@ -5,7 +5,7 @@ import { Button, IconButton } from "react-native-paper";
 
 import { colors } from "@feria-a-ti/common/theme/base";
 
-import { RFormProps } from "@feria-a-ti/common/model/registerFormProps";
+import { RFormProps } from "@feria-a-ti/common/model/props/registerFormProps";
 import { CommentFields } from "@feria-a-ti/common/model/comments/commentsFields";
 
 import InputComponent from "@feria-a-ti/mobile/components/inputs/InputComponent";

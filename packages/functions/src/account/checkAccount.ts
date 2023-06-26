@@ -1,11 +1,8 @@
 import { EditAccountFields, GetAccountFields } from "../model/types";
 import { userType } from "../model/accountTypes";
 import { errorCodes } from "../errors";
-import { phoneFormatRegex } from "../utilities/checkDataType";
-import {
-    emailFormatRegex,
-    passwordFormatRegex,
-} from "../utilities/checkAccount";
+import { emailFormatRegex, phoneFormatRegex } from "../utilities/checkDataType";
+import { passwordFormatRegex } from "../utilities/checkAccount";
 
 export const checkGetAccountFields = (
     input: GetAccountFields

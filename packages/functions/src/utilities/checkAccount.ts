@@ -1,11 +1,6 @@
 import { errorCodes } from "../errors";
 import { AccountFields } from "../model/types";
-
-export const emailFormatRegex = new RegExp(
-    "^([\\w-]+(?:\\.[\\w-]+)*)@((?:[\\w-]+\\.)" +
-        "*\\w[\\w-]{0,66})\\.([a-z]{2,6}(?:\\.[a-z]{2})?)$",
-    "i"
-);
+import { emailFormatRegex } from "./checkDataType";
 
 export const passwordFormatRegex = new RegExp(
     /^(?=.*[a-zA-Zñ])(?=.*[0-9])[A-Zña-z0-9!@#$%^&+=*.\\\-_]+$/

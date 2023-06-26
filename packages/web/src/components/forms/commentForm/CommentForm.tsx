@@ -1,7 +1,7 @@
 import { useForm } from "react-hook-form";
 import { Box, Button, Card, Divider } from "@mui/material";
 
-import { RFormProps } from "@feria-a-ti/common/model/registerFormProps";
+import { RFormProps } from "@feria-a-ti/common/model/props/registerFormProps";
 import { CommentFields } from "@feria-a-ti/common/model/comments/commentsFields";
 
 import InputComponentAlt from "@feria-a-ti/web/src/components/inputComponent/InputComponentAlt";

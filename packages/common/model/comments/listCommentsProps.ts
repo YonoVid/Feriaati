@@ -1,4 +1,4 @@
-import { FormProps } from "@feria-a-ti/common/model/sharedProps";
+import { FormProps } from "@feria-a-ti/common/model/props/sharedProps";
 import { UserComment } from "@feria-a-ti/common/model/functionsTypes";
 import { FieldValues } from "react-hook-form";
 

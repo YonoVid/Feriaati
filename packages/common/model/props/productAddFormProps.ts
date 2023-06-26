@@ -1,6 +1,6 @@
-import { FormProps } from "@feria-a-ti/common/model/sharedProps";
+import { FormProps } from "./sharedProps";
 import { FieldValues } from "react-hook-form";
-import { ProductData } from "./functionsTypes";
+import { ProductData } from "../functionsTypes";
 
 export type ProductFields = {
     tokenVendor?: string;

@@ -1,4 +1,5 @@
 import { AccountData, userStatus, userType } from "./accountTypes";
+import { DayTime } from "./productTypes";
 
 export type AccountFields = {
     email: string;
@@ -91,4 +92,13 @@ export type ProductDeleteFields = ProductListFields & {
 
 export type ProductEditFields = ProductFields & {
     id: string;
+};
+
+export type UpdateProductVendorFields = {
+    tokenVendor?: string;
+    productVendorId: string;
+    image?: string;
+    serviceTime?: { start: DayTime; end: DayTime };
+    contactPhone?: string;
+    contactEmail?: string;
 };
