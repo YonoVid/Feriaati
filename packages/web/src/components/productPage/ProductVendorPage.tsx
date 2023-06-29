@@ -64,25 +64,28 @@ function ProductVendorPage(props: ProductVendorPageProps) {
                         </h3>
                         <h5>
                             Horario de atención:
-                            {(serviceTime?.start.hours
-                                .toString()
-                                .padStart(2, "0") +
-                                ":" +
-                                serviceTime?.start.minutes
-                                    .toString()
-                                    .padStart(2, "0") || "") +
-                                "-" +
-                                (serviceTime?.end.hours
+                            {serviceTime &&
+                                (serviceTime?.start.hours
                                     .toString()
                                     .padStart(2, "0") +
                                     ":" +
-                                    serviceTime?.end.minutes
+                                    serviceTime?.start.minutes
                                         .toString()
-                                        .padStart(2, "0") || "")}
+                                        .padStart(2, "0") || "") +
+                                    "-" +
+                                    (serviceTime?.end.hours
+                                        .toString()
+                                        .padStart(2, "0") +
+                                        ":" +
+                                        serviceTime?.end.minutes
+                                            .toString()
+                                            .padStart(2, "0") || "")}
                         </h5>
                         <h5>
                             Método de contacto:
-                            {contact?.phone + "-" + contact?.email || "-"}
+                            {(contact &&
+                                contact?.phone + "-" + contact?.email) ||
+                                "-"}
                         </h5>
                         {isEditable && (
                             <Button onClick={onUpdatePage} variant="contained">

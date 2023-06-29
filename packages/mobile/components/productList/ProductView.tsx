@@ -1,26 +1,31 @@
 import "react-native-get-random-values";
 import React, { useEffect, useState } from "react";
 
-import { Image, View, StyleSheet } from "react-native";
+import { StyleSheet } from "react-native";
 import { colors } from "@feria-a-ti/common/theme/base";
 
-import { ProductData } from "@feria-a-ti/common/model/functionsTypes";
+import {
+    ProductCollectionData,
+    ProductData,
+} from "@feria-a-ti/common/model/functionsTypes";
 import { Avatar, Text, Button, Card, IconButton } from "react-native-paper";
 
 export type ProductViewProps = {
     product: ProductData;
     isEditable: boolean;
+    addProduct?: (data: ProductCollectionData, quantity: number) => void;
     onEdit?: (product: ProductData) => void;
     onDelete?: (id: string) => void;
 };
 
 export const ProductView = (props: ProductViewProps) => {
-    const { product, isEditable, onEdit, onDelete } = props;
+    const { product, isEditable, addProduct, onEdit, onDelete } = props;
     const { id, name, description, price, discount, promotion, image } =
         props.product;
 
     const [expanded, setExpanded] = useState(false);
     const [imageIndex, setImageIndex] = useState(0);
+    const [quantity, setQuantity] = useState(1);
 
     const handleExpandClick = () => {
         setExpanded(!expanded);
@@ -68,16 +73,26 @@ export const ProductView = (props: ProductViewProps) => {
                 )}
             />
             {expanded && (
-                <Card.Content>
-                    <Text>
-                        {discount !== "none" &&
-                            "Descuento de " +
-                                (discount === "percentage"
-                                    ? promotion + "%"
-                                    : "$" + promotion)}
-                    </Text>
-                    <Text>{description}</Text>
-                </Card.Content>
+                <>
+                    <Card.Content>
+                        <Text>
+                            {discount !== "none" &&
+                                "Descuento de " +
+                                    (discount === "percentage"
+                                        ? promotion + "%"
+                                        : "$" + promotion)}
+                        </Text>
+                        <Text>{description}</Text>
+                    </Card.Content>
+                    <Card.Actions>
+                        <IconButton icon="heart" size={20} onPress={() => {}} />
+                        <IconButton
+                            icon="share-variant-outline"
+                            size={20}
+                            onPress={() => {}}
+                        />
+                    </Card.Actions>
+                </>
             )}
             <Card.Actions>
                 <IconButton
@@ -100,12 +115,32 @@ export const ProductView = (props: ProductViewProps) => {
                     </>
                 ) : (
                     <>
-                        <IconButton icon="heart" size={20} onPress={() => {}} />
                         <IconButton
-                            icon="share-variant-outline"
+                            icon="minus-circle"
                             size={20}
-                            onPress={() => {}}
+                            iconColor={colors.secondary}
+                            onPress={() =>
+                                quantity > 1 && setQuantity(quantity - 1)
+                            }
                         />
+                        <Text>{quantity}</Text>
+                        <IconButton
+                            icon="plus-circle"
+                            size={20}
+                            iconColor={colors.primary}
+                            onPress={() =>
+                                quantity < 999 && setQuantity(quantity + 1)
+                            }
+                        />
+                        <Button
+                            color="primary"
+                            mode="contained-tonal"
+                            onPress={() =>
+                                addProduct && addProduct(product, quantity)
+                            }
+                        >
+                            Comprar
+                        </Button>
                     </>
                 )}
             </Card.Actions>

@@ -1,22 +1,5 @@
-import { useEffect, useState } from "react";
-
-import {
-    Box,
-    Button,
-    Card,
-    Divider,
-    Pagination,
-    Stack,
-    TextField,
-} from "@mui/material";
-import {
-    ShoppingCartItem,
-    ShoppingCartProps,
-} from "@feria-a-ti/common/model/props/shoppingCartProps";
-import {
-    ProductData,
-    ProductDiscount,
-} from "@feria-a-ti/common/model/functionsTypes";
+import { Box, Card, Stack } from "@mui/material";
+import { ShoppingCartProps } from "@feria-a-ti/common/model/props/shoppingCartProps";
 
 import "./ShoppingCartComponent.css";
 import CartProductView from "./CartProductView";

@@ -17,6 +17,7 @@ import { ManagerAddProduct } from "./vendor/ManagerAddProduct";
 import { ManagerVendor } from "./vendor/ManagerVendor";
 import { UserVendorSelect } from "./client/UserVendorSelect";
 import { AccountManager } from "./account/AccountManager";
+import { ShoppingCartPage } from "./client/ShoppingCartPage";
 
 const Stack = createNativeStackNavigator();
 
@@ -44,6 +45,11 @@ export default function App() {
                         name="recoveryClient"
                         component={RecoveryClient}
                         options={{ title: "Recuperar cuenta de usuario " }}
+                    />
+                    <Stack.Screen
+                        name="userShoppingCart"
+                        component={ShoppingCartPage}
+                        options={{ title: "Productos de carro " }}
                     />
                     <Stack.Screen
                         name="userVendorSelect"

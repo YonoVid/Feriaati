@@ -86,7 +86,15 @@ function NavBar() {
 
     return (
         <AppBar
-            color={type == userType.vendor ? "primary" : "secondary"}
+            color={
+                type == userType.undefined
+                    ? isVendorPage
+                        ? "primary"
+                        : "secondary"
+                    : type == userType.vendor
+                    ? "primary"
+                    : "secondary"
+            }
             position="static"
             sx={{ top: 0 }}
         >
@@ -215,7 +223,7 @@ function NavBar() {
                             </Box>
 
                             <Box sx={{ flexGrow: 0 }}>
-                                {userType.vendor !== type && (
+                                {userType.user == type && (
                                     <Tooltip
                                         title="Carro de productos"
                                         sx={{ p: 0, marginRight: "1em" }}

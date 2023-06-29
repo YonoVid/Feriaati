@@ -12,7 +12,7 @@ import { UserContext } from "../App";
 export type HeaderLayoutContext = {
     setMessage: (data: { msg: string; isError: boolean }) => void;
     products: Array<ShoppingCartItem>;
-    addProduct: (data: ProductCollectionData) => void;
+    addProduct: (data: ProductCollectionData, quantity: number) => void;
     editProduct: (index: number, quantity: number) => void;
     deleteProduct: (index: number) => void;
 };

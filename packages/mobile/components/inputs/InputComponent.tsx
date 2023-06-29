@@ -17,6 +17,7 @@ interface Props<T> extends UseControllerProps<T> {
     type?: "text" | "password" | "email" | "number";
     hidden?: boolean;
     error?: FieldError | undefined;
+    onChange?: (value: string) => void;
 }
 
 const InputComponent = <T extends FieldValues>({
@@ -29,6 +30,7 @@ const InputComponent = <T extends FieldValues>({
     control,
     rules,
     error,
+    onChange,
 }: Props<T>) => {
     //const { name, label, control, rules, error } = props;
     const [isFocused, setFocusState] = useState(false);
@@ -58,57 +60,84 @@ const InputComponent = <T extends FieldValues>({
 
     return (
         <>
-            <Controller
-                control={control}
-                rules={rules}
-                render={({
-                    field: { onChange, onBlur, value },
-                    fieldState: { error },
-                }) => (
-                    <>
-                        <TextInput
-                            style={style}
-                            autoCapitalize="none"
-                            secureTextEntry={type == "password" ? true : false}
-                            multiline={multiline ? multiline : undefined}
-                            numberOfLines={multiline ? rows : undefined}
-                            //style={styles.input}
-                            placeholder={labelText}
-                            label={labelText}
-                            // placeholderTextColor={
-                            //     isFocused
-                            //         ? styles.input.backgroundColor
-                            //         : styles.input.borderColor
-                            // }
-                            selectionColor={styles.input.color}
-                            mode="flat"
-                            onFocus={() => {
-                                setFocusState(true);
-                            }}
-                            onEndEditing={() => {
-                                setFocusState(false);
-                            }}
-                            onBlur={onBlur}
-                            onChangeText={(text) => {
-                                onChangeWrapper(onChange, text);
-                                console.log(error);
-                            }}
-                            onSubmitEditing={() => {
-                                Keyboard.dismiss();
-                            }}
-                            value={"" || value}
-                            error={error != null}
-                        />
-                        <HelperText
-                            type="error"
-                            visible={error && error != null}
-                        >
-                            {(error && error.message) || ""}
-                        </HelperText>
-                    </>
-                )}
-                name={name}
-            />
+            {control ? (
+                <Controller
+                    control={control}
+                    rules={rules}
+                    render={({
+                        field: { onChange, onBlur, value },
+                        fieldState: { error },
+                    }) => (
+                        <>
+                            <TextInput
+                                style={style}
+                                autoCapitalize="none"
+                                secureTextEntry={
+                                    type == "password" ? true : false
+                                }
+                                multiline={multiline ? multiline : undefined}
+                                numberOfLines={multiline ? rows : undefined}
+                                //style={styles.input}
+                                placeholder={labelText}
+                                label={labelText}
+                                // placeholderTextColor={
+                                //     isFocused
+                                //         ? styles.input.backgroundColor
+                                //         : styles.input.borderColor
+                                // }
+                                selectionColor={styles.input.color}
+                                mode="flat"
+                                onFocus={() => {
+                                    setFocusState(true);
+                                }}
+                                onEndEditing={() => {
+                                    setFocusState(false);
+                                }}
+                                onBlur={onBlur}
+                                onChangeText={(text) => {
+                                    onChangeWrapper(onChange, text);
+                                    console.log(error);
+                                }}
+                                onSubmitEditing={() => {
+                                    Keyboard.dismiss();
+                                }}
+                                value={"" || value}
+                                error={error != null}
+                            />
+                            <HelperText
+                                type="error"
+                                visible={error && error != null}
+                            >
+                                {(error && error.message) || ""}
+                            </HelperText>
+                        </>
+                    )}
+                    name={name}
+                />
+            ) : (
+                <TextInput
+                    style={style}
+                    autoCapitalize="none"
+                    secureTextEntry={type == "password" ? true : false}
+                    multiline={multiline ? multiline : undefined}
+                    numberOfLines={multiline ? rows : undefined}
+                    placeholder={labelText}
+                    label={labelText}
+                    selectionColor={styles.input.color}
+                    mode="flat"
+                    onFocus={() => {
+                        setFocusState(true);
+                    }}
+                    onEndEditing={() => {
+                        setFocusState(false);
+                    }}
+                    onChangeText={onChange}
+                    onSubmitEditing={() => {
+                        Keyboard.dismiss();
+                    }}
+                    error={error != null}
+                />
+            )}
         </>
     );
 };

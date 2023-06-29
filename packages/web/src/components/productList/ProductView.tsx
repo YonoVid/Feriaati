@@ -165,7 +165,6 @@ export const ProductView = (props: ProductViewProps) => {
                         </>
                     ) : (
                         <>
-                            {addProduct && {}}
                             <IconButton aria-label="add to favorites">
                                 <FavoriteIcon />
                             </IconButton>

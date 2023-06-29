@@ -14,11 +14,11 @@ import AddCircleIcon from "@mui/icons-material/AddCircle";
 import RemoveCircleIcon from "@mui/icons-material/RemoveCircle";
 import DeleteIcon from "@mui/icons-material/Delete";
 
-import { ProductData } from "@feria-a-ti/common/model/functionsTypes";
+import { ProductCollectionData } from "@feria-a-ti/common/model/functionsTypes";
 import "./CartProductView.css";
 
 export type CartProductViewProps = {
-    product: ProductData;
+    product: ProductCollectionData;
     quantity: number;
     onEdit: (quantity: number) => void;
     onDelete: () => void;
@@ -27,7 +27,7 @@ export type CartProductViewProps = {
 export const CartProductView = (props: CartProductViewProps) => {
     const theme = useTheme();
     const { quantity, product, onEdit, onDelete } = props;
-    const { id, name, price, discount, promotion, image } = product;
+    const { name, price, discount, promotion, image } = product;
 
     const [localQuantity, setLocalQuantity] = useState(quantity);
     const [finalPrice, setFinalPrice] = useState(

@@ -20,6 +20,7 @@ import { ProductListFields } from "@feria-a-ti/common/model/props/productAddForm
 import { ProductList } from "../../components/productList/ProductList";
 import { colors } from "@feria-a-ti/common/theme/base";
 import { CommentList } from "../../components/commentList/commentList";
+import { ProductVendorPage } from "../vendor/ProductVendorPage";
 
 export interface UserVendorSelectProps {
     navigation: NavigationProp<ParamListBase>;
@@ -27,7 +28,7 @@ export interface UserVendorSelectProps {
 
 export const UserVendorSelect = (props: UserVendorSelectProps) => {
     // Context variables
-    const { setSession, setMessage } = useAppContext();
+    const { setSession, setMessage, addProduct } = useAppContext();
     // Navigation
     const { navigation } = props;
     // Selection of vendor
@@ -92,11 +93,12 @@ export const UserVendorSelect = (props: UserVendorSelectProps) => {
                             icon="arrow-left"
                             onPress={() => setSelectedVendor(null)}
                         />
-                        <ProductList
-                            label="Productos vendedor"
-                            products={products}
+                        <ProductVendorPage
+                            addProduct={addProduct}
+                            onReload={getVendors}
+                            vendorData={selectedVendor}
                             isEditable={false}
-                            onReload={() => loadProducts()}
+                            products={products}
                         />
                         <CommentList
                             commentsVendor={selectedVendor.email}

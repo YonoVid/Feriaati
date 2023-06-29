@@ -5,7 +5,7 @@ import { CircularProgress } from "@mui/material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 
 import { themeOptions } from "@feria-a-ti/common/theme/base";
-import { SessionUserData } from "@feria-a-ti/common/model/sessionType";
+import { RSessionUserData } from "@feria-a-ti/common/model/sessionType";
 import { UserToken, userType } from "@feria-a-ti/common/model/functionsTypes";
 import ErrorPage from "@feria-a-ti/web/src/pages/errorPage/ErrorPage";
 import RegisterPage from "@feria-a-ti/web/src/pages/userPages/RegisterPage";
@@ -108,7 +108,7 @@ const router = createBrowserRouter([
 ]);
 
 const theme = createTheme(themeOptions);
-export const UserContext = React.createContext<SessionUserData>({
+export const UserContext = React.createContext<RSessionUserData>({
     authUser: "",
     authToken: "",
     type: userType.undefined,
