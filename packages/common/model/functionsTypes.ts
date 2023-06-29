@@ -103,11 +103,24 @@ export type ProductListCollectionData = {
     contact?: { phone: string; email: string };
 };
 
+export enum ProductDiscount {
+    NONE = "none",
+    PERCENTAGE = "percentage",
+    VALUE = "value",
+}
+
+export enum ProductUnit {
+    UNIT = "none",
+    GRAM = "gram",
+    KILOGRAM = "kilogram",
+}
+
 export type ProductCollectionData = {
     name: string;
     description: string;
+    unit?: ProductUnit;
     price: number;
-    discount: "none" | "percentage" | "value";
+    discount: ProductDiscount;
     promotion: number;
     image: [string, string, string];
 };

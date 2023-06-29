@@ -12,7 +12,7 @@ import {
 } from "@feria-a-ti/common/model/functionsTypes";
 import { UpdateProductVendorFields } from "@feria-a-ti/common/model/fields/updateFields";
 
-import ProductVendorPage from "@feria-a-ti/web/src/components/productPage/ProductPage";
+import ProductVendorPage from "@feria-a-ti/web/src/components/productPage/ProductVendorPage";
 import ProductVendorUpdateForm from "@feria-a-ti/web/src/components/forms/productVendorUpdateForm/ProductVendorUpdateForm";
 
 import { UserContext } from "@feria-a-ti/web/src/App";

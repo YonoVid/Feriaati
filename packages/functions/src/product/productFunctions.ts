@@ -103,6 +103,7 @@ export const addProduct = functions.https.onCall(
                     const productData: ProductCollectionData = {
                         name: data.name,
                         description: data.description,
+                        // unit: ProductUnit.KILOGRAM,
                         price: data.price,
                         discount: data.discount,
                         promotion: data.promotion as number,
@@ -286,8 +287,8 @@ export const editProduct = functions.https.onCall(
                         promotion: data.promotion as number,
                         image:
                             typeof data.image === "string"
-                                ? [data.image, "", ""]
-                                : data.image,
+                                ? [imageData[0], "", ""]
+                                : imageData,
                     };
 
                     // Actualizar el producto en la base de datos

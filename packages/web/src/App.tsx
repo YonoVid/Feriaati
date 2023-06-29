@@ -24,6 +24,7 @@ import ManagerVendorPage from "@feria-a-ti/web/src/pages/vendorPages/ManagerVend
 import ProductAddManager from "./pages/vendorPages/ProductAddManager";
 import UserVendorSelect from "./pages/userPages/UserVendorSelect";
 import AccountPage from "./pages/accountPages/AccountPage";
+import ShoppingCartPage from "./pages/userPages/ShoppingCartPage";
 
 const router = createBrowserRouter([
     {
@@ -57,6 +58,10 @@ const router = createBrowserRouter([
             {
                 path: "/productVendor",
                 element: <UserVendorSelect />,
+            },
+            {
+                path: "/shoppingCart",
+                element: <ShoppingCartPage />,
             },
             {
                 path: "/home",
@@ -107,6 +112,8 @@ export const UserContext = React.createContext<SessionUserData>({
     authUser: "",
     authToken: "",
     type: userType.undefined,
+    productQuantity: NaN,
+    setProductQuantity: (quantity: number) => NaN,
     setSession: (data: UserToken) => {
         data;
     },
@@ -120,6 +127,7 @@ function App() {
     const [type, setType] = useState<userType>(
         (localStorage.getItem("type") as userType) || undefined
     );
+    const [productQuantity, setProductQuantity] = useState<number>(0);
 
     const setSessionData = (user: UserToken) => {
         console.log("SET SESSION::", user);
@@ -156,6 +164,8 @@ function App() {
                         authUser: user,
                         authToken: token,
                         type: type,
+                        productQuantity: productQuantity,
+                        setProductQuantity: setProductQuantity,
                         setSession: setSessionData,
                         resetSession: resetSessionData,
                         checkSession: checkSessionData,

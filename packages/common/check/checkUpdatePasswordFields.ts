@@ -1,4 +1,4 @@
-import { UpdatePassFields } from "@feria-a-ti/common/model/updateFields";
+import { UpdatePassFields } from "@feria-a-ti/common/model/fields/updateFields";
 
 export const checkUpdatePassFields = (input: UpdatePassFields): boolean => {
     const { codigo, password, confirmPassword } = input;

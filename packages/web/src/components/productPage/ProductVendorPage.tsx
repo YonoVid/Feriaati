@@ -5,12 +5,20 @@ import { ProductVendorPageProps } from "@feria-a-ti/common/model/props/productVe
 
 import ProductList from "@feria-a-ti/web/src/components/productList/ProductList";
 
-import "./ProductPage.css";
+import "./ProductVendorPage.css";
 import "../../App.css";
 
 function ProductVendorPage(props: ProductVendorPageProps) {
-    const { vendorData, products, onAdd, onEdit, onDelete, onUpdatePage } =
-        props;
+    const {
+        vendorData,
+        products,
+        isEditable,
+        addProduct,
+        onAdd,
+        onEdit,
+        onDelete,
+        onUpdatePage,
+    } = props;
     const {
         enterpriseName,
         street,
@@ -76,9 +84,11 @@ function ProductVendorPage(props: ProductVendorPageProps) {
                             Método de contacto:
                             {contact?.phone + "-" + contact?.email || "-"}
                         </h5>
-                        <Button onClick={onUpdatePage} variant="contained">
-                            Actualizar información
-                        </Button>
+                        {isEditable && (
+                            <Button onClick={onUpdatePage} variant="contained">
+                                Actualizar información
+                            </Button>
+                        )}
                     </Box>
                     <Box
                         sx={{ flex: 1, padding: "5%", alignContent: "center" }}
@@ -98,9 +108,10 @@ function ProductVendorPage(props: ProductVendorPageProps) {
                 </Box>
             </Card>
             <ProductList
-                isEditable={true}
+                isEditable={isEditable}
                 label=""
                 products={products}
+                addProduct={addProduct}
                 onAdd={onAdd}
                 onEdit={onEdit}
                 onDelete={onDelete}

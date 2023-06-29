@@ -19,11 +19,12 @@ import {
 import {
     ProductFields,
     RProductAddFormProps,
-} from "@feria-a-ti/common/model/productAddFormProps";
+} from "@feria-a-ti/common/model/props/productAddFormProps";
 import InputComponentAlt from "@feria-a-ti/web/src/components/inputComponent/InputComponentAlt";
 
 import "./ProductAddForm.css";
 import { compressImage } from "@feria-a-ti/common/compression";
+import { ProductDiscount } from "@feria-a-ti/common/model/functionsTypes";
 function ProductAddForm(props: RProductAddFormProps) {
     const {
         buttonLabel,
@@ -33,11 +34,12 @@ function ProductAddForm(props: RProductAddFormProps) {
         imageData,
         editableState,
         setImageData,
+        setCanSubmit,
         onSubmit,
         onCancel,
     } = props;
     const { setValue, handleSubmit, watch, control } = useForm<ProductFields>({
-        defaultValues: { discount: "none" },
+        defaultValues: { discount: ProductDiscount.NONE },
     });
 
     useEffect(() => {
@@ -74,6 +76,7 @@ function ProductAddForm(props: RProductAddFormProps) {
 
     const fileStore = async (e: ChangeEvent<Element>, index: number) => {
         setIsLoading(true);
+        setCanSubmit && setCanSubmit(false);
         const target = e.target as HTMLInputElement;
         fileIndex = index;
         if (
@@ -89,6 +92,7 @@ function ProductAddForm(props: RProductAddFormProps) {
             fileReader?.readAsDataURL(img as File);
         }
         setIsLoading(false);
+        setCanSubmit && setCanSubmit(true);
     };
 
     const colorTheme =
@@ -254,17 +258,17 @@ function ProductAddForm(props: RProductAddFormProps) {
                                     onChange={onChange}
                                 >
                                     <FormControlLabel
-                                        value="none"
+                                        value={ProductDiscount.NONE}
                                         control={<Radio />}
                                         label="Sin descuento"
                                     />
                                     <FormControlLabel
-                                        value="percentage"
+                                        value={ProductDiscount.PERCENTAGE}
                                         control={<Radio />}
                                         label="Porcentual"
                                     />
                                     <FormControlLabel
-                                        value="value"
+                                        value={ProductDiscount.VALUE}
                                         control={<Radio />}
                                         label="Cantidad"
                                     />
@@ -305,7 +309,6 @@ function ProductAddForm(props: RProductAddFormProps) {
                         color={colorTheme}
                         type="submit"
                         variant="contained"
-                        onClick={onSubmit}
                         disabled={
                             props.canSubmit != null ? !props.canSubmit : false
                         }

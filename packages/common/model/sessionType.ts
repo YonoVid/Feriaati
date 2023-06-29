@@ -4,6 +4,8 @@ export type SessionUserData = {
     type: userType;
     authUser: string | undefined;
     authToken: string | undefined;
+    productQuantity: number;
+    setProductQuantity: (quantity: number) => void;
     setSession: (data: UserToken) => void;
     resetSession: () => void;
     checkSession: () => boolean;

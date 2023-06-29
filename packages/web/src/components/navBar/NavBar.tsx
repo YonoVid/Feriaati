@@ -2,6 +2,7 @@ import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
     AppBar,
+    Badge,
     Box,
     Button,
     Container,
@@ -15,13 +16,15 @@ import {
 import MenuIcon from "@mui/icons-material/Menu";
 import AdbIcon from "@mui/icons-material/Adb";
 import AccountCircle from "@mui/icons-material/AccountCircle";
+import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 // import "./NavBar.css";
 import { userType } from "@feria-a-ti/common/model/functionsTypes";
 import { UserContext } from "@feria-a-ti/web/src/App";
 
 function NavBar() {
     //Context variables
-    const { authUser, type, resetSession } = useContext(UserContext);
+    const { authUser, type, productQuantity, resetSession } =
+        useContext(UserContext);
     //Navigation definition
     const navigate = useNavigate();
 
@@ -83,7 +86,7 @@ function NavBar() {
 
     return (
         <AppBar
-            color={isVendorPage ? "primary" : "secondary"}
+            color={type == userType.vendor ? "primary" : "secondary"}
             position="static"
             sx={{ top: 0 }}
         >
@@ -146,7 +149,7 @@ function NavBar() {
                                     display: { xs: "block", md: "none" },
                                 }}
                             >
-                                {pages.map((page) => (
+                                {settings.map((page) => (
                                     <MenuItem
                                         key={page.label}
                                         onClick={() => {
@@ -212,7 +215,31 @@ function NavBar() {
                             </Box>
 
                             <Box sx={{ flexGrow: 0 }}>
-                                <Tooltip title="Open settings">
+                                {userType.vendor !== type && (
+                                    <Tooltip
+                                        title="Carro de productos"
+                                        sx={{ p: 0, marginRight: "1em" }}
+                                    >
+                                        <IconButton
+                                            size="large"
+                                            aria-label="shopping cart of current session"
+                                            aria-controls="menu-appbar"
+                                            aria-haspopup="true"
+                                            color="inherit"
+                                            onClick={() =>
+                                                navigate("/shoppingCart")
+                                            }
+                                        >
+                                            <Badge
+                                                badgeContent={productQuantity}
+                                                color="primary"
+                                            >
+                                                <ShoppingCartIcon />
+                                            </Badge>
+                                        </IconButton>
+                                    </Tooltip>
+                                )}
+                                <Tooltip title="Abrir opciones">
                                     <IconButton
                                         size="large"
                                         aria-label="account of current user"

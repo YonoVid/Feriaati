@@ -5,14 +5,16 @@ import {
     Button,
     Card,
     Divider,
-    IconButton,
     Pagination,
     Stack,
     TextField,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
-import { RProductListProps } from "@feria-a-ti/common/model/productListProps";
-import { ProductData } from "@feria-a-ti/common/model/functionsTypes";
+import { RProductListProps } from "@feria-a-ti/common/model/props/productListProps";
+import {
+    ProductData,
+    ProductDiscount,
+} from "@feria-a-ti/common/model/functionsTypes";
 
 import ProductView from "./ProductView";
 import "./ProductList.css";
@@ -25,6 +27,7 @@ function ProductList(props: RProductListProps) {
         products,
         filter,
         isEditable,
+        addProduct,
         onAdd,
         onEdit,
         onDelete,
@@ -46,7 +49,7 @@ function ProductList(props: RProductListProps) {
             name: "Test",
             description: "Is a test of product views",
             price: 1000,
-            discount: "none",
+            discount: ProductDiscount.NONE,
             promotion: 400,
             image: [
                 "https://storage.googleapis.com/feria-a-ti.appspot.com/register/vendor/manolo%40correo.cl.png?GoogleAccessId=feria-a-ti%40appspot.gserviceaccount.com&Expires=16447017600&Signature=O5TXKKg%2FlfV9TcjaeQ7Q4JcfthLjuDS%2Ba%2B6fmRcC9CErkUFGmEThnD8BFfvFm6JhjaA04PKnKxjGvv4UcKR%2FU%2BNejmJLPFCkEwtjn5%2B%2BCtqqWZJarAghQ5ZVtlnnSVg9zzNogehRNbNuaqRXr6b6KDMBCci%2BS9UgrDUOnJYeZFU4ursRXEEd6Utp%2Fc6OD8Dd%2F1a8kL%2F0UQyUfyhVnNVyOJz%2B%2B5XPfviImG8ErQ1ouztDb91z64cf805r6bJBW185ILuqjy52Uk9CL%2Fu6TKBZW33GPBpopfHC3HksGTZaaVFpmz9Ye9SYkuWQjQkG3na1mteGg6cfXTFpVFds%2FhGEAA%3D%3D",
@@ -59,7 +62,7 @@ function ProductList(props: RProductListProps) {
 
     const getList = (): ProductData[] => {
         if (filterVendor && filterVendor != null && filter != "") {
-            return products.filter((value) =>
+            return products.filter((value: any) =>
                 value.name.toUpperCase().includes(filterVendor.toUpperCase())
             );
         }
@@ -114,21 +117,24 @@ function ProductList(props: RProductListProps) {
                     .map((product, index) => (
                         <ProductView
                             onEdit={() => onEdit && onEdit(product)}
+                            addProduct={addProduct}
                             onDelete={() => onDelete && onDelete(product.id)}
                             isEditable={isEditable}
                             key={product.name + index}
                             product={product}
                         />
                     ))}
-                <Button
-                    color="secondary"
-                    type="button"
-                    variant="contained"
-                    onClick={onAdd}
-                    startIcon={<AddIcon />}
-                >
-                    Agregar producto
-                </Button>
+                {isEditable && (
+                    <Button
+                        color="secondary"
+                        type="button"
+                        variant="contained"
+                        onClick={onAdd}
+                        startIcon={<AddIcon />}
+                    >
+                        Agregar producto
+                    </Button>
+                )}
             </Stack>
             <Box sx={{ margin: "1em" }}>{children}</Box>
         </Card>
