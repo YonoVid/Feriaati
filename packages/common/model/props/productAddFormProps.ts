@@ -1,13 +1,14 @@
 import { FormProps } from "./sharedProps";
 import { FieldValues } from "react-hook-form";
-import { ProductData } from "../functionsTypes";
+import { ProductData, ProductDiscount, ProductUnit } from "../functionsTypes";
 
 export type ProductFields = {
     tokenVendor?: string;
     name: string;
     description: string;
+    unit?: ProductUnit;
     price: number;
-    discount: "none" | "percentage" | "value";
+    discount: ProductDiscount;
     promotion?: number;
     image: [string, string, string] | string;
 };
@@ -35,6 +36,7 @@ export type RProductAddFormProps = ProductAddFormProps & {
     imageData: [string, string, string];
     editableState?: ProductData | null;
     setImageData: (data: [string, string, string]) => void;
+    setCanSubmit?: React.Dispatch<React.SetStateAction<boolean>>;
     onSubmit: (data: FieldValues) => void;
     onCancel?: () => void;
 };

@@ -1,4 +1,5 @@
 import { AccountData, userStatus, userType } from "./accountTypes";
+import { ProductDiscount, ProductUnit } from "./productTypes";
 import { DayTime } from "./productTypes";
 
 export type AccountFields = {
@@ -75,8 +76,9 @@ export type ProductFields = {
     tokenVendor?: string;
     name: string;
     description: string;
+    unit?: ProductUnit;
     price: number;
-    discount: "none" | "percentage" | "value";
+    discount: ProductDiscount;
     promotion?: number;
     image: [string, string, string] | string;
 };

@@ -14,7 +14,7 @@ import FileInputComponent from "../inputs/FileInputComponent";
 
 function CommentForm(props: RFormProps) {
     const { children, canSubmit, onSubmit } = props;
-    const { handleSubmit, control } = useForm<CommentFields>();
+    const { handleSubmit, reset, control } = useForm<CommentFields>();
 
     return (
         <View style={{ flexDirection: "row" }}>
@@ -39,7 +39,10 @@ function CommentForm(props: RFormProps) {
                     mode="contained"
                     color={styles.buttonInner.color}
                     disabled={!props.canSubmit}
-                    onPress={handleSubmit(onSubmit)}
+                    onPress={() => {
+                        reset();
+                        handleSubmit(onSubmit);
+                    }}
                 >
                     Enviar
                 </Button>

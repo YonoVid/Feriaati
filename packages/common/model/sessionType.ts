@@ -9,6 +9,11 @@ export type SessionUserData = {
     checkSession: () => boolean;
 };
 
+export type RSessionUserData = SessionUserData & {
+    productQuantity: number;
+    setProductQuantity: (quantity: number) => void;
+};
+
 export type UIMessages = {
     setMessage: (data: { msg: string; isError: boolean }) => void;
 };

@@ -5,7 +5,7 @@ import { CircularProgress } from "@mui/material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 
 import { themeOptions } from "@feria-a-ti/common/theme/base";
-import { SessionUserData } from "@feria-a-ti/common/model/sessionType";
+import { RSessionUserData } from "@feria-a-ti/common/model/sessionType";
 import { UserToken, userType } from "@feria-a-ti/common/model/functionsTypes";
 import ErrorPage from "@feria-a-ti/web/src/pages/errorPage/ErrorPage";
 import RegisterPage from "@feria-a-ti/web/src/pages/userPages/RegisterPage";
@@ -24,6 +24,7 @@ import ManagerVendorPage from "@feria-a-ti/web/src/pages/vendorPages/ManagerVend
 import ProductAddManager from "./pages/vendorPages/ProductAddManager";
 import UserVendorSelect from "./pages/userPages/UserVendorSelect";
 import AccountPage from "./pages/accountPages/AccountPage";
+import ShoppingCartPage from "./pages/userPages/ShoppingCartPage";
 
 const router = createBrowserRouter([
     {
@@ -57,6 +58,10 @@ const router = createBrowserRouter([
             {
                 path: "/productVendor",
                 element: <UserVendorSelect />,
+            },
+            {
+                path: "/shoppingCart",
+                element: <ShoppingCartPage />,
             },
             {
                 path: "/home",
@@ -103,10 +108,12 @@ const router = createBrowserRouter([
 ]);
 
 const theme = createTheme(themeOptions);
-export const UserContext = React.createContext<SessionUserData>({
+export const UserContext = React.createContext<RSessionUserData>({
     authUser: "",
     authToken: "",
     type: userType.undefined,
+    productQuantity: NaN,
+    setProductQuantity: (quantity: number) => NaN,
     setSession: (data: UserToken) => {
         data;
     },
@@ -120,6 +127,7 @@ function App() {
     const [type, setType] = useState<userType>(
         (localStorage.getItem("type") as userType) || undefined
     );
+    const [productQuantity, setProductQuantity] = useState<number>(0);
 
     const setSessionData = (user: UserToken) => {
         console.log("SET SESSION::", user);
@@ -156,6 +164,8 @@ function App() {
                         authUser: user,
                         authToken: token,
                         type: type,
+                        productQuantity: productQuantity,
+                        setProductQuantity: setProductQuantity,
                         setSession: setSessionData,
                         resetSession: resetSessionData,
                         checkSession: checkSessionData,

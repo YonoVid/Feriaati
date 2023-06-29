@@ -114,6 +114,7 @@ function ManagerVendorPage() {
             image: imageData,
         };
         const check = checkAddProductFields(formatedData);
+        console.log(formatedData);
         console.log("SUBMIT FORM ON EDIT::", check);
         if (check) {
             setCanSubmit(false);
@@ -205,6 +206,7 @@ function ManagerVendorPage() {
                     setImageData={setImageData}
                     onSubmit={onEdit}
                     onCancel={() => setProductEditable(null)}
+                    setCanSubmit={setCanSubmit}
                     canSubmit={canSubmit}
                     buttonLabel={"Editar producto"}
                 />

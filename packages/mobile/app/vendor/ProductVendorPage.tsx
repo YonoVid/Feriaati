@@ -14,6 +14,7 @@ export const ProductVendorPage = (props: ProductVendorPageProps) => {
         vendorData,
         products,
         isEditable,
+        addProduct,
         onAdd,
         onReload,
         onEdit,
@@ -75,7 +76,9 @@ export const ProductVendorPage = (props: ProductVendorPageProps) => {
                             </Text>
                             <Text style={{ flex: 6 }}>
                                 Horario de atención:
-                                {serviceTime && serviceTime != null
+                                {serviceTime &&
+                                serviceTime &&
+                                serviceTime != null
                                     ? (serviceTime?.start.hours
                                           .toString()
                                           .padStart(2, "0") +
@@ -95,7 +98,9 @@ export const ProductVendorPage = (props: ProductVendorPageProps) => {
                             </Text>
                             <Text style={{ flex: 6 }}>
                                 Método de contacto:
-                                {contact?.phone + "-" + contact?.email || "-"}
+                                {(contact &&
+                                    contact?.phone + "-" + contact?.email) ||
+                                    "-"}
                             </Text>
                         </>
                     )}
@@ -120,6 +125,7 @@ export const ProductVendorPage = (props: ProductVendorPageProps) => {
                 label="Productos"
                 products={products}
                 isEditable={isEditable || false}
+                addProduct={addProduct}
                 onAdd={onAdd}
                 onEdit={onEdit}
                 onReload={onReload}

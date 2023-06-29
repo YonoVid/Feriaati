@@ -24,11 +24,24 @@ export type ProductListCollectionData = {
     contact?: { phone: string; email: string };
 };
 
+export enum ProductUnit {
+    UNIT = "none",
+    GRAM = "gram",
+    KILOGRAM = "kilogram",
+}
+
+export enum ProductDiscount {
+    NONE = "none",
+    PERCENTAGE = "percentage",
+    VALUE = "value",
+}
+
 export type ProductCollectionData = {
     name: string;
     description: string;
+    unit?: ProductUnit;
     price: number;
-    discount: "none" | "percentage" | "value";
+    discount: ProductDiscount;
     promotion: number;
     image: [string, string, string];
 };

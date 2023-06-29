@@ -1,7 +1,7 @@
 import {
     ProductDeleteFields,
     ProductFields,
-} from "@feria-a-ti/common/model/productAddFormProps";
+} from "@feria-a-ti/common/model/props/productAddFormProps";
 import { numberRegex } from "./checkRegisterFields";
 // import { numberRegex } from "./checkRegisterFields";
 
@@ -13,8 +13,9 @@ export const checkAddProductFields = (input: ProductFields): boolean => {
     console.log("Required check", requiredCheck);
 
     const priceCheck =
-        price === null ||
+        price == null ||
         price == undefined ||
+        !isNaN(price) ||
         (price !== 0 && numberRegex.test(price.toString()));
     console.log("Price check::%d = %b", price, priceCheck);
 
@@ -22,6 +23,7 @@ export const checkAddProductFields = (input: ProductFields): boolean => {
         discount === "none" ||
         (discount != null &&
             promotion != null &&
+            !isNaN(price) &&
             (promotion as number) > 0 &&
             ((discount === "percentage" && promotion <= 100) ||
                 (discount === "value" && (promotion as number) <= price)));

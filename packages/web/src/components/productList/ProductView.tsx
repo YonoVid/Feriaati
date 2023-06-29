@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import {
+    Box,
+    Button,
     Card,
     CardActions,
     CardContent,
@@ -11,18 +13,24 @@ import {
     styled,
     Typography,
 } from "@mui/material";
+import AddCircleIcon from "@mui/icons-material/AddCircle";
+import RemoveCircleIcon from "@mui/icons-material/RemoveCircle";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import ShareIcon from "@mui/icons-material/Share";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
-import { ProductData } from "@feria-a-ti/common/model/functionsTypes";
+import {
+    ProductCollectionData,
+    ProductData,
+} from "@feria-a-ti/common/model/functionsTypes";
 import "./ProductList.css";
 
 export type ProductViewProps = {
     product: ProductData;
     isEditable: boolean;
+    addProduct?: (data: ProductCollectionData, quantity: number) => void;
     onEdit?: (product: ProductData) => void;
     onDelete?: (id: string) => void;
 };
@@ -43,12 +51,13 @@ const ExpandMore = styled((props: ExpandMoreProps) => {
 }));
 
 export const ProductView = (props: ProductViewProps) => {
-    const { isEditable, onEdit, onDelete } = props;
+    const { product, isEditable, addProduct, onEdit, onDelete } = props;
     const { id, name, description, price, discount, promotion, image } =
-        props.product;
+        product;
 
     const [expanded, setExpanded] = useState(false);
     const [imageIndex, setImageIndex] = useState(0);
+    const [quantity, setQuantity] = useState(1);
 
     const handleExpandClick = () => {
         setExpanded(!expanded);
@@ -73,7 +82,7 @@ export const ProductView = (props: ProductViewProps) => {
             : 0);
 
     return (
-        <Card sx={{ maxWidth: "12em" }}>
+        <Card sx={{ maxWidth: "16em" }}>
             <CardMedia
                 component="img"
                 height="175em"
@@ -83,6 +92,36 @@ export const ProductView = (props: ProductViewProps) => {
                 )}
                 alt="Product image"
             />
+            {addProduct && (
+                <Box>
+                    <IconButton
+                        aria-label="remover producto"
+                        color="primary"
+                        onClick={() =>
+                            quantity > 1 && setQuantity(quantity - 1)
+                        }
+                    >
+                        <RemoveCircleIcon />
+                    </IconButton>
+                    {quantity}
+                    <IconButton
+                        aria-label="editar producto"
+                        color="secondary"
+                        onClick={() =>
+                            quantity < 999 && setQuantity(quantity + 1)
+                        }
+                    >
+                        <AddCircleIcon />
+                    </IconButton>
+                    <Button
+                        color="primary"
+                        variant="contained"
+                        onClick={() => addProduct(product, quantity)}
+                    >
+                        Comprar
+                    </Button>
+                </Box>
+            )}
             <CardActions disableSpacing>
                 <CardHeader
                     title={"$" + finalPrice}

@@ -1,7 +1,7 @@
-import { userStatus } from "./registerFields";
+import { userStatus } from "./fields/registerFields";
 
 export type UpdateStateFields = {
-  id: string;
-  email: string;
-  state: userStatus;
+    id: string;
+    email: string;
+    state: userStatus;
 };
