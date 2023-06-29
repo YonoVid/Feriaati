@@ -136,15 +136,13 @@ export const CartProductView = (props: CartProductViewProps) => {
                     <Typography variant="h6" color="text.primary">
                         {"$" + subtotal}
                     </Typography>
-                </CardContent>
-                <Box sx={{ display: "flex" }}>
                     <IconButton
                         aria-label="eliminar producto"
                         onClick={() => onDelete && onDelete()}
                     >
                         <DeleteIcon />
                     </IconButton>
-                </Box>
+                </CardContent>
             </Card>
         </Box>
     );
