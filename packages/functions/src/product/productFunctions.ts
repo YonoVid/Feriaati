@@ -52,6 +52,7 @@ export const addProduct = functions.https.onCall(
                         const vendorData =
                             (await vendor.docs[0].data()) as VendorCollectionData;
                         let collection: ProductListCollectionData = {
+                            isDeleted: false,
                             vendorId: vendor.docs[0].id,
                             enterpriseName: vendorData.enterpriseName,
                             localNumber: vendorData.localNumber,

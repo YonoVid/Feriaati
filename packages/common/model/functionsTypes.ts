@@ -1,5 +1,6 @@
 import { DayTime } from "./baseTypes";
 
+//Response Data
 export type ResponseData<T> = {
     error: boolean;
     code: string;
@@ -11,6 +12,18 @@ export type UserToken = {
     email: string;
     token: string;
     type: userType;
+};
+
+export type ProductData = ProductCollectionData & {
+    id: string;
+};
+
+export type ProductListData = ProductListCollectionData & {
+    id: string;
+};
+
+export type VendorData = VendorCollectionData & {
+    id: string;
 };
 
 //
@@ -123,8 +136,4 @@ export type ProductCollectionData = {
     discount: ProductDiscount;
     promotion: number;
     image: [string, string, string];
-};
-
-export type ProductData = ProductCollectionData & {
-    id: string;
 };

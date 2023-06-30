@@ -1,5 +1,5 @@
 import { AccountData, userStatus, userType } from "./accountTypes";
-import { ProductDiscount, ProductUnit } from "./productTypes";
+import { DayTimeRange, ProductDiscount, ProductUnit } from "./productTypes";
 import { DayTime } from "./productTypes";
 
 export type AccountFields = {
@@ -103,4 +103,25 @@ export type UpdateProductVendorFields = {
     serviceTime?: { start: DayTime; end: DayTime };
     contactPhone?: string;
     contactEmail?: string;
+};
+
+export type UpdateFullProductVendorFields = {
+    adminToken: string;
+    id: string;
+    vendorId?: string;
+    enterpriseName?: string;
+    rut?: string;
+    localNumber?: number;
+    region?: number;
+    commune?: number;
+    street?: string;
+    streetNumber?: number;
+    image?: string;
+    serviceTime?: DayTimeRange;
+    contact?: { phone: string; email: string };
+};
+
+export type DeleteProductVendorFields = {
+    adminToken: string;
+    productVendorId: string;
 };

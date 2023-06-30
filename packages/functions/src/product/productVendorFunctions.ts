@@ -39,6 +39,7 @@ export const productVendorUpdate = functions.https.onCall(
                         data.image &&
                         data.image != null &&
                         data.image != "" &&
+                        data.image.includes("data:image") &&
                         !data.image.includes("https")
                             ? await uploadVendorProductImage(
                                   docVendorProducts.id + "_0",

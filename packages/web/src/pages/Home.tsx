@@ -26,6 +26,7 @@ function Home() {
             {type === userType.user && (
                 <Navigate to="/productVendor" replace={true} />
             )}
+            {type === userType.admin && <Navigate to="/admin" replace={true} />}
             <h1>¡Bienvenido!</h1>
             <button onClick={handleLogout}>Cerrar sesión</button>
         </>

@@ -2,6 +2,8 @@
 // VENDOR PRODUCTS RELATED TYPES
 //
 
+import { LogicalData } from "./sharedTypes";
+
 export type DayTime = {
     hours: number;
     minutes: number;
@@ -10,7 +12,7 @@ export type DayTime = {
 
 export type DayTimeRange = { start: DayTime; end: DayTime };
 
-export type ProductListCollectionData = {
+export type ProductListCollectionData = LogicalData & {
     vendorId: string;
     enterpriseName: string;
     rut: string;

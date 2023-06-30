@@ -4,6 +4,7 @@ import {
 } from "@feria-a-ti/common/model/fields/updateFields";
 import { emailFormatRegex } from "./checkLoginFields";
 import { phoneFormatRegex } from "./checkAccountFields";
+import { UpdateFullProductVendorFields } from "../model/fields/adminFields";
 
 export const checkTimeRange = (serviceTime: DayTimeRange): boolean => {
     return (
@@ -62,4 +63,52 @@ export const checkProductVendorUpdate = (
         contactCheckPhone &&
         contactCheckEmail
     );
+};
+
+export const checkProductVendorFullUpdate = (
+    input: UpdateFullProductVendorFields
+): boolean => {
+    const {
+        adminToken,
+        id,
+        vendorId,
+        enterpriseName,
+        rut,
+        localNumber,
+        street,
+        streetNumber,
+        region,
+        commune,
+        contact,
+        serviceTime,
+        image,
+    } = input;
+
+    const check = checkProductVendorUpdate({
+        tokenVendor: "ignore",
+        productVendorId: "ignore",
+        image: image || undefined,
+        serviceTime: serviceTime || undefined,
+        contactPhone: contact?.phone || undefined,
+        contactEmail: contact?.email || undefined,
+    });
+    if (!check) {
+        //Check required values exist
+        const requiredCheck =
+            adminToken != null &&
+            adminToken != "" &&
+            id != null &&
+            id != "" &&
+            ((vendorId != null && vendorId != "") ||
+                (enterpriseName != "" && enterpriseName != null) ||
+                (rut != "" && rut != null) ||
+                (street != "" && street != null) ||
+                (!isNaN(localNumber as number) && localNumber != null) ||
+                (!isNaN(streetNumber as number) && streetNumber != null) ||
+                (!isNaN(commune as number) && commune != null) ||
+                (!isNaN(region as number) && region != null));
+
+        return requiredCheck;
+    }
+    return check;
 };

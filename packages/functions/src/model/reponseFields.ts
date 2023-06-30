@@ -1,5 +1,8 @@
-import { userStatus, userType } from "./accountTypes";
-import { ProductCollectionData } from "./productTypes";
+import { userStatus, userType, VendorCollectionData } from "./accountTypes";
+import {
+    ProductCollectionData,
+    ProductListCollectionData,
+} from "./productTypes";
 
 export type ResponseData<T> = {
     error: boolean;
@@ -21,5 +24,13 @@ export type UpdateStateFields = {
 };
 
 export type ProductData = ProductCollectionData & {
+    id: string;
+};
+
+export type ProductListData = ProductListCollectionData & {
+    id: string;
+};
+
+export type VendorData = VendorCollectionData & {
     id: string;
 };

@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import {
     Box,
     Card,
-    CardActions,
     CardContent,
     CardMedia,
     IconButton,

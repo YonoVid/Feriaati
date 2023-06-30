@@ -1,6 +1,7 @@
 import {
     ProductFields,
     ProductListFields,
+    UpdateFullProductVendorFields,
     UpdateProductVendorFields,
 } from "../model/types";
 import { errorCodes } from "../errors";
@@ -131,4 +132,60 @@ export const checkProductVendorUpdate = (
             contactCheckPhone,
         code: errorCodes.SUCCESFULL,
     };
+};
+
+export const checkProductVendorFullUpdate = (
+    input: UpdateFullProductVendorFields
+): { check: boolean; code: errorCodes } => {
+    const {
+        adminToken,
+        id,
+        vendorId,
+        enterpriseName,
+        rut,
+        localNumber,
+        street,
+        streetNumber,
+        region,
+        commune,
+        contact,
+        serviceTime,
+        image,
+    } = input;
+
+    const { check, code } = checkProductVendorUpdate({
+        tokenVendor: "ignore",
+        productVendorId: "ignore",
+        image: image || undefined,
+        serviceTime: serviceTime || undefined,
+        contactPhone: contact?.phone || undefined,
+        contactEmail: contact?.email || undefined,
+    });
+    if (!check) {
+        //Check required values exist
+        const requiredCheck =
+            adminToken != null &&
+            adminToken != "" &&
+            id != null &&
+            id != "" &&
+            ((vendorId != null && vendorId != "") ||
+                (enterpriseName != "" && enterpriseName != null) ||
+                (rut != "" && rut != null) ||
+                (street != "" && street != null) ||
+                (!isNaN(localNumber as number) && localNumber != null) ||
+                (!isNaN(streetNumber as number) && streetNumber != null) ||
+                (!isNaN(commune as number) && commune != null) ||
+                (!isNaN(region as number) && region != null));
+        if (!requiredCheck) {
+            return {
+                check: false,
+                code: errorCodes.MISSING_REQUIRED_DATA_ERROR,
+            };
+        }
+        return {
+            check: requiredCheck,
+            code: errorCodes.SUCCESFULL,
+        };
+    }
+    return { check: check, code: code };
 };
