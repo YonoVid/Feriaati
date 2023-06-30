@@ -1,7 +1,12 @@
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
 import { LoginFields, UpdateStateFields } from "../model/types";
-import { ResponseData, UserToken } from "../model/reponseFields";
+import {
+    ProductListData,
+    ResponseData,
+    UserToken,
+    VendorData,
+} from "../model/reponseFields";
 import {
     userStatus,
     userType,
@@ -82,6 +87,57 @@ export const vendorList = functions.https.onCall(async () => {
         );
     }
 });
+
+export const registerVendorList = functions.https.onCall(
+    async (): Promise<VendorData[]> => {
+        try {
+            const db = admin.firestore();
+            const usersRef = db.collection(collectionNames.VENDORS);
+            const querySnapshot = await usersRef.get();
+            const vendors: VendorData[] = [];
+
+            querySnapshot.forEach((doc) => {
+                const userData = doc.data() as VendorData;
+                if (userData.status === userStatus.registered) {
+                    vendors.push({ ...userData, id: doc.id });
+                }
+            });
+
+            return vendors;
+        } catch (error) {
+            functions.logger.error(error);
+            throw new functions.https.HttpsError(
+                "internal",
+                "Error al obtener datos de los vendedores"
+            );
+        }
+    }
+);
+
+export const productVendorList = functions.https.onCall(
+    async (): Promise<ProductListData[]> => {
+        try {
+            const db = admin.firestore();
+            const usersRef = db.collection(collectionNames.VENDORPRODUCTS);
+            const querySnapshot = await usersRef.get();
+            const vendors: ProductListData[] = [];
+
+            querySnapshot.forEach((doc) => {
+                const userData = doc.data() as ProductListData;
+                vendors.push({ ...userData, id: doc.id });
+            });
+
+            return vendors;
+        } catch (error) {
+            functions.logger.error(error);
+            throw new functions.https.HttpsError(
+                "internal",
+                "Error al obtener datos de los vendedores"
+            );
+        }
+    }
+);
+
 export const vendorStateUpdate = functions.https.onCall(
     async (data: UpdateStateFields, context): Promise<ResponseData<null>> => {
         try {
@@ -116,6 +172,7 @@ export const vendorStateUpdate = functions.https.onCall(
                         const vendorData =
                             (await vendorDoc.data()) as VendorCollectionData;
                         let collection: ProductListCollectionData = {
+                            isDeleted: false,
                             vendorId: id,
                             enterpriseName: vendorData.enterpriseName,
                             localNumber: vendorData.localNumber,
@@ -184,6 +241,7 @@ export const deleteUser = functions.https.onCall(
                         const vendorData =
                             (await vendorDoc.data()) as VendorCollectionData;
                         let collection: ProductListCollectionData = {
+                            isDeleted: false,
                             vendorId: id,
                             enterpriseName: vendorData.enterpriseName,
                             localNumber: vendorData.localNumber,

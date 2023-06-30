@@ -139,6 +139,7 @@ export const addComment = functions.https.onCall(
                             const vendorData =
                                 docVendorProduct.data() as VendorCollectionData;
                             let collection: ProductListCollectionData = {
+                                isDeleted: false,
                                 vendorId: docVendorProduct.id,
                                 enterpriseName: vendorData.enterpriseName,
                                 localNumber: vendorData.localNumber,
