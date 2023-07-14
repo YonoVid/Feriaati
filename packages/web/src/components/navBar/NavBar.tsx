@@ -1,5 +1,6 @@
 import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { httpsCallable } from "firebase/functions";
 import {
     AppBar,
     Badge,
@@ -18,18 +19,39 @@ import AdbIcon from "@mui/icons-material/Adb";
 import AccountCircle from "@mui/icons-material/AccountCircle";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 // import "./NavBar.css";
-import { userType } from "@feria-a-ti/common/model/functionsTypes";
+import { functions } from "@feria-a-ti/common/firebase";
+import {
+    ResponseData,
+    userType,
+} from "@feria-a-ti/common/model/functionsTypes";
 import { UserContext } from "@feria-a-ti/web/src/App";
+import { LogoutFields } from "@feria-a-ti/common/model/fields/loginFields";
 
 function NavBar() {
     //Context variables
-    const { authUser, type, productQuantity, resetSession } =
+    const { authUser, authToken, type, productQuantity, resetSession } =
         useContext(UserContext);
     //Navigation definition
     const navigate = useNavigate();
 
     const clearAuth = () => {
         resetSession && resetSession();
+        try {
+            console.log("LOGOUT::", authUser, ":", type);
+            const logout = httpsCallable<LogoutFields, ResponseData<null>>(
+                functions,
+                "logoutUser"
+            );
+            logout({
+                token: authToken as string,
+                type: type,
+            }).then((result) => {
+                // const { msg, error } = result.data;
+                console.log(result.data);
+            });
+        } catch (error) {
+            console.error("Error al cerrar sesión:", error);
+        }
     };
 
     const pages = [

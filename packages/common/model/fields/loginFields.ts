@@ -1,3 +1,5 @@
+import { userType } from "../functionsTypes";
+
 export type LoginFields = {
     email: string;
     password: string;
@@ -13,4 +15,9 @@ export type UpdatePassFields = {
     codigo: string;
     password: string;
     confirmPassword: string;
+};
+
+export type LogoutFields = {
+    type: userType;
+    token: string;
 };

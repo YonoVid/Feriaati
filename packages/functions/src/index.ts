@@ -52,7 +52,11 @@ export {
 
 export { productVendorUpdate } from "./product/productVendorFunctions";
 
-export { getAccountUser, editAccountUser } from "./account/accountFunctions";
+export {
+    getAccountUser,
+    editAccountUser,
+    logoutUser,
+} from "./account/accountFunctions";
 
 export {
     getComments,

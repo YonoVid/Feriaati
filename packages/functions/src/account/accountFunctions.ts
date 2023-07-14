@@ -7,7 +7,11 @@ import {
 } from "../model/accountTypes";
 import { errorCodes, messagesCode } from "../errors";
 import { checkEditAccountFields, checkGetAccountFields } from "./checkAccount";
-import { EditAccountFields, GetAccountFields } from "../model/types";
+import {
+    EditAccountFields,
+    GetAccountFields,
+    LogoutFields,
+} from "../model/types";
 import { collectionNames } from "../consts";
 import { getAccount } from "../utilities/account";
 import { updateAccountPassword } from "../utilities/updateAccount";
@@ -140,6 +144,52 @@ export const editAccountUser = functions.https.onCall(
                 code: code,
                 error: true,
                 extra: {},
+            };
+        } catch (err) {
+            functions.logger.error(err);
+            throw new functions.https.HttpsError(
+                "invalid-argument",
+                "some message"
+            );
+        }
+    }
+);
+
+export const logoutUser = functions.https.onCall(
+    async (data: LogoutFields, context: any): Promise<ResponseData<null>> => {
+        try {
+            functions.logger.info("DATA::", data);
+            let check =
+                data.token != null &&
+                data.token != undefined &&
+                data.type != null &&
+                data.type != undefined;
+
+            if (check) {
+                const accountCollection =
+                    data.type === userType.vendor
+                        ? collectionNames.VENDORS
+                        : data.type === userType.user
+                        ? collectionNames.USERS
+                        : collectionNames.ADMINS;
+                let { doc, code } = await getAccount(accountCollection, {
+                    token: data.token,
+                });
+                if (code === errorCodes.SUCCESFULL) {
+                    doc.ref.update({ token: null });
+                }
+
+                const error = code !== errorCodes.SUCCESFULL;
+                return {
+                    error: error,
+                    code: code,
+                    msg: messagesCode[code],
+                };
+            }
+            return {
+                msg: messagesCode[errorCodes.MISSING_REQUIRED_DATA_ERROR],
+                code: errorCodes.MISSING_REQUIRED_DATA_ERROR,
+                error: true,
             };
         } catch (err) {
             functions.logger.error(err);

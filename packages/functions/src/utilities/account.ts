@@ -21,7 +21,12 @@ export const accountLoginVerification = async (
         if (accountCode == errorCodes.SUCCESFULL) {
             let userData = userSnapshot.data();
             functions.logger.info("DATA COLLECTION::", userData);
-            if (userData?.status === userStatus.activated) {
+            if (
+                userData?.status === userStatus.activated &&
+                (userData?.token == null ||
+                    userData?.token == undefined ||
+                    userData?.token == "")
+            ) {
                 const eConfig = {
                     algorithm: userData?.algorithm,
                     encryptionKey: process.env.ENCRYPTION_KEY,
@@ -52,6 +57,12 @@ export const accountLoginVerification = async (
                     userData?.status === (userStatus.registered as string)
                 ) {
                     code = errorCodes.UNACTIVATED_ACCOUNT_ERROR;
+                } else if (
+                    userData?.token != null &&
+                    userData?.token != undefined &&
+                    userData?.token != ""
+                ) {
+                    code = errorCodes.ACTION_DONE_ERROR;
                 } else {
                     code = errorCodes.USER_NOT_EXISTS_ERROR;
                 }

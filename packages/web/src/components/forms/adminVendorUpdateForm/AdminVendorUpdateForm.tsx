@@ -23,6 +23,7 @@ import {
 import {
     numberRegex,
     emailFormatRegex,
+    stringRegex,
 } from "@feria-a-ti/common/check/checkBase";
 
 import InputComponentAlt from "@feria-a-ti/web/src/components/inputComponent/InputComponentAlt";
@@ -127,6 +128,11 @@ function AdminVendorUpdateForm(props: RProductVendorFullUpdateProps) {
                                 value: 128,
                                 message: "El máximo de caracteres es 128",
                             },
+                            pattern: {
+                                value: stringRegex,
+                                message:
+                                    "No se aceptan caracteres especiales (Ej: <,>,+,-,etc.)",
+                            },
                         }}
                     />
                     <InputComponentAlt
@@ -187,6 +193,11 @@ function AdminVendorUpdateForm(props: RProductVendorFullUpdateProps) {
                             maxLength: {
                                 value: 128,
                                 message: "El máximo de caracteres es 128",
+                            },
+                            pattern: {
+                                value: stringRegex,
+                                message:
+                                    "No se aceptan caracteres especiales (Ej: <,>,+,-,etc.)",
                             },
                         }}
                     />

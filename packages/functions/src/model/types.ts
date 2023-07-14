@@ -55,6 +55,12 @@ export type LoginFields = {
     password: string;
     attempts: number;
 };
+
+export type LogoutFields = {
+    type: userType;
+    token: string;
+};
+
 export type RecoveryFields = {
     email: string;
 };
