@@ -85,6 +85,8 @@ const FileInputComponent = <T extends FieldValues>({
                             console.log(value.width);
                         })
                         .finally(() => setIsLoading(false));
+                } else {
+                    setIsLoading(false);
                 }
             });
         } catch (err) {

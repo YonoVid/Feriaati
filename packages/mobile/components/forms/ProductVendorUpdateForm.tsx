@@ -48,6 +48,8 @@ function ProductVendorUpdateForm(props: RProductVendorUpdateProps) {
     useEffect(() => {
         if (editedVendor) {
             setValue("serviceTime", editedVendor.serviceTime);
+            setValue("serviceTime.start", editedVendor.serviceTime.start);
+            setValue("serviceTime.end", editedVendor.serviceTime.end);
             editedVendor.contact?.phone &&
                 setValue("contactPhone", editedVendor.contact?.phone);
             editedVendor.contact?.email &&

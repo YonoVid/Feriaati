@@ -59,7 +59,7 @@ export const CommentList = (props: RListCommentsProps) => {
                     const { extra, msg, error } = result.data;
                     console.log(result);
                     if (error) {
-                        setMessage({ msg: msg, isError: true });
+                        console.log(msg);
                     } else {
                         setComments(extra);
                     }

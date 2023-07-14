@@ -64,7 +64,7 @@ export const UserVendorSelect = (props: UserVendorSelectProps) => {
                 setProducts(extra);
                 //setIsLogged(result.data as any);
                 if (error) {
-                    setMessage({ msg, isError: error });
+                    console.log(msg);
                 }
             });
         }

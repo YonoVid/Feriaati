@@ -73,7 +73,7 @@ export const ManagerVendor = (props: ManagerVendorProps) => {
                 setProductVendor(extra as ProductListData);
                 //setIsLogged(result.data as any);
                 if (error && msg !== "") {
-                    setMessage({ msg, isError: error });
+                    console.log(msg);
                 }
             });
         }

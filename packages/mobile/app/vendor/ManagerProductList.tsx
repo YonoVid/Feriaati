@@ -78,6 +78,7 @@ export const ManagerProductList = (props: ManagerProductListProps) => {
         const check = checkProductVendorUpdate(formatedData);
         console.log("SUBMIT FORM ON EDIT VENDOR::", check);
         if (check) {
+            setCanSubmit(false);
             console.log("DATA FORM ON EDIT VENDOR::", formatedData);
             // setCanSubmit(false);
             const editProduct = httpsCallable<
