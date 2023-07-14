@@ -55,12 +55,14 @@ function RegisterPage() {
                 .then((result) => {
                     const { msg, error } = result.data;
                     console.log(result);
-                    //Set registered email
-                    setEmailRegistered(data.email);
-                    //Set register complete
-                    setRegisterComplete(true);
                     //Show alert message
                     setMessage({ msg, isError: error });
+                    if (!error) {
+                        //Set registered email
+                        setEmailRegistered(data.email);
+                        //Set register complete
+                        setRegisterComplete(true);
+                    }
                 })
                 .catch((error) => {
                     console.log(error);

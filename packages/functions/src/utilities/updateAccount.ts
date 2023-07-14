@@ -1,30 +1,31 @@
 import * as functions from "firebase-functions";
-import * as admin from "firebase-admin";
 import { RecoveryFields, UpdatePassFields } from "../model/types";
 import { getRandomIntString } from "./random";
 import { sendRecoveryMail } from "./mail";
 import { errorCodes, messagesCode } from "../errors";
 import { checkUpdatePassFields } from "./checkUpdate";
-import { encryption } from "./encryption";
-import { userStatus } from "../model/accountTypes";
+import { encryption, config } from "./encryption";
+import { AccountCollectionData, userStatus } from "../model/accountTypes";
+import { getAccount } from "./account";
+import { collectionNames } from "../consts";
 
 export const updateAccountCode = async (
-    collection: string,
+    collection: collectionNames,
     data: RecoveryFields
 ) => {
-    const db = admin.firestore();
     //Checks of data and database
     let check = data.email != null && data.email != "";
     //Get collection of email data
-    const collectionDocReference = db.collection(collection).doc(data.email);
-    const collectionDoc = await collectionDocReference.get();
+    const { code, doc: userDoc } = await getAccount(collection, {
+        email: data.email,
+    });
+
     if (check) {
-        if (collectionDoc.exists) {
-            const userDoc = await collectionDocReference.get();
+        if (code == errorCodes.SUCCESFULL) {
             if (userDoc.data()?.status === userStatus.activated) {
                 const codigo = getRandomIntString(999999);
                 sendRecoveryMail("", data.email, codigo);
-                collectionDocReference.update({ passwordCode: codigo });
+                userDoc.ref.update({ passwordCode: codigo });
                 // Returning results.
                 return {
                     extra: data.email,
@@ -51,26 +52,29 @@ export const updateAccountCode = async (
 };
 
 export const updateAccountPassword = async (
-    collection: string,
+    collection: collectionNames,
     data: UpdatePassFields,
     checkCode: boolean = true
 ): Promise<{ code: errorCodes; email: string }> => {
-    const db = admin.firestore();
     functions.logger.info(data);
 
     //Get collection of email data
-    const collectionDocReference = db.collection(collection).doc(data.email);
-    const collectionDoc = await collectionDocReference.get();
-    if (collectionDoc.exists) {
+    const { code, doc: collectionDoc } = await getAccount(collection, {
+        email: data.email,
+    });
+    if (code == errorCodes.SUCCESFULL) {
         //Checks of data and database
         let { code, check } = checkUpdatePassFields(data);
         if (check) {
             const userDoc = collectionDoc.data();
             if (userDoc?.status === userStatus.activated) {
                 if (!checkCode || userDoc?.passwordCode === data.codigo) {
-                    collectionDocReference.update({
+                    let updateData: Partial<AccountCollectionData> = {
                         password: encryption.encrypt(data.password),
-                    });
+                        iv: config.iv,
+                        algorithm: config.algorithm,
+                    };
+                    collectionDoc.ref.update(updateData);
                     // Returning results.
                     return {
                         email: data.email,

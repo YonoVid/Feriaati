@@ -30,17 +30,14 @@ function RegisterVendorList(props: RegisterVendorListProps) {
             {vendors.map((vendor) => (
                 <ListItem
                     disablePadding
-                    key={vendor.email}
+                    key={vendor.id}
                     secondaryAction={
                         <>
                             <IconButton
                                 edge="end"
                                 aria-label="delete"
                                 onClick={() =>
-                                    updateState(
-                                        vendor.email,
-                                        userStatus.activated
-                                    )
+                                    updateState(vendor.id, userStatus.activated)
                                 }
                             >
                                 <CheckCircleIcon />
@@ -49,10 +46,7 @@ function RegisterVendorList(props: RegisterVendorListProps) {
                                 edge="end"
                                 aria-label="delete"
                                 onClick={() =>
-                                    updateState(
-                                        vendor.email,
-                                        userStatus.blocked
-                                    )
+                                    updateState(vendor.id, userStatus.blocked)
                                 }
                             >
                                 <DisabledByDefaultIcon />

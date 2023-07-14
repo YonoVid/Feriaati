@@ -19,6 +19,7 @@ export {
     login,
     passRecovery,
     passUpdate,
+    vendorListUser,
 } from "./buyer/buyerFunctions";
 
 export {

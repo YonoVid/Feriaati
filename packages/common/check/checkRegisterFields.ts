@@ -3,17 +3,11 @@ import {
     RegisterFields,
     RegisterVendorFields,
 } from "@feria-a-ti/common/model/fields/registerFields";
+import { stringRegex } from "./checkBase";
+import { emailFormatRegex } from "./checkBase";
+import { passwordFormatRegex } from "./checkLoginFields";
 
 export const rutFormatRegex = new RegExp(/\b[0-9]{1,8}\-[K|k|0-9]$/gim);
-export const numberRegex = new RegExp(/\b[0-9]+$/gim);
-export const emailFormatRegex = new RegExp(
-    "^([\\w-]+(?:\\.[\\w-]+)*)@((?:[\\w-]+\\.)*\\w[\\w-]{0,66})\\.([a-z]{2,6}(?:\\.[a-z]{2})?)$",
-    "i"
-);
-
-export const passwordFormatRegex = new RegExp(
-    /^(?=.*[a-zA-Zñ])(?=.*[0-9])[A-Zña-z0-9!@#$%^&+=*.\\\-_]+$/
-);
 
 export const checkRutVerificationCode = (rut: number, code: number): boolean =>
     checkRutVerificationCodeString(rut.toString() + "-" + code.toString());
@@ -97,12 +91,22 @@ export const checkRegisterVendorFields = (
         image != null;
     // console.log("Username check", userCheck);
 
+    const specialCheck =
+        stringRegex.test(name) &&
+        stringRegex.test(surname) &&
+        stringRegex.test(enterpriseName) &&
+        stringRegex.test(street);
+
+    const numericCheck = !isNaN(localNumber) && !isNaN(streetNumber);
+
     const confirmPasswordCheck = password === confirmPassword;
     // console.log("Password check", passwordCheck);
 
     return (
         checkAccountFields({ email: email, password: password }) &&
         requiredCheck &&
+        specialCheck &&
+        numericCheck &&
         confirmPasswordCheck
     );
 };

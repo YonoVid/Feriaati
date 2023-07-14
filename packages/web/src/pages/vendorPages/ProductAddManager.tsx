@@ -6,7 +6,7 @@ import { httpsCallable } from "firebase/functions";
 import { functions } from "@feria-a-ti/common/firebase";
 import { checkAddProductFields } from "@feria-a-ti/common/check/checkProductFields";
 import { ResponseData } from "@feria-a-ti/common/model/functionsTypes";
-import { ProductFields } from "@feria-a-ti/common/model/productAddFormProps";
+import { ProductFields } from "@feria-a-ti/common/model/props/productAddFormProps";
 import ProductAddForm from "@feria-a-ti/web/src/components/forms/productAddForm/ProductAddForm";
 
 import { UserContext } from "@feria-a-ti/web/src/App";
@@ -39,6 +39,8 @@ function ProductAddManager() {
             tokenVendor: authToken as string,
             name: data.name as string,
             description: data.description as string,
+            unit: data.unit,
+            unitType: data.unitType,
             price: data.price as number,
             discount: data.discount,
             promotion: data.promotion as number,

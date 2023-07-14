@@ -37,6 +37,7 @@ function VendorLoginPage() {
             password: data.password as string,
             attempts: attempt,
         };
+        console.log(formatedData);
         const check = checkLoginFields(formatedData);
         if (check) {
             //Lock button

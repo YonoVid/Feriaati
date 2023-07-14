@@ -21,7 +21,7 @@ import {
     emailFormatRegex,
     numberRegex,
     passwordFormatRegex,
-} from "@feria-a-ti/common/check/checkRegisterFields";
+} from "@feria-a-ti/common/check/checkBase";
 import { phoneFormatRegex } from "@feria-a-ti/common/check/checkAccountFields";
 
 import InputComponentAlt from "@feria-a-ti/web/src/components/inputComponent/InputComponentAlt";
@@ -98,7 +98,6 @@ function EditAccountForm(props: REditAccountFormProps) {
                     <Box>
                         <InputComponentAlt
                             control={control}
-                            defaultValue={"********"}
                             name="password"
                             label="Nueva contraseña"
                             type="password"
@@ -120,7 +119,6 @@ function EditAccountForm(props: REditAccountFormProps) {
                         />
                         <InputComponentAlt
                             control={control}
-                            defaultValue={"********"}
                             name="confirmPassword"
                             label="Confirmar nueva contraseña"
                             type="password"

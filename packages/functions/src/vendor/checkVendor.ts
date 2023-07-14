@@ -1,6 +1,7 @@
 import { errorCodes } from "../errors";
 import { RegisterVendorFields } from "../model/types";
 import { checkAccountFields } from "../utilities/checkAccount";
+import { stringRegex } from "../utilities/checkDataType";
 
 export const checkRegisterVendorFields = (
     input: RegisterVendorFields
@@ -34,6 +35,22 @@ export const checkRegisterVendorFields = (
     if (!requiredCheck) {
         return { check: false, code: errorCodes.MISSING_REQUIRED_DATA_ERROR };
     }
+
+    const specialCheck =
+        stringRegex.test(name) &&
+        stringRegex.test(surname) &&
+        stringRegex.test(enterpriseName) &&
+        stringRegex.test(street);
+
+    if (!specialCheck) {
+        return { check: false, code: errorCodes.STRING_FORMAT_ERROR };
+    }
+
+    const numericCheck = !isNaN(localNumber) && !isNaN(streetNumber);
+    if (!numericCheck) {
+        return { check: false, code: errorCodes.INCORRECT_INTEGER_FORMAT };
+    }
+
     const { check: accountCheck, code: accountCode } = checkAccountFields({
         email: email,
         password: password,

@@ -21,6 +21,7 @@ import CommentForm from "../forms/commentForm/CommentForm";
 import CommentView from "./CommentView";
 import "./CommentList.css";
 import { UserContext } from "../../App";
+import { stringRegex } from "@feria-a-ti/common/check/checkBase";
 
 function CommentList(props: RListCommentsProps) {
     //Global UI context
@@ -60,7 +61,7 @@ function CommentList(props: RListCommentsProps) {
                     const { extra, msg, error } = result.data;
                     console.log(result);
                     if (error) {
-                        setMessage({ msg: msg, isError: true });
+                        console.log("LOAD COMMENTS ERROR::", msg);
                     } else {
                         setComments(extra);
                     }
@@ -103,27 +104,32 @@ function CommentList(props: RListCommentsProps) {
                 userToken: authToken,
                 vendorId: commentsVendor,
             };
-            const upload = httpsCallable<
-                CommentFields,
-                ResponseData<UserComment>
-            >(functions, "addComment");
-            console.log("UPLOAD COMMENT::", formatedData);
-            upload(formatedData)
-                .then((result) => {
-                    const { msg, error, extra } = result.data;
-                    console.log(result);
+            const check = stringRegex.test(data.comment);
+            if (check) {
+                const upload = httpsCallable<
+                    CommentFields,
+                    ResponseData<UserComment>
+                >(functions, "addComment");
+                console.log("UPLOAD COMMENT::", formatedData);
+                upload(formatedData)
+                    .then((result) => {
+                        const { msg, error, extra } = result.data;
+                        console.log(result);
 
-                    setMessage({ msg: msg, isError: error });
-                    !error && setComments([extra, ...comments]);
-                })
-                .finally(() => setCanSubmit(true));
+                        setMessage({ msg: msg, isError: error });
+                        !error && setComments([extra, ...comments]);
+                    })
+                    .finally(() => setCanSubmit(true));
+            }
         } catch (error) {
             console.error("Error al obtener los vendedores:", error);
         }
     };
 
     useEffect(() => {
-        getComments();
+        if (commentsVendor && commentsVendor !== "") {
+            getComments();
+        }
     }, [commentsVendor]);
 
     return (

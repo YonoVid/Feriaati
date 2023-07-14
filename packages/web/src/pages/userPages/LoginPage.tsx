@@ -46,7 +46,7 @@ function LoginPage() {
                     const {
                         msg,
                         error,
-                        extra: { email, type, token },
+                        extra: { email, type, token, id },
                     } = result.data as ResponseData<UserToken>;
                     console.log(result);
                     console.log(attempt);
@@ -56,7 +56,7 @@ function LoginPage() {
                         setMessage({ msg, isError: error });
                     }
                     if (token != null && token !== "") {
-                        setSession && setSession({ email, type, token });
+                        setSession && setSession({ email, type, token, id });
                         navigate("/session");
                     }
                 })

@@ -44,31 +44,41 @@ const AdminStatePage = () => {
     const [canSubmit, setCanSubmit] = useState<boolean>(true);
 
     useEffect(() => {
-        if (productList == undefined) {
+        if (newVendors == [] || productList == undefined) {
             getNewVendors();
         }
-        if (vendors == []) {
+        if (vendors == [] || productList == undefined) {
             getVendors();
         }
-    }, [productList]);
+    }, []);
 
-    const getVendors = async () => {
+    const getNewVendors = async () => {
         try {
-            const vendors = httpsCallable(functions, "registerVendorList");
-            const response = await vendors();
-            const vendorsData = response.data as VendorData[];
-            setNewVendors(vendorsData);
+            const vendors = httpsCallable<string, ResponseData<VendorData[]>>(
+                functions,
+                "registerVendorList"
+            );
+            vendors(authToken).then((response) => {
+                const vendorsData = response.data.extra as VendorData[];
+                setNewVendors(vendorsData);
+                console.log("NEW VENDORS DATA::", vendorsData);
+            });
         } catch (error) {
             console.error("Error al obtener los vendedores:", error);
         }
     };
 
-    const getNewVendors = async () => {
+    const getVendors = async () => {
         try {
-            const vendors = httpsCallable(functions, "productVendorList");
-            const response = await vendors();
-            const vendorsData = response.data as ProductListData[];
-            setVendors(vendorsData);
+            const vendors = httpsCallable<
+                string,
+                ResponseData<ProductListData[]>
+            >(functions, "productVendorList");
+            vendors(authToken).then((response) => {
+                const vendorsData = response.data.extra as ProductListData[];
+                setVendors(vendorsData);
+                console.log("VENDORS DATA::", vendorsData);
+            });
         } catch (error) {
             console.error("Error al obtener los vendedores:", error);
         }
@@ -80,11 +90,18 @@ const AdminStatePage = () => {
                 UpdateStateFields,
                 ResponseData<null>
             >(functions, "vendorStateUpdate");
-            updateState({ id, email: id, status })
+            console.log("SELECTED USER::", id);
+            updateState({ token: authToken as string, itemId: id, status })
                 .then((response) => {
                     const { msg, error } = response.data;
                     console.log(response.data);
                     setMessage({ msg, isError: error });
+                    if (!error) {
+                        setNewVendors(
+                            newVendors.filter((value) => value.id !== id)
+                        );
+                        getVendors();
+                    }
                 })
                 .finally(() => setCanSubmit(true));
             // .finally(() => setShowAlert(true));
@@ -153,6 +170,9 @@ const AdminStatePage = () => {
                 const { msg, error } = response.data;
                 console.log(response.data);
                 setMessage({ msg, isError: error });
+                if (!error) {
+                    setVendors(vendors.filter((value) => value.id !== id));
+                }
             });
             // .finally(() => setShowAlert(true));
         } catch (error) {

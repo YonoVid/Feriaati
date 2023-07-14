@@ -2,8 +2,8 @@ import { userStatus } from "@feria-a-ti/common/model/functionsTypes";
 import { DayTimeRange } from "./updateFields";
 
 export type UpdateStateFields = {
-    id: string;
-    email: string;
+    token: string;
+    itemId: string;
     status: userStatus;
 };
 

@@ -24,7 +24,11 @@ import InputComponentAlt from "@feria-a-ti/web/src/components/inputComponent/Inp
 
 import "./ProductAddForm.css";
 import { compressImage } from "@feria-a-ti/common/compression";
-import { ProductDiscount } from "@feria-a-ti/common/model/functionsTypes";
+import {
+    ProductDiscount,
+    ProductUnit,
+} from "@feria-a-ti/common/model/functionsTypes";
+import { numberRegex, stringRegex } from "@feria-a-ti/common/check/checkBase";
 function ProductAddForm(props: RProductAddFormProps) {
     const {
         buttonLabel,
@@ -39,7 +43,10 @@ function ProductAddForm(props: RProductAddFormProps) {
         onCancel,
     } = props;
     const { setValue, handleSubmit, watch, control } = useForm<ProductFields>({
-        defaultValues: { discount: ProductDiscount.NONE },
+        defaultValues: {
+            discount: ProductDiscount.NONE,
+            unitType: ProductUnit.KILOGRAM,
+        },
     });
 
     useEffect(() => {
@@ -49,6 +56,8 @@ function ProductAddForm(props: RProductAddFormProps) {
             setValue("discount", editableState.discount);
             setValue("description", editableState.description);
             setValue("promotion", editableState.promotion);
+            setValue("unit", editableState.unit);
+            setValue("unitType", editableState.unitType);
             setLocalImageData(editableState.image);
             setImageData(editableState.image);
         }
@@ -214,6 +223,11 @@ function ProductAddForm(props: RProductAddFormProps) {
                                         message:
                                             "El máximo de caracteres es 128",
                                     },
+                                    pattern: {
+                                        value: stringRegex,
+                                        message:
+                                            "No se aceptan caracteres especiales (Ej: <,>,+,-,etc.)",
+                                    },
                                 }}
                             />
                         </Box>
@@ -224,22 +238,91 @@ function ProductAddForm(props: RProductAddFormProps) {
                                 label="Descripción"
                                 rules={{
                                     required: "La descripción es requerida",
+                                    pattern: {
+                                        value: stringRegex,
+                                        message:
+                                            "No se aceptan caracteres especiales (Ej: <,>,+,-,etc.)",
+                                    },
                                 }}
                             />
                         </Box>
                     </Box>
                 </Box>
-
                 <Box>
-                    <InputComponentAlt
-                        control={control}
-                        name="price"
-                        label="Precio"
-                        type="number"
-                        rules={{
-                            required: "El precio es requerido",
-                        }}
-                    />
+                    <Box>
+                        <InputComponentAlt
+                            control={control}
+                            name="price"
+                            label="Precio"
+                            type="text"
+                            rules={{
+                                required: "El precio es requerido",
+                                pattern: {
+                                    value: numberRegex,
+                                    message: "Valor debe ser numérico",
+                                },
+                                validate: {
+                                    isPositive: (value) =>
+                                        (value as number) > 0 ||
+                                        "El precio debe tener un valor mayor a 0",
+                                },
+                            }}
+                        />
+                        <FormControl>
+                            <FormLabel id="demo-radio-buttons-group-label">
+                                Unidad
+                            </FormLabel>
+                            <Controller
+                                control={control}
+                                name="unitType"
+                                render={({ field: { onChange, value } }) => (
+                                    <RadioGroup
+                                        row
+                                        aria-labelledby="demo-radio-buttons-group-label"
+                                        defaultValue="none"
+                                        name="radio-buttons-group"
+                                        value={value || "kilogram"}
+                                        onChange={onChange}
+                                    >
+                                        <FormControlLabel
+                                            value={ProductUnit.KILOGRAM}
+                                            control={<Radio />}
+                                            label="Kilogramo"
+                                        />
+                                        <FormControlLabel
+                                            value={ProductUnit.GRAM}
+                                            control={<Radio />}
+                                            label="Gramo"
+                                        />
+                                        <FormControlLabel
+                                            value={ProductUnit.UNIT}
+                                            control={<Radio />}
+                                            label="Unidad"
+                                        />
+                                    </RadioGroup>
+                                )}
+                            />
+                        </FormControl>
+                        {watch("unitType") === ProductUnit.GRAM && (
+                            <InputComponentAlt
+                                control={control}
+                                name="unit"
+                                label="Unidad"
+                                type="text"
+                                rules={{
+                                    pattern: {
+                                        value: numberRegex,
+                                        message: "Valor debe ser numérico",
+                                    },
+                                    validate: {
+                                        isPositive: (value) =>
+                                            (value as number) > 0 ||
+                                            "La cantidad debe tener un valor mayor a 0",
+                                    },
+                                }}
+                            />
+                        )}
+                    </Box>
                 </Box>
                 <Box>
                     <FormControl>
@@ -251,6 +334,7 @@ function ProductAddForm(props: RProductAddFormProps) {
                             name="discount"
                             render={({ field: { onChange, value } }) => (
                                 <RadioGroup
+                                    row
                                     aria-labelledby="demo-radio-buttons-group-label"
                                     defaultValue="none"
                                     name="radio-buttons-group"
@@ -281,15 +365,13 @@ function ProductAddForm(props: RProductAddFormProps) {
                             control={control}
                             name="promotion"
                             label="Descuento"
-                            type="number"
+                            type="text"
                             rules={{
+                                pattern: {
+                                    value: numberRegex,
+                                    message: "Valor debe ser numérico",
+                                },
                                 validate: {
-                                    isNumeric: (value) =>
-                                        (watch("discount") !== "none" &&
-                                            value != "" &&
-                                            value != null) ||
-                                        "El descuento debe tener un valor numérico",
-
                                     lessThanTotal: (value) =>
                                         (watch("discount") !== "none" &&
                                             (watch("discount") === "percentage"

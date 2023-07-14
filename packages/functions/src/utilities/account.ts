@@ -7,71 +7,67 @@ import { collectionNames } from "../consts";
 
 export const accountLoginVerification = async (
     collection: collectionNames,
-    id: string,
+    email: string,
     password: string,
     attempt?: number
-) => {
-    let code, token;
+): Promise<{ token: string; code: errorCodes; id: string }> => {
+    let token,
+        code = errorCodes.SUCCESFULL;
     try {
-        const db = admin.firestore();
-        const usersRef = db.collection(collection);
-        const querySnapshot = usersRef.doc(id);
-        const userDoc = await querySnapshot.get();
-        let userData = userDoc.data();
-        functions.logger.info("DATA COLLECTION::", userData);
-        if (
-            userDoc.exists &&
-            userData?.status === (userStatus.activated as string)
-        ) {
-            const eConfig = {
-                algorithm: userData?.algorithm,
-                encryptionKey: process.env.ENCRYPTION_KEY,
-                salt: "123",
-                iv: userData?.iv as Buffer,
-            };
-            const desencryption = new Encryption(eConfig);
+        const { code: accountCode, doc: userSnapshot } = await getAccount(
+            collection,
+            { email: email }
+        );
+        if (accountCode == errorCodes.SUCCESFULL) {
+            let userData = userSnapshot.data();
+            functions.logger.info("DATA COLLECTION::", userData);
+            if (userData?.status === userStatus.activated) {
+                const eConfig = {
+                    algorithm: userData?.algorithm,
+                    encryptionKey: process.env.ENCRYPTION_KEY,
+                    salt: "123",
+                    iv: userData?.iv as Buffer,
+                };
+                const desencryption = new Encryption(eConfig);
 
-            if (userData?.password !== desencryption.encrypt(password)) {
-                if (attempt && attempt >= 5) {
-                    code = errorCodes.BLOCKED_ACCOUNT_ERROR;
-                } else {
-                    code = errorCodes.INCORRECT_PASSWORD_ERROR;
+                if (userData?.password !== desencryption.encrypt(password)) {
+                    if (attempt && attempt >= 5) {
+                        code = errorCodes.BLOCKED_ACCOUNT_ERROR;
+                    } else {
+                        code = errorCodes.INCORRECT_PASSWORD_ERROR;
+                    }
+                }
+            } else if (userData?.type === userType.temp) {
+                if (userData?.password !== password) {
+                    if (attempt && attempt >= 5) {
+                        code = errorCodes.BLOCKED_ACCOUNT_ERROR;
+                    } else {
+                        code = errorCodes.INCORRECT_PASSWORD_ERROR;
+                    }
                 }
             } else {
-                code = errorCodes.SUCCESFULL;
-            }
-        } else if (userData?.type === userType.temp) {
-            if (userData?.password !== password) {
-                if (attempt && attempt >= 5) {
+                if (userData?.status === (userStatus.blocked as string)) {
                     code = errorCodes.BLOCKED_ACCOUNT_ERROR;
+                } else if (
+                    userData?.status === (userStatus.registered as string)
+                ) {
+                    code = errorCodes.UNACTIVATED_ACCOUNT_ERROR;
                 } else {
-                    code = errorCodes.INCORRECT_PASSWORD_ERROR;
+                    code = errorCodes.USER_NOT_EXISTS_ERROR;
                 }
-            } else {
-                code = errorCodes.SUCCESFULL;
             }
-        } else {
-            if (userData?.status === (userStatus.blocked as string)) {
-                code = errorCodes.BLOCKED_ACCOUNT_ERROR;
-            } else if (userData?.status === (userStatus.registered as string)) {
-                code = errorCodes.UNACTIVATED_ACCOUNT_ERROR;
-            } else {
-                code = errorCodes.USER_NOT_EXISTS_ERROR;
+            if (code === errorCodes.SUCCESFULL) {
+                token = getRandomBytes(20).toString("hex");
+                await userSnapshot.ref.update({ token: token });
+            } else if (code === errorCodes.BLOCKED_ACCOUNT_ERROR) {
+                userSnapshot.ref.update({ status: userStatus.blocked });
             }
         }
-        if (code === errorCodes.SUCCESFULL) {
-            token = getRandomBytes(20).toString("hex");
-            await querySnapshot.update({ token: token });
-        } else if (code === errorCodes.BLOCKED_ACCOUNT_ERROR) {
-            accountLoginVerification;
-            querySnapshot.update({ status: userStatus.blocked });
-        }
+        return { token: token || "", code: code, id: userSnapshot.id || "" };
     } catch (e) {
         functions.logger.error("ERROR ON ACCOUNT LOGIN::", e);
         throw e;
     }
-
-    return { token: token, code: code };
 };
 
 export const getAccount = async (
@@ -79,7 +75,9 @@ export const getAccount = async (
     identificator: {
         id?: string;
         token?: string;
-    }
+        email?: string;
+    },
+    createOnFail: boolean = false
 ): Promise<{ code: errorCodes; doc: admin.firestore.DocumentSnapshot }> => {
     const db = admin.firestore();
     let docReference;
@@ -93,21 +91,50 @@ export const getAccount = async (
             .collection(collection)
             .doc(identificator.id as string)
             .get();
-    } else {
+    } else if (
+        identificator.token &&
+        identificator.token !== null &&
+        identificator.token !== ""
+    ) {
         functions.logger.info("ACCOUNT FROM TOKEN");
         const queryAccount = db
             .collection(collection)
             .where("token", "==", identificator.token);
         docReference = (await queryAccount.get()).docs[0];
+    } else if (
+        identificator.email &&
+        identificator.email !== null &&
+        identificator.email !== ""
+    ) {
+        functions.logger.info("ACCOUNT FROM EMAIL");
+        const queryAccount = db
+            .collection(collection)
+            .where("email", "==", identificator.email);
+        docReference = (await queryAccount.get()).docs[0];
+    } else {
+        return {
+            doc: await db.collection(collection).doc().get(),
+            code: errorCodes.MISSING_REQUIRED_DATA_ERROR,
+        };
     }
 
-    functions.logger.info("ACCOUNT DOC::", docReference);
+    functions.logger.info("ACCOUNT DOC::", docReference.id);
 
-    if (!docReference.exists) {
+    if (!docReference && createOnFail) {
+        const doc = db.collection(collection).doc();
+        doc.set({});
+        docReference = await doc.get();
         return {
             doc: docReference,
             code: errorCodes.DOCUMENT_NOT_EXISTS_ERROR,
         };
     }
-    return { doc: docReference, code: errorCodes.SUCCESFULL };
+
+    return {
+        doc: docReference,
+        code:
+            !docReference || !docReference.exists
+                ? errorCodes.DOCUMENT_NOT_EXISTS_ERROR
+                : errorCodes.SUCCESFULL,
+    };
 };

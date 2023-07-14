@@ -1,34 +1,72 @@
 import { useForm } from "react-hook-form";
-import { Box, Button, Card, CardActions, Divider } from "@mui/material";
+import {
+    Avatar,
+    Box,
+    Button,
+    Card,
+    CardActions,
+    Divider,
+    Grid,
+    LinearProgress,
+} from "@mui/material";
 
 import { compressImage } from "@feria-a-ti/common/compression";
 import {
     checkRutVerificationCodeString,
+    rutFormatRegex,
+} from "@feria-a-ti/common/check/checkRegisterFields";
+import {
     emailFormatRegex,
     numberRegex,
     passwordFormatRegex,
-    rutFormatRegex,
-} from "@feria-a-ti/common/check/checkRegisterFields";
+    stringRegex,
+} from "@feria-a-ti/common/check/checkBase";
 import { RegisterVendorFields } from "@feria-a-ti/common/model/fields/registerFields";
 import { RRegisterVendorFormProps } from "@feria-a-ti/common/model/props/registerFormProps";
 import { regionCode, regionCommune } from "@feria-a-ti/common/constants/form";
 
 import InputComponentAlt from "@feria-a-ti/web/src/components/inputComponent/InputComponentAlt";
 import "./RegisterVendorForm.css";
+import { ChangeEvent, useState } from "react";
 
 function RegisterVendorForm(props: RRegisterVendorFormProps) {
-    const { children, setImageData, onSubmit } = props;
-    const { watch, handleSubmit, setValue, control } =
+    const { children, setImageData, onSubmit, canSubmit, setCanSubmit } = props;
+    const { watch, handleSubmit, resetField, control } =
         useForm<RegisterVendorFields>();
+
+    const [localImageData, setLocalImageData] = useState<string>("");
+    const [isLoading, setIsLoading] = useState(false);
 
     //Image reader
     const fileReader = new FileReader();
 
     if (fileReader != null && setImageData != null) {
         fileReader.onload = (ev: ProgressEvent<FileReader>) => {
-            setImageData(ev.target?.result as ArrayBuffer);
+            const newValue = ev.target?.result as string;
+            setLocalImageData(newValue);
+            setImageData(newValue);
         };
     }
+
+    const fileStore = async (e: ChangeEvent<Element>) => {
+        setIsLoading(true);
+        setCanSubmit && setCanSubmit(false);
+        const target = e.target as HTMLInputElement;
+        if (
+            !(
+                e.target.hasAttribute("type") &&
+                e.target.getAttribute("type") === "submit"
+            ) &&
+            target &&
+            target != null &&
+            target.files != null
+        ) {
+            const img = await compressImage(target!.files![0]);
+            fileReader?.readAsDataURL(img as File);
+        }
+        setIsLoading(false);
+        setCanSubmit && setCanSubmit(true);
+    };
 
     return (
         <>
@@ -54,6 +92,11 @@ function RegisterVendorForm(props: RRegisterVendorFormProps) {
                                 maxLength: {
                                     value: 128,
                                     message: "El máximo de caracteres es 128",
+                                },
+                                pattern: {
+                                    value: stringRegex,
+                                    message:
+                                        "No se aceptan caracteres especiales (Ej: <,>,+,-,etc.)",
                                 },
                             }}
                         />
@@ -83,7 +126,7 @@ function RegisterVendorForm(props: RRegisterVendorFormProps) {
                             type="select"
                             selectOptions={regionCode}
                             defaultValue="Elige tú región"
-                            onChange={() => setValue("commune", NaN)}
+                            onChange={() => resetField("commune")}
                             rules={{
                                 required: "La región es requerida",
                             }}
@@ -112,6 +155,11 @@ function RegisterVendorForm(props: RRegisterVendorFormProps) {
                                     value: 128,
                                     message: "El máximo de caracteres es 128",
                                 },
+                                pattern: {
+                                    value: stringRegex,
+                                    message:
+                                        "No se aceptan caracteres especiales (Ej: <,>,+,-,etc.)",
+                                },
                             }}
                         />
                         <InputComponentAlt
@@ -132,32 +180,36 @@ function RegisterVendorForm(props: RRegisterVendorFormProps) {
                             }}
                         />
                     </Box>
-                    <InputComponentAlt
-                        control={control}
-                        name="image"
-                        label="Imagen de local"
-                        type="file"
-                        rules={{
-                            required: "Se debe subir una imagen del local",
-                        }}
-                        onChange={async (e) => {
-                            const target = e.target as HTMLInputElement;
-                            if (
-                                !(
-                                    e.target.hasAttribute("type") &&
-                                    e.target.getAttribute("type") === "submit"
-                                ) &&
-                                target &&
-                                target != null &&
-                                target.files != null
-                            ) {
-                                const img = await compressImage(
-                                    target!.files![0]
-                                );
-                                fileReader?.readAsDataURL(img as File);
-                            }
-                        }}
-                    />
+                    {isLoading && <LinearProgress />}
+                    <Grid container>
+                        <Grid item xs={10}>
+                            <InputComponentAlt
+                                control={control}
+                                name="image"
+                                label="Imagen de local"
+                                type="file"
+                                rules={{
+                                    required:
+                                        "Se debe subir una imagen del local",
+                                    validate: () =>
+                                        !isLoading ||
+                                        "Hay imagenes que se están procesando",
+                                }}
+                                onChange={async (e) => {
+                                    await fileStore(e);
+                                }}
+                            />
+                        </Grid>
+                        <Grid item xs={2}>
+                            <Avatar
+                                alt="Image Preview 1"
+                                src={localImageData}
+                                sx={{ width: 56, height: 56 }}
+                            >
+                                1
+                            </Avatar>
+                        </Grid>
+                    </Grid>
                     <Box>
                         <InputComponentAlt
                             control={control}
@@ -189,6 +241,11 @@ function RegisterVendorForm(props: RRegisterVendorFormProps) {
                             type="text"
                             rules={{
                                 required: "Los nombres son requeridos",
+                                pattern: {
+                                    value: stringRegex,
+                                    message:
+                                        "No se aceptan caracteres especiales (Ej: <,>,+,-,etc.)",
+                                },
                             }}
                         />
                         <InputComponentAlt
@@ -198,6 +255,11 @@ function RegisterVendorForm(props: RRegisterVendorFormProps) {
                             type="text"
                             rules={{
                                 required: "Los apellidos son requeridos",
+                                pattern: {
+                                    value: stringRegex,
+                                    message:
+                                        "No se aceptan caracteres especiales (Ej: <,>,+,-,etc.)",
+                                },
                             }}
                         />
                     </Box>

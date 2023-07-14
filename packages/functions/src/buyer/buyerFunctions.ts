@@ -1,5 +1,4 @@
 import * as functions from "firebase-functions";
-import * as admin from "firebase-admin";
 import {
     RegisterConfirm,
     RegisterFields,
@@ -7,7 +6,7 @@ import {
     UpdatePassFields,
     RecoveryFields,
 } from "../model/types";
-import { ResponseData, UserToken } from "../model/reponseFields";
+import { ResponseData, UserToken, VendorData } from "../model/reponseFields";
 import {
     UserCollectionData,
     userStatus,
@@ -18,7 +17,7 @@ import { errorCodes, messagesCode } from "../errors";
 
 import { checkRegisterFields } from "./checkRegister";
 import { sendVerificationMail } from "../utilities/mail";
-import { accountLoginVerification } from "../utilities/account";
+import { accountLoginVerification, getAccount } from "../utilities/account";
 import { checkAccountFields } from "../utilities/checkAccount";
 
 import { encryption, config } from "../utilities/encryption";
@@ -27,6 +26,7 @@ import {
     updateAccountPassword,
 } from "../utilities/updateAccount";
 import { collectionNames } from "../consts";
+import { getProductVendorList } from "../utilities/getList";
 
 /**
  * Function to log in user in the platform requires data of type LoginFields
@@ -38,7 +38,7 @@ export const login = functions.https.onCall(
             let { code, check } = checkAccountFields(data);
 
             if (check) {
-                let { token, code } = await accountLoginVerification(
+                let { token, code, id } = await accountLoginVerification(
                     collectionNames.USERS,
                     data.email,
                     data.password,
@@ -55,6 +55,7 @@ export const login = functions.https.onCall(
                               type: userType.user,
                               token: token,
                               email: data.email,
+                              id: id,
                           },
                 };
             }
@@ -80,23 +81,27 @@ export const login = functions.https.onCall(
 export const addUser = functions.https.onCall(
     async (data: RegisterFields, context): Promise<ResponseData<string>> => {
         try {
-            const db = admin.firestore();
             //Checks of data and database
             let { check, code } = checkRegisterFields(data);
             let error = false;
             //Get collection of email data
-            const collectionDocReference = db
-                .collection(collectionNames.USERS)
-                .doc(data.email);
-            const collectionDoc = await collectionDocReference.get();
 
             functions.logger.info("DATA::", data);
-            functions.logger.info("DATA COLLECTION::", collectionDoc);
 
             if (check) {
+                let { code: accountCode, doc: collectionDoc } =
+                    await getAccount(
+                        collectionNames.USERS,
+                        {
+                            email: data.email,
+                        },
+                        true
+                    );
+                code = accountCode;
+                functions.logger.info("DATA COLLECTION::", collectionDoc);
                 if (
-                    !collectionDoc.exists ||
-                    collectionDoc.get("status") === "registered"
+                    accountCode === errorCodes.DOCUMENT_NOT_EXISTS_ERROR ||
+                    collectionDoc.get("status") === userStatus.registered
                 ) {
                     //Setup document of user data
                     const collectionData: UserCollectionData = {
@@ -117,15 +122,15 @@ export const addUser = functions.https.onCall(
                         data.email,
                         collectionData.code
                     );
-                    if (collectionDoc.exists) {
+                    if (collectionDoc && collectionDoc.exists) {
                         //Update document in collection if exists
-                        collectionDocReference.update(collectionData);
+                        collectionDoc.ref.update(collectionData);
                     } else {
                         //Creates document in collection of users
-                        collectionDocReference.create(collectionData);
+                        collectionDoc.ref.create(collectionData);
                     }
                     code = errorCodes.SUCCESFULL;
-                } else if (collectionDoc.exists) {
+                } else {
                     code = errorCodes.DOCUMENT_ALREADY_EXISTS_ERROR;
                     error = true;
                 }
@@ -154,40 +159,38 @@ export const addUser = functions.https.onCall(
 export const confirmRegister = functions.https.onCall(
     async (data: RegisterConfirm, context): Promise<ResponseData<string>> => {
         try {
-            const db = admin.firestore();
             //Store return message
             let code = errorCodes.SUCCESFULL;
-            let error = false;
             functions.logger.info("DATA", data);
             //Checks of data and database
-            const collectionDocReference = db
-                .collection(collectionNames.USERS)
-                .doc(data.email);
-
-            const collectionDoc = await collectionDocReference.get();
+            let { code: accountCode, doc: collectionDoc } = await getAccount(
+                collectionNames.USERS,
+                {
+                    email: data.email,
+                }
+            );
 
             functions.logger.info("DATA COLLECTION::", collectionDoc);
 
             if (
-                collectionDoc.exists &&
+                accountCode !== errorCodes.DOCUMENT_NOT_EXISTS_ERROR &&
                 collectionDoc.get("code") === data.code
             ) {
                 //Update document of user data
-                collectionDocReference.update({
+                collectionDoc.ref.update({
                     status: userStatus.activated as string,
                 });
 
                 code = errorCodes.SUCCESFULL;
-            } else if (collectionDoc.exists) {
-                error = true;
+            } else if (accountCode !== errorCodes.DOCUMENT_NOT_EXISTS_ERROR) {
                 code = errorCodes.INCORRECT_CODE_ERROR;
+            } else {
+                code = errorCodes.USER_NOT_EXISTS_ERROR;
             }
-
-            error = code !== errorCodes.SUCCESFULL;
             // Returning results.
             return {
                 extra: data.email,
-                error: error,
+                error: code !== errorCodes.SUCCESFULL,
                 code: code,
                 msg: messagesCode[code],
             };
@@ -200,7 +203,7 @@ export const confirmRegister = functions.https.onCall(
 
 export const passRecovery = functions.https.onCall(
     async (data: RecoveryFields): Promise<ResponseData<any>> => {
-        return updateAccountCode("users", data);
+        return updateAccountCode(collectionNames.USERS, data);
     }
 );
 export const passUpdate = functions.https.onCall(
@@ -215,5 +218,19 @@ export const passUpdate = functions.https.onCall(
             error: code !== errorCodes.SUCCESFULL,
             extra: email,
         };
+    }
+);
+
+export const vendorListUser = functions.https.onCall(
+    async (data: string): Promise<ResponseData<VendorData[]>> => {
+        try {
+            return getProductVendorList(data, collectionNames.USERS);
+        } catch (error) {
+            functions.logger.error(error);
+            throw new functions.https.HttpsError(
+                "internal",
+                "Error al obtener datos de los vendedores"
+            );
+        }
     }
 );

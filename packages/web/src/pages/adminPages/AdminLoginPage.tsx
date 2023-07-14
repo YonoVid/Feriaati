@@ -38,13 +38,16 @@ function AdminLoginPage() {
         };
         const check = checkLoginFields(formatedData);
         if (check) {
-            const login = httpsCallable(functions, "adminLogin");
+            const login = httpsCallable<LoginFields, ResponseData<UserToken>>(
+                functions,
+                "adminLogin"
+            );
             login(formatedData)
                 .then((result) => {
                     const {
                         msg,
                         error,
-                        extra: { email, token, type },
+                        extra: { id, email, token, type },
                     } = result.data as ResponseData<UserToken>;
                     console.log(result);
                     console.log(attempt);
@@ -55,7 +58,7 @@ function AdminLoginPage() {
                     }
                     console.log("TOKEN::", token);
                     if (token != null && token !== "") {
-                        setSession && setSession({ token, type, email });
+                        setSession && setSession({ id, email, token, type });
                         navigate("/admin");
                     }
                 })

@@ -10,7 +10,7 @@ import {
 } from "@feria-a-ti/common/check/checkProductFields";
 import {
     ProductData,
-    ProductListCollectionData,
+    ProductListData,
     ResponseData,
 } from "@feria-a-ti/common/model/functionsTypes";
 import {
@@ -35,8 +35,7 @@ function ManagerVendorPage() {
     const navigate = useNavigate();
 
     //Page stored data
-    const [productVendor, setProductVendor] =
-        useState<ProductListCollectionData>();
+    const [productVendor, setProductVendor] = useState<ProductListData>();
     const [products, setProducts] = useState<Array<ProductData>>([]);
 
     const [imageData, setImageData] = useState<[string, string, string]>([
@@ -61,7 +60,7 @@ function ManagerVendorPage() {
         if (check) {
             const addProduct = httpsCallable<
                 ProductListFields,
-                ResponseData<ProductListCollectionData>
+                ResponseData<ProductListData>
             >(functions, "getProductVendor");
             addProduct(formatedData).then((result) => {
                 const { msg, error, extra } = result.data;
@@ -103,11 +102,14 @@ function ManagerVendorPage() {
     };
 
     const onEdit = (data: FieldValues) => {
+        console.log("IMAGE DATA::", imageData);
         const formatedData: ProductEditFields = {
             id: productEditable?.id as string,
             tokenVendor: authToken as string,
             name: data.name as string,
             description: data.description as string,
+            unitType: data.unitType,
+            unit: data.unit as number,
             price: data.price as number,
             discount: data.discount,
             promotion: data.promotion as number,
@@ -195,7 +197,7 @@ function ManagerVendorPage() {
                     onDelete={onDelete}
                 >
                     <CommentList
-                        commentsVendor={productVendor?.vendorId || ""}
+                        commentsVendor={productVendor?.id || ""}
                         isUser={false}
                     />
                 </ManagerProductList>

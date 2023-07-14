@@ -9,6 +9,7 @@ export type ResponseData<T> = {
 };
 
 export type UserToken = {
+    id: string;
     email: string;
     token: string;
     type: userType;
@@ -131,7 +132,8 @@ export enum ProductUnit {
 export type ProductCollectionData = {
     name: string;
     description: string;
-    unit?: ProductUnit;
+    unitType: ProductUnit;
+    unit?: number;
     price: number;
     discount: ProductDiscount;
     promotion: number;

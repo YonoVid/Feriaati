@@ -15,9 +15,7 @@ import {
 } from "./checkComment";
 import { collectionNames } from "../consts";
 import { errorCodes, messagesCode } from "../errors";
-import { ProductListCollectionData } from "../model/productTypes";
 import { getAccount } from "../utilities/account";
-import { VendorCollectionData } from "../model/accountTypes";
 
 export const getComments = functions.https.onCall(
     async (
@@ -29,11 +27,11 @@ export const getComments = functions.https.onCall(
             const { check, code } = checkGetCommentsFields(data);
             if (check) {
                 const db = admin.firestore();
-                let docReference;
+                let vendorProductsRef;
                 if (data.id && data.id !== null && data.id !== "") {
-                    functions.logger.info("LIST FROM VENDOR ID");
-                    docReference = await db
-                        .collection(collectionNames.VENDORS)
+                    functions.logger.info("LIST FROM PRODUCT VENDOR ID");
+                    vendorProductsRef = await db
+                        .collection(collectionNames.VENDORPRODUCTS)
                         .doc(data.id as string)
                         .get();
                 } else {
@@ -41,21 +39,23 @@ export const getComments = functions.https.onCall(
                     const queryVendor = db
                         .collection(collectionNames.VENDORS)
                         .where("token", "==", data.token);
-                    docReference = (await queryVendor.get()).docs[0];
-                }
+                    let docReference = (await queryVendor.get()).docs[0];
+                    functions.logger.info("VENDOR DOC::", docReference.id);
 
-                functions.logger.info("VENDOR DOC::", docReference);
-
-                if (docReference.exists) {
-                    const vendorProductsRef = (
+                    vendorProductsRef = (
                         await db
                             .collection(collectionNames.VENDORPRODUCTS)
                             .where("vendorId", "==", docReference.id)
                             .get()
                     ).docs[0];
+                }
 
-                    functions.logger.info("VENDOR PRODUCTS DOC", docReference);
+                functions.logger.info(
+                    "PRODUCT VENDOR DOC::",
+                    vendorProductsRef.id
+                );
 
+                if (vendorProductsRef && vendorProductsRef.exists) {
                     const productsRef = await db
                         .collection(collectionNames.VENDORPRODUCTS)
                         .doc(vendorProductsRef.id)
@@ -119,44 +119,12 @@ export const addComment = functions.https.onCall(
                 if (code === errorCodes.SUCCESFULL) {
                     functions.logger.info("LIST FROM VENDOR ID");
                     const docVendorProduct = await db
-                        .collection(collectionNames.VENDORS)
+                        .collection(collectionNames.VENDORPRODUCTS)
                         .doc(data.vendorId as string)
                         .get();
 
                     if (docVendorProduct.exists) {
-                        // Get product list reference
-                        const productsRef = db.collection(
-                            collectionNames.VENDORPRODUCTS
-                        );
-
-                        const products = await productsRef
-                            .where("vendorId", "==", docVendorProduct.id)
-                            .get();
-                        // Store document id
-                        let id;
-                        // Create new collection if not exists
-                        if (products.empty) {
-                            const vendorData =
-                                docVendorProduct.data() as VendorCollectionData;
-                            let collection: ProductListCollectionData = {
-                                isDeleted: false,
-                                vendorId: docVendorProduct.id,
-                                enterpriseName: vendorData.enterpriseName,
-                                localNumber: vendorData.localNumber,
-                                rut: vendorData.rut,
-                                street: vendorData.street,
-                                streetNumber: vendorData.streetNumber,
-                                region: vendorData.region,
-                                commune: vendorData.commune,
-                                image: vendorData.image,
-                            };
-                            id = (await productsRef.add(collection)).id;
-                        } else {
-                            id = products.docs[0].id;
-                        }
-
-                        const commentRef = await productsRef
-                            .doc(id)
+                        const commentRef = await docVendorProduct.ref
                             .collection(collectionNames.COMMENTPRODUCTS)
                             .doc();
 
@@ -218,12 +186,12 @@ export const reportComment = functions.https.onCall(
             const { check, code } = checkReportCommentFields(data);
 
             if (check) {
-                // Obtener la referencia del producto a editar
+                // Obtener la referencia del comentario a reportar
                 const productVendorRef = await db
                     .collection(collectionNames.VENDORPRODUCTS)
-                    .where("vendorId", "==", data.vendorId)
+                    .doc(data.vendorId as string)
                     .get();
-                const productVendorId = productVendorRef.docs[0].id || "";
+                const productVendorId = productVendorRef.id || "";
 
                 const commentRef = db
                     .collection(collectionNames.VENDORPRODUCTS)
@@ -231,7 +199,7 @@ export const reportComment = functions.https.onCall(
                     .collection(collectionNames.COMMENTPRODUCTS)
                     .doc(data.commentId as string);
 
-                // Verificar si el producto existe
+                // Verificar si el comentario existe
                 const commentDoc = await commentRef.get();
                 if (!commentDoc.exists) {
                     return {
@@ -250,8 +218,18 @@ export const reportComment = functions.https.onCall(
                     reports: commentData.reports ? commentData.reports + 1 : 1,
                 };
 
-                // Actualizar el producto en la base de datos
+                // Actualizar el comentario y usuario en la base de datos
                 await commentRef.update(updatedProductData);
+
+                const userDocRef = await db
+                    .collection(collectionNames.USERS)
+                    .doc(commentData.userId)
+                    .get();
+                const userReports = (await userDocRef.get("reports")) || 0;
+                await db
+                    .collection(collectionNames.USERS)
+                    .doc(commentData.userId)
+                    .update({ reports: userReports + 1 });
 
                 // Retornar el ID del producto editado
                 return {

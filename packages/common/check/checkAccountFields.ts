@@ -1,6 +1,6 @@
 import { GetAccountFields } from "@feria-a-ti/common/model/account/getAccountFields";
 import { AccountData, userType } from "../model/functionsTypes";
-import { emailFormatRegex, passwordFormatRegex } from "./checkRegisterFields";
+import { emailFormatRegex, passwordFormatRegex } from "./checkBase";
 
 export const phoneFormatRegex = new RegExp(
     /\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}/

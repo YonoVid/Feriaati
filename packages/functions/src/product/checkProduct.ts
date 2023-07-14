@@ -5,28 +5,54 @@ import {
     UpdateProductVendorFields,
 } from "../model/types";
 import { errorCodes } from "../errors";
-import { emailFormatRegex, phoneFormatRegex } from "../utilities/checkDataType";
-import { DayTimeRange } from "../model/productTypes";
+import {
+    emailFormatRegex,
+    numberRegex,
+    phoneFormatRegex,
+} from "../utilities/checkDataType";
+import { DayTimeRange, ProductUnit } from "../model/productTypes";
 // import { numberRegex } from "../utilities/checkDataType";
 
 export const checkAddProductFields = (
     input: ProductFields
 ): { check: boolean; code: errorCodes } => {
-    const { name, description, price, discount, promotion, image } = input;
+    const {
+        name,
+        description,
+        price,
+        discount,
+        promotion,
+        image,
+        unit,
+        unitType,
+    } = input;
     //Check required values exist
     const requiredCheck =
-        name != null && description != null && price != null && image != null;
+        name != null &&
+        description != null &&
+        price != null &&
+        image != null &&
+        unitType != null;
     if (!requiredCheck) {
         return { check: false, code: errorCodes.MISSING_REQUIRED_DATA_ERROR };
     }
-    // !TODO Fix numeric check of price
-    // let stringPrice: string = price.toString();
-    // const stringTest: string = stringPrice.replace(/["']+/g, "");
-    // const priceCheck =
-    //     price === null || price === 0 || numberRegex.test(stringTest);
-    // if (!priceCheck) {
-    //     return { check: false, code: errorCodes.INCORRECT_INTEGER_FORMAT };
-    // }
+
+    const priceCheck =
+        price == null ||
+        price == undefined ||
+        !isNaN(price) ||
+        (price > 0 && numberRegex.test(price.toString()));
+    if (!priceCheck) {
+        return { check: false, code: errorCodes.INCORRECT_INTEGER_FORMAT };
+    }
+
+    const unitCheck =
+        unitType !== ProductUnit.GRAM ||
+        (unit != undefined && unit != null && (unit as number) > 0);
+    if (!unitCheck) {
+        return { check: false, code: errorCodes.INCORRECT_INTEGER_FORMAT };
+    }
+
     const discountCheck =
         discount === "none" ||
         (discount != null &&
@@ -39,7 +65,7 @@ export const checkAddProductFields = (
     }
     // console.log("Username check", userCheck);
     return {
-        check: requiredCheck,
+        check: requiredCheck && priceCheck && discountCheck && unitCheck,
         code: errorCodes.SUCCESFULL,
     };
 };

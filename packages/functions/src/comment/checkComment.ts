@@ -4,6 +4,7 @@ import {
     GetCommentsFields,
     ReportCommentFields,
 } from "../model/commentTypes";
+import { stringRegex } from "../utilities/checkDataType";
 
 export const checkGetCommentsFields = (
     input: GetCommentsFields
@@ -65,9 +66,12 @@ export const checkCommentFields = (
         return { check: false, code: errorCodes.MISSING_REQUIRED_DATA_ERROR };
     }
     const commentCheck =
-        comment != null && comment != "" && comment.length < 255;
+        comment != null &&
+        comment != "" &&
+        comment.length < 255 &&
+        stringRegex.test(comment);
     if (!commentCheck) {
-        return { check: false, code: errorCodes.MISSING_REQUIRED_DATA_ERROR };
+        return { check: false, code: errorCodes.COMMENT_FORMAT_ERROR };
     }
     // console.log("Username check", userCheck);
     return {

@@ -16,17 +16,19 @@ import { phoneFormatRegex } from "@feria-a-ti/common/check/checkAccountFields";
 import { DayTime } from "@feria-a-ti/common/model/baseTypes";
 import { RProductVendorFullUpdateProps } from "@feria-a-ti/common/model/props/productVendorUpdateFormProps";
 import { FormUpdateFullProductVendorFields } from "@feria-a-ti/common/model/fields/adminFields";
-import { emailFormatRegex } from "@feria-a-ti/common/check/checkLoginFields";
+import {
+    checkRutVerificationCodeString,
+    rutFormatRegex,
+} from "@feria-a-ti/common/check/checkRegisterFields";
+import {
+    numberRegex,
+    emailFormatRegex,
+} from "@feria-a-ti/common/check/checkBase";
 
 import InputComponentAlt from "@feria-a-ti/web/src/components/inputComponent/InputComponentAlt";
 import TimeInputComponent from "@feria-a-ti/web/src/components/timeInputComponent/TimeInputComponent";
 
 import "./AdminVendorUpdateForm.css";
-import {
-    checkRutVerificationCodeString,
-    numberRegex,
-    rutFormatRegex,
-} from "@feria-a-ti/common/check/checkRegisterFields";
 import { regionCode, regionCommune } from "@feria-a-ti/common/constants/form";
 
 function AdminVendorUpdateForm(props: RProductVendorFullUpdateProps) {

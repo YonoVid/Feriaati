@@ -12,6 +12,7 @@ import {
     ResponseData,
     UserComment,
     VendorCollectionData,
+    VendorData,
 } from "@feria-a-ti/common/model/functionsTypes";
 import { ProductListFields } from "@feria-a-ti/common/model/props/productAddFormProps";
 
@@ -24,34 +25,33 @@ const UserVendorSelect = () => {
     //Global UI context
     const { setMessage, addProduct } = useHeaderContext();
     //Global state variable
-    const { type } = useContext(UserContext);
+    const { authToken, type } = useContext(UserContext);
 
     // Selection of vendor
-    const [selectedVendor, setSelectedVendor] =
-        useState<VendorCollectionData | null>();
+    const [selectedVendor, setSelectedVendor] = useState<VendorData | null>();
     const [productVendor, setProductVendor] =
         useState<ProductListCollectionData | null>();
     // Product stored data
     const [products, setProducts] = useState<Array<ProductData>>([]);
 
     // Data of vendors stored
-    const [vendors, setVendors] = useState<VendorCollectionData[]>([]);
+    const [vendors, setVendors] = useState<VendorData[]>([]);
     useEffect(() => {
         getVendors();
     }, []);
 
-    const loadVendor = (data: VendorCollectionData) => {
+    const loadVendor = (data: VendorData) => {
         const formatedData: ProductListFields = {
-            idVendor: data.email as string,
+            idVendor: data.id as string,
         };
-        const check = data.email != null && data.email != "";
+        const check = data.id != null && data.id != "";
         console.log("SUBMIT FORM LOAD VENDOR::", check);
         if (check) {
-            const addProduct = httpsCallable<
+            const getProductVendor = httpsCallable<
                 ProductListFields,
                 ResponseData<ProductListCollectionData>
             >(functions, "getProductVendor");
-            addProduct(formatedData).then((result) => {
+            getProductVendor(formatedData).then((result) => {
                 const { msg, error, extra } = result.data;
                 console.log(result.data);
 
@@ -66,12 +66,12 @@ const UserVendorSelect = () => {
         }
     };
 
-    const loadProducts = (data?: VendorCollectionData) => {
+    const loadProducts = (data?: VendorData) => {
         const dataSource = data ? data : selectedVendor;
         const formatedData: ProductListFields = {
-            idVendor: dataSource?.email as string,
+            idVendor: dataSource?.id as string,
         };
-        const check = dataSource?.email != null && dataSource?.email != "";
+        const check = dataSource?.id != null && dataSource?.id != "";
         console.log("SUBMIT FORM::", check, dataSource);
         if (check) {
             const addProduct = httpsCallable<
@@ -93,10 +93,17 @@ const UserVendorSelect = () => {
 
     const getVendors = async () => {
         try {
-            const vendors = httpsCallable(functions, "vendorList");
-            const response = await vendors();
-            const vendorsData = response.data as VendorCollectionData[];
-            setVendors(vendorsData);
+            const vendors = httpsCallable<string, ResponseData<VendorData[]>>(
+                functions,
+                "vendorListUser"
+            );
+            vendors(authToken).then((response) => {
+                const { error, extra } = response.data;
+                if (!error) {
+                    const vendorsData = extra as VendorData[];
+                    setVendors(vendorsData);
+                }
+            });
         } catch (error) {
             console.error("Error al obtener los vendedores:", error);
         }
@@ -114,7 +121,7 @@ const UserVendorSelect = () => {
                         isEditable={false}
                     />
                     <CommentList
-                        commentsVendor={selectedVendor.email}
+                        commentsVendor={selectedVendor.id}
                         isUser={true}
                     />
                 </>
@@ -132,20 +139,24 @@ const UserVendorSelect = () => {
                         {"Lista de Vendedores"}
                     </h1>
                     <List>
-                        {vendors.map((vendor) => (
-                            <ListItem
-                                component="button"
-                                disablePadding
-                                key={vendor.email}
-                                onClick={() => {
-                                    setSelectedVendor(vendor);
-                                    loadVendor(vendor);
-                                }}
-                            >
-                                <ListItemText primary={vendor.enterpriseName} />
-                                <Divider />
-                            </ListItem>
-                        ))}
+                        {vendors &&
+                            vendors !== [] &&
+                            vendors.map((vendor) => (
+                                <ListItem
+                                    component="button"
+                                    disablePadding
+                                    key={vendor.id}
+                                    onClick={() => {
+                                        setSelectedVendor(vendor);
+                                        loadVendor(vendor);
+                                    }}
+                                >
+                                    <ListItemText
+                                        primary={vendor.enterpriseName}
+                                    />
+                                    <Divider />
+                                </ListItem>
+                            ))}
                     </List>
                 </Card>
             )}

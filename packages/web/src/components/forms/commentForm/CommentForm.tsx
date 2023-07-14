@@ -6,6 +6,7 @@ import { CommentFields } from "@feria-a-ti/common/model/comments/commentsFields"
 
 import InputComponentAlt from "@feria-a-ti/web/src/components/inputComponent/InputComponentAlt";
 import "./CommentForm.css";
+import { stringRegex } from "@feria-a-ti/common/check/checkBase";
 
 function CommentForm(props: RFormProps) {
     const { canSubmit, onSubmit } = props;
@@ -30,6 +31,11 @@ function CommentForm(props: RFormProps) {
                         maxLength: {
                             value: 254,
                             message: "El máximo de caracteres es 254",
+                        },
+                        pattern: {
+                            value: stringRegex,
+                            message:
+                                "No se aceptan caracteres especiales (Ej: <,>,+,-,etc.)",
                         },
                     }}
                 />

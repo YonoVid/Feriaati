@@ -1,4 +1,3 @@
-import * as admin from "firebase-admin";
 import * as functions from "firebase-functions";
 import {
     LoginFields,
@@ -14,7 +13,7 @@ import Encryption, { generativeIvOfSize } from "../utilities/encryption";
 import { getRandomIntString } from "../utilities/random";
 import { uploadRegisterImage } from "../utilities/storage";
 import { checkAccountFields } from "../utilities/checkAccount";
-import { accountLoginVerification } from "../utilities/account";
+import { accountLoginVerification, getAccount } from "../utilities/account";
 import {
     updateAccountCode,
     updateAccountPassword,
@@ -44,22 +43,26 @@ export const addVendor = functions.https.onCall(
         context
     ): Promise<ResponseData<string>> => {
         try {
-            const db = admin.firestore();
             //Checks of data and database
             let { check, code } = checkRegisterVendorFields(data);
             let error = false;
-            //Get collection of email data
-            const collectionDocReference = db
-                .collection(collectionNames.VENDORS)
-                .doc(data.email);
-            const collectionDoc = await collectionDocReference.get();
 
             functions.logger.info("DATA::", data);
-            functions.logger.info("DATA COLLECTION::", collectionDoc);
 
             if (check) {
+                //Get collection of email data
+                let { code: accountCode, doc: collectionDoc } =
+                    await getAccount(
+                        collectionNames.VENDORS,
+                        {
+                            email: data.email,
+                        },
+                        true
+                    );
+                code = accountCode;
+                functions.logger.info("DATA COLLECTION::", collectionDoc);
                 if (
-                    !collectionDoc.exists ||
+                    accountCode === errorCodes.DOCUMENT_NOT_EXISTS_ERROR ||
                     collectionDoc.get("status") === "registered"
                 ) {
                     functions.logger.info(
@@ -101,13 +104,13 @@ export const addVendor = functions.https.onCall(
                     // );
                     if (collectionDoc.exists) {
                         //Update document in collection if exists
-                        collectionDocReference.update(collectionData);
+                        collectionDoc.ref.update(collectionData);
                     } else {
                         //Creates document in collection of users
-                        collectionDocReference.create(collectionData);
+                        collectionDoc.ref.create(collectionData);
                     }
                     code = errorCodes.SUCCESFULL;
-                } else if (collectionDoc.exists) {
+                } else {
                     code = errorCodes.DOCUMENT_ALREADY_EXISTS_ERROR;
                     error = true;
                 }
@@ -136,7 +139,7 @@ export const loginVendor = functions.https.onCall(
             let { check, code } = checkAccountFields(data);
 
             if (check) {
-                let { token, code } = await accountLoginVerification(
+                let { token, code, id } = await accountLoginVerification(
                     collectionNames.VENDORS,
                     data.email,
                     data.password,
@@ -153,6 +156,7 @@ export const loginVendor = functions.https.onCall(
                               type: userType.vendor,
                               token: token,
                               email: data.email,
+                              id: id,
                           },
                 };
             }

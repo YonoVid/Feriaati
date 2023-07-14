@@ -117,6 +117,7 @@ export const deleteProductList = functions.https.onCall(
                         const updateData: Partial<ProductListCollectionData> = {
                             isDeleted: true,
                             userDelete: adminAccount.doc.id,
+                            deletedDate: new Date(),
                         };
                         vendorProductsRef.update(updateData);
                         return {

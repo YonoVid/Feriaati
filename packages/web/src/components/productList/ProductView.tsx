@@ -24,6 +24,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import {
     ProductCollectionData,
     ProductData,
+    ProductUnit,
 } from "@feria-a-ti/common/model/functionsTypes";
 import "./ProductList.css";
 
@@ -52,8 +53,17 @@ const ExpandMore = styled((props: ExpandMoreProps) => {
 
 export const ProductView = (props: ProductViewProps) => {
     const { product, isEditable, addProduct, onEdit, onDelete } = props;
-    const { id, name, description, price, discount, promotion, image } =
-        product;
+    const {
+        id,
+        name,
+        description,
+        price,
+        discount,
+        promotion,
+        image,
+        unitType,
+        unit,
+    } = product;
 
     const [expanded, setExpanded] = useState(false);
     const [imageIndex, setImageIndex] = useState(0);
@@ -73,6 +83,14 @@ export const ProductView = (props: ProductViewProps) => {
         }, 3000);
     }, []);
 
+    const unitLabel =
+        "(" +
+        (unitType === ProductUnit.GRAM
+            ? unit + "gr."
+            : unitType === ProductUnit.KILOGRAM
+            ? "kg."
+            : "unidad") +
+        ")";
     const finalPrice =
         price -
         (discount !== "none"
@@ -124,7 +142,7 @@ export const ProductView = (props: ProductViewProps) => {
             )}
             <CardActions disableSpacing>
                 <CardHeader
-                    title={"$" + finalPrice}
+                    title={"$" + finalPrice + " " + unitLabel}
                     subheader={
                         discount !== "none" &&
                         "Descuento de " +

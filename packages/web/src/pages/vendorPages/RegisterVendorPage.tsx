@@ -66,7 +66,9 @@ function RegisterVendorPage() {
                     console.log(result);
                     //Show alert message
                     setMessage({ msg, isError: error });
-                    navigate("/loginVendor");
+                    if (!error) {
+                        navigate("/loginVendor");
+                    }
                 })
                 .catch((error) => {
                     console.log(error);
@@ -80,8 +82,9 @@ function RegisterVendorPage() {
         <>
             <RegisterVendorForm
                 onSubmit={onSubmitRegister}
-                canSubmit={canSubmit}
                 setImageData={setImageData}
+                canSubmit={canSubmit}
+                setCanSubmit={setCanSubmit}
             >
                 <Link
                     component="button"

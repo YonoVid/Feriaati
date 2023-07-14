@@ -67,8 +67,8 @@ export type UpdatePassFields = {
 };
 
 export type UpdateStateFields = {
-    id: string;
-    email: string;
+    token: string;
+    itemId: string;
     status: userStatus;
 };
 
@@ -76,7 +76,8 @@ export type ProductFields = {
     tokenVendor?: string;
     name: string;
     description: string;
-    unit?: ProductUnit;
+    unitType: ProductUnit;
+    unit?: number;
     price: number;
     discount: ProductDiscount;
     promotion?: number;

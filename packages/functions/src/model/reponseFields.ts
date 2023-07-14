@@ -12,6 +12,7 @@ export type ResponseData<T> = {
 };
 
 export type UserToken = {
+    id: string;
     email: string;
     token: string;
     type: userType;

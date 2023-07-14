@@ -29,4 +29,5 @@ export type RRegisterFormProps = RFormProps & {
 
 export type RRegisterVendorFormProps = RRegisterFormProps & {
     setImageData: React.Dispatch<React.SetStateAction<string | ArrayBuffer>>;
+    setCanSubmit?: React.Dispatch<React.SetStateAction<boolean>>;
 };

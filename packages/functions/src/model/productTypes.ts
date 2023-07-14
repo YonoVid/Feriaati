@@ -41,9 +41,10 @@ export enum ProductDiscount {
 export type ProductCollectionData = {
     name: string;
     description: string;
-    unit?: ProductUnit;
+    unitType: ProductUnit;
+    unit?: number;
     price: number;
     discount: ProductDiscount;
-    promotion: number;
-    image: [string, string, string];
+    promotion?: number;
+    image: [string, string, string] | string;
 };

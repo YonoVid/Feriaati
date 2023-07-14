@@ -4,7 +4,8 @@ import { Box, Button, Card, Divider } from "@mui/material";
 import { controlValidInput } from "@feria-a-ti/common/inputControl";
 import { RRegisterFormProps } from "@feria-a-ti/common/model/props/registerFormProps";
 import { RegisterFields } from "@feria-a-ti/common/model/fields/registerFields";
-import { emailFormatRegex } from "@feria-a-ti/common/check/checkRegisterFields";
+import { emailFormatRegex } from "@feria-a-ti/common/check/checkBase";
+import { passwordFormatRegex } from "@feria-a-ti/common/check/checkLoginFields";
 
 import InputComponentAlt from "@feria-a-ti/web/src/components/inputComponent/InputComponentAlt";
 import "./RegisterUserForm.css";
@@ -76,6 +77,10 @@ function RegisterUserForm(props: RRegisterFormProps) {
                                 value: 10,
                                 message:
                                     "La contraseña tiene un mínimo de 10 caracteres",
+                            },
+                            pattern: {
+                                value: passwordFormatRegex,
+                                message: "La contraseña debe ser alfanumérica",
                             },
                         }}
                     />

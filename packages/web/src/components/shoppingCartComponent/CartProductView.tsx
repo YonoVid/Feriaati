@@ -13,7 +13,10 @@ import AddCircleIcon from "@mui/icons-material/AddCircle";
 import RemoveCircleIcon from "@mui/icons-material/RemoveCircle";
 import DeleteIcon from "@mui/icons-material/Delete";
 
-import { ProductCollectionData } from "@feria-a-ti/common/model/functionsTypes";
+import {
+    ProductCollectionData,
+    ProductUnit,
+} from "@feria-a-ti/common/model/functionsTypes";
 import "./CartProductView.css";
 
 export type CartProductViewProps = {
@@ -26,7 +29,7 @@ export type CartProductViewProps = {
 export const CartProductView = (props: CartProductViewProps) => {
     const theme = useTheme();
     const { quantity, product, onEdit, onDelete } = props;
-    const { name, price, discount, promotion, image } = product;
+    const { name, price, discount, promotion, image, unitType, unit } = product;
 
     const [localQuantity, setLocalQuantity] = useState(quantity);
     const [finalPrice, setFinalPrice] = useState(
@@ -38,6 +41,15 @@ export const CartProductView = (props: CartProductViewProps) => {
                 : 0)
     );
     const [subtotal, setSubtotal] = useState(finalPrice * localQuantity);
+
+    const unitLabel =
+        "(" +
+        (unitType === ProductUnit.GRAM
+            ? unit + "gr."
+            : unitType === ProductUnit.KILOGRAM
+            ? "kg."
+            : "unidad") +
+        ")";
 
     useEffect(() => {
         setFinalPrice(
@@ -66,7 +78,7 @@ export const CartProductView = (props: CartProductViewProps) => {
                 <Box sx={{ display: "flex", flexDirection: "column" }}>
                     <CardContent sx={{ flex: "1 0 auto" }}>
                         <Typography component="div" variant="h5">
-                            {name}
+                            {name + " " + unitLabel}
                         </Typography>
                         <Typography
                             variant="subtitle1"

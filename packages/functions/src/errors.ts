@@ -13,6 +13,8 @@ export enum errorCodes {
     PHONE_FORMAT_ERROR = "ERR07",
     DIRECTION_FORMAT_ERROR = "ERR08",
     TIME_FORMAT_ERROR = "ERR09",
+    STRING_FORMAT_ERROR = "ERR10",
+    COMMENT_FORMAT_ERROR = "ERR11",
     USER_NOT_EXISTS_ERROR = "ERL01",
     BLOCKED_ACCOUNT_ERROR = "ERL02",
     UNACTIVATED_ACCOUNT_ERROR = "ERL03",
@@ -20,6 +22,7 @@ export enum errorCodes {
     VENDOR_NOT_EXISTS_ERROR = "ERL05",
     VENDOR_PERMISSION_ERROR = "ERL06",
     ACTION_DONE_ERROR = "ERL09",
+    ADMIN_NOT_EXISTS_ERROR = "ERL10",
     INCORRECT_INTEGER_FORMAT = "ERS00",
 }
 
@@ -45,6 +48,10 @@ export const messagesCode: { [code in errorCodes]: string } = {
         "El formato de la dirección es incorrecto o falta información",
     [errorCodes.TIME_FORMAT_ERROR]:
         "El formato del horario es incorrecto o falta información",
+    [errorCodes.STRING_FORMAT_ERROR]:
+        "La cadena de texto no debe tener caracteres especiales",
+    [errorCodes.COMMENT_FORMAT_ERROR]:
+        "La cadena de texto no debe tener caracteres especiales y ser menor a 254 caracteres",
     [errorCodes.USER_NOT_EXISTS_ERROR]: "El usuario no existe",
     [errorCodes.BLOCKED_ACCOUNT_ERROR]:
         "La cuenta está bloqueada, contacte con soporte",
@@ -58,4 +65,5 @@ export const messagesCode: { [code in errorCodes]: string } = {
         "El número debe ser un entero. Ej: 100",
     [errorCodes.ACTION_DONE_ERROR]:
         "La acción ya ha sido realizada anteriormente",
+    [errorCodes.ADMIN_NOT_EXISTS_ERROR]: "La cuenta de administrador no existe",
 };

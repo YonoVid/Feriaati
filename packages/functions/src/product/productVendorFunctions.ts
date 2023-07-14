@@ -40,7 +40,7 @@ export const productVendorUpdate = functions.https.onCall(
                         data.image != null &&
                         data.image != "" &&
                         data.image.includes("data:image") &&
-                        !data.image.includes("https")
+                        !data.image.includes("http")
                             ? await uploadVendorProductImage(
                                   docVendorProducts.id + "_0",
                                   data.image
@@ -50,8 +50,12 @@ export const productVendorUpdate = functions.https.onCall(
                     const updateData: Partial<ProductListCollectionData> = {
                         image: imageUpdate,
                         contact: {
-                            phone: data.contactPhone as string,
-                            email: data.contactEmail as string,
+                            phone: data.contactPhone
+                                ? (data.contactPhone as string)
+                                : "",
+                            email: data.contactEmail
+                                ? (data.contactEmail as string)
+                                : "",
                         },
                         serviceTime: data.serviceTime,
                     };
