@@ -36,17 +36,16 @@ export const ShoppingCartComponent = (props: ShoppingCartProps) => {
         <View style={styles.container}>
             <View style={{ flexDirection: "column" }}>
                 {products.map((product, index) => (
-                    <>
+                    <View key={product.value.name + index}>
                         <CartProductView
                             onEdit={(quantity) =>
                                 onEdit && onEdit(index, quantity)
                             }
                             onDelete={() => onDelete && onDelete(index)}
-                            key={product.value.name + index}
                             product={product.value}
                             quantity={product.quantity}
                         />
-                    </>
+                    </View>
                 ))}
                 <Card>
                     <Card.Title title={"TOTAL: $" + total} />

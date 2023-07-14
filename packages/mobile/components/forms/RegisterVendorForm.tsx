@@ -1,22 +1,25 @@
 import React, { useCallback, useState } from "react";
 import { Image, Text, View, StyleSheet } from "react-native";
 import { Controller, FieldError, useForm } from "react-hook-form";
-import { Button } from "react-native-paper";
+import { Button, ProgressBar } from "react-native-paper";
 
 import { colors } from "@feria-a-ti/common/theme/base";
 import {
     checkRutVerificationCodeString,
+    rutFormatRegex,
+} from "@feria-a-ti/common/check/checkRegisterFields";
+import {
     emailFormatRegex,
     numberRegex,
     passwordFormatRegex,
-    rutFormatRegex,
-} from "@feria-a-ti/common/check/checkRegisterFields";
+} from "@feria-a-ti/common/check/checkBase";
 import { RegisterVendorFields } from "@feria-a-ti/common/model/fields/registerFields";
 import { RRegisterVendorFormProps } from "@feria-a-ti/common/model/props/registerFormProps";
 import { regionCode, regionCommune } from "@feria-a-ti/common/constants/form";
 import InputComponent from "@feria-a-ti/mobile/components/inputs/InputComponent";
 import DropdownComponent from "@feria-a-ti/mobile/components/inputs/DropdownComponent";
 import FileInputComponent from "../inputs/FileInputComponent";
+import { stringRegex } from "@feria-a-ti/common/check/checkBase";
 
 function RegisterVendorForm(props: RRegisterVendorFormProps) {
     const { setImageData, onSubmit } = props;
@@ -27,6 +30,8 @@ function RegisterVendorForm(props: RRegisterVendorFormProps) {
         control,
         formState: { errors },
     } = useForm<RegisterVendorFields>();
+
+    const [isLoading, setIsLoading] = useState(false);
 
     return (
         <View style={styles.container}>
@@ -41,6 +46,11 @@ function RegisterVendorForm(props: RRegisterVendorFormProps) {
                     maxLength: {
                         value: 128,
                         message: "El máximo de caracteres es 128",
+                    },
+                    pattern: {
+                        value: stringRegex,
+                        message:
+                            "No se aceptan caracteres especiales (Ej: <,>,+,-,etc.)",
                     },
                 }}
             />
@@ -92,6 +102,11 @@ function RegisterVendorForm(props: RRegisterVendorFormProps) {
                         value: 128,
                         message: "El máximo de caracteres es 128",
                     },
+                    pattern: {
+                        value: stringRegex,
+                        message:
+                            "No se aceptan caracteres especiales (Ej: <,>,+,-,etc.)",
+                    },
                 }}
             />
             <InputComponent
@@ -112,6 +127,7 @@ function RegisterVendorForm(props: RRegisterVendorFormProps) {
                 }}
             />
 
+            {isLoading && <ProgressBar indeterminate={true} />}
             <FileInputComponent
                 name="image"
                 type="image"
@@ -123,6 +139,7 @@ function RegisterVendorForm(props: RRegisterVendorFormProps) {
                 }}
                 icon="camera"
                 setData={setImageData}
+                setIsLoading={setIsLoading}
             />
             <InputComponent
                 name="rut"
@@ -151,6 +168,11 @@ function RegisterVendorForm(props: RRegisterVendorFormProps) {
                 error={errors?.name}
                 rules={{
                     required: "Los nombres son requeridos",
+                    pattern: {
+                        value: stringRegex,
+                        message:
+                            "No se aceptan caracteres especiales (Ej: <,>,+,-,etc.)",
+                    },
                 }}
             />
             <InputComponent
@@ -160,6 +182,11 @@ function RegisterVendorForm(props: RRegisterVendorFormProps) {
                 error={errors?.surname}
                 rules={{
                     required: "Los apellidos son requeridos",
+                    pattern: {
+                        value: stringRegex,
+                        message:
+                            "No se aceptan caracteres especiales (Ej: <,>,+,-,etc.)",
+                    },
                 }}
             />
             <InputComponent

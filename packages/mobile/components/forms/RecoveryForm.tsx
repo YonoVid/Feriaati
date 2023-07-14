@@ -43,7 +43,7 @@ function RecoveryForm(props: RRecoveryFormProps) {
             <View style={styles.button}>
                 <Button
                     color={styles.buttonInner.color}
-                    title="Iniciar Sesion"
+                    title="Solicitar cambio"
                     disabled={!canSubmit}
                     onPress={handleSubmit(props.onSubmit)}
                 />

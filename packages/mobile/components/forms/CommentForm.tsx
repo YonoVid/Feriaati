@@ -17,7 +17,7 @@ function CommentForm(props: RFormProps) {
     const { handleSubmit, reset, control } = useForm<CommentFields>();
 
     return (
-        <View style={{ flexDirection: "row" }}>
+        <View style={{ flexDirection: "column" }}>
             <InputComponent
                 name="comment"
                 label="Danos tu opinión"
@@ -63,7 +63,6 @@ const styles = StyleSheet.create({
         borderRadius: 30,
     },
     button: {
-        marginTop: 35,
         alignContent: "center",
         color: colors.light,
         height: 40,

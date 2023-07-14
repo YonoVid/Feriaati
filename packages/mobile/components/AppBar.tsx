@@ -1,19 +1,46 @@
 import React, { useState } from "react";
 import { Appbar, Drawer, Menu } from "react-native-paper";
+import { httpsCallable } from "@firebase/functions";
+
 import { getHeaderTitle } from "@react-navigation/elements";
 import { NativeStackHeaderProps } from "@react-navigation/native-stack";
+import { functions } from "@feria-a-ti/common/firebase";
+import { LogoutFields } from "@feria-a-ti/common/model/fields/loginFields";
+import {
+    ResponseData,
+    userType,
+} from "@feria-a-ti/common/model/functionsTypes";
 
 import { useAppContext } from "../app/AppContext";
-import { userType } from "@feria-a-ti/common/model/functionsTypes";
 
 export default function AppBar(props: NativeStackHeaderProps) {
     //Session context data
     // Context variables
-    const { authToken, type, resetSession } = useAppContext();
+    const { authUser, authToken, type, resetSession } = useAppContext();
 
     const { navigation, route, options, back } = props;
     const [visible, setVisible] = useState(false);
     const [active, setActive] = useState("");
+
+    const logout = () => {
+        resetSession && resetSession();
+        try {
+            console.log("LOGOUT::", authUser, ":", type);
+            const logout = httpsCallable<LogoutFields, ResponseData<null>>(
+                functions,
+                "logoutUser"
+            );
+            logout({
+                token: authToken as string,
+                type: type,
+            }).then((result) => {
+                // const { msg, error } = result.data;
+                console.log(result.data);
+            });
+        } catch (error) {
+            console.error("Error al cerrar sesión:", error);
+        }
+    };
 
     const openMenu = () => {
         console.log(visible);
@@ -99,7 +126,7 @@ export default function AppBar(props: NativeStackHeaderProps) {
                                             "LAST SCREEN NAME::",
                                             route.name
                                         );
-                                        resetSession();
+                                        logout();
                                         navigation.replace("session");
                                         console.log("TOKEN::", authToken);
                                         console.log("TYPE::", type);

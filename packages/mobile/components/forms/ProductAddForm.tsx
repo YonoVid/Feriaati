@@ -17,7 +17,11 @@ import {
 } from "@feria-a-ti/common/model/props/productAddFormProps";
 import InputComponent from "@feria-a-ti/mobile/components/inputs/InputComponent";
 import FileInputComponent from "../inputs/FileInputComponent";
-import { numberRegex } from "@feria-a-ti/common/check/checkRegisterFields";
+import { numberRegex, stringRegex } from "@feria-a-ti/common/check/checkBase";
+import {
+    ProductDiscount,
+    ProductUnit,
+} from "@feria-a-ti/common/model/functionsTypes";
 
 function ProductAddForm(props: RProductAddFormProps) {
     const {
@@ -34,7 +38,12 @@ function ProductAddForm(props: RProductAddFormProps) {
         watch,
         control,
         formState: { errors },
-    } = useForm<ProductFields>({ defaultValues: { discount: "none" } });
+    } = useForm<ProductFields>({
+        defaultValues: {
+            discount: ProductDiscount.NONE,
+            unitType: ProductUnit.KILOGRAM,
+        },
+    });
 
     const [localImageData, setLocalImageData] = useState<
         [string, string, string]
@@ -125,6 +134,11 @@ function ProductAddForm(props: RProductAddFormProps) {
                         value: 128,
                         message: "El máximo de caracteres es 128",
                     },
+                    pattern: {
+                        value: stringRegex,
+                        message:
+                            "No se aceptan caracteres especiales (Ej: <,>,+,-,etc.)",
+                    },
                 }}
             />
 
@@ -135,8 +149,62 @@ function ProductAddForm(props: RProductAddFormProps) {
                 error={errors?.description}
                 rules={{
                     required: "La descripción es requerida",
+                    pattern: {
+                        value: stringRegex,
+                        message:
+                            "No se aceptan caracteres especiales (Ej: <,>,+,-,etc.)",
+                    },
                 }}
             />
+
+            <Controller
+                control={control}
+                name="unitType"
+                render={({ field: { onChange, value } }) => (
+                    <RadioButton.Group
+                        onValueChange={(value) => {
+                            onChange(value);
+                            setValue("unit", 0);
+                        }}
+                        value={value}
+                    >
+                        <RadioButton.Item
+                            label="Kilogramo"
+                            value={ProductUnit.KILOGRAM}
+                        />
+                        <RadioButton.Item
+                            label="Gramo"
+                            value={ProductUnit.GRAM}
+                        />
+                        <RadioButton.Item
+                            label="Unidad"
+                            value={ProductUnit.UNIT}
+                        />
+                    </RadioButton.Group>
+                )}
+            />
+
+            {watch("unitType") === ProductUnit.GRAM && (
+                <InputComponent
+                    control={control}
+                    name="unit"
+                    label="Unidad"
+                    type="number"
+                    error={errors?.price}
+                    rules={{
+                        pattern: {
+                            value: numberRegex,
+                            message:
+                                "El descuento debe tener un valor numérico",
+                        },
+                        validate: {
+                            isPositive: (value) =>
+                                (value as number) > 0 ||
+                                "La unidad debe ser mayor a 0",
+                        },
+                    }}
+                />
+            )}
 
             <InputComponent
                 control={control}

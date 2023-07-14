@@ -7,6 +7,7 @@ import { colors } from "@feria-a-ti/common/theme/base";
 import {
     ProductCollectionData,
     ProductData,
+    ProductUnit,
 } from "@feria-a-ti/common/model/functionsTypes";
 import { Avatar, Text, Button, Card, IconButton } from "react-native-paper";
 
@@ -19,7 +20,7 @@ export type CartProductViewProps = {
 
 export const CartProductView = (props: CartProductViewProps) => {
     const { quantity, product, onEdit, onDelete } = props;
-    const { name, price, discount, promotion, image } = product;
+    const { name, price, discount, promotion, image, unitType, unit } = product;
 
     const [localQuantity, setLocalQuantity] = useState(quantity);
     const [finalPrice, setFinalPrice] = useState(
@@ -31,6 +32,15 @@ export const CartProductView = (props: CartProductViewProps) => {
                 : 0)
     );
     const [subtotal, setSubtotal] = useState(finalPrice * localQuantity);
+
+    const unitLabel =
+        "(" +
+        (unitType === ProductUnit.GRAM
+            ? unit + "gr."
+            : unitType === ProductUnit.KILOGRAM
+            ? "kg."
+            : "unidad") +
+        ")";
 
     useEffect(() => {
         setFinalPrice(
@@ -48,7 +58,7 @@ export const CartProductView = (props: CartProductViewProps) => {
         <View>
             <Card>
                 <Card.Title
-                    title={name}
+                    title={name + " " + unitLabel}
                     subtitle={
                         "$" +
                         finalPrice +

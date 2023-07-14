@@ -6,7 +6,7 @@ import { Button, IconButton, ProgressBar, TextInput } from "react-native-paper";
 import { colors } from "@feria-a-ti/common/theme/base";
 import { UpdateProductVendorFields } from "@feria-a-ti/common/model/fields/updateFields";
 import { RProductVendorUpdateProps } from "@feria-a-ti/common/model/props/productVendorUpdateFormProps";
-import { emailFormatRegex } from "@feria-a-ti/common/check/checkRegisterFields";
+import { emailFormatRegex } from "@feria-a-ti/common/check/checkBase";
 
 import InputComponent from "@feria-a-ti/mobile/components/inputs/InputComponent";
 import FileInputComponent from "../inputs/FileInputComponent";
@@ -58,15 +58,10 @@ function ProductVendorUpdateForm(props: RProductVendorUpdateProps) {
     }, [editedVendor, setImageData, setValue]);
 
     console.log("VENDOR SERVICE TIME::" + editedVendor.serviceTime);
-    console.log(
-        "VENDOR SERVIDE TIME TYPES::",
-        typeof editedVendor.serviceTime.start,
-        typeof editedVendor.serviceTime.end
-    );
 
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Nuevo producto</Text>
+            <Text style={styles.title}>Actualizar local</Text>
             {isLoading && <ProgressBar indeterminate={true} />}
             <FileInputComponent
                 name="image"
@@ -92,7 +87,6 @@ function ProductVendorUpdateForm(props: RProductVendorUpdateProps) {
 
             <TimeInputComponent
                 control={control}
-                defaultValue={editedVendor.serviceTime.start}
                 name="serviceTime.start"
                 label="Inicio atención (opcional)"
                 rules={{
@@ -117,7 +111,6 @@ function ProductVendorUpdateForm(props: RProductVendorUpdateProps) {
 
             <TimeInputComponent
                 control={control}
-                defaultValue={editedVendor.serviceTime.end}
                 name="serviceTime.end"
                 label="Término atención (opcional)"
                 rules={{
@@ -143,7 +136,7 @@ function ProductVendorUpdateForm(props: RProductVendorUpdateProps) {
             <InputComponent
                 control={control}
                 name="contactPhone"
-                label="Descripción"
+                label="Teléfono (opcional)"
                 error={errors?.contactPhone}
                 rules={{
                     minLength: {
@@ -164,7 +157,7 @@ function ProductVendorUpdateForm(props: RProductVendorUpdateProps) {
             <InputComponent
                 control={control}
                 name="contactEmail"
-                label="Precio"
+                label="Correo de contacto (opcional)"
                 type="number"
                 error={errors?.contactEmail}
                 rules={{

@@ -7,6 +7,7 @@ import { colors } from "@feria-a-ti/common/theme/base";
 import {
     ProductCollectionData,
     ProductData,
+    ProductUnit,
 } from "@feria-a-ti/common/model/functionsTypes";
 import { Avatar, Text, Button, Card, IconButton } from "react-native-paper";
 
@@ -20,8 +21,17 @@ export type ProductViewProps = {
 
 export const ProductView = (props: ProductViewProps) => {
     const { product, isEditable, addProduct, onEdit, onDelete } = props;
-    const { id, name, description, price, discount, promotion, image } =
-        props.product;
+    const {
+        id,
+        name,
+        description,
+        price,
+        discount,
+        promotion,
+        image,
+        unit,
+        unitType,
+    } = props.product;
 
     const [expanded, setExpanded] = useState(false);
     const [imageIndex, setImageIndex] = useState(0);
@@ -30,6 +40,23 @@ export const ProductView = (props: ProductViewProps) => {
     const handleExpandClick = () => {
         setExpanded(!expanded);
     };
+
+    const unitLabel =
+        "(" +
+        (unitType === ProductUnit.GRAM
+            ? unit + "gr."
+            : unitType === ProductUnit.KILOGRAM
+            ? "kg."
+            : "unidad") +
+        ")";
+
+    const finalPrice =
+        price -
+        (discount !== "none"
+            ? discount === "percentage"
+                ? (price * promotion) / 100
+                : promotion
+            : 0);
 
     useEffect(() => {
         setInterval(() => {
@@ -46,18 +73,10 @@ export const ProductView = (props: ProductViewProps) => {
         );
     }, []);
 
-    const finalPrice =
-        price -
-        (discount !== "none"
-            ? discount === "percentage"
-                ? (price * promotion) / 100
-                : promotion
-            : 0);
-
     return (
         <Card>
             <Card.Title
-                title={name}
+                title={name + " " + unitLabel}
                 subtitle={"$" + finalPrice}
                 left={(props) => (
                     <Avatar.Image

@@ -13,6 +13,7 @@ import {
 import {
     ProductData,
     ProductListCollectionData,
+    ProductListData,
     ResponseData,
     userType,
 } from "@feria-a-ti/common/model/functionsTypes";
@@ -38,8 +39,7 @@ export const ManagerVendor = (props: ManagerVendorProps) => {
     // Navigation
     const { navigation } = props;
     // Server data
-    const [productVendor, setProductVendor] =
-        useState<ProductListCollectionData>();
+    const [productVendor, setProductVendor] = useState<ProductListData>();
     const [products, setProducts] = useState<Array<ProductData>>([]);
 
     // Form variables
@@ -64,13 +64,13 @@ export const ManagerVendor = (props: ManagerVendorProps) => {
         if (check) {
             const addProduct = httpsCallable<
                 ProductListFields,
-                ResponseData<ProductListCollectionData>
+                ResponseData<ProductListData>
             >(functions, "getProductVendor");
             addProduct(formatedData).then((result) => {
                 const { msg, error, extra } = result.data;
                 console.log(result.data);
 
-                setProductVendor(extra as ProductListCollectionData);
+                setProductVendor(extra as ProductListData);
                 //setIsLogged(result.data as any);
                 if (error && msg !== "") {
                     setMessage({ msg, isError: error });
@@ -210,7 +210,7 @@ export const ManagerVendor = (props: ManagerVendorProps) => {
                         >
                             <CommentList
                                 commentsVendor={
-                                    productVendor ? productVendor.vendorId : ""
+                                    productVendor ? productVendor.id : ""
                                 }
                                 isUser={false}
                             />

@@ -14,6 +14,7 @@ import {
     ResponseData,
     UserToken,
     VendorCollectionData,
+    VendorData,
 } from "@feria-a-ti/common/model/functionsTypes";
 import { useAppContext } from "../AppContext";
 import { ProductListFields } from "@feria-a-ti/common/model/props/productAddFormProps";
@@ -28,36 +29,35 @@ export interface UserVendorSelectProps {
 
 export const UserVendorSelect = (props: UserVendorSelectProps) => {
     // Context variables
-    const { setSession, setMessage, addProduct } = useAppContext();
+    const { authToken, setSession, setMessage, addProduct } = useAppContext();
     // Navigation
     const { navigation } = props;
     // Selection of vendor
     const [filterVendor, setFilterVendor] = useState<string | null>();
     // Selection of vendor
-    const [selectedVendor, setSelectedVendor] =
-        useState<VendorCollectionData | null>();
+    const [selectedVendor, setSelectedVendor] = useState<VendorData | null>();
     // Product stored data
     const [products, setProducts] = useState<Array<ProductData>>([]);
 
     // Data of vendors stored
-    const [vendors, setVendors] = useState<VendorCollectionData[]>([]);
+    const [vendors, setVendors] = useState<VendorData[]>([]);
     useEffect(() => {
         getVendors();
     }, []);
 
-    const loadProducts = (data?: VendorCollectionData) => {
+    const loadProducts = (data?: VendorData) => {
         const dataSource = data ? data : selectedVendor;
         const formatedData: ProductListFields = {
-            idVendor: dataSource?.email as string,
+            idVendor: dataSource?.id as string,
         };
-        const check = dataSource?.email != null && dataSource?.email != "";
+        const check = dataSource?.id != null && dataSource?.id != "";
         console.log("SUBMIT FORM::", check, dataSource);
         if (check) {
-            const addProduct = httpsCallable<
+            const listProduct = httpsCallable<
                 ProductListFields,
                 ResponseData<ProductData[]>
             >(functions, "listProduct");
-            addProduct(formatedData).then((result) => {
+            listProduct(formatedData).then((result) => {
                 const { msg, error, extra } = result.data;
                 console.log(result.data);
 
@@ -72,10 +72,17 @@ export const UserVendorSelect = (props: UserVendorSelectProps) => {
 
     const getVendors = async () => {
         try {
-            const vendors = httpsCallable(functions, "vendorList");
-            const response = await vendors();
-            const vendorsData = response.data as VendorCollectionData[];
-            setVendors(vendorsData);
+            const vendors = httpsCallable<string, ResponseData<VendorData[]>>(
+                functions,
+                "vendorListUser"
+            );
+            vendors(authToken).then((response) => {
+                const { error, extra } = response.data;
+                if (!error) {
+                    const vendorsData = extra as VendorData[];
+                    setVendors(vendorsData);
+                }
+            });
         } catch (error) {
             console.error("Error al obtener los vendedores:", error);
         }
@@ -101,7 +108,7 @@ export const UserVendorSelect = (props: UserVendorSelectProps) => {
                             products={products}
                         />
                         <CommentList
-                            commentsVendor={selectedVendor.email}
+                            commentsVendor={selectedVendor.id}
                             isUser={true}
                         />
                     </>
@@ -113,7 +120,7 @@ export const UserVendorSelect = (props: UserVendorSelectProps) => {
                             </List.Subheader>
                             {vendors.map((vendor) => (
                                 <List.Item
-                                    key={vendor.email}
+                                    key={vendor.id}
                                     title={vendor.enterpriseName}
                                     description={vendor.region}
                                     left={(props) => (

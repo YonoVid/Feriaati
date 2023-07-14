@@ -25,26 +25,39 @@ export const CommentView = (props: CommentViewProps) => {
 
     return (
         <Card>
+            <Card.Actions>
+                <Text
+                    style={{
+                        backgroundColor: colors.primary,
+                        width: onReport ? "80%" : "100%",
+                    }}
+                >
+                    {comment.username}:
+                </Text>
+                {onReport && (
+                    <IconButton
+                        icon={"alert-octagon"}
+                        size={20}
+                        onPress={onReport}
+                    />
+                )}
+            </Card.Actions>
             <Card.Content>
                 <View
                     style={{
-                        flexDirection: "row",
+                        flexDirection: "column",
                     }}
                 >
-                    <Text style={{ backgroundColor: colors.primary }}>
-                        {comment.username}:
+                    <Text
+                        style={{
+                            maxWidth: "90%",
+                            justifyContent: "space-around",
+                        }}
+                    >
+                        {comment.comment}
                     </Text>
-                    <Text>{comment.comment}</Text>
                 </View>
             </Card.Content>
-
-            <Card.Actions>
-                <IconButton
-                    icon={"alert-octagon"}
-                    size={20}
-                    onPress={onReport}
-                />
-            </Card.Actions>
         </Card>
     );
 };

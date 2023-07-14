@@ -77,7 +77,7 @@ export const ChangePasswordForm = (props: RRecoveryFormProps) => {
             <View style={styles.button}>
                 <Button
                     color={styles.buttonInner.color}
-                    title="Iniciar Sesion"
+                    title="Actualizar contraseña"
                     disabled={!canSubmit}
                     onPress={handleSubmit(props.onSubmit)}
                 />

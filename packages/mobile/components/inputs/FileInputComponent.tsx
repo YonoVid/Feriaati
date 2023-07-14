@@ -1,4 +1,4 @@
-import React, {
+import {
     Dispatch,
     SetStateAction,
     useCallback,
@@ -20,6 +20,7 @@ import * as ExpoImageManipulator from "expo-image-manipulator";
 
 import { colors } from "@feria-a-ti/common/theme/base";
 import { Path } from "react-router-dom";
+import React from "react";
 
 interface Props<T> extends UseControllerProps<T> {
     label: string;
@@ -47,43 +48,47 @@ const FileInputComponent = <T extends FieldValues>({
     const [preview, setPreview] = useState(defaultPreview || "");
     const labelText = label != null ? label : name;
 
-    const handleDocumentSelection = useCallback(async () => {
+    const handleDocumentSelection = () => {
         setIsLoading(true);
         try {
-            const response = await DocumentPicker.getDocumentAsync({
+            console.log("OPEN FILE EXPLORER");
+            const response = DocumentPicker.getDocumentAsync({
                 type: "image/*",
                 multiple: false,
                 copyToCacheDirectory: false,
-            });
-            if (response.type === "success") {
-                let imageAction = [];
-                if (response["size"] / 1024 ** 2 > 1) {
-                    Image.getSize(response["uri"], (width, height) => {
-                        console.log(width, "x", height);
-                        imageAction.push(
-                            height > width ? { height: 1500 } : { width: 1500 }
-                        );
+            }).then((response) => {
+                if (response.type === "success") {
+                    let imageAction = [];
+                    if (response["size"] / 1024 ** 2 > 1) {
+                        Image.getSize(response["uri"], (width, height) => {
+                            console.log(width, "x", height);
+                            imageAction.push(
+                                height > width
+                                    ? { height: 1500 }
+                                    : { width: 1500 }
+                            );
+                        });
+                    }
+                    setShownValue(response["name"]);
+                    console.log(response);
+                    console.log(response.size);
+                    ExpoImageManipulator.manipulateAsync(
+                        response["uri"],
+                        imageAction,
+                        { compress: 0.75, base64: true }
+                    ).then((value) => {
+                        setData(value.base64);
+                        setPreview(value.uri);
+                        console.log(value.base64 != null);
+                        console.log(value.width);
                     });
                 }
-                setShownValue(response["name"]);
-                console.log(response);
-                console.log(response.size);
-                await ExpoImageManipulator.manipulateAsync(
-                    response["uri"],
-                    imageAction,
-                    { compress: 0.75, base64: true }
-                ).then((value) => {
-                    setData(value.base64);
-                    setPreview(value.uri);
-                    console.log(value.base64 != null);
-                    console.log(value.width);
-                });
-            }
+            });
         } catch (err) {
             console.warn(err);
         }
         setIsLoading(false);
-    }, []);
+    };
 
     useEffect(() => console.log("PREVIEW EXISTS::", defaultPreview != null));
 
@@ -99,7 +104,10 @@ const FileInputComponent = <T extends FieldValues>({
                             style={{ flex: 1 }}
                             mode="elevated"
                             icon={icon}
-                            onPress={handleDocumentSelection}
+                            onPress={() => {
+                                handleDocumentSelection();
+                                console.log("PICK DOCUMENT");
+                            }}
                         >
                             {(shownValue &&
                                 (shownValue.length > 25

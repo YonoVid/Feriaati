@@ -39,23 +39,6 @@ export const ProductList = (props: RProductListProps) => {
         setPage(value);
     };
 
-    useEffect(() => {
-        const mockupProduct: ProductData = {
-            id: "mockup",
-            name: "Test",
-            description: "Is a test of product views",
-            price: 1000,
-            discount: ProductDiscount.NONE,
-            promotion: 400,
-            image: [
-                "https://reactnative.dev/img/tiny_logo.png",
-                "https://reactnative.dev/img/tiny_logo.png",
-                "https://reactnative.dev/img/tiny_logo.png",
-            ],
-        };
-        products.length === 0 && products.push(mockupProduct);
-    }, []);
-
     const getList = (): ProductData[] => {
         if (pageFilter && pageFilter != null && pageFilter != "") {
             return products.filter((value) =>
