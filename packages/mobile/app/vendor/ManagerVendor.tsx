@@ -218,7 +218,8 @@ export const ManagerVendor = (props: ManagerVendorProps) => {
                     </>
                 ) : (
                     <ProductAddForm
-                        buttonLabel="Añadir producto"
+                        label="Editar producto"
+                        buttonLabel="Actualizar"
                         onSubmit={onEdit}
                         onCancel={() => setProductEditable(null)}
                         canSubmit={canSubmit}

@@ -48,7 +48,7 @@ const FileInputComponent = <T extends FieldValues>({
     const [preview, setPreview] = useState(defaultPreview || "");
     const labelText = label != null ? label : name;
 
-    const handleDocumentSelection = () => {
+    const handleDocumentSelection = (onChange?: (...event: any[]) => void) => {
         setIsLoading(true);
         try {
             console.log("OPEN FILE EXPLORER");
@@ -70,24 +70,26 @@ const FileInputComponent = <T extends FieldValues>({
                         });
                     }
                     setShownValue(response["name"]);
+                    onChange && onChange(response["name"]);
                     console.log(response);
                     console.log(response.size);
                     ExpoImageManipulator.manipulateAsync(
                         response["uri"],
                         imageAction,
                         { compress: 0.75, base64: true }
-                    ).then((value) => {
-                        setData(value.base64);
-                        setPreview(value.uri);
-                        console.log(value.base64 != null);
-                        console.log(value.width);
-                    });
+                    )
+                        .then((value) => {
+                            setData(value.base64);
+                            setPreview(value.uri);
+                            console.log(value.base64 != null);
+                            console.log(value.width);
+                        })
+                        .finally(() => setIsLoading(false));
                 }
             });
         } catch (err) {
             console.warn(err);
         }
-        setIsLoading(false);
     };
 
     useEffect(() => console.log("PREVIEW EXISTS::", defaultPreview != null));
@@ -99,20 +101,22 @@ const FileInputComponent = <T extends FieldValues>({
                     name={name}
                     control={control}
                     rules={rules}
-                    render={({ field: { value }, fieldState: { error } }) => (
+                    render={({
+                        field: { onChange, value },
+                        fieldState: { error },
+                    }) => (
                         <Button
                             style={{ flex: 1 }}
                             mode="elevated"
                             icon={icon}
                             onPress={() => {
-                                handleDocumentSelection();
-                                console.log("PICK DOCUMENT");
+                                handleDocumentSelection(onChange);
                             }}
                         >
-                            {(shownValue &&
-                                (shownValue.length > 25
-                                    ? shownValue.substring(0, 25) + "..."
-                                    : shownValue)) ||
+                            {(value &&
+                                (value.length > 25
+                                    ? value.substring(0, 25) + "..."
+                                    : value)) ||
                                 labelText}
                         </Button>
                     )}

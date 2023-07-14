@@ -42,12 +42,12 @@ export const LoginVendor = (props: LoginVendorProps) => {
                         const {
                             msg,
                             error,
-                            extra: { token, type, email },
+                            extra: { token, type, email, id },
                         } = result.data;
                         console.log(result);
                         setMessage({ msg, isError: error });
                         if (token != null && token != "") {
-                            setSession({ token, type, email });
+                            setSession({ token, type, email, id });
                             console.log("SESSION::", token, type, email);
                             navigation.navigate("session");
                         }

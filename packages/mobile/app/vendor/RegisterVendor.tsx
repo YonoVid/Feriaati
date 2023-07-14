@@ -18,9 +18,11 @@ export interface RegisterVendorProps {
     navigation: NavigationProp<ParamListBase>;
 }
 
-export const RegisterVendor = () => {
+export const RegisterVendor = (props: RegisterVendorProps) => {
     // Context variables
     const { setSession, setMessage } = useAppContext();
+    // Navigation
+    const { navigation } = props;
 
     //Account data
     const [emailRegistered, setEmailRegistered] = useState("");
@@ -54,6 +56,9 @@ export const RegisterVendor = () => {
                 .catch((error) => {
                     console.log(error);
                     setMessage({ msg: messagesCode["ERR00"], isError: true });
+                    if (!error) {
+                        navigation.navigate("/loginVendor");
+                    }
                 })
                 .finally(() => setCanRegister(true));
         }

@@ -88,7 +88,7 @@ export const editAccountUser = functions.https.onCall(
                     id: data.id,
                     token: data.token,
                 });
-                let accountData: AccountData | undefined;
+                let accountData: Partial<AccountCollectionData> | undefined;
                 if (code === errorCodes.SUCCESFULL) {
                     const docData: AccountCollectionData =
                         doc.data() as AccountCollectionData;
@@ -109,7 +109,6 @@ export const editAccountUser = functions.https.onCall(
                     accountData = {
                         type: docData.type,
                         email: data.email ? data.email : docData.email,
-                        password: docData.password,
                     };
                     if (data.direction) {
                         accountData.direction = data.direction;
@@ -131,7 +130,7 @@ export const editAccountUser = functions.https.onCall(
                 //Hide password for return message
                 accountData && (accountData.password = "**********");
 
-                const error = code !== "00000";
+                const error = code !== errorCodes.SUCCESFULL;
                 return {
                     error: error,
                     code: code,

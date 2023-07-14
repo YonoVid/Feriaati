@@ -129,8 +129,6 @@ export const getAccount = async (
         };
     }
 
-    functions.logger.info("ACCOUNT DOC::", docReference.id);
-
     if (!docReference && createOnFail) {
         const doc = db.collection(collection).doc();
         doc.set({});
@@ -140,6 +138,7 @@ export const getAccount = async (
             code: errorCodes.DOCUMENT_NOT_EXISTS_ERROR,
         };
     }
+    functions.logger.info("ACCOUNT DOC::", docReference && docReference.id);
 
     return {
         doc: docReference,

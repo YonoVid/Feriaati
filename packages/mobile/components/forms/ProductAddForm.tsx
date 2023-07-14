@@ -25,6 +25,7 @@ import {
 
 function ProductAddForm(props: RProductAddFormProps) {
     const {
+        label,
         buttonLabel,
         canSubmit,
         editableState,
@@ -80,7 +81,7 @@ function ProductAddForm(props: RProductAddFormProps) {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Nuevo producto</Text>
+            <Text style={styles.title}>{label || "Nuevo producto"}</Text>
             {isLoading && <ProgressBar indeterminate={true} />}
             <FileInputComponent
                 name="image.0"
