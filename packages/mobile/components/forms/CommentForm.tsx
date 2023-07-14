@@ -7,6 +7,7 @@ import { colors } from "@feria-a-ti/common/theme/base";
 
 import { RFormProps } from "@feria-a-ti/common/model/props/registerFormProps";
 import { CommentFields } from "@feria-a-ti/common/model/comments/commentsFields";
+import { stringRegex } from "@feria-a-ti/common/check/checkBase";
 
 import InputComponent from "@feria-a-ti/mobile/components/inputs/InputComponent";
 import DropdownComponent from "@feria-a-ti/mobile/components/inputs/DropdownComponent";
@@ -30,6 +31,11 @@ function CommentForm(props: RFormProps) {
                     maxLength: {
                         value: 254,
                         message: "El máximo de caracteres es 254",
+                    },
+                    pattern: {
+                        value: stringRegex,
+                        message:
+                            "No se aceptan caracteres especiales (Ej: <,>,+,-,etc.)",
                     },
                 }}
             />
