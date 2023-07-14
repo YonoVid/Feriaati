@@ -26,6 +26,17 @@ export type ProductListData = ProductListCollectionData & {
 export type VendorData = VendorCollectionData & {
     id: string;
 };
+//
+// LOGIC DATA
+//
+
+export type LogicalData = {
+    isDeleted: boolean;
+    deletedDate?: Date;
+    userDelete?: string;
+    updateDate?: Date;
+    userUpdate?: string;
+};
 
 //
 // VENDOR PAGE TYPES
@@ -102,7 +113,7 @@ export type VendorCollectionData = AccountCollectionData & {
     image: string;
 };
 
-export type ProductListCollectionData = {
+export type ProductListCollectionData = LogicalData & {
     vendorId: string;
     enterpriseName: string;
     rut: string;

@@ -140,7 +140,6 @@ const UserVendorSelect = () => {
                     </h1>
                     <List>
                         {vendors &&
-                            vendors !== [] &&
                             vendors.map((vendor) => (
                                 <ListItem
                                     component="button"

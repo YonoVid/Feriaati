@@ -42,6 +42,7 @@ export const VendorView = (props: VendorViewProps) => {
         serviceTime,
         contact,
         image,
+        isDeleted,
     } = vendor;
 
     return (
@@ -60,7 +61,8 @@ export const VendorView = (props: VendorViewProps) => {
                     <Box sx={{ display: "flex", flexDirection: "column" }}>
                         <CardContent sx={{ flex: "1 0 auto" }}>
                             <Typography component="div" variant="h5">
-                                {enterpriseName}
+                                {enterpriseName +
+                                    (isDeleted ? " (DELETED)" : "")}
                             </Typography>
                             <Typography
                                 variant="subtitle1"
@@ -103,30 +105,32 @@ export const VendorView = (props: VendorViewProps) => {
                                     "-"}
                             </h5>
                         </CardContent>
-                        <Box
-                            sx={{
-                                display: "flex",
-                                alignItems: "center",
-                                float: "ltr",
-                                pl: 1,
-                                pb: 1,
-                            }}
-                        >
-                            <IconButton
-                                aria-label="previous"
-                                color="warning"
-                                onClick={() => onEdit && onEdit()}
+                        {!isDeleted && (
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    float: "ltr",
+                                    pl: 1,
+                                    pb: 1,
+                                }}
                             >
-                                <EditIcon />
-                            </IconButton>
-                            <IconButton
-                                aria-label="next"
-                                color="error"
-                                onClick={() => onDelete && onDelete()}
-                            >
-                                <DeleteIcon />
-                            </IconButton>
-                        </Box>
+                                <IconButton
+                                    aria-label="previous"
+                                    color="warning"
+                                    onClick={() => onEdit && onEdit()}
+                                >
+                                    <EditIcon />
+                                </IconButton>
+                                <IconButton
+                                    aria-label="next"
+                                    color="error"
+                                    onClick={() => onDelete && onDelete()}
+                                >
+                                    <DeleteIcon />
+                                </IconButton>
+                            </Box>
+                        )}
                     </Box>
                 </Card>
             </Box>

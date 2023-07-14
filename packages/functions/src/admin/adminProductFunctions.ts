@@ -32,7 +32,8 @@ export const updateProductList = functions.https.onCall(
                         .collection(collectionNames.VENDORPRODUCTS)
                         .doc(data.id);
                     const docVendorProducts = await vendorProductsRef.get();
-                    if (docVendorProducts.exists) {
+                    const isDeleted = docVendorProducts.get("isDeleted");
+                    if (docVendorProducts.exists && !isDeleted) {
                         const imageUpdate =
                             data.image &&
                             data.image != null &&
@@ -113,7 +114,8 @@ export const deleteProductList = functions.https.onCall(
                         .collection(collectionNames.VENDORPRODUCTS)
                         .doc(data.productVendorId);
                     const docVendorProducts = await vendorProductsRef.get();
-                    if (docVendorProducts.exists) {
+                    const isDeleted = docVendorProducts.get("isDeleted");
+                    if (docVendorProducts.exists && !isDeleted) {
                         const updateData: Partial<ProductListCollectionData> = {
                             isDeleted: true,
                             userDelete: adminAccount.doc.id,
