@@ -1,5 +1,5 @@
 //Check if string don't use special characters
-export const stringRegex = new RegExp(/^[^()!<>=+-.\{\}\[\]]*$/m);
+export const stringRegex = new RegExp(/^[^()!<>=+\-\{\}\[\]]*$/im);
 //Check if string only contains numbers
 export const numberRegex = new RegExp(/\b[0-9]+$/i);
 //Check if string has correct email format

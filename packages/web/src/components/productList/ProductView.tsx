@@ -27,6 +27,9 @@ import {
     ProductUnit,
 } from "@feria-a-ti/common/model/functionsTypes";
 import "./ProductList.css";
+import InputComponentAlt from "../inputComponent/InputComponentAlt";
+import { numberRegex } from "@feria-a-ti/common/check/checkBase";
+import { useForm } from "react-hook-form";
 
 export type ProductViewProps = {
     product: ProductData;
@@ -65,9 +68,13 @@ export const ProductView = (props: ProductViewProps) => {
         unit,
     } = product;
 
+    const { watch, setValue, handleSubmit, control } = useForm<{
+        quantity: number;
+    }>({ defaultValues: { quantity: 1 } });
+
     const [expanded, setExpanded] = useState(false);
     const [imageIndex, setImageIndex] = useState(0);
-    const [quantity, setQuantity] = useState(1);
+    const [manualNumber, setManualNumber] = useState(false);
 
     const handleExpandClick = () => {
         setExpanded(!expanded);
@@ -82,6 +89,13 @@ export const ProductView = (props: ProductViewProps) => {
             setImageIndex(newIndex);
         }, 3000);
     }, []);
+
+    const onSubmit = () => {
+        if (addProduct && product != null && product != undefined) {
+            addProduct(product, watch("quantity"));
+            setManualNumber(false);
+        }
+    };
 
     const unitLabel =
         "(" +
@@ -111,34 +125,84 @@ export const ProductView = (props: ProductViewProps) => {
                 alt="Product image"
             />
             {addProduct && (
-                <Box>
-                    <IconButton
-                        aria-label="remover producto"
-                        color="primary"
-                        onClick={() =>
-                            quantity > 1 && setQuantity(quantity - 1)
-                        }
-                    >
-                        <RemoveCircleIcon />
-                    </IconButton>
-                    {quantity}
-                    <IconButton
-                        aria-label="editar producto"
-                        color="secondary"
-                        onClick={() =>
-                            quantity < 999 && setQuantity(quantity + 1)
-                        }
-                    >
-                        <AddCircleIcon />
-                    </IconButton>
-                    <Button
-                        color="primary"
-                        variant="contained"
-                        onClick={() => addProduct(product, quantity)}
-                    >
-                        Comprar
-                    </Button>
-                </Box>
+                <form onSubmit={handleSubmit(onSubmit)}>
+                    <Box>
+                        <Box
+                            sx={{
+                                alignItems: "center",
+                                alignContent: "center",
+                                marginTop: "auto",
+                                marginBottom: "auto",
+                            }}
+                        >
+                            <IconButton
+                                aria-label="remover producto"
+                                color="primary"
+                                onClick={() =>
+                                    !isNaN(Number(watch("quantity"))) &&
+                                    watch("quantity") > 1 &&
+                                    setValue("quantity", watch("quantity") - 1)
+                                }
+                            >
+                                <RemoveCircleIcon />
+                            </IconButton>
+                            {manualNumber ? (
+                                <InputComponentAlt
+                                    sx={{
+                                        flex: 1,
+                                        minWidth: "3em",
+                                        maxWidth: "4em",
+                                    }}
+                                    inputProps={{ maxLength: 3 }}
+                                    control={control}
+                                    name="quantity"
+                                    label=""
+                                    type="number"
+                                    rules={{
+                                        required: "La cantidad es requerida",
+                                        maxLength: {
+                                            value: 2,
+                                            message: "El máximo valor es 99",
+                                        },
+                                        pattern: {
+                                            value: numberRegex,
+                                            message: "Valor debe ser numérico",
+                                        },
+                                    }}
+                                />
+                            ) : (
+                                <Button
+                                    color="inherit"
+                                    variant="text"
+                                    onClick={() => setManualNumber(true)}
+                                >
+                                    {watch("quantity")}
+                                </Button>
+                            )}
+                            <IconButton
+                                aria-label="editar producto"
+                                color="secondary"
+                                onClick={() =>
+                                    !isNaN(Number(watch("quantity"))) &&
+                                    watch("quantity") < 999 &&
+                                    setValue(
+                                        "quantity",
+                                        Number(watch("quantity")) + 1
+                                    )
+                                }
+                            >
+                                <AddCircleIcon />
+                            </IconButton>
+                        </Box>
+                        <Button
+                            color="primary"
+                            variant="contained"
+                            type="submit"
+                        >
+                            Comprar
+                        </Button>
+                    </Box>
+                </form>
             )}
             <CardActions disableSpacing>
                 <CardHeader
