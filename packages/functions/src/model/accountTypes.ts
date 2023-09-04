@@ -1,3 +1,5 @@
+import { ProductFactureData } from "./productTypes";
+
 export enum userType {
     admin = "admin",
     user = "user",
@@ -51,4 +53,9 @@ export type VendorCollectionData = AccountCollectionData & {
     name: string;
     surname: string;
     image: string;
+};
+
+export type UserFactureCollectionData = {
+    products: { [id: string]: ProductFactureData[] };
+    date: Date;
 };

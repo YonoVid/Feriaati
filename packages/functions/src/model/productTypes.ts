@@ -48,3 +48,10 @@ export type ProductCollectionData = {
     promotion?: number;
     image: [string, string, string] | string;
 };
+
+export type ProductFactureData = {
+    id: string;
+    name: string;
+    quantity: number;
+    subtotal: number;
+};

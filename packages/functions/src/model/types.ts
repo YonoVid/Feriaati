@@ -1,5 +1,10 @@
 import { AccountData, userStatus, userType } from "./accountTypes";
-import { DayTimeRange, ProductDiscount, ProductUnit } from "./productTypes";
+import {
+    DayTimeRange,
+    ProductDiscount,
+    ProductFactureData,
+    ProductUnit,
+} from "./productTypes";
 import { DayTime } from "./productTypes";
 
 export type AccountFields = {
@@ -101,6 +106,11 @@ export type ProductDeleteFields = ProductListFields & {
 
 export type ProductEditFields = ProductFields & {
     id: string;
+};
+
+export type ProductFactureFields = {
+    token: string;
+    products: { [id: string]: ProductFactureData[] };
 };
 
 export type UpdateProductVendorFields = {

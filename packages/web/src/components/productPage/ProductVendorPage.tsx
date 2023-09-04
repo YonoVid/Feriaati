@@ -20,6 +20,7 @@ function ProductVendorPage(props: ProductVendorPageProps) {
         onUpdatePage,
     } = props;
     const {
+        vendorId,
         enterpriseName,
         street,
         streetNumber,
@@ -114,6 +115,7 @@ function ProductVendorPage(props: ProductVendorPageProps) {
                 isEditable={isEditable}
                 label=""
                 products={products}
+                vendorId={vendorId || "empty"}
                 addProduct={addProduct}
                 onAdd={onAdd}
                 onEdit={onEdit}

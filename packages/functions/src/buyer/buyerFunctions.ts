@@ -5,10 +5,12 @@ import {
     LoginFields,
     UpdatePassFields,
     RecoveryFields,
+    ProductFactureFields,
 } from "../model/types";
 import { ResponseData, UserToken, VendorData } from "../model/reponseFields";
 import {
     UserCollectionData,
+    UserFactureCollectionData,
     userStatus,
     userType,
 } from "../model/accountTypes";
@@ -225,6 +227,64 @@ export const vendorListUser = functions.https.onCall(
     async (data: string): Promise<ResponseData<VendorData[]>> => {
         try {
             return getProductVendorList(data, collectionNames.USERS);
+        } catch (error) {
+            functions.logger.error(error);
+            throw new functions.https.HttpsError(
+                "internal",
+                "Error al obtener datos de los vendedores"
+            );
+        }
+    }
+);
+
+export const buyProductUser = functions.https.onCall(
+    async (data: ProductFactureFields): Promise<ResponseData<string>> => {
+        try {
+            //Checks of data and database
+            let code = errorCodes.SUCCESFULL;
+            let check = true;
+            //Get collection of email data
+
+            functions.logger.info("DATA::", data);
+
+            if (check) {
+                let { code: accountCode, doc: collectionDoc } =
+                    await getAccount(
+                        collectionNames.USERS,
+                        {
+                            token: data.token,
+                        },
+                        true
+                    );
+                code = accountCode;
+                functions.logger.info("DATA COLLECTION::", collectionDoc);
+                if (accountCode == errorCodes.SUCCESFULL) {
+                    //Setup document of user data
+                    const collectionData: UserFactureCollectionData = {
+                        date: new Date(),
+                        products: data.products,
+                    };
+                    functions.logger.info("TO UPLOAD DATA::", collectionData);
+
+                    //Creates document in collection of user
+                    collectionDoc.ref
+                        .collection("factures")
+                        .doc()
+                        .create(collectionData);
+
+                    code = errorCodes.SUCCESFULL;
+                } else {
+                    code = errorCodes.DOCUMENT_ALREADY_EXISTS_ERROR;
+                }
+            }
+
+            // Returning results.
+            return {
+                extra: data.token,
+                error: code !== errorCodes.SUCCESFULL,
+                code: code,
+                msg: messagesCode[code],
+            };
         } catch (error) {
             functions.logger.error(error);
             throw new functions.https.HttpsError(

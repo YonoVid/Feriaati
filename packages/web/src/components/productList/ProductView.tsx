@@ -22,7 +22,6 @@ import ShareIcon from "@mui/icons-material/Share";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 import {
-    ProductCollectionData,
     ProductData,
     ProductUnit,
 } from "@feria-a-ti/common/model/functionsTypes";
@@ -30,11 +29,13 @@ import "./ProductList.css";
 import InputComponentAlt from "../inputComponent/InputComponentAlt";
 import { numberRegex } from "@feria-a-ti/common/check/checkBase";
 import { useForm } from "react-hook-form";
+import { ShoppingCartItem } from "@feria-a-ti/common/model/props/shoppingCartProps";
 
 export type ProductViewProps = {
     product: ProductData;
+    vendorId?: string;
     isEditable: boolean;
-    addProduct?: (data: ProductCollectionData, quantity: number) => void;
+    addProduct?: (data: ShoppingCartItem) => void;
     onEdit?: (product: ProductData) => void;
     onDelete?: (id: string) => void;
 };
@@ -55,7 +56,8 @@ const ExpandMore = styled((props: ExpandMoreProps) => {
 }));
 
 export const ProductView = (props: ProductViewProps) => {
-    const { product, isEditable, addProduct, onEdit, onDelete } = props;
+    const { vendorId, product, isEditable, addProduct, onEdit, onDelete } =
+        props;
     const {
         id,
         name,
@@ -92,7 +94,11 @@ export const ProductView = (props: ProductViewProps) => {
 
     const onSubmit = () => {
         if (addProduct && product != null && product != undefined) {
-            addProduct(product, watch("quantity"));
+            addProduct({
+                id: { productId: product.id, vendorId: vendorId || "unknown" },
+                value: product,
+                quantity: Number(watch("quantity")),
+            });
             setManualNumber(false);
         }
     };
@@ -208,11 +214,12 @@ export const ProductView = (props: ProductViewProps) => {
                 <CardHeader
                     title={"$" + finalPrice + " " + unitLabel}
                     subheader={
-                        discount !== "none" &&
-                        "Descuento de " +
-                            (discount === "percentage"
-                                ? promotion + "%"
-                                : "$" + promotion)
+                        discount !== "none"
+                            ? "Descuento de " +
+                              (discount === "percentage"
+                                  ? promotion + "%"
+                                  : "$" + promotion)
+                            : "Sin descuento"
                     }
                 />
                 <ExpandMore
