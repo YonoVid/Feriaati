@@ -1,12 +1,19 @@
 import { ChangeEvent } from "react";
 import { Controller, FieldValues, UseControllerProps } from "react-hook-form";
-import { MenuItem, SxProps, TextField, Theme } from "@mui/material";
+import {
+    InputBaseComponentProps,
+    MenuItem,
+    SxProps,
+    TextField,
+    Theme,
+} from "@mui/material";
 import "./InputComponent.css";
 // import { Box, TextField } from "@mui/material";
 // import { Controller } from "react-hook-form";
 
 interface Props<T> extends UseControllerProps<T> {
     sx?: SxProps<Theme>;
+    inputProps?: InputBaseComponentProps | undefined;
     label: string;
     disabled?: boolean;
     multiline?: boolean;
@@ -19,6 +26,7 @@ interface Props<T> extends UseControllerProps<T> {
 
 const InputComponentAlt = <T extends FieldValues>({
     sx,
+    inputProps,
     name,
     label,
     disabled,
@@ -71,8 +79,9 @@ const InputComponentAlt = <T extends FieldValues>({
                                     ? {
                                           inputMode: "numeric",
                                           pattern: "[0-9]*",
+                                          ...inputProps,
                                       }
-                                    : {}
+                                    : { ...inputProps }
                             }
                             select={type === "select"}
                             label={inputLabel}
@@ -105,7 +114,7 @@ const InputComponentAlt = <T extends FieldValues>({
                 ></Controller>
             ) : (
                 <TextField
-                    sx={{ flex: 1, minWidth: "10em", maxWidth: "20em" }}
+                    sx={{ flex: 1, minWidth: "10em", maxWidth: "20em", ...sx }}
                     disabled={disabled || false}
                     InputLabelProps={{
                         shrink: type === "file" ? true : undefined,

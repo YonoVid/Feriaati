@@ -27,7 +27,7 @@ function ShoppingCartComponent(props: ShoppingCartProps) {
             newTotal += item.quantity * finalPrice;
         });
         setTotal(newTotal);
-    }, []);
+    }, [products]);
 
     return (
         <Card
