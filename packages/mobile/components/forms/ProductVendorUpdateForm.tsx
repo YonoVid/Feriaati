@@ -46,15 +46,21 @@ function ProductVendorUpdateForm(props: RProductVendorUpdateProps) {
     };
 
     useEffect(() => {
-        if (editedVendor) {
-            setValue("serviceTime", editedVendor.serviceTime);
-            setValue("serviceTime.start", editedVendor.serviceTime.start);
-            setValue("serviceTime.end", editedVendor.serviceTime.end);
-            editedVendor.contact?.phone &&
-                setValue("contactPhone", editedVendor.contact?.phone);
-            editedVendor.contact?.email &&
-                setValue("contactEmail", editedVendor.contact?.email);
-            setLocalImageData(editedVendor.image);
+        if (editedVendor && editedVendor.serviceTime != null) {
+            if (editedVendor.serviceTime != null) {
+                console.log("VENDOR::", editedVendor);
+                setValue("serviceTime", editedVendor.serviceTime);
+                setValue("serviceTime.start", editedVendor.serviceTime.start);
+                setValue("serviceTime.end", editedVendor.serviceTime.end);
+            }
+            if (editedVendor.contact != null) {
+                editedVendor.contact?.phone &&
+                    setValue("contactPhone", editedVendor.contact?.phone);
+                editedVendor.contact?.email &&
+                    setValue("contactEmail", editedVendor.contact?.email);
+            }
+            if (editedVendor.image != null)
+                setLocalImageData(editedVendor.image);
             setImageData(editedVendor.image);
         }
     }, [editedVendor, setImageData, setValue]);

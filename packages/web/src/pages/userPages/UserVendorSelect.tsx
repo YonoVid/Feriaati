@@ -114,6 +114,7 @@ const UserVendorSelect = () => {
                 <>
                     <ProductVendorPage
                         addProduct={addProduct}
+                        vendorId={selectedVendor.id}
                         vendorData={productVendor || {}}
                         products={products}
                         isEditable={false}

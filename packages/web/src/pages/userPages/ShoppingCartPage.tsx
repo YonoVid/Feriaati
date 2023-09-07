@@ -22,7 +22,7 @@ import { functions } from "@feria-a-ti/common/firebase";
 
 const ShoppingCartPage = () => {
     //Global UI context
-    const { products, setMessage, editProduct, deleteProduct } =
+    const { products, setMessage, editProduct, deleteProduct, resetProduct } =
         useHeaderContext();
     //Global state variable
     const { authToken, type } = useContext(UserContext);
@@ -85,6 +85,9 @@ const ShoppingCartPage = () => {
             console.log(result.data);
 
             setMessage({ msg, isError: error });
+            if (!error) {
+                resetProduct();
+            }
             //setIsLogged(result.data as any);
         });
     };

@@ -10,17 +10,20 @@ import {
     ProductUnit,
 } from "@feria-a-ti/common/model/functionsTypes";
 import { Avatar, Text, Button, Card, IconButton } from "react-native-paper";
+import { ShoppingCartItem } from "@feria-a-ti/common/model/props/shoppingCartProps";
 
 export type ProductViewProps = {
+    vendorId?: string;
     product: ProductData;
     isEditable: boolean;
-    addProduct?: (data: ProductCollectionData, quantity: number) => void;
+    addProduct?: (data: ShoppingCartItem) => void;
     onEdit?: (product: ProductData) => void;
     onDelete?: (id: string) => void;
 };
 
 export const ProductView = (props: ProductViewProps) => {
-    const { product, isEditable, addProduct, onEdit, onDelete } = props;
+    const { vendorId, product, isEditable, addProduct, onEdit, onDelete } =
+        props;
     const {
         id,
         name,
@@ -155,7 +158,15 @@ export const ProductView = (props: ProductViewProps) => {
                             color="primary"
                             mode="contained-tonal"
                             onPress={() =>
-                                addProduct && addProduct(product, quantity)
+                                addProduct &&
+                                addProduct({
+                                    quantity: quantity,
+                                    id: {
+                                        vendorId: vendorId,
+                                        productId: product.id,
+                                    },
+                                    value: product,
+                                })
                             }
                         >
                             Comprar

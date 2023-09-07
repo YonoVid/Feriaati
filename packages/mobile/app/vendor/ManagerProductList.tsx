@@ -113,6 +113,7 @@ export const ManagerProductList = (props: ManagerProductListProps) => {
                 {!updateVendorPage ? (
                     <>
                         <ProductVendorPage
+                            vendorId={productVendor?.vendorId || "null"}
                             vendorData={productVendor || {}}
                             products={products}
                             isEditable={isEditable}

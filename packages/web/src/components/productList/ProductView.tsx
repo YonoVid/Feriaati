@@ -235,6 +235,9 @@ export const ProductView = (props: ProductViewProps) => {
                 <CardHeader title={name} />
                 <CardContent>
                     <Typography paragraph>{description}</Typography>
+                    <Typography variant="subtitle2" sx={{ fontSize: "0.1em" }}>
+                        {vendorId + "-" + id}
+                    </Typography>
                 </CardContent>
                 <CardActions disableSpacing>
                     {isEditable ? (

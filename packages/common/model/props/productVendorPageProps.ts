@@ -2,6 +2,7 @@ import { ProductData, ProductListCollectionData } from "../functionsTypes";
 import { ShoppingCartItem } from "./shoppingCartProps";
 
 export type ProductVendorPageProps = {
+    vendorId: string;
     vendorData: Partial<ProductListCollectionData>;
     isEditable: boolean;
     products: ProductData[];

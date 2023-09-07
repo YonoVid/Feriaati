@@ -3,7 +3,7 @@ import { Text, View, Button, StyleSheet } from "react-native";
 import { useForm } from "react-hook-form";
 import { colors } from "@feria-a-ti/common/theme/base";
 import InputComponent from "@feria-a-ti/mobile/components/inputs/InputComponent";
-import { emailFormatRegex } from "@feria-a-ti/common/check/checkRegisterFields";
+import { emailFormatRegex } from "@feria-a-ti/common/check/checkBase";
 import { LoginFields } from "@feria-a-ti/common/model/fields/loginFields";
 import { LoginFormProps } from "@feria-a-ti/common/model/props/loginFormProps";
 

@@ -7,22 +7,22 @@ import {
 } from "./productTypes";
 import { DayTime } from "./productTypes";
 
+export type UserRequestFields = {
+    token?: string;
+    id?: string;
+};
+
 export type AccountFields = {
     email: string;
     password: string;
     status?: userStatus;
 };
 
-export type GetAccountFields = {
-    token?: string;
-    id?: string;
+export type GetAccountFields = UserRequestFields & {
     type: userType;
 };
 
-export type EditAccountFields = Partial<AccountData> & {
-    token?: string;
-    id?: string;
-};
+export type EditAccountFields = Partial<AccountData> & UserRequestFields;
 
 export type UserFields = AccountFields & {
     username: string;

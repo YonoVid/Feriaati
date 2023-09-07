@@ -16,6 +16,7 @@ import InputComponent from "../inputs/InputComponent";
 
 export const ProductList = (props: RProductListProps) => {
     const {
+        vendorId,
         label,
         color,
         children,
@@ -101,6 +102,7 @@ export const ProductList = (props: RProductListProps) => {
                     .slice(page * 3, (page + 1) * 3)
                     .map((product, index) => (
                         <ProductView
+                            vendorId={vendorId}
                             addProduct={addProduct}
                             onEdit={onEdit}
                             onDelete={onDelete}

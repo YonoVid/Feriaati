@@ -10,6 +10,7 @@ import "../../App.css";
 
 function ProductVendorPage(props: ProductVendorPageProps) {
     const {
+        vendorId,
         vendorData,
         products,
         isEditable,
@@ -20,7 +21,6 @@ function ProductVendorPage(props: ProductVendorPageProps) {
         onUpdatePage,
     } = props;
     const {
-        vendorId,
         enterpriseName,
         street,
         streetNumber,

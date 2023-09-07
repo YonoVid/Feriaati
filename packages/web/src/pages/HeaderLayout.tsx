@@ -13,9 +13,11 @@ export type HeaderLayoutContext = {
     addProduct: (data: ShoppingCartItem) => void;
     editProduct: (index: number, quantity: number) => void;
     deleteProduct: (index: number) => void;
+    resetProduct: () => void;
 };
 
 export const HeaderLayout = () => {
+    const shoppingKey = "shoppingCart";
     //Context variables
     const { productQuantity, setProductQuantity } = useContext(UserContext);
 
@@ -23,7 +25,7 @@ export const HeaderLayout = () => {
     const [snackBarData, setSnackBarData] = useState("");
     const [snackBarType, setSnackBarType] = useState<AlertColor>("success");
     const [shoppingCart, setShoppingCart] = useState<Array<ShoppingCartItem>>(
-        JSON.parse(localStorage.getItem("shoppingCart") || "[]")
+        JSON.parse(localStorage.getItem(shoppingKey) || "[]")
     );
 
     // // Alert Related values
@@ -38,7 +40,7 @@ export const HeaderLayout = () => {
 
     const addProduct = (data: ShoppingCartItem) => {
         const checkIndex = shoppingCart.findIndex(
-            (item) => item.value === data.value //TODO:: CHANGE FOR ID
+            (item) => item.id === data.id
         );
         if (checkIndex >= 0) {
             editProduct(
@@ -52,10 +54,7 @@ export const HeaderLayout = () => {
             setProductQuantity(productQuantity + 1);
             setMessage({ msg: "Añadido producto al carro", isError: false });
             //Store persistent local data
-            localStorage.setItem(
-                "shoppingCart",
-                JSON.stringify(newShoppingCart)
-            );
+            localStorage.setItem(shoppingKey, JSON.stringify(newShoppingCart));
         }
     };
 
@@ -74,10 +73,7 @@ export const HeaderLayout = () => {
             setShoppingCart(newShoppingCart);
             setMessage({ msg: "Editado producto del carro", isError: false });
             //Store persistent local data
-            localStorage.setItem(
-                "shoppingCart",
-                JSON.stringify(newShoppingCart)
-            );
+            localStorage.setItem(shoppingKey, JSON.stringify(newShoppingCart));
         }
     };
 
@@ -93,11 +89,16 @@ export const HeaderLayout = () => {
             setProductQuantity(productQuantity - 1);
             setMessage({ msg: "Eliminado producto del carro", isError: false });
             //Store persisten local data
-            localStorage.setItem(
-                "shoppingCart",
-                JSON.stringify(newShoppingCart)
-            );
+            localStorage.setItem(shoppingKey, JSON.stringify(newShoppingCart));
         }
+    };
+
+    const resetProduct = () => {
+        setShoppingCart([]);
+        setProductQuantity(0);
+        setMessage({ msg: "Reiniciado carro", isError: false });
+        //Store persisten local data
+        localStorage.removeItem(shoppingKey);
     };
 
     const handleClose = (
@@ -139,6 +140,7 @@ export const HeaderLayout = () => {
                             addProduct,
                             editProduct,
                             deleteProduct,
+                            resetProduct,
                         }}
                     />
                 </Grid>

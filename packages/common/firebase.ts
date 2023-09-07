@@ -33,7 +33,7 @@ if (
     location.hostname === "localhost" ||
     location.hostname === "127.0.0.1"
 ) {
-    const localAddress = "localhost";
+    const localAddress = "10.42.32.122" || "localhost";
     // Point to function emulator on localhost.
     connectFunctionsEmulator(functions, localAddress, 5001);
     // Point to the Storage emulator running on localhost.

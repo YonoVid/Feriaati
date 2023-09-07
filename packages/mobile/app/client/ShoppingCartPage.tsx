@@ -44,6 +44,7 @@ export const ShoppingCartPage = (props: ShoppingCartPageProps) => {
                     </Text>
                     {products && (
                         <ShoppingCartComponent
+                            onSubmit={() => console.log("BUY PRODUCTS")}
                             label={"Carro de compra"}
                             products={products}
                             isEditable={true}

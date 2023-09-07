@@ -11,6 +11,7 @@ import { colors } from "@feria-a-ti/common/theme/base";
 
 export const ProductVendorPage = (props: ProductVendorPageProps) => {
     const {
+        vendorId,
         vendorData,
         products,
         isEditable,
@@ -122,6 +123,7 @@ export const ProductVendorPage = (props: ProductVendorPageProps) => {
                 </Card.Actions>
             </Card>
             <ProductList
+                vendorId={vendorId}
                 label="Productos"
                 products={products}
                 isEditable={isEditable || false}

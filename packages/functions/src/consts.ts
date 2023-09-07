@@ -5,4 +5,5 @@ export enum collectionNames {
     VENDORPRODUCTS = "vendorProducts",
     COMMENTPRODUCTS = "commentProducts",
     PRODUCTS = "products",
+    FACTURES = "factures",
 }

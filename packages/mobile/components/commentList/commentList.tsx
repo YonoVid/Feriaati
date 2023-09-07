@@ -117,7 +117,7 @@ export const CommentList = (props: RListCommentsProps) => {
                 })
                 .finally(() => setCanSubmit(true));
         } catch (error) {
-            console.error("Error al obtener los vendedores:", error);
+            console.error("Error al enviar comentario:", error);
         }
     };
 

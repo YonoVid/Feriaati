@@ -19,16 +19,19 @@ export {
     login,
     passRecovery,
     passUpdate,
-    vendorListUser,
-    buyProductUser,
-} from "./buyer/buyerFunctions";
+} from "./buyer/buyerAccessFunctions";
+
+export { vendorListUser, buyProductUser } from "./buyer/buyerFunctions";
 
 export {
     addVendor,
     loginVendor,
     passRecoveryVendor,
     passUpdateVendor,
-} from "./vendor/vendorFunctions";
+} from "./vendor/vendorAccessFunctions";
+
+export { checkPetitionVendor } from "./vendor/vendorFunctions";
+
 export {
     adminLogin,
     vendorList,
