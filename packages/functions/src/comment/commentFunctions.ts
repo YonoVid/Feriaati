@@ -4,8 +4,10 @@ import {
     CommentCollectionData,
     CommentFields,
     GetCommentsFields,
+    OpinionValue,
     ReportCommentFields,
     UserComment,
+    UserCommentList,
 } from "../model/commentTypes";
 import { ResponseData } from "../model/reponseFields";
 import {
@@ -16,14 +18,18 @@ import {
 import { collectionNames } from "../consts";
 import { errorCodes, messagesCode } from "../errors";
 import { getAccount } from "../utilities/account";
+import { ProductListCollectionData } from "../model/productTypes";
+import { VendorCollectionData } from "../model/accountTypes";
 
 export const getComments = functions.https.onCall(
     async (
         data: GetCommentsFields,
         context
-    ): Promise<ResponseData<Array<UserComment>>> => {
+    ): Promise<ResponseData<UserCommentList>> => {
         try {
             functions.logger.info("DATA::", data);
+            let userId = "";
+            let userComment;
             const { check, code } = checkGetCommentsFields(data);
             if (check) {
                 const db = admin.firestore();
@@ -34,20 +40,31 @@ export const getComments = functions.https.onCall(
                         .collection(collectionNames.VENDORPRODUCTS)
                         .doc(data.id as string)
                         .get();
+
+                    if (data.token && data.token != null) {
+                        const { doc, code } = await getAccount(
+                            collectionNames.USERS,
+                            { token: data.token }
+                        );
+                        if (code == errorCodes.SUCCESFULL) {
+                            userId = doc.id;
+                        }
+                    }
                 } else {
                     functions.logger.info("LIST FROM VENDOR TOKEN");
                     const queryVendor = db
                         .collection(collectionNames.VENDORS)
                         .where("token", "==", data.token);
-                    let docReference = (await queryVendor.get()).docs[0];
+                    const docReference = (await queryVendor.get()).docs[0];
                     functions.logger.info("VENDOR DOC::", docReference.id);
 
-                    vendorProductsRef = (
-                        await db
-                            .collection(collectionNames.VENDORPRODUCTS)
-                            .where("vendorId", "==", docReference.id)
-                            .get()
-                    ).docs[0];
+                    vendorProductsRef = await db
+                        .collection(collectionNames.VENDORPRODUCTS)
+                        .doc(
+                            (docReference.data() as VendorCollectionData)
+                                .productsId || ""
+                        )
+                        .get();
                 }
 
                 functions.logger.info(
@@ -66,14 +83,18 @@ export const getComments = functions.https.onCall(
 
                     productsRef.forEach((doc) => {
                         const productData = doc.data() as CommentCollectionData;
-                        comments.push({ id: doc.id, ...productData });
+                        if (productData.userId == userId) {
+                            userComment = productData;
+                        } else {
+                            comments.push({ id: doc.id, ...productData });
+                        }
                     });
 
                     return {
                         code: errorCodes.SUCCESFULL,
                         msg: messagesCode[errorCodes.SUCCESFULL],
                         error: false,
-                        extra: comments,
+                        extra: { own: userComment, comments: comments },
                     };
                 }
                 return {
@@ -124,9 +145,20 @@ export const addComment = functions.https.onCall(
                         .get();
 
                     if (docVendorProduct.exists) {
-                        const commentRef = await docVendorProduct.ref
+                        const commentDocs = await docVendorProduct.ref
                             .collection(collectionNames.COMMENTPRODUCTS)
-                            .doc();
+                            .where("userId", "==", userDoc.id)
+                            .limit(1)
+                            .get();
+                        let commentRef;
+
+                        // Get rating of vendorProduct
+                        const vendorProductData: ProductListCollectionData =
+                            docVendorProduct.data() as ProductListCollectionData;
+                        let positive =
+                            data.opinion == OpinionValue.POSITIVE ? 1 : 0;
+                        let negative =
+                            data.opinion == OpinionValue.NEGATIVE ? 1 : 0;
 
                         // Configurar los datos del producto
                         const commentData: CommentCollectionData = {
@@ -134,9 +166,38 @@ export const addComment = functions.https.onCall(
                             username: await userDoc.get("username"),
                             userId: userDoc.id,
                             date: new Date(),
+                            opinion: data.opinion,
                         };
-
-                        await commentRef.create(commentData);
+                        if (commentDocs.size > 0) {
+                            commentRef = commentDocs.docs[0];
+                            const oldData: CommentCollectionData =
+                                commentRef.data() as CommentCollectionData;
+                            positive -=
+                                oldData.opinion == OpinionValue.POSITIVE
+                                    ? 1
+                                    : 0;
+                            negative -=
+                                oldData.opinion == OpinionValue.NEGATIVE
+                                    ? 1
+                                    : 0;
+                            commentRef.ref.set(commentData);
+                        } else {
+                            commentRef = await docVendorProduct.ref
+                                .collection(collectionNames.COMMENTPRODUCTS)
+                                .doc();
+                            commentRef.create(commentData);
+                        }
+                        docVendorProduct.ref.set({
+                            ...vendorProductData,
+                            rating: {
+                                positive:
+                                    (vendorProductData.rating?.positive || 0) +
+                                    positive,
+                                negative:
+                                    (vendorProductData.rating?.negative || 0) +
+                                    negative,
+                            },
+                        });
 
                         // Retornar el ID del producto creado
                         return {

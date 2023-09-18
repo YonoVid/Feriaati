@@ -3,6 +3,7 @@
 //
 
 import { LogicalData } from "./sharedTypes";
+import { TimeDate } from "./transactionTypes";
 
 export type DayTime = {
     hours: number;
@@ -13,7 +14,7 @@ export type DayTime = {
 export type DayTimeRange = { start: DayTime; end: DayTime };
 
 export type ProductListCollectionData = LogicalData & {
-    vendorId: string;
+    rating?: { positive: number; negative: number };
     enterpriseName: string;
     rut: string;
     localNumber: number;
@@ -54,4 +55,10 @@ export type ProductFactureData = {
     name: string;
     quantity: number;
     subtotal: number;
+};
+
+export type FactureData = {
+    id: string;
+    date: TimeDate;
+    products: Array<ProductFactureData>;
 };

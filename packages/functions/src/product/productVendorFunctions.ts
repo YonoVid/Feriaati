@@ -11,6 +11,7 @@ import { collectionNames } from "../consts";
 import { errorCodes, messagesCode } from "../errors";
 import { checkProductVendorUpdate } from "./checkProduct";
 import { uploadVendorProductImage } from "../utilities/storage";
+import { VendorCollectionData } from "../model/accountTypes";
 
 // Update local data
 export const productVendorUpdate = functions.https.onCall(
@@ -24,17 +25,12 @@ export const productVendorUpdate = functions.https.onCall(
             });
             if (code === errorCodes.SUCCESFULL) {
                 const db = admin.firestore();
-                const vendorProductsRef = (
-                    await db
-                        .collection(collectionNames.VENDORPRODUCTS)
-                        .where("vendorId", "==", data.productVendorId)
-                        .get()
-                ).docs[0].ref;
+                const vendorProductsRef = await db
+                    .collection(collectionNames.VENDORPRODUCTS)
+                    .doc((doc.data() as VendorCollectionData).productsId || "");
                 const docVendorProducts = await vendorProductsRef.get();
 
-                let vendorProductData =
-                    docVendorProducts.data() as ProductListCollectionData;
-                if (vendorProductData.vendorId === doc.id) {
+                if (docVendorProducts.exists) {
                     const imageUpdate =
                         data.image &&
                         data.image != null &&

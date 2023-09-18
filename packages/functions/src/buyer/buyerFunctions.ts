@@ -9,6 +9,8 @@ import { getAccount } from "../utilities/account";
 
 import { collectionNames } from "../consts";
 import { getProductVendorList } from "../utilities/getList";
+import { FactureData } from "../model/productTypes";
+import { firestore } from "firebase-admin";
 
 export const vendorListUser = functions.https.onCall(
     async (data: string): Promise<ResponseData<VendorData[]>> => {
@@ -69,8 +71,13 @@ export const buyProductUser = functions.https.onCall(
                             { id: key }
                         );
                         if (code === errorCodes.SUCCESFULL) {
-                            const petitionData = {
-                                date: new Date(),
+                            const time = firestore.Timestamp.now();
+                            const petitionData: FactureData = {
+                                id: collectionDoc.id,
+                                date: {
+                                    seconds: time.seconds,
+                                    nanoseconds: time.nanoseconds,
+                                },
                                 products: data.products[key],
                             };
                             doc.ref

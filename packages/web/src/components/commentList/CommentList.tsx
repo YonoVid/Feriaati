@@ -4,8 +4,10 @@ import { httpsCallable } from "firebase/functions";
 import { Box, Card, Divider, Pagination, Stack } from "@mui/material";
 
 import {
+    CommentCollectionData,
     ResponseData,
     UserComment,
+    UserCommentList,
 } from "@feria-a-ti/common/model/functionsTypes";
 import { RListCommentsProps } from "@feria-a-ti/common/model/comments/listCommentsProps";
 import { functions } from "@feria-a-ti/common/firebase";
@@ -42,6 +44,7 @@ function CommentList(props: RListCommentsProps) {
     };
 
     // Data of comments stored
+    const [ownComment, setOwnComment] = useState<CommentCollectionData>([]);
     const [comments, setComments] = useState<UserComment[]>([]);
 
     const getComments = () => {
@@ -54,7 +57,7 @@ function CommentList(props: RListCommentsProps) {
             console.log("GET COMMENTS::", commentsVendor);
             const get = httpsCallable<
                 GetCommentsFields,
-                ResponseData<Array<UserComment>>
+                ResponseData<UserCommentList>
             >(functions, "getComments");
             get(formatedData)
                 .then((result) => {
@@ -63,7 +66,8 @@ function CommentList(props: RListCommentsProps) {
                     if (error) {
                         console.log("LOAD COMMENTS ERROR::", msg);
                     } else {
-                        setComments(extra);
+                        setComments(extra.comments);
+                        extra.own && setOwnComment(extra.own);
                     }
                 })
                 .finally(() => setCanSubmit(true));
@@ -103,6 +107,7 @@ function CommentList(props: RListCommentsProps) {
                 comment: data.comment,
                 userToken: authToken,
                 vendorId: commentsVendor,
+                opinion: data.opinion,
             };
             const check = stringRegex.test(data.comment);
             if (check) {
@@ -117,7 +122,9 @@ function CommentList(props: RListCommentsProps) {
                         console.log(result);
 
                         setMessage({ msg: msg, isError: error });
-                        !error && setComments([extra, ...comments]);
+                        if (!error) {
+                            setOwnComment(extra);
+                        }
                     })
                     .finally(() => setCanSubmit(true));
             }
@@ -142,12 +149,16 @@ function CommentList(props: RListCommentsProps) {
                 borderRadius: "10%",
             }}
         >
-            {isUser && (
-                <CommentForm canSubmit={canSubmit} onSubmit={uploadComment} />
-            )}
             <h1 style={{ maxWidth: "100%" }}>
                 {label != null ? label : "Comentarios"}
             </h1>
+            {isUser && (
+                <CommentForm
+                    comment={ownComment}
+                    canSubmit={canSubmit}
+                    onSubmit={uploadComment}
+                />
+            )}
             <Stack
                 direction={"column"}
                 spacing={{ xs: 1, sm: 2, md: 4 }}

@@ -5,3 +5,14 @@ export type UserFactureCollectionData = {
     buyer: string;
     date: Date;
 };
+
+export type UserFactureCollectionStoredData = {
+    products: { [id: string]: ProductFactureData[] };
+    buyer: string;
+    date: TimeDate;
+};
+
+export type TimeDate = {
+    seconds: number;
+    nanoseconds: number;
+};

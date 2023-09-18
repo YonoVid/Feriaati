@@ -51,4 +51,5 @@ export type VendorCollectionData = AccountCollectionData & {
     name: string;
     surname: string;
     image: string;
+    productsId: string | undefined;
 };

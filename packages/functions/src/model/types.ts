@@ -142,3 +142,8 @@ export type DeleteProductVendorFields = {
     adminToken: string;
     productVendorId: string;
 };
+
+export type FactureFields = UserRequestFields & {
+    index: number;
+    size: number;
+};

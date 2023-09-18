@@ -1,56 +1,177 @@
-import { useForm } from "react-hook-form";
-import { Box, Button, Card, Divider } from "@mui/material";
+import { useEffect, useState } from "react";
+import { FieldValues, useForm } from "react-hook-form";
+
+import { Box, Button, IconButton } from "@mui/material";
+import ThumbUpIcon from "@mui/icons-material/ThumbUp";
+import ThumbDownIcon from "@mui/icons-material/ThumbDown";
 
 import { RFormProps } from "@feria-a-ti/common/model/props/registerFormProps";
-import { CommentFields } from "@feria-a-ti/common/model/comments/commentsFields";
+import {
+    CommentFields,
+    OpinionValue,
+} from "@feria-a-ti/common/model/comments/commentsFields";
 
 import InputComponentAlt from "@feria-a-ti/web/src/components/inputComponent/InputComponentAlt";
-import "./CommentForm.css";
 import { stringRegex } from "@feria-a-ti/common/check/checkBase";
+import "./CommentForm.css";
+
+const colorDict = {
+    [OpinionValue.NONE]: "none",
+    [OpinionValue.POSITIVE]: "secondary.main",
+    [OpinionValue.NEGATIVE]: "primary.main",
+};
+
+const inverseColorDict = {
+    [OpinionValue.NONE]: "none",
+    [OpinionValue.POSITIVE]: "primary.contrastText",
+    [OpinionValue.NEGATIVE]: "primary.contrastText",
+};
 
 function CommentForm(props: RFormProps) {
-    const { canSubmit, onSubmit } = props;
-    const { control, handleSubmit } = useForm<CommentFields>();
+    // Call global variables
+
+    const { comment, canSubmit, onSubmit } = props;
+    const { control, clearErrors, setValue, handleSubmit } =
+        useForm<CommentFields>();
+
+    const [opinion, setOpinion] = useState<OpinionValue>(OpinionValue.NONE);
+
+    const selectedIcon = {
+        color: "primary.contrastText",
+        border: 1,
+        borderColor: "primary.contrastText",
+    };
+
+    const changeOpinion = (value: OpinionValue) => {
+        let newValue = value;
+        if (opinion == value) {
+            newValue = OpinionValue.NONE;
+        }
+        setOpinion(newValue);
+        setValue("opinion", newValue);
+        clearErrors();
+    };
+
+    useEffect(() => {
+        if (comment && comment != null) {
+            setValue("comment", comment.comment);
+            changeOpinion(comment.opinion);
+        }
+        console.log(comment);
+    }, [comment]);
 
     return (
-        <form
-            onSubmit={handleSubmit(onSubmit)}
-            style={{ display: "flex", flexDirection: "row" }}
+        <Box
+            sx={{
+                border: 1,
+                borderColor: "primary",
+                margin: "2em",
+                backgroundColor: colorDict[opinion],
+            }}
         >
-            <Box sx={{ flex: 6 }}>
+            <form
+                onSubmit={handleSubmit(onSubmit)}
+                style={{
+                    display: "flex",
+                    flexDirection: "row",
+                }}
+            >
+                <Box
+                    sx={{
+                        margin: "1em",
+                        flex: 2,
+                        flexDirection: "column",
+                        justifyContent: "space-between",
+                    }}
+                >
+                    <IconButton
+                        className="iconButton"
+                        sx={
+                            opinion == OpinionValue.POSITIVE ? selectedIcon : {}
+                        }
+                        color="secondary"
+                        onClick={() => changeOpinion(OpinionValue.POSITIVE)}
+                    >
+                        <ThumbUpIcon sx={{ fontSize: "2em" }} />
+                    </IconButton>
+                    <IconButton
+                        className="iconButton"
+                        sx={
+                            opinion == OpinionValue.NEGATIVE ? selectedIcon : {}
+                        }
+                        color="primary"
+                        onClick={() => changeOpinion(OpinionValue.NEGATIVE)}
+                    >
+                        <ThumbDownIcon sx={{ fontSize: "2em" }} />
+                    </IconButton>
+                </Box>
                 <InputComponentAlt
-                    sx={{ width: "100%", maxWidth: "100%" }}
+                    sx={{ display: "none" }}
                     control={control}
-                    name="comment"
-                    multiline={true}
-                    rows={5}
-                    label="Danos tu opinión"
+                    name="opinion"
+                    label="Opinión"
                     type="text"
                     rules={{
-                        required: "El comentario no puede estar vacío",
-                        maxLength: {
-                            value: 254,
-                            message: "El máximo de caracteres es 254",
-                        },
-                        pattern: {
-                            value: stringRegex,
-                            message:
-                                "No se aceptan caracteres especiales (Ej: <,>,+,-,etc.)",
-                        },
+                        required:
+                            "Se debe señalar si la opinión es positiva o negativa",
                     }}
                 />
-            </Box>
-            <Box sx={{ margin: "1em", flex: 6 }}>
-                <Button
-                    color="primary"
-                    type="submit"
-                    variant="contained"
-                    disabled={canSubmit != null ? !canSubmit : false}
+                <Box sx={{ flex: 6 }}>
+                    <InputComponentAlt
+                        sx={{
+                            width: "100%",
+                            maxWidth: "100%",
+                            backgroundColor: inverseColorDict[opinion],
+                        }}
+                        control={control}
+                        name="comment"
+                        multiline={true}
+                        rows={5}
+                        label="Danos tu opinión"
+                        type="text"
+                        rules={{
+                            required: "El comentario no puede estar vacío",
+                            maxLength: {
+                                value: 254,
+                                message: "El máximo de caracteres es 254",
+                            },
+                            pattern: {
+                                value: stringRegex,
+                                message:
+                                    "No se aceptan caracteres especiales (Ej: <,>,+,-,etc.)",
+                            },
+                            validate: () =>
+                                opinion != OpinionValue.NONE ||
+                                "Se debe señalar si la opinión es positiva o negativa",
+                        }}
+                    />
+                </Box>
+                <Box
+                    sx={{
+                        flex: 2,
+                        flexDirection: "column",
+                        justifyContent: "center",
+                        margin: "auto",
+                        marginX: "1em",
+                        alignContent: "stretch",
+                    }}
                 >
-                    Enviar
-                </Button>
-            </Box>
-        </form>
+                    <Button
+                        sx={{ flex: 1 }}
+                        color={
+                            opinion != OpinionValue.NEGATIVE
+                                ? "primary"
+                                : "secondary"
+                        }
+                        type="submit"
+                        variant="contained"
+                        disabled={canSubmit != null ? !canSubmit : false}
+                    >
+                        {comment && comment != null ? "Editar" : "Enviar"}
+                    </Button>
+                </Box>
+            </form>
+        </Box>
     );
 }
 

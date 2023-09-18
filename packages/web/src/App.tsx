@@ -25,6 +25,8 @@ import ProductAddManager from "./pages/vendorPages/ProductAddManager";
 import UserVendorSelect from "./pages/userPages/UserVendorSelect";
 import AccountPage from "./pages/accountPages/AccountPage";
 import ShoppingCartPage from "./pages/userPages/ShoppingCartPage";
+import FacturesPage from "./pages/userPages/FacturesPage";
+import VendorFacturesPage from "./pages/vendorPages/VendorFacturesPage";
 
 const router = createBrowserRouter([
     {
@@ -56,8 +58,8 @@ const router = createBrowserRouter([
                 element: <ProductPage />,
             },
             {
-                path: "/productVendor",
-                element: <UserVendorSelect />,
+                path: "/factures",
+                element: <FacturesPage />,
             },
             {
                 path: "/shoppingCart",
@@ -78,6 +80,14 @@ const router = createBrowserRouter([
             {
                 path: "/registerVendor",
                 element: <RegisterVendorPage />,
+            },
+            {
+                path: "/productVendor",
+                element: <UserVendorSelect />,
+            },
+            {
+                path: "/facturesVendor",
+                element: <VendorFacturesPage />,
             },
             {
                 path: "/managerVendor",

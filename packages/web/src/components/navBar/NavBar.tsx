@@ -62,6 +62,13 @@ function NavBar() {
                 navigate(type === "vendor" ? "managerVendor" : "home");
             },
         },
+        {
+            label: "FACTURAS",
+            action: () => {
+                console.log("FACTURES ACTION");
+                navigate(type === "vendor" ? "facturesVendor" : "factures");
+            },
+        },
     ];
     const settings = [
         {

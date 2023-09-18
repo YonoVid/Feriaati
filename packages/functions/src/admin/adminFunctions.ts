@@ -203,21 +203,21 @@ export const vendorStateUpdate = functions.https.onCall(
 
                     if (status === userStatus.activated) {
                         // Get product list reference
-                        const productsRef = db.collection(
-                            collectionNames.VENDORPRODUCTS
-                        );
+                        const productsId = (
+                            vendorDoc.data() as VendorCollectionData
+                        ).productsId;
 
-                        const products = await productsRef
-                            .where("vendorId", "==", itemId)
+                        const products = await db
+                            .collection(collectionNames.VENDORPRODUCTS)
+                            .where("vendorId", "==", productsId)
                             .get();
 
                         // Create new collection if not exists
                         if (products.empty) {
                             const vendorData =
                                 (await vendorDoc.data()) as VendorCollectionData;
-                            let collection: ProductListCollectionData = {
+                            const collection: ProductListCollectionData = {
                                 isDeleted: false,
-                                vendorId: itemId,
                                 enterpriseName: vendorData.enterpriseName,
                                 localNumber: vendorData.localNumber,
                                 rut: vendorData.rut,
@@ -229,7 +229,9 @@ export const vendorStateUpdate = functions.https.onCall(
                                 updateDate: new Date(),
                                 userUpdate: adminDoc.id,
                             };
-                            await productsRef.add(collection);
+                            await db
+                                .collection(collectionNames.VENDORPRODUCTS)
+                                .add(collection);
                         }
                     }
                     return {

@@ -1,4 +1,5 @@
 import { DayTime } from "./baseTypes";
+import { OpinionValue } from "./comments/commentsFields";
 
 //Response Data
 export type ResponseData<T> = {
@@ -42,11 +43,17 @@ export type LogicalData = {
 // VENDOR PAGE TYPES
 //
 
+export type UserCommentList = {
+    own: UserComment;
+    comments: Array<UserComment>;
+};
+
 export type UserComment = {
     id?: string;
     userId: string;
     username?: string;
     comment: string;
+    opinion: OpinionValue;
 };
 
 export type CommentCollectionData = UserComment & {
@@ -111,10 +118,11 @@ export type VendorCollectionData = AccountCollectionData & {
     name: string;
     surname: string;
     image: string;
+    productsId: string | undefined;
 };
 
 export type ProductListCollectionData = LogicalData & {
-    vendorId: string;
+    rating?: { positive: number; negative: number };
     enterpriseName: string;
     rut: string;
     localNumber: number;
@@ -156,4 +164,15 @@ export type ProductFactureData = {
     name: string;
     quantity: number;
     subtotal: number;
+};
+
+export type FactureData = {
+    id: string;
+    date: TimeDate;
+    products: Array<ProductFactureData>;
+};
+
+export type TimeDate = {
+    seconds: number;
+    nanoseconds: number;
 };

@@ -23,12 +23,16 @@ export {
 
 export { vendorListUser, buyProductUser } from "./buyer/buyerFunctions";
 
+export { getFactures } from "./buyer/buyerFactureFunctions";
+
 export {
     addVendor,
     loginVendor,
     passRecoveryVendor,
     passUpdateVendor,
 } from "./vendor/vendorAccessFunctions";
+
+export { getVendorFactures } from "./vendor/vendorFactureFunctions";
 
 export { checkPetitionVendor } from "./vendor/vendorFunctions";
 
