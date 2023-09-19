@@ -19,6 +19,7 @@ function ShoppingCartComponent(props: ShoppingCartProps) {
         children,
         products,
         isEditable,
+        canSubmit,
         onEdit,
         onDelete,
         onSubmit,
@@ -92,6 +93,7 @@ function ShoppingCartComponent(props: ShoppingCartProps) {
                     color="primary"
                     variant="contained"
                     type="button"
+                    disabled={canSubmit}
                     onClick={onSubmit}
                 >
                     Realizar Comprar

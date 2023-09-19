@@ -6,11 +6,20 @@ import { colors } from "@feria-a-ti/common/theme/base";
 
 import { ShoppingCartProps } from "@feria-a-ti/common/model/props/shoppingCartProps";
 import { CartProductView } from "./CartProductView";
-import { Card } from "react-native-paper";
+import { Button, Card } from "react-native-paper";
 
 export const ShoppingCartComponent = (props: ShoppingCartProps) => {
-    const { label, color, children, products, isEditable, onEdit, onDelete } =
-        props;
+    const {
+        label,
+        color,
+        children,
+        products,
+        isEditable,
+        canSubmit,
+        onSubmit,
+        onEdit,
+        onDelete,
+    } = props;
 
     const [total, setTotal] = useState(0);
 
@@ -50,6 +59,16 @@ export const ShoppingCartComponent = (props: ShoppingCartProps) => {
                 <Card>
                     <Card.Title title={"TOTAL: $" + total} />
                 </Card>
+                <View style={styles.button}>
+                    <Button
+                        mode="contained"
+                        color={styles.buttonInner.color}
+                        disabled={!canSubmit}
+                        onPress={props.onSubmit}
+                    >
+                        Realizar compra
+                    </Button>
+                </View>
             </View>
         </View>
     );

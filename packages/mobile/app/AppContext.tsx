@@ -23,7 +23,8 @@ import { ShoppingCartItem } from "@feria-a-ti/common/model/props/shoppingCartPro
 export type AppContext = SessionUserData &
     UIMessages & {
         products: Array<ShoppingCartItem>;
-        addProduct: (data: ShoppingCartItem) => void;
+        resetProduct: () => void;
+        addProduct: (data: ShoppingCartItem, quantity: number) => void;
         editProduct: (index: number, quantity: number) => void;
         deleteProduct: (index: number) => void;
     };
@@ -38,6 +39,7 @@ export const ComponentContext = createContext<AppContext>({
     resetSession: () => false,
     checkSession: () => false,
     products: [],
+    resetProduct: () => null,
     addProduct: (data: ShoppingCartItem) => null,
     editProduct: (index: number, quantity: number) => null,
     deleteProduct: (index: number) => null,
@@ -82,6 +84,13 @@ export const AppContext = (props: { children: any }) => {
         return true;
     };
     //Shopping cart related variables
+    const resetProduct = () => {
+        setShoppingCart([]);
+        setProductQuantity(0);
+        setMessage({ msg: "Reiniciado carro", isError: false });
+        //Store persisten local data
+    };
+
     const addProduct = (data: ShoppingCartItem, quantity: number) => {
         const checkIndex = shoppingCart.findIndex(
             (item) => item.id === data.id
@@ -153,6 +162,7 @@ export const AppContext = (props: { children: any }) => {
                     authToken: token,
                     type,
                     products: shoppingCart,
+                    resetProduct: resetProduct,
                     addProduct: addProduct,
                     editProduct: editProduct,
                     deleteProduct: deleteProduct,
