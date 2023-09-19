@@ -104,6 +104,7 @@ export const addUser = functions.https.onCall(
                 ) {
                     //Setup document of user data
                     const collectionData: UserCollectionData = {
+                        isDeleted: false,
                         type: userType.user,
                         username: data.username,
                         email: data.email,

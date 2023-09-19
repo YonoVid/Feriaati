@@ -27,6 +27,11 @@ export type ProductListData = ProductListCollectionData & {
 export type VendorData = VendorCollectionData & {
     id: string;
 };
+
+export type UserData = UserCollectionData & {
+    id: string;
+};
+
 //
 // LOGIC DATA
 //
@@ -96,12 +101,13 @@ export type AccountData = {
     direction?: Array<AccountDirection>;
 };
 
-export type AccountCollectionData = AccountData & {
-    algorithm: string;
-    status: string;
-    iv: ArrayBuffer;
-    code: string;
-};
+export type AccountCollectionData = LogicalData &
+    AccountData & {
+        algorithm: string;
+        status: string;
+        iv: ArrayBuffer;
+        code: string;
+    };
 
 export type UserCollectionData = AccountCollectionData & {
     username: string;

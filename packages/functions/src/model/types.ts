@@ -125,7 +125,6 @@ export type UpdateProductVendorFields = {
 export type UpdateFullProductVendorFields = {
     adminToken: string;
     id: string;
-    vendorId?: string;
     enterpriseName?: string;
     rut?: string;
     localNumber?: number;
@@ -138,9 +137,26 @@ export type UpdateFullProductVendorFields = {
     contact?: { phone: string; email: string };
 };
 
-export type DeleteProductVendorFields = {
+export type UpdateFullVendorFields = {
     adminToken: string;
-    productVendorId: string;
+    id: string;
+    email?: string;
+    password?: string;
+    name?: string;
+    surname?: string;
+};
+
+export type UpdateFullUserFields = {
+    adminToken: string;
+    id: string;
+    email?: string;
+    password?: string;
+    username?: string;
+};
+
+export type DeleteFields = {
+    token: string;
+    itemId: string;
 };
 
 export type FactureFields = UserRequestFields & {

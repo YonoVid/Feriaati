@@ -9,24 +9,21 @@ import { functions } from "@feria-a-ti/common/firebase"; // Importa la configura
 import {
     ProductListData,
     ResponseData,
-    VendorData,
 } from "@feria-a-ti/common/model/functionsTypes";
 import {
-    DeleteProductVendorFields,
+    DeleteFields,
     UpdateFullProductVendorFields,
-    UpdateStateFields,
 } from "@feria-a-ti/common/model/fields/adminFields";
-import { userStatus } from "@feria-a-ti/common/model/fields/registerFields";
 
 import VendorList from "@feria-a-ti/web/src/components/vendorList/VendorList";
-import RegisterVendorList from "@feria-a-ti/web/src/components/vendorList/RegisterVendorList";
-import AdminVendorUpdateForm from "@feria-a-ti/web/src/components/forms/adminVendorUpdateForm/AdminVendorUpdateForm";
+import AdminProductListUpdateForm from "@feria-a-ti/web/src/components/forms/adminProductListUpdateForm/AdminProductListUpdateForm";
 
 import { UserContext } from "@feria-a-ti/web/src/App";
 import { useHeaderContext } from "../HeaderLayout";
 import { checkProductVendorFullUpdate } from "@feria-a-ti/common/check/checkProductVendorUpdate";
+import ProductVendorList from "../../components/productVendorList/ProductVendorList";
 
-const AdminStatePage = () => {
+const AdminProductsPage = () => {
     //Global UI context
     const { setMessage } = useHeaderContext();
     //Global state variable
@@ -38,35 +35,15 @@ const AdminStatePage = () => {
     );
     // Data of vendors stored
     const [vendors, setVendors] = useState<ProductListData[]>([]);
-    const [newVendors, setNewVendors] = useState<VendorData[]>([]);
 
     const [imageData, setImageData] = useState<string>("");
     const [canSubmit, setCanSubmit] = useState<boolean>(true);
 
     useEffect(() => {
-        if (newVendors == [] || productList == undefined) {
-            getNewVendors();
-        }
         if (vendors == [] || productList == undefined) {
             getVendors();
         }
     }, []);
-
-    const getNewVendors = async () => {
-        try {
-            const vendors = httpsCallable<string, ResponseData<VendorData[]>>(
-                functions,
-                "registerVendorList"
-            );
-            vendors(authToken).then((response) => {
-                const vendorsData = response.data.extra as VendorData[];
-                setNewVendors(vendorsData);
-                console.log("NEW VENDORS DATA::", vendorsData);
-            });
-        } catch (error) {
-            console.error("Error al obtener los vendedores:", error);
-        }
-    };
 
     const getVendors = async () => {
         try {
@@ -84,38 +61,11 @@ const AdminStatePage = () => {
         }
     };
 
-    const updateState = async (id: string, status: userStatus) => {
-        try {
-            const updateState = httpsCallable<
-                UpdateStateFields,
-                ResponseData<null>
-            >(functions, "vendorStateUpdate");
-            console.log("SELECTED USER::", id);
-            updateState({ token: authToken as string, itemId: id, status })
-                .then((response) => {
-                    const { msg, error } = response.data;
-                    console.log(response.data);
-                    setMessage({ msg, isError: error });
-                    if (!error) {
-                        setNewVendors(
-                            newVendors.filter((value) => value.id !== id)
-                        );
-                        getVendors();
-                    }
-                })
-                .finally(() => setCanSubmit(true));
-            // .finally(() => setShowAlert(true));
-        } catch (error) {
-            console.error("Error al actualizar el estado del vendedor:", error);
-        }
-    };
-
     const updateProductList = async (data: FieldValues) => {
         try {
             const formatedData: UpdateFullProductVendorFields = {
                 adminToken: authToken || "",
                 id: productList?.id as string,
-                vendorId: productList?.vendorId,
                 enterpriseName:
                     data.enterpriseName || productList?.enterpriseName,
                 rut: data.rut || productList?.rut,
@@ -158,14 +108,14 @@ const AdminStatePage = () => {
 
     const deleteProductList = async (id: string) => {
         try {
-            const updateState = httpsCallable<
-                DeleteProductVendorFields,
-                ResponseData<null>
-            >(functions, "deleteProductList");
+            const updateState = httpsCallable<DeleteFields, ResponseData<null>>(
+                functions,
+                "deleteProductList"
+            );
 
             updateState({
-                adminToken: authToken as string,
-                productVendorId: id,
+                token: authToken as string,
+                itemId: id,
             }).then((response) => {
                 const { msg, error } = response.data;
                 console.log(response.data);
@@ -184,7 +134,7 @@ const AdminStatePage = () => {
         <>
             {type !== "admin" && <Navigate to="/adminLogin" replace={true} />}
             {productList ? (
-                <AdminVendorUpdateForm
+                <AdminProductListUpdateForm
                     canSubmit={canSubmit}
                     imageData={imageData}
                     setImageData={setImageData}
@@ -202,18 +152,11 @@ const AdminStatePage = () => {
                         borderRadius: "10%",
                     }}
                 >
-                    <h1 style={{ maxWidth: "100%" }}>
-                        {"Lista de Vendedores"}
-                    </h1>
-                    <VendorList
-                        vendors={vendors}
+                    <h1 style={{ maxWidth: "100%" }}>{"Lista de Tiendas"}</h1>
+                    <ProductVendorList
+                        productVendors={vendors}
                         onEdit={(data) => setProductList(data)}
                         onDelete={(id: string) => deleteProductList(id)}
-                    />
-                    <h1 style={{ maxWidth: "100%" }}>{"Solicitudes"}</h1>
-                    <RegisterVendorList
-                        vendors={newVendors}
-                        updateState={updateState}
                     />
                 </Card>
             )}
@@ -221,4 +164,4 @@ const AdminStatePage = () => {
     );
 };
 
-export default AdminStatePage;
+export default AdminProductsPage;

@@ -1,36 +1,35 @@
-import { useEffect } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
 import { Box, Button, Card, Divider } from "@mui/material";
 
-import { RVendorFullUpdateProps } from "@feria-a-ti/common/model/props/productVendorUpdateFormProps";
-import { FormUpdateFullVendorFields } from "@feria-a-ti/common/model/fields/adminFields";
+import { controlValidInput } from "@feria-a-ti/common/inputControl";
+import { RUserFullUpdateProps } from "@feria-a-ti/common/model/props/productVendorUpdateFormProps";
+import { FormUpdateFullUserFields } from "@feria-a-ti/common/model/fields/adminFields";
 
 import {
     emailFormatRegex,
     passwordFormatRegex,
-    stringRegex,
 } from "@feria-a-ti/common/check/checkBase";
 
 import InputComponentAlt from "@feria-a-ti/web/src/components/inputComponent/InputComponentAlt";
 
-import "./AdminVendorUpdateForm.css";
+import "./AdminUserUpdateForm.css";
 
-function AdminVendorUpdateForm(props: RVendorFullUpdateProps) {
-    const { label, color, children, vendor, onSubmit, onCancel } = props;
+function AdminUserUpdateForm(props: RUserFullUpdateProps) {
+    const { label, color, children, user, onSubmit, onCancel } = props;
 
     const { setValue, handleSubmit, watch, control } =
-        useForm<FormUpdateFullVendorFields>();
+        useForm<FormUpdateFullUserFields>();
 
     useEffect(() => {
-        if (vendor) {
-            setValue("email", vendor.email);
-            setValue("password", vendor.password);
-            setValue("confirmPassword", vendor.password);
-            setValue("name", vendor.name);
-            setValue("surname", vendor.surname);
+        if (user) {
+            setValue("email", user.email);
+            setValue("password", user.password);
+            setValue("confirmPassword", user.password);
+            setValue("username", user.username);
         }
-    }, [vendor, setValue]);
+    }, [user, setValue]);
 
     const colorTheme =
         color != null && color === "secondary" ? "secondary" : "primary";
@@ -53,29 +52,19 @@ function AdminVendorUpdateForm(props: RVendorFullUpdateProps) {
                 <Box>
                     <InputComponentAlt
                         control={control}
-                        name="name"
-                        label="Nombres"
+                        name="username"
+                        label="Nombre de usuario"
                         type="text"
+                        onChange={controlValidInput}
                         rules={{
-                            required: "Los nombres son requeridos",
-                            pattern: {
-                                value: stringRegex,
-                                message:
-                                    "No se aceptan caracteres especiales (Ej: <,>,+,-,etc.)",
+                            required: "El nombre de usuario es requerido",
+                            minLength: {
+                                value: 8,
+                                message: "El mínimo de caracteres es 8",
                             },
-                        }}
-                    />
-                    <InputComponentAlt
-                        control={control}
-                        name="surname"
-                        label="Apellidos"
-                        type="text"
-                        rules={{
-                            required: "Los apellidos son requeridos",
-                            pattern: {
-                                value: stringRegex,
-                                message:
-                                    "No se aceptan caracteres especiales (Ej: <,>,+,-,etc.)",
+                            maxLength: {
+                                value: 25,
+                                message: "El máximo de caracteres es 128",
                             },
                         }}
                     />
@@ -164,4 +153,4 @@ function AdminVendorUpdateForm(props: RVendorFullUpdateProps) {
     );
 }
 
-export default AdminVendorUpdateForm;
+export default AdminUserUpdateForm;

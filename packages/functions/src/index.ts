@@ -36,18 +36,27 @@ export { getVendorFactures } from "./vendor/vendorFactureFunctions";
 
 export { checkPetitionVendor } from "./vendor/vendorFunctions";
 
-export {
-    adminLogin,
-    vendorList,
-    vendorStateUpdate,
-    registerVendorList,
-    productVendorList,
-} from "./admin/adminFunctions";
+export { adminLogin, productVendorList } from "./admin/adminFunctions";
 
 export {
     updateProductList,
     deleteProductList,
 } from "./admin/adminProductFunctions";
+
+export {
+    vendorList,
+    vendorStateUpdate,
+    registerVendorList,
+    updateVendor,
+    deleteVendor,
+} from "./admin/adminVendorFunctions";
+
+export {
+    userList,
+    userStateUpdate,
+    updateUser,
+    deleteUser,
+} from "./admin/adminUserFunctions";
 
 export {
     addProduct,

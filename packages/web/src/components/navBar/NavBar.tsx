@@ -54,22 +54,59 @@ function NavBar() {
         }
     };
 
-    const pages = [
-        {
-            label: "HOME",
-            action: () => {
-                console.log("HOME ACTION");
-                navigate(type === "vendor" ? "managerVendor" : "home");
-            },
-        },
-        {
-            label: "FACTURAS",
-            action: () => {
-                console.log("FACTURES ACTION");
-                navigate(type === "vendor" ? "facturesVendor" : "factures");
-            },
-        },
-    ];
+    const pages =
+        userType.admin != type
+            ? [
+                  {
+                      label: "HOME",
+                      action: () => {
+                          console.log("HOME ACTION");
+                          navigate(
+                              type === "vendor" ? "managerVendor" : "home"
+                          );
+                      },
+                  },
+                  {
+                      label: "FACTURAS",
+                      action: () => {
+                          console.log("FACTURES ACTION");
+                          navigate(
+                              type === "vendor" ? "facturesVendor" : "factures"
+                          );
+                      },
+                  },
+              ]
+            : [
+                  {
+                      label: "HOME",
+                      action: () => {
+                          console.log("HOME ACTION");
+                          navigate("home");
+                      },
+                  },
+                  {
+                      label: "TIENDAS",
+                      action: () => {
+                          console.log("FACTURES ACTION");
+                          navigate("productsAdmin");
+                      },
+                  },
+                  {
+                      label: "VENDEDORES",
+                      action: () => {
+                          console.log("FACTURES ACTION");
+                          navigate("vendorsAdmin");
+                      },
+                  },
+                  {
+                      label: "USUARIOS",
+                      action: () => {
+                          console.log("FACTURES ACTION");
+                          navigate("usersAdmin");
+                      },
+                  },
+              ];
+
     const settings = [
         {
             label: "Home",

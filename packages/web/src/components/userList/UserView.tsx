@@ -1,9 +1,7 @@
-import { useEffect, useState } from "react";
 import {
     Box,
     Card,
     CardContent,
-    CardMedia,
     IconButton,
     SxProps,
     Theme,
@@ -14,26 +12,20 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 
 import { colors } from "@feria-a-ti/common/theme/base";
-import {
-    ProductListCollectionData,
-    UserComment,
-    VendorCollectionData,
-    VendorData,
-} from "@feria-a-ti/common/model/functionsTypes";
+import { UserData } from "@feria-a-ti/common/model/functionsTypes";
 
-import "./VendorList.css";
-import { regionCode, regionCommune } from "@feria-a-ti/common/constants/form";
+import "./UserList.css";
 
-export type VendorViewProps = {
-    vendor: VendorData;
+export type UserViewProps = {
+    user: UserData;
     sx?: SxProps<Theme>;
     onEdit?: () => void;
     onDelete?: () => void;
 };
 
-export const VendorView = (props: VendorViewProps) => {
-    const { sx, vendor, onEdit, onDelete } = props;
-    const { email, password, name, surname, image, isDeleted } = vendor;
+export const UserView = (props: UserViewProps) => {
+    const { sx, user, onEdit, onDelete } = props;
+    const { email, password, username, isDeleted } = user;
 
     return (
         <>
@@ -46,15 +38,6 @@ export const VendorView = (props: VendorViewProps) => {
                         flex: 6,
                     }}
                 >
-                    <CardMedia
-                        component="img"
-                        sx={{ width: "15em" }}
-                        image={image.replace(
-                            "storage.googleapis.com",
-                            "localhost:9199"
-                        )}
-                        alt={"Item image"}
-                    />
                     <Box
                         sx={{
                             display: "flex",
@@ -71,8 +54,8 @@ export const VendorView = (props: VendorViewProps) => {
                                 color="text.secondary"
                                 component="div"
                             >
-                                Nombre de Vendedor:&nbsp;
-                                {name + " " + surname}
+                                Nombre de usuario:&nbsp;
+                                {username}
                             </Typography>
                             <Typography
                                 variant="subtitle1"
@@ -116,4 +99,4 @@ export const VendorView = (props: VendorViewProps) => {
     );
 };
 
-export default VendorView;
+export default UserView;

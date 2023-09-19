@@ -76,6 +76,7 @@ export const addVendor = functions.https.onCall(
                     );
                     //Setup document of user data
                     const collectionData: VendorCollectionData = {
+                        isDeleted: false,
                         productsId: undefined,
                         type: userType.vendor,
                         rut: data.rut,

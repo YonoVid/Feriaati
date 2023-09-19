@@ -1,4 +1,9 @@
-import { userStatus, userType, VendorCollectionData } from "./accountTypes";
+import {
+    UserCollectionData,
+    userStatus,
+    userType,
+    VendorCollectionData,
+} from "./accountTypes";
 import {
     ProductCollectionData,
     ProductListCollectionData,
@@ -29,6 +34,10 @@ export type ProductData = ProductCollectionData & {
 };
 
 export type ProductListData = ProductListCollectionData & {
+    id: string;
+};
+
+export type UserData = UserCollectionData & {
     id: string;
 };
 

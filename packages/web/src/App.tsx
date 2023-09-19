@@ -19,7 +19,7 @@ import ProductPage from "@feria-a-ti/web/src/pages/productPage/ProductPage";
 import VendorLoginPage from "@feria-a-ti/web/src/pages/vendorPages/VendorLoginPage";
 import VendorRecoveryPage from "@feria-a-ti/web/src/pages/vendorPages/VendorRecoveryPage";
 import { HeaderLayout } from "@feria-a-ti/web/src/pages/HeaderLayout";
-import ActivateVendors from "./pages/adminPages/ActivateVendors";
+import AdminActivateVendors from "./pages/adminPages/AdminActivateVendors";
 import ManagerVendorPage from "@feria-a-ti/web/src/pages/vendorPages/ManagerVendorPage";
 import ProductAddManager from "./pages/vendorPages/ProductAddManager";
 import UserVendorSelect from "./pages/userPages/UserVendorSelect";
@@ -27,6 +27,9 @@ import AccountPage from "./pages/accountPages/AccountPage";
 import ShoppingCartPage from "./pages/userPages/ShoppingCartPage";
 import FacturesPage from "./pages/userPages/FacturesPage";
 import VendorFacturesPage from "./pages/vendorPages/VendorFacturesPage";
+import AdminUserPage from "./pages/adminPages/AdminUserPage";
+import AdminVendorPage from "./pages/adminPages/AdminVendorPage";
+import AdminProductsPage from "./pages/adminPages/AdminProductsPage";
 
 const router = createBrowserRouter([
     {
@@ -103,7 +106,19 @@ const router = createBrowserRouter([
             },
             {
                 path: "/admin",
-                element: <ActivateVendors />,
+                element: <AdminActivateVendors />,
+            },
+            {
+                path: "/productsAdmin",
+                element: <AdminProductsPage />,
+            },
+            {
+                path: "/vendorsAdmin",
+                element: <AdminVendorPage />,
+            },
+            {
+                path: "/usersAdmin",
+                element: <AdminUserPage />,
             },
             {
                 path: "/productPage",
