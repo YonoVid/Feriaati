@@ -23,7 +23,7 @@ import { ShoppingCartItem } from "@feria-a-ti/common/model/props/shoppingCartPro
 export type AppContext = SessionUserData &
     UIMessages & {
         products: Array<ShoppingCartItem>;
-        addProduct: (data: ProductCollectionData, quantity: number) => void;
+        addProduct: (data: ShoppingCartItem) => void;
         editProduct: (index: number, quantity: number) => void;
         deleteProduct: (index: number) => void;
     };
@@ -38,7 +38,7 @@ export const ComponentContext = createContext<AppContext>({
     resetSession: () => false,
     checkSession: () => false,
     products: [],
-    addProduct: (data: ProductCollectionData) => null,
+    addProduct: (data: ShoppingCartItem) => null,
     editProduct: (index: number, quantity: number) => null,
     deleteProduct: (index: number) => null,
     setMessage: () => false,
@@ -82,9 +82,9 @@ export const AppContext = (props: { children: any }) => {
         return true;
     };
     //Shopping cart related variables
-    const addProduct = (data: ProductCollectionData, quantity: number) => {
+    const addProduct = (data: ShoppingCartItem, quantity: number) => {
         const checkIndex = shoppingCart.findIndex(
-            (item) => item.value === data
+            (item) => item.id === data.id
         );
         if (checkIndex >= 0) {
             editProduct(
@@ -92,15 +92,13 @@ export const AppContext = (props: { children: any }) => {
                 shoppingCart[checkIndex].quantity + quantity
             );
         } else {
-            const newShoppingCart = shoppingCart.concat({
-                value: data,
-                quantity: quantity,
-            });
+            const newShoppingCart = shoppingCart.concat(data);
 
             setShoppingCart(newShoppingCart);
             setProductQuantity(productQuantity + 1);
             setMessage({ msg: "Añadido producto al carro", isError: false });
         }
+        console.log(shoppingCart);
     };
 
     const editProduct = (index: number, quantity: number) => {
@@ -111,6 +109,7 @@ export const AppContext = (props: { children: any }) => {
             const newProduct: ShoppingCartItem = {
                 value: product.value,
                 quantity: quantity,
+                id: product.id,
             };
             newShoppingCart[index] = newProduct;
 

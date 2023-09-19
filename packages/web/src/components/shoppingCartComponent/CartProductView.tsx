@@ -88,11 +88,12 @@ export const CartProductView = (props: CartProductViewProps) => {
                             {"$" +
                                 price +
                                 "| " +
-                                (discount !== "none" &&
-                                    "Descuento de " +
-                                        (discount === "percentage"
-                                            ? promotion + "%"
-                                            : "$" + promotion))}
+                                (discount !== "none"
+                                    ? "Descuento de " +
+                                      (discount === "percentage"
+                                          ? promotion + "%"
+                                          : "$" + promotion)
+                                    : "Sin descuento")}
                         </Typography>
                     </CardContent>
                     <Box

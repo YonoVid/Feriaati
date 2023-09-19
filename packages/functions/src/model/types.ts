@@ -1,6 +1,16 @@
 import { AccountData, userStatus, userType } from "./accountTypes";
-import { DayTimeRange, ProductDiscount, ProductUnit } from "./productTypes";
+import {
+    DayTimeRange,
+    ProductDiscount,
+    ProductFactureData,
+    ProductUnit,
+} from "./productTypes";
 import { DayTime } from "./productTypes";
+
+export type UserRequestFields = {
+    token?: string;
+    id?: string;
+};
 
 export type AccountFields = {
     email: string;
@@ -8,16 +18,11 @@ export type AccountFields = {
     status?: userStatus;
 };
 
-export type GetAccountFields = {
-    token?: string;
-    id?: string;
+export type GetAccountFields = UserRequestFields & {
     type: userType;
 };
 
-export type EditAccountFields = Partial<AccountData> & {
-    token?: string;
-    id?: string;
-};
+export type EditAccountFields = Partial<AccountData> & UserRequestFields;
 
 export type UserFields = AccountFields & {
     username: string;
@@ -103,6 +108,11 @@ export type ProductEditFields = ProductFields & {
     id: string;
 };
 
+export type ProductFactureFields = {
+    token: string;
+    products: { [id: string]: ProductFactureData[] };
+};
+
 export type UpdateProductVendorFields = {
     tokenVendor?: string;
     productVendorId: string;
@@ -115,7 +125,6 @@ export type UpdateProductVendorFields = {
 export type UpdateFullProductVendorFields = {
     adminToken: string;
     id: string;
-    vendorId?: string;
     enterpriseName?: string;
     rut?: string;
     localNumber?: number;
@@ -128,7 +137,29 @@ export type UpdateFullProductVendorFields = {
     contact?: { phone: string; email: string };
 };
 
-export type DeleteProductVendorFields = {
+export type UpdateFullVendorFields = {
     adminToken: string;
-    productVendorId: string;
+    id: string;
+    email?: string;
+    password?: string;
+    name?: string;
+    surname?: string;
+};
+
+export type UpdateFullUserFields = {
+    adminToken: string;
+    id: string;
+    email?: string;
+    password?: string;
+    username?: string;
+};
+
+export type DeleteFields = {
+    token: string;
+    itemId: string;
+};
+
+export type FactureFields = UserRequestFields & {
+    index: number;
+    size: number;
 };

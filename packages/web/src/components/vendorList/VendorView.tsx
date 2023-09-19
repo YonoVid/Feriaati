@@ -18,13 +18,14 @@ import {
     ProductListCollectionData,
     UserComment,
     VendorCollectionData,
+    VendorData,
 } from "@feria-a-ti/common/model/functionsTypes";
 
 import "./VendorList.css";
 import { regionCode, regionCommune } from "@feria-a-ti/common/constants/form";
 
 export type VendorViewProps = {
-    vendor: ProductListCollectionData;
+    vendor: VendorData;
     sx?: SxProps<Theme>;
     onEdit?: () => void;
     onDelete?: () => void;
@@ -32,23 +33,19 @@ export type VendorViewProps = {
 
 export const VendorView = (props: VendorViewProps) => {
     const { sx, vendor, onEdit, onDelete } = props;
-    const {
-        enterpriseName,
-        localNumber,
-        region,
-        commune,
-        street,
-        streetNumber,
-        serviceTime,
-        contact,
-        image,
-        isDeleted,
-    } = vendor;
+    const { email, password, name, surname, image, isDeleted } = vendor;
 
     return (
         <>
             <Box sx={{ display: "flex" }}>
-                <Card sx={{ display: "flex", flex: 6 }}>
+                <Card
+                    sx={{
+                        display: "flex",
+                        flexDirection: "row",
+                        justifyContent: "space-between",
+                        flex: 6,
+                    }}
+                >
                     <CardMedia
                         component="img"
                         sx={{ width: "15em" }}
@@ -58,80 +55,61 @@ export const VendorView = (props: VendorViewProps) => {
                         )}
                         alt={"Item image"}
                     />
-                    <Box sx={{ display: "flex", flexDirection: "column" }}>
+                    <Box
+                        sx={{
+                            display: "flex",
+                            flexDirection: "column",
+                            marginX: 5,
+                        }}
+                    >
                         <CardContent sx={{ flex: "1 0 auto" }}>
                             <Typography component="div" variant="h5">
-                                {enterpriseName +
-                                    (isDeleted ? " (DELETED)" : "")}
+                                {email + (isDeleted ? " (DELETED)" : "")}
                             </Typography>
                             <Typography
                                 variant="subtitle1"
                                 color="text.secondary"
                                 component="div"
                             >
-                                Zona de atención:
-                                {(region ? regionCode[region - 1][1] : "") +
-                                    ", " +
-                                    (region && commune
-                                        ? regionCommune[region].find(
-                                              (el: string | number[]) =>
-                                                  el[0] === commune
-                                          )[1]
-                                        : "")}
+                                Nombre de Vendedor:&nbsp;
+                                {name + " " + surname}
                             </Typography>
-                            <h5>
-                                Horario de atención:
-                                {serviceTime &&
-                                    (serviceTime?.start.hours
-                                        .toString()
-                                        .padStart(2, "0") +
-                                        ":" +
-                                        serviceTime?.start.minutes
-                                            .toString()
-                                            .padStart(2, "0") || "") +
-                                        "-" +
-                                        (serviceTime?.end.hours
-                                            .toString()
-                                            .padStart(2, "0") +
-                                            ":" +
-                                            serviceTime?.end.minutes
-                                                .toString()
-                                                .padStart(2, "0") || "")}
-                            </h5>
-                            <h5>
-                                Método de contacto:
-                                {(contact &&
-                                    contact?.phone + "-" + contact?.email) ||
-                                    "-"}
-                            </h5>
-                        </CardContent>
-                        {!isDeleted && (
-                            <Box
-                                sx={{
-                                    display: "flex",
-                                    alignItems: "center",
-                                    float: "ltr",
-                                    pl: 1,
-                                    pb: 1,
-                                }}
+                            <Typography
+                                variant="subtitle1"
+                                color="text.secondary"
+                                component="div"
                             >
-                                <IconButton
-                                    aria-label="previous"
-                                    color="warning"
-                                    onClick={() => onEdit && onEdit()}
-                                >
-                                    <EditIcon />
-                                </IconButton>
-                                <IconButton
-                                    aria-label="next"
-                                    color="error"
-                                    onClick={() => onDelete && onDelete()}
-                                >
-                                    <DeleteIcon />
-                                </IconButton>
-                            </Box>
-                        )}
+                                {"*".repeat(password.length)}
+                            </Typography>
+                        </CardContent>
                     </Box>
+                    {!isDeleted && (
+                        <Box
+                            sx={{
+                                display: "flex",
+                                margin: 1,
+                                alignItems: "center",
+                                float: "ltr",
+                                pl: 1,
+                                pb: 1,
+                            }}
+                        >
+                            <IconButton
+                                aria-label="previous"
+                                color="warning"
+                                onClick={() => onEdit && onEdit()}
+                            >
+                                <EditIcon />
+                            </IconButton>
+                            <IconButton
+                                aria-label="next"
+                                color="error"
+                                onClick={() => onDelete && onDelete()}
+                            >
+                                <DeleteIcon />
+                            </IconButton>
+                        </Box>
+                    )}
                 </Card>
             </Box>
         </>

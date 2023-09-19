@@ -1,5 +1,5 @@
 import { errorCodes } from "../errors";
-import { RegisterVendorFields } from "../model/types";
+import { RegisterVendorFields, UpdateFullVendorFields } from "../model/types";
 import { checkAccountFields } from "../utilities/checkAccount";
 import { stringRegex } from "../utilities/checkDataType";
 
@@ -68,6 +68,33 @@ export const checkRegisterVendorFields = (
 
     return {
         check: requiredCheck && accountCheck && passwordCheck,
+        code: errorCodes.SUCCESFULL,
+    };
+};
+
+export const checkVendorFullUpdate = (
+    input: UpdateFullVendorFields
+): { check: boolean; code: errorCodes } => {
+    const { adminToken, id, email, password, name, surname } = input;
+
+    //Check required values exist
+    const requiredCheck =
+        adminToken != null &&
+        adminToken != "" &&
+        id != null &&
+        id != "" &&
+        ((email != "" && email != null) ||
+            (password != "" && password != null) ||
+            (name != "" && name != null) ||
+            (surname != "" && surname != null));
+    if (!requiredCheck) {
+        return {
+            check: false,
+            code: errorCodes.MISSING_REQUIRED_DATA_ERROR,
+        };
+    }
+    return {
+        check: requiredCheck,
         code: errorCodes.SUCCESFULL,
     };
 };

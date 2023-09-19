@@ -21,6 +21,7 @@ import "./ProductList.css";
 
 function ProductList(props: RProductListProps) {
     const {
+        vendorId,
         label,
         color,
         children,
@@ -99,6 +100,7 @@ function ProductList(props: RProductListProps) {
                     .slice((page - 1) * 3, page * 3)
                     .map((product, index) => (
                         <ProductView
+                            vendorId={vendorId}
                             onEdit={() => onEdit && onEdit(product)}
                             addProduct={addProduct}
                             onDelete={() => onDelete && onDelete(product.id)}

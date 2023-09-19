@@ -6,9 +6,6 @@ import {
     ListItem,
     ListItemText,
 } from "@mui/material";
-// import DeleteIcon from "@mui/icons-material/Delete";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import DisabledByDefaultIcon from "@mui/icons-material/DisabledByDefault";
 
 import {
     userStatus,
@@ -16,6 +13,7 @@ import {
 } from "@feria-a-ti/common/model/functionsTypes";
 
 import { useHeaderContext } from "@feria-a-ti/web/src/pages/HeaderLayout";
+import VendorRegisterView from "./VendorRegisterView";
 
 interface RegisterVendorListProps {
     vendors: VendorData[];
@@ -28,33 +26,17 @@ function RegisterVendorList(props: RegisterVendorListProps) {
     return (
         <List>
             {vendors.map((vendor) => (
-                <ListItem
-                    disablePadding
-                    key={vendor.id}
-                    secondaryAction={
-                        <>
-                            <IconButton
-                                edge="end"
-                                aria-label="delete"
-                                onClick={() =>
-                                    updateState(vendor.id, userStatus.activated)
-                                }
-                            >
-                                <CheckCircleIcon />
-                            </IconButton>
-                            <IconButton
-                                edge="end"
-                                aria-label="delete"
-                                onClick={() =>
-                                    updateState(vendor.id, userStatus.blocked)
-                                }
-                            >
-                                <DisabledByDefaultIcon />
-                            </IconButton>
-                        </>
-                    }
-                >
-                    <ListItemText primary={vendor.enterpriseName} />
+                <ListItem disablePadding key={vendor.id}>
+                    <VendorRegisterView
+                        sx={{ flex: 1, flexGrow: 1 }}
+                        vendor={vendor}
+                        onAccept={() =>
+                            updateState(vendor.id, userStatus.activated)
+                        }
+                        onDelete={() =>
+                            updateState(vendor.id, userStatus.blocked)
+                        }
+                    />
                     <Divider />
                 </ListItem>
             ))}

@@ -1,9 +1,7 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Outlet, useOutletContext } from "react-router-dom";
 import { AlertColor, Grid } from "@mui/material";
 import { Alert, Snackbar } from "@mui/material";
-
-import { ProductCollectionData } from "@feria-a-ti/common/model/functionsTypes";
 
 import NavBar from "@feria-a-ti/web/src/components/navBar/NavBar";
 import { ShoppingCartItem } from "@feria-a-ti/common/model/props/shoppingCartProps";
@@ -12,12 +10,14 @@ import { UserContext } from "../App";
 export type HeaderLayoutContext = {
     setMessage: (data: { msg: string; isError: boolean }) => void;
     products: Array<ShoppingCartItem>;
-    addProduct: (data: ProductCollectionData, quantity: number) => void;
+    addProduct: (data: ShoppingCartItem) => void;
     editProduct: (index: number, quantity: number) => void;
     deleteProduct: (index: number) => void;
+    resetProduct: () => void;
 };
 
 export const HeaderLayout = () => {
+    const shoppingKey = "shoppingCart";
     //Context variables
     const { productQuantity, setProductQuantity } = useContext(UserContext);
 
@@ -25,7 +25,7 @@ export const HeaderLayout = () => {
     const [snackBarData, setSnackBarData] = useState("");
     const [snackBarType, setSnackBarType] = useState<AlertColor>("success");
     const [shoppingCart, setShoppingCart] = useState<Array<ShoppingCartItem>>(
-        []
+        JSON.parse(localStorage.getItem(shoppingKey) || "[]")
     );
 
     // // Alert Related values
@@ -38,24 +38,23 @@ export const HeaderLayout = () => {
         setOpen(true);
     };
 
-    const addProduct = (data: ProductCollectionData, quantity: number) => {
+    const addProduct = (data: ShoppingCartItem) => {
         const checkIndex = shoppingCart.findIndex(
-            (item) => item.value === data
+            (item) => item.id === data.id
         );
         if (checkIndex >= 0) {
             editProduct(
                 checkIndex,
-                shoppingCart[checkIndex].quantity + quantity
+                shoppingCart[checkIndex].quantity + data.quantity
             );
         } else {
-            const newShoppingCart = shoppingCart.concat({
-                value: data,
-                quantity: quantity,
-            });
+            const newShoppingCart = shoppingCart.concat(data);
 
             setShoppingCart(newShoppingCart);
             setProductQuantity(productQuantity + 1);
             setMessage({ msg: "Añadido producto al carro", isError: false });
+            //Store persistent local data
+            localStorage.setItem(shoppingKey, JSON.stringify(newShoppingCart));
         }
     };
 
@@ -65,6 +64,7 @@ export const HeaderLayout = () => {
         if (product != undefined && product != null) {
             const newShoppingCart = shoppingCart.concat([]);
             const newProduct: ShoppingCartItem = {
+                id: product.id,
                 value: product.value,
                 quantity: quantity,
             };
@@ -72,6 +72,8 @@ export const HeaderLayout = () => {
 
             setShoppingCart(newShoppingCart);
             setMessage({ msg: "Editado producto del carro", isError: false });
+            //Store persistent local data
+            localStorage.setItem(shoppingKey, JSON.stringify(newShoppingCart));
         }
     };
 
@@ -80,13 +82,23 @@ export const HeaderLayout = () => {
 
         if (product != undefined && product != null) {
             const newShoppingCart = shoppingCart.filter(
-                (value, valueIndex) => valueIndex !== index
+                (value, valueIndex) => value && valueIndex !== index
             );
 
             setShoppingCart(newShoppingCart);
             setProductQuantity(productQuantity - 1);
             setMessage({ msg: "Eliminado producto del carro", isError: false });
+            //Store persisten local data
+            localStorage.setItem(shoppingKey, JSON.stringify(newShoppingCart));
         }
+    };
+
+    const resetProduct = () => {
+        setShoppingCart([]);
+        setProductQuantity(0);
+        setMessage({ msg: "Reiniciado carro", isError: false });
+        //Store persisten local data
+        localStorage.removeItem(shoppingKey);
     };
 
     const handleClose = (
@@ -99,6 +111,10 @@ export const HeaderLayout = () => {
 
         setOpen(false);
     };
+
+    useEffect(() => {
+        setProductQuantity(shoppingCart.length);
+    }, []);
 
     return (
         <>
@@ -124,6 +140,7 @@ export const HeaderLayout = () => {
                             addProduct,
                             editProduct,
                             deleteProduct,
+                            resetProduct,
                         }}
                     />
                 </Grid>

@@ -14,15 +14,11 @@ import {
     ResponseData,
 } from "../model/reponseFields";
 
-import {
-    ProductCollectionData,
-    ProductListCollectionData,
-} from "../model/productTypes";
+import { ProductCollectionData } from "../model/productTypes";
 import { collectionNames } from "../consts";
 import { errorCodes, messagesCode } from "../errors";
 import { uploadProductImage } from "../utilities/storage";
 import { getAccount } from "../utilities/account";
-import { VendorCollectionData } from "../model/accountTypes";
 import { DocumentSnapshot } from "firebase-admin/firestore";
 
 //funciones crud producto
@@ -51,27 +47,7 @@ export const addProduct = functions.https.onCall(
                         .where("vendorId", "==", vendor.docs[0].id)
                         .get();
                     // Store document id
-                    let id;
-                    // Create new collection if not exists
-                    if (products.empty) {
-                        const vendorData =
-                            (await vendor.docs[0].data()) as VendorCollectionData;
-                        let collection: ProductListCollectionData = {
-                            isDeleted: false,
-                            vendorId: vendor.docs[0].id,
-                            enterpriseName: vendorData.enterpriseName,
-                            localNumber: vendorData.localNumber,
-                            rut: vendorData.rut,
-                            street: vendorData.street,
-                            streetNumber: vendorData.streetNumber,
-                            region: vendorData.region,
-                            commune: vendorData.commune,
-                            image: vendorData.image,
-                        };
-                        id = (await productsRef.add(collection)).id;
-                    } else {
-                        id = products.docs[0].id;
-                    }
+                    const id = products.docs[0].id;
 
                     const productRef = await productsRef
                         .doc(id)

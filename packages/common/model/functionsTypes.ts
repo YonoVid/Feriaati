@@ -1,4 +1,5 @@
 import { DayTime } from "./baseTypes";
+import { OpinionValue } from "./comments/commentsFields";
 
 //Response Data
 export type ResponseData<T> = {
@@ -26,6 +27,11 @@ export type ProductListData = ProductListCollectionData & {
 export type VendorData = VendorCollectionData & {
     id: string;
 };
+
+export type UserData = UserCollectionData & {
+    id: string;
+};
+
 //
 // LOGIC DATA
 //
@@ -42,11 +48,17 @@ export type LogicalData = {
 // VENDOR PAGE TYPES
 //
 
+export type UserCommentList = {
+    own: UserComment;
+    comments: Array<UserComment>;
+};
+
 export type UserComment = {
     id?: string;
     userId: string;
     username?: string;
     comment: string;
+    opinion: OpinionValue;
 };
 
 export type CommentCollectionData = UserComment & {
@@ -89,12 +101,13 @@ export type AccountData = {
     direction?: Array<AccountDirection>;
 };
 
-export type AccountCollectionData = AccountData & {
-    algorithm: string;
-    status: string;
-    iv: ArrayBuffer;
-    code: string;
-};
+export type AccountCollectionData = LogicalData &
+    AccountData & {
+        algorithm: string;
+        status: string;
+        iv: ArrayBuffer;
+        code: string;
+    };
 
 export type UserCollectionData = AccountCollectionData & {
     username: string;
@@ -111,10 +124,11 @@ export type VendorCollectionData = AccountCollectionData & {
     name: string;
     surname: string;
     image: string;
+    productsId: string | undefined;
 };
 
 export type ProductListCollectionData = LogicalData & {
-    vendorId: string;
+    rating?: { positive: number; negative: number };
     enterpriseName: string;
     rut: string;
     localNumber: number;
@@ -149,4 +163,22 @@ export type ProductCollectionData = {
     discount: ProductDiscount;
     promotion: number;
     image: [string, string, string];
+};
+
+export type ProductFactureData = {
+    id: string;
+    name: string;
+    quantity: number;
+    subtotal: number;
+};
+
+export type FactureData = {
+    id: string;
+    date: TimeDate;
+    products: Array<ProductFactureData>;
+};
+
+export type TimeDate = {
+    seconds: number;
+    nanoseconds: number;
 };

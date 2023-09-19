@@ -38,6 +38,7 @@ export const UserVendorSelect = (props: UserVendorSelectProps) => {
     const [selectedVendor, setSelectedVendor] = useState<VendorData | null>();
     // Product stored data
     const [products, setProducts] = useState<Array<ProductData>>([]);
+    const [productVendorId, setProductVendorId] = useState<string | null>();
 
     // Data of vendors stored
     const [vendors, setVendors] = useState<VendorData[]>([]);
@@ -61,6 +62,7 @@ export const UserVendorSelect = (props: UserVendorSelectProps) => {
                 const { msg, error, extra } = result.data;
                 console.log(result.data);
 
+                setProductVendorId();
                 setProducts(extra);
                 //setIsLogged(result.data as any);
                 if (error) {
@@ -101,6 +103,7 @@ export const UserVendorSelect = (props: UserVendorSelectProps) => {
                             onPress={() => setSelectedVendor(null)}
                         />
                         <ProductVendorPage
+                            vendorId={selectedVendor.id}
                             addProduct={addProduct}
                             onReload={getVendors}
                             vendorData={selectedVendor}

@@ -1,3 +1,5 @@
+import { LogicalData } from "./sharedTypes";
+
 export enum userType {
     admin = "admin",
     user = "user",
@@ -29,12 +31,13 @@ export type AccountData = {
     direction?: Array<AccountDirection>;
 };
 
-export type AccountCollectionData = AccountData & {
-    algorithm: string;
-    status: string;
-    iv: ArrayBuffer;
-    code: string;
-};
+export type AccountCollectionData = LogicalData &
+    AccountData & {
+        algorithm: string;
+        status: string;
+        iv: ArrayBuffer;
+        code: string;
+    };
 
 export type UserCollectionData = AccountCollectionData & {
     username: string;
@@ -51,4 +54,5 @@ export type VendorCollectionData = AccountCollectionData & {
     name: string;
     surname: string;
     image: string;
+    productsId: string | undefined;
 };

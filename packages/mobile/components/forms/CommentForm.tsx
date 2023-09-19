@@ -1,7 +1,7 @@
-import React, { useCallback, useEffect, useState } from "react";
-import { Image, Text, View, StyleSheet } from "react-native";
-import { Controller, FieldError, useForm } from "react-hook-form";
-import { Button, IconButton } from "react-native-paper";
+import React from "react";
+import { View, StyleSheet } from "react-native";
+import { useForm } from "react-hook-form";
+import { Button } from "react-native-paper";
 
 import { colors } from "@feria-a-ti/common/theme/base";
 
@@ -10,12 +10,15 @@ import { CommentFields } from "@feria-a-ti/common/model/comments/commentsFields"
 import { stringRegex } from "@feria-a-ti/common/check/checkBase";
 
 import InputComponent from "@feria-a-ti/mobile/components/inputs/InputComponent";
-import DropdownComponent from "@feria-a-ti/mobile/components/inputs/DropdownComponent";
-import FileInputComponent from "../inputs/FileInputComponent";
 
 function CommentForm(props: RFormProps) {
     const { children, canSubmit, onSubmit } = props;
-    const { handleSubmit, reset, control } = useForm<CommentFields>();
+    const {
+        handleSubmit,
+        reset,
+        control,
+        formState: { errors },
+    } = useForm<CommentFields>();
 
     return (
         <View style={{ flexDirection: "column" }}>
@@ -24,8 +27,9 @@ function CommentForm(props: RFormProps) {
                 label="Danos tu opinión"
                 multiline={true}
                 rows={3}
-                control={control}
                 style={{ flex: 5 }}
+                control={control}
+                error={errors?.comment}
                 rules={{
                     required: "El comentario no puede estar vacío",
                     maxLength: {
@@ -45,10 +49,7 @@ function CommentForm(props: RFormProps) {
                     mode="contained"
                     color={styles.buttonInner.color}
                     disabled={!props.canSubmit}
-                    onPress={() => {
-                        reset();
-                        handleSubmit(onSubmit);
-                    }}
+                    onPress={handleSubmit(onSubmit)}
                 >
                     Enviar
                 </Button>

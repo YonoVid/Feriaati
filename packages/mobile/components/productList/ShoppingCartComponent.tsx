@@ -30,7 +30,7 @@ export const ShoppingCartComponent = (props: ShoppingCartProps) => {
             newTotal += item.quantity * finalPrice;
         });
         setTotal(newTotal);
-    }, []);
+    }, [products]);
 
     return (
         <View style={styles.container}>

@@ -1,9 +1,6 @@
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
-import {
-    DeleteProductVendorFields,
-    UpdateFullProductVendorFields,
-} from "../model/types";
+import { DeleteFields, UpdateFullProductVendorFields } from "../model/types";
 import { ResponseData } from "../model/reponseFields";
 
 import { errorCodes, messagesCode } from "../errors";
@@ -93,26 +90,23 @@ export const updateProductList = functions.https.onCall(
 );
 
 export const deleteProductList = functions.https.onCall(
-    async (
-        data: DeleteProductVendorFields,
-        context
-    ): Promise<ResponseData<null>> => {
+    async (data: DeleteFields, context): Promise<ResponseData<null>> => {
         try {
-            const { adminToken, productVendorId } = data;
+            const { token, itemId } = data;
             if (
-                adminToken != null &&
-                adminToken != "" &&
-                productVendorId != null &&
-                productVendorId != ""
+                token != null &&
+                token != "" &&
+                itemId != null &&
+                itemId != ""
             ) {
                 const adminAccount = await getAccount(collectionNames.ADMINS, {
-                    token: data.adminToken,
+                    token: data.token,
                 });
                 if (adminAccount.code === errorCodes.SUCCESFULL) {
                     const db = admin.firestore();
                     const vendorProductsRef = await db
                         .collection(collectionNames.VENDORPRODUCTS)
-                        .doc(data.productVendorId);
+                        .doc(data.itemId);
                     const docVendorProducts = await vendorProductsRef.get();
                     const isDeleted = docVendorProducts.get("isDeleted");
                     if (docVendorProducts.exists && !isDeleted) {

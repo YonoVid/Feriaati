@@ -166,7 +166,6 @@ export const checkProductVendorFullUpdate = (
     const {
         adminToken,
         id,
-        vendorId,
         enterpriseName,
         rut,
         localNumber,
@@ -194,8 +193,7 @@ export const checkProductVendorFullUpdate = (
             adminToken != "" &&
             id != null &&
             id != "" &&
-            ((vendorId != null && vendorId != "") ||
-                (enterpriseName != "" && enterpriseName != null) ||
+            ((enterpriseName != "" && enterpriseName != null) ||
                 (rut != "" && rut != null) ||
                 (street != "" && street != null) ||
                 (!isNaN(localNumber as number) && localNumber != null) ||

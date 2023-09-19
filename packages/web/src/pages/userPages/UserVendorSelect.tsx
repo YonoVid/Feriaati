@@ -10,8 +10,6 @@ import {
     ProductData,
     ProductListCollectionData,
     ResponseData,
-    UserComment,
-    VendorCollectionData,
     VendorData,
 } from "@feria-a-ti/common/model/functionsTypes";
 import { ProductListFields } from "@feria-a-ti/common/model/props/productAddFormProps";
@@ -116,6 +114,7 @@ const UserVendorSelect = () => {
                 <>
                     <ProductVendorPage
                         addProduct={addProduct}
+                        vendorId={selectedVendor.id}
                         vendorData={productVendor || {}}
                         products={products}
                         isEditable={false}

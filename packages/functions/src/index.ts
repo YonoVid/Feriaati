@@ -19,27 +19,44 @@ export {
     login,
     passRecovery,
     passUpdate,
-    vendorListUser,
-} from "./buyer/buyerFunctions";
+} from "./buyer/buyerAccessFunctions";
+
+export { vendorListUser, buyProductUser } from "./buyer/buyerFunctions";
+
+export { getFactures } from "./buyer/buyerFactureFunctions";
 
 export {
     addVendor,
     loginVendor,
     passRecoveryVendor,
     passUpdateVendor,
-} from "./vendor/vendorFunctions";
-export {
-    adminLogin,
-    vendorList,
-    vendorStateUpdate,
-    registerVendorList,
-    productVendorList,
-} from "./admin/adminFunctions";
+} from "./vendor/vendorAccessFunctions";
+
+export { getVendorFactures } from "./vendor/vendorFactureFunctions";
+
+export { checkPetitionVendor } from "./vendor/vendorFunctions";
+
+export { adminLogin, productVendorList } from "./admin/adminFunctions";
 
 export {
     updateProductList,
     deleteProductList,
 } from "./admin/adminProductFunctions";
+
+export {
+    vendorList,
+    vendorStateUpdate,
+    registerVendorList,
+    updateVendor,
+    deleteVendor,
+} from "./admin/adminVendorFunctions";
+
+export {
+    userList,
+    userStateUpdate,
+    updateUser,
+    deleteUser,
+} from "./admin/adminUserFunctions";
 
 export {
     addProduct,

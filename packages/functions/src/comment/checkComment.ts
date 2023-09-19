@@ -2,6 +2,7 @@ import { errorCodes } from "../errors";
 import {
     CommentFields,
     GetCommentsFields,
+    OpinionValue,
     ReportCommentFields,
 } from "../model/commentTypes";
 import { stringRegex } from "../utilities/checkDataType";
@@ -55,13 +56,14 @@ export const checkReportCommentFields = (
 export const checkCommentFields = (
     input: CommentFields
 ): { check: boolean; code: errorCodes } => {
-    const { vendorId, userToken, comment } = input;
+    const { vendorId, userToken, comment, opinion } = input;
     //Check required values exist
     const requiredCheck =
         vendorId != null &&
         vendorId != "" &&
         userToken != "" &&
-        userToken != null;
+        userToken != null &&
+        opinion != null;
     if (!requiredCheck) {
         return { check: false, code: errorCodes.MISSING_REQUIRED_DATA_ERROR };
     }
@@ -73,9 +75,14 @@ export const checkCommentFields = (
     if (!commentCheck) {
         return { check: false, code: errorCodes.COMMENT_FORMAT_ERROR };
     }
+
+    const opinionCheck = opinion != OpinionValue.NONE;
+    if (!opinionCheck) {
+        return { check: false, code: errorCodes.COMMENT_FORMAT_ERROR };
+    }
     // console.log("Username check", userCheck);
     return {
-        check: requiredCheck && commentCheck,
+        check: requiredCheck && commentCheck && opinionCheck,
         code: errorCodes.SUCCESFULL,
     };
 };
