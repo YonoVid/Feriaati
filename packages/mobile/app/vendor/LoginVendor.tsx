@@ -27,10 +27,10 @@ export const LoginVendor = (props: LoginVendorProps) => {
     // Navigation
     const { navigation } = props;
     // Form variables
-    const [submitActive, setSubmitActive] = useState(true);
+    const [canSubmit, setCanSubmit] = useState(true);
 
     const onSubmit = (data: LoginFields) => {
-        //  setSubmitActive(false);
+        setCanSubmit(false);
         console.log("SUBMIT FORM");
 
         const check = checkLoginFields(data);
@@ -56,7 +56,7 @@ export const LoginVendor = (props: LoginVendorProps) => {
                 .catch((error: any) => {
                     console.log(error);
                 })
-                .finally(() => setSubmitActive(true));
+                .finally(() => setCanSubmit(true));
         }
     };
 
@@ -66,7 +66,7 @@ export const LoginVendor = (props: LoginVendorProps) => {
                 style={styles.container}
                 contentContainerStyle={styles.innerContainer}
             >
-                <LoginForm onSubmit={onSubmit} canSubmit={submitActive}>
+                <LoginForm onSubmit={onSubmit} canSubmit={canSubmit}>
                     <Button
                         mode="text"
                         onPress={() => navigation.navigate("registerVendor")}

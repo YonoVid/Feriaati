@@ -16,7 +16,7 @@ export type ProductViewProps = {
     vendorId?: string;
     product: ProductData;
     isEditable: boolean;
-    addProduct?: (data: ShoppingCartItem) => void;
+    addProduct?: (data: ShoppingCartItem, quantity: number) => void;
     onEdit?: (product: ProductData) => void;
     onDelete?: (id: string) => void;
 };
@@ -161,6 +161,7 @@ export const ProductView = (props: ProductViewProps) => {
                                 addProduct &&
                                 addProduct({
                                     quantity: quantity,
+
                                     id: {
                                         vendorId: vendorId,
                                         productId: product.id,

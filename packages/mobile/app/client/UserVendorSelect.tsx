@@ -62,7 +62,7 @@ export const UserVendorSelect = (props: UserVendorSelectProps) => {
                 const { msg, error, extra } = result.data;
                 console.log(result.data);
 
-                setProductVendorId();
+                setProductVendorId(extra.id);
                 setProducts(extra);
                 //setIsLogged(result.data as any);
                 if (error) {
