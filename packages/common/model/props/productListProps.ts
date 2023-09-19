@@ -11,7 +11,7 @@ export type ProductListProps = FormProps & {
     isEditable: boolean;
     filter?: string;
     onSubmit?: (data: ProductFields) => void;
-    addProduct?: (data: ShoppingCartItem) => void;
+    addProduct?: (data: ShoppingCartItem, quantity: number) => void;
     onAdd?: () => void;
     onEdit?: (data: ProductData) => void;
     onReload?: () => void;

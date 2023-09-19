@@ -31,7 +31,23 @@ export const ProductVendorPage = (props: ProductVendorPageProps) => {
         serviceTime,
         contact,
         image,
+        rating,
     } = vendorData;
+
+    const rateCount =
+        rating && rating != null ? rating.positive + rating.negative : 1;
+
+    const rate =
+        rating && rating != null
+            ? rating.positive - rating.negative / rateCount
+            : 0;
+
+    const rateColor =
+        Math.abs(rate) < 0.1
+            ? "none"
+            : rate > 0
+            ? colors.primary
+            : colors.secondary;
 
     const [expanded, setExpanded] = useState(false);
 
@@ -52,6 +68,25 @@ export const ProductVendorPage = (props: ProductVendorPageProps) => {
                         "Ubicación de local: " + street + " " + streetNumber
                     }
                 />
+                <Text
+                    style={{
+                        backgroundColor: rateColor,
+                        padding: 5,
+                        borderRadius: 15,
+                        alignContent: "center",
+                        alignItems: "center",
+                        textAlign: "center",
+                    }}
+                >
+                    {Math.abs(rate) < 0.1
+                        ? "Valoración: No hay suficiente información"
+                        : "Valoración: " +
+                          (rate > 0 ? "Positiva" : "Negativa") +
+                          "(" +
+                          rateCount +
+                          ")"}
+                </Text>
+
                 <Card.Cover
                     style={{ height: "25%", maxHeight: "25%" }}
                     resizeMode="cover"
@@ -96,6 +131,12 @@ export const ProductVendorPage = (props: ProductVendorPageProps) => {
                                               .toString()
                                               .padStart(2, "0") || "")
                                     : ":"}
+                            </Text>
+                            <Text style={{ flex: 6 }}>
+                                Método de contacto:
+                                {(contact &&
+                                    contact?.phone + "-" + contact?.email) ||
+                                    "-"}
                             </Text>
                             <Text style={{ flex: 6 }}>
                                 Método de contacto:
