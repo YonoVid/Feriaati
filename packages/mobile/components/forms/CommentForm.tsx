@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { View, StyleSheet } from "react-native";
 import { useForm } from "react-hook-form";
 import { Button } from "react-native-paper";
@@ -6,28 +6,102 @@ import { Button } from "react-native-paper";
 import { colors } from "@feria-a-ti/common/theme/base";
 
 import { RFormProps } from "@feria-a-ti/common/model/props/registerFormProps";
-import { CommentFields } from "@feria-a-ti/common/model/comments/commentsFields";
+import {
+    CommentFields,
+    OpinionValue,
+} from "@feria-a-ti/common/model/comments/commentsFields";
 import { stringRegex } from "@feria-a-ti/common/check/checkBase";
 
 import InputComponent from "@feria-a-ti/mobile/components/inputs/InputComponent";
 
 function CommentForm(props: RFormProps) {
-    const { children, canSubmit, onSubmit } = props;
+    const { children, canSubmit, comment, onSubmit } = props;
     const {
         handleSubmit,
         reset,
+        setValue,
+        clearErrors,
         control,
         formState: { errors },
     } = useForm<CommentFields>();
 
+    const [opinion, setOpinion] = useState<OpinionValue>(OpinionValue.NONE);
+
+    const selectedIcon = {
+        color: colors.secondary,
+        border: 1,
+        borderColor: colors.primary,
+    };
+
+    const changeOpinion = (value: OpinionValue) => {
+        let newValue = value;
+        if (opinion == value) {
+            newValue = OpinionValue.NONE;
+        }
+        setOpinion(newValue);
+        setValue("opinion", newValue);
+        clearErrors();
+    };
+
+    useEffect(() => {
+        if (comment && comment != null) {
+            setValue("comment", comment.comment);
+            changeOpinion(comment.opinion);
+        }
+        console.log(comment);
+    }, [comment]);
+
     return (
         <View style={{ flexDirection: "column" }}>
+            <View style={{ ...styles.button, flexDirection: "row" }}>
+                <Button
+                    style={{
+                        flex: 1,
+                        ...(opinion == OpinionValue.POSITIVE
+                            ? {
+                                  backgroundColor: colors.primary,
+                                  ...selectedIcon,
+                              }
+                            : selectedIcon),
+                    }}
+                    mode={
+                        opinion == OpinionValue.POSITIVE
+                            ? "contained"
+                            : "outlined"
+                    }
+                    disabled={!props.canSubmit}
+                    onPress={() => changeOpinion(OpinionValue.POSITIVE)}
+                    icon="thumb-up"
+                >
+                    Positivo
+                </Button>
+                <Button
+                    style={{
+                        flex: 1,
+                        ...(opinion == OpinionValue.NEGATIVE
+                            ? {
+                                  ...selectedIcon,
+                              }
+                            : selectedIcon),
+                    }}
+                    mode={
+                        opinion == OpinionValue.NEGATIVE
+                            ? "contained"
+                            : "outlined"
+                    }
+                    disabled={!props.canSubmit}
+                    onPress={() => changeOpinion(OpinionValue.NEGATIVE)}
+                    icon="thumb-down"
+                >
+                    Negativo
+                </Button>
+            </View>
             <InputComponent
                 name="comment"
                 label="Danos tu opinión"
                 multiline={true}
                 rows={3}
-                style={{ flex: 5 }}
+                style={{ flex: 5, margin: 2 }}
                 control={control}
                 error={errors?.comment}
                 rules={{
@@ -41,6 +115,9 @@ function CommentForm(props: RFormProps) {
                         message:
                             "No se aceptan caracteres especiales (Ej: <,>,+,-,etc.)",
                     },
+                    validate: () =>
+                        opinion != OpinionValue.NONE ||
+                        "Se debe señalar si la opinión es positiva o negativa",
                 }}
             />
 

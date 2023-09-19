@@ -106,7 +106,7 @@ export const CommentList = (props: RListCommentsProps) => {
                 comment: data.comment,
                 userToken: authToken,
                 vendorId: commentsVendor,
-                opinion: OpinionValue.POSITIVE,
+                opinion: data.opinion,
             };
             const upload = httpsCallable<
                 CommentFields,
