@@ -103,15 +103,39 @@ export default function AppBar(props: NativeStackHeaderProps) {
                                     title={"HOME"}
                                 />
                                 {type === userType.user && (
-                                    <Menu.Item
-                                        onPress={() => {
-                                            navigation.replace(
-                                                "userShoppingCart"
-                                            );
-                                            closeMenu();
-                                        }}
-                                        title={"Carro"}
-                                    />
+                                    <>
+                                        <Menu.Item
+                                            onPress={() => {
+                                                navigation.replace(
+                                                    "userShoppingCart"
+                                                );
+                                                closeMenu();
+                                            }}
+                                            title={"Carro"}
+                                        />
+                                        <Menu.Item
+                                            onPress={() => {
+                                                navigation.replace(
+                                                    "userFactures"
+                                                );
+                                                closeMenu();
+                                            }}
+                                            title={"Facturas"}
+                                        />
+                                    </>
+                                )}
+                                {type === userType.vendor && (
+                                    <>
+                                        <Menu.Item
+                                            onPress={() => {
+                                                navigation.replace(
+                                                    "facturesVendor"
+                                                );
+                                                closeMenu();
+                                            }}
+                                            title={"Facturas"}
+                                        />
+                                    </>
                                 )}
                                 <Menu.Item
                                     onPress={() => {
