@@ -27,6 +27,8 @@ const ShoppingCartPage = () => {
     //Global state variable
     const { authToken, type } = useContext(UserContext);
 
+    const [canSubmit, setCanSubmit] = useState(true);
+
     const onEdit = (index: number, quantity: number) => {
         editProduct(index, quantity);
         return true;
@@ -38,6 +40,7 @@ const ShoppingCartPage = () => {
     };
 
     const onSubmit = () => {
+        setCanSubmit(false);
         const productPetition: { [id: string]: ProductFactureData[] } = {};
 
         console.log("SUBMIT BUYING PETITION");
@@ -80,16 +83,18 @@ const ShoppingCartPage = () => {
         buyProductUser({
             token: authToken as string,
             products: productPetition,
-        }).then((result) => {
-            const { msg, error, extra } = result.data;
-            console.log(result.data);
+        })
+            .then((result) => {
+                const { msg, error, extra } = result.data;
+                console.log(result.data);
 
-            setMessage({ msg, isError: error });
-            if (!error) {
-                resetProduct();
-            }
-            //setIsLogged(result.data as any);
-        });
+                setMessage({ msg, isError: error });
+                if (!error) {
+                    resetProduct();
+                }
+                //setIsLogged(result.data as any);
+            })
+            .finally(() => setCanSubmit(true));
     };
 
     return (
@@ -111,6 +116,7 @@ const ShoppingCartPage = () => {
                     <ShoppingCartComponent
                         label={"Carro de compra"}
                         products={products}
+                        canSubmit={canSubmit}
                         isEditable={true}
                         onEdit={onEdit}
                         onDelete={onDelete}

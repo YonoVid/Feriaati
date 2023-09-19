@@ -6,12 +6,14 @@ import { httpsCallable } from "@firebase/functions";
 import {
     ResponseData,
     UserComment,
+    UserCommentList,
 } from "@feria-a-ti/common/model/functionsTypes";
 import { RListCommentsProps } from "@feria-a-ti/common/model/comments/listCommentsProps";
 import { functions } from "@feria-a-ti/common/firebase";
 import {
     CommentFields,
     GetCommentsFields,
+    OpinionValue,
     ReportCommentFields,
 } from "@feria-a-ti/common/model/comments/commentsFields";
 
@@ -40,6 +42,7 @@ export const CommentList = (props: RListCommentsProps) => {
     };
 
     // Data of comments stored
+    const [ownComments, setOwnComments] = useState<UserComment>();
     const [comments, setComments] = useState<UserComment[]>([]);
 
     const getComments = () => {
@@ -52,7 +55,7 @@ export const CommentList = (props: RListCommentsProps) => {
             console.log("GET COMMENTS::", commentsVendor);
             const get = httpsCallable<
                 GetCommentsFields,
-                ResponseData<Array<UserComment>>
+                ResponseData<UserCommentList>
             >(functions, "getComments");
             get(formatedData)
                 .then((result) => {
@@ -61,7 +64,9 @@ export const CommentList = (props: RListCommentsProps) => {
                     if (error) {
                         console.log(msg);
                     } else {
-                        setComments(extra);
+                        const { own, comments } = extra as UserCommentList;
+                        setOwnComments(own);
+                        setComments(comments);
                     }
                 })
                 .finally(() => setCanSubmit(true));
@@ -101,6 +106,7 @@ export const CommentList = (props: RListCommentsProps) => {
                 comment: data.comment,
                 userToken: authToken,
                 vendorId: commentsVendor,
+                opinion: OpinionValue.POSITIVE,
             };
             const upload = httpsCallable<
                 CommentFields,

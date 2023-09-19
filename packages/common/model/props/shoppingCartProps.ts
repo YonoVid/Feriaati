@@ -11,6 +11,7 @@ export type ShoppingCartProps = FormProps & {
     label: string;
     products: Array<ShoppingCartItem>;
     isEditable: boolean;
+    canSubmit: boolean;
     onEdit?: (index: number, quantity: number) => void;
     onDelete?: (index: number) => void;
     onSubmit: () => void;

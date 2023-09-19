@@ -10,7 +10,7 @@ import { getAccount } from "../utilities/account";
 import { collectionNames } from "../consts";
 import { getProductVendorList } from "../utilities/getList";
 import { FactureData } from "../model/productTypes";
-import { firestore } from "firebase-admin";
+import { Timestamp } from "firebase-admin/firestore";
 
 export const vendorListUser = functions.https.onCall(
     async (data: string): Promise<ResponseData<VendorData[]>> => {
@@ -29,16 +29,16 @@ export const vendorListUser = functions.https.onCall(
 export const buyProductUser = functions.https.onCall(
     async (data: ProductFactureFields): Promise<ResponseData<string>> => {
         try {
-            //Checks of data and database
+            // Checks of data and database
             let code = errorCodes.SUCCESFULL;
             let check =
                 Object.keys(data.products).length > 0 || data.products != null;
-            //Get collection of email data
+            // Get collection of email data
 
             functions.logger.info("DATA::", data);
 
             if (check) {
-                let { code: accountCode, doc: collectionDoc } =
+                const { code: accountCode, doc: collectionDoc } =
                     await getAccount(
                         collectionNames.USERS,
                         {
@@ -49,7 +49,7 @@ export const buyProductUser = functions.https.onCall(
                 code = accountCode;
                 functions.logger.info("DATA COLLECTION::", collectionDoc);
                 if (accountCode == errorCodes.SUCCESFULL) {
-                    //Setup document of user data
+                    // Setup document of user data
                     const collectionData: UserFactureCollectionData = {
                         date: new Date(),
                         buyer: collectionDoc.id,
@@ -57,21 +57,21 @@ export const buyProductUser = functions.https.onCall(
                     };
                     functions.logger.info("TO UPLOAD DATA::", collectionData);
 
-                    //Creates document in collection of factures
+                    // Creates document in collection of factures
                     const db = admin.firestore();
                     await db
                         .collection(collectionNames.FACTURES)
                         .doc()
                         .create(collectionData);
 
-                    //Create product petition
+                    // Create product petition
+                    const time = Timestamp.now();
                     for (let key in data.products) {
                         const { code, doc } = await getAccount(
                             collectionNames.VENDORPRODUCTS,
                             { id: key }
                         );
                         if (code === errorCodes.SUCCESFULL) {
-                            const time = firestore.Timestamp.now();
                             const petitionData: FactureData = {
                                 id: collectionDoc.id,
                                 date: {
@@ -102,7 +102,7 @@ export const buyProductUser = functions.https.onCall(
             functions.logger.error(error);
             throw new functions.https.HttpsError(
                 "internal",
-                "Error al obtener datos de los vendedores"
+                "Error al generar petición de compra"
             );
         }
     }
