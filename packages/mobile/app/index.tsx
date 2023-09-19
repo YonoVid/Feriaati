@@ -18,6 +18,8 @@ import { ManagerVendor } from "./vendor/ManagerVendor";
 import { UserVendorSelect } from "./client/UserVendorSelect";
 import { AccountManager } from "./account/AccountManager";
 import { ShoppingCartPage } from "./client/ShoppingCartPage";
+import { FacturesClient } from "./client/FacturesClient";
+import { FacturesVendor } from "./vendor/FacturesVendor";
 
 const Stack = createNativeStackNavigator();
 
@@ -57,6 +59,11 @@ export default function App() {
                         options={{ title: "Productos de vendedores " }}
                     />
                     <Stack.Screen
+                        name="userFactures"
+                        component={FacturesClient}
+                        options={{ title: "Productos de vendedores " }}
+                    />
+                    <Stack.Screen
                         name="loginVendor"
                         component={LoginVendor}
                         options={{ title: "Inicio de sesión de vendedor " }}
@@ -75,6 +82,11 @@ export default function App() {
                         name="managerVendor"
                         component={ManagerVendor}
                         options={{ title: "Gestionar productos " }}
+                    />
+                    <Stack.Screen
+                        name="facturesVendor"
+                        component={FacturesVendor}
+                        options={{ title: "Facturas de vendedor " }}
                     />
                     <Stack.Screen
                         name="managerAddProduct"
