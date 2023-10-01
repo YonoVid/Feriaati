@@ -80,3 +80,15 @@ export {
     reportComment,
     addComment,
 } from "./comment/commentFunctions";
+
+export {
+    addProductIndex,
+    editProductIndex,
+    deleteProductIndex,
+} from "./search/productSearch";
+
+export {
+    addProductVendorIndex,
+    editProductVendorIndex,
+    deleteProductVendorIndex,
+} from "./search/productVendorSearch";

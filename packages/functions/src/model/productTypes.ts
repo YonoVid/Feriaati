@@ -13,7 +13,7 @@ export type DayTime = {
 
 export type DayTimeRange = { start: DayTime; end: DayTime };
 
-export type ProductListCollectionData = LogicalData & {
+export type ProductListCollection = {
     rating?: { positive: number; negative: number };
     enterpriseName: string;
     rut: string;
@@ -26,6 +26,8 @@ export type ProductListCollectionData = LogicalData & {
     serviceTime?: DayTimeRange;
     contact?: { phone: string; email: string };
 };
+
+export type ProductListCollectionData = LogicalData & ProductListCollection;
 
 export enum ProductUnit {
     UNIT = "none",

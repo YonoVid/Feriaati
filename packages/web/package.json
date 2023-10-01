@@ -17,12 +17,15 @@
     "@mui/material": "^5.13.1",
     "@mui/x-date-pickers": "^6.9.0",
     "@sendgrid/mail": "^7.7.0",
+    "algoliasearch": "^4.20.0",
     "browser-image-compression": "^2.0.2",
     "dayjs": "^1.11.8",
+    "dotenv": "^16.3.1",
     "firebase": "^9.21.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.43.9",
+    "react-instantsearch": "^7.1.0",
     "react-router-dom": "^6.10.0"
   },
   "devDependencies": {

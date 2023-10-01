@@ -25,7 +25,7 @@ export const HeaderLayout = () => {
     const [snackBarData, setSnackBarData] = useState("");
     const [snackBarType, setSnackBarType] = useState<AlertColor>("success");
     const [shoppingCart, setShoppingCart] = useState<Array<ShoppingCartItem>>(
-        JSON.parse(localStorage.getItem(shoppingKey) || "[]")
+        JSON.parse(localStorage.getItem(shoppingKey) as string) || []
     );
 
     // // Alert Related values

@@ -125,38 +125,40 @@ const UserVendorSelect = () => {
                     />
                 </>
             ) : (
-                <Card
-                    className="inputContainer"
-                    color="secondary"
-                    sx={{
-                        maxWidth: "50%",
-                        alignContent: "center",
-                        borderRadius: "10%",
-                    }}
-                >
-                    <h1 style={{ maxWidth: "100%" }}>
-                        {"Lista de Vendedores"}
-                    </h1>
-                    <List>
-                        {vendors &&
-                            vendors.map((vendor) => (
-                                <ListItem
-                                    component="button"
-                                    disablePadding
-                                    key={vendor.id}
-                                    onClick={() => {
-                                        setSelectedVendor(vendor);
-                                        loadVendor(vendor);
-                                    }}
-                                >
-                                    <ListItemText
-                                        primary={vendor.enterpriseName}
-                                    />
-                                    <Divider />
-                                </ListItem>
-                            ))}
-                    </List>
-                </Card>
+                <>
+                    <Card
+                        className="inputContainer"
+                        color="secondary"
+                        sx={{
+                            maxWidth: "50%",
+                            alignContent: "center",
+                            borderRadius: "10%",
+                        }}
+                    >
+                        <h1 style={{ maxWidth: "100%" }}>
+                            {"Lista de Vendedores"}
+                        </h1>
+                        <List>
+                            {vendors &&
+                                vendors.map((vendor) => (
+                                    <ListItem
+                                        component="button"
+                                        disablePadding
+                                        key={vendor.id}
+                                        onClick={() => {
+                                            setSelectedVendor(vendor);
+                                            loadVendor(vendor);
+                                        }}
+                                    >
+                                        <ListItemText
+                                            primary={vendor.enterpriseName}
+                                        />
+                                        <Divider />
+                                    </ListItem>
+                                ))}
+                        </List>
+                    </Card>
+                </>
             )}
         </>
     );
