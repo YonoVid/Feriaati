@@ -5,9 +5,53 @@ import {
     onDocumentDeleted,
 } from "firebase-functions/v2/firestore";
 import { collectionNames } from "../consts";
-import { ProductCollectionData } from "../model/productTypes";
-import { ProductIndex } from "../model/indexTypes";
+import {
+    ProductCollectionData,
+    ProductDiscount,
+    ProductUnit,
+} from "../model/productTypes";
+import { IndexType, ProductIndex } from "../model/indexTypes";
 import { deleteIndex, editIndex } from "./search";
+
+const formatIndex = (
+    id: string,
+    vendorId: string,
+    data: ProductCollectionData,
+    active: boolean
+): ProductIndex => {
+    const discount: ProductDiscount = data.discount || ProductDiscount.NONE;
+    const promotion: number = data.promotion || 0;
+
+    const unitLabel =
+        "(" +
+        (data.unitType === ProductUnit.GRAM
+            ? data.unit + "gr."
+            : data.unitType === ProductUnit.KILOGRAM
+            ? "kg."
+            : "unidad") +
+        ")";
+    const finalPrice =
+        data.price -
+        (discount !== "none"
+            ? discount === "percentage"
+                ? (data.price * promotion) / 100
+                : promotion
+            : 0);
+
+    const formatedData: ProductIndex = {
+        objectID: "product-" + id,
+        id: id,
+        vendorId: vendorId,
+        name: data.name + unitLabel,
+        description: data.description,
+        price: "$" + finalPrice,
+        image: data.image[0],
+        type: IndexType.PRODUCT,
+        active: active,
+    };
+
+    return formatedData;
+};
 
 export const addProductIndex = onDocumentCreated(
     collectionNames.VENDORPRODUCTS +
@@ -19,17 +63,13 @@ export const addProductIndex = onDocumentCreated(
             event.data?.data() as ProductCollectionData;
         functions.logger.info("ADDING TO INDEX::", eventData);
 
-        const data: ProductIndex = {
-            objectID: "product-" + event.data?.id,
-            name: eventData.name,
-            description: eventData.description,
-            unitType: eventData.unitType,
-            unit: eventData.unit,
-            price: eventData.price,
-            discount: eventData.discount,
-            promotion: eventData.promotion,
-            image: eventData.image,
-        };
+        const data: ProductIndex = formatIndex(
+            event.data?.id as string,
+            event.params.productsDocument as string,
+            eventData,
+            true
+        );
+
         return editIndex(data, process.env.SEARCH_ENGINE_INDEX as string)
             .then((res) =>
                 functions.logger.info("SUCCESS ALGOLIA product ADD", res)
@@ -52,18 +92,16 @@ export const editProductIndex = onDocumentUpdated(
             event.data?.after.data() as ProductCollectionData;
         functions.logger.info("EDITING INDEX::", eventDataAfter);
 
-        const data: ProductIndex = {
-            objectID: "product-" + event.data?.before.id,
-            name: eventDataAfter.name || eventDataBefore.name,
-            description:
-                eventDataAfter.description || eventDataBefore.description,
-            unitType: eventDataAfter.unitType || eventDataBefore.unitType,
-            unit: eventDataAfter.unit || eventDataBefore.unit,
-            price: eventDataAfter.price || eventDataBefore.price,
-            discount: eventDataAfter.discount || eventDataBefore.discount,
-            promotion: eventDataAfter.promotion || eventDataBefore.promotion,
-            image: eventDataAfter.image || eventDataBefore.image,
-        };
+        const data = formatIndex(
+            event.data?.after.id as string,
+            event.params.productsDocument as string,
+            {
+                ...eventDataBefore,
+                ...eventDataAfter,
+            },
+            true
+        );
+
         return editIndex(data, process.env.SEARCH_ENGINE_INDEX as string)
             .then((res) =>
                 functions.logger.info("SUCCESS ALGOLIA product ADD", res)

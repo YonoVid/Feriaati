@@ -1,22 +1,36 @@
 import { useContext, useState } from "react";
-import { FieldValues } from "react-hook-form";
 import { Navigate, useNavigate } from "react-router-dom";
-import { httpsCallable } from "firebase/functions";
 
-import { Button, Link } from "@mui/material";
+import {
+    Avatar,
+    Box,
+    Button,
+    Card,
+    CardContent,
+    IconButton,
+    Link,
+    Stack,
+    Typography,
+} from "@mui/material";
 
 import { InstantSearch, Highlight, Hits, SearchBox } from "react-instantsearch";
 import algoliasearch from "algoliasearch/lite";
-
-import { functions } from "@feria-a-ti/common/firebase";
 import {
-    ResponseData,
-    UserToken,
-} from "@feria-a-ti/common/model/functionsTypes";
+    Environment,
+    IntegrationApiKeys,
+    IntegrationCommerceCodes,
+    Options,
+    WebpayPlus,
+} from "transbank-sdk";
+
+import { colors } from "@feria-a-ti/common/theme/base";
+
 import { UserContext } from "@feria-a-ti/web/src/App";
 
 import { useHeaderContext } from "../HeaderLayout";
 import "../../App.css";
+import SearchResultComponent from "../../components/searchEngine/SearchResultComponent";
+import { IndexType } from "@feria-a-ti/common/model/indexTypes";
 
 const searchClient = algoliasearch(
     "88L6KTFHAN",
@@ -29,7 +43,7 @@ function SearchPage() {
     //Global UI context
     const { setMessage } = useHeaderContext();
     //Global state variable
-    const { setSession, type } = useContext(UserContext);
+    const { authToken, type } = useContext(UserContext);
     //Navigation definition
     const navigate = useNavigate();
     // Text input
@@ -37,61 +51,88 @@ function SearchPage() {
     // Form variables
     const [canSubmit, setSubmitActive] = useState(true);
 
-    const onSubmit = (data: FieldValues) => {
+    const [response, setResponse] = useState<any>();
+
+    const onClick = async (id: string, type: IndexType) => {
         setSubmitActive(false);
-        console.log("SUBMIT FORM");
-        const formatedData: any = {
-            text: searchString,
-        };
-        const check = true;
-        if (check) {
-            const search = httpsCallable(functions, "searchTest");
-            search(formatedData)
-                .then((result) => {
-                    const { msg, error, extra } =
-                        result.data as ResponseData<UserToken>;
-                    console.log(result);
-                    setSubmitActive(true);
-                    //setIsLogged(result.data as any);
-                    if (msg !== "") {
-                        setMessage({ msg, isError: error });
-                    }
-                })
-                .finally(() => setSubmitActive(true));
-        }
+        console.log("GO TO SEARCH ITEM::", id, type);
+
+        const amount = 1000;
+        const buyOrder = "1234567890";
+        const sessionId = authToken + "-1234567890";
+        const returnUrl = window.location.href;
+
+        const tx = new WebpayPlus.Transaction(
+            new Options(
+                IntegrationCommerceCodes.WEBPAY_PLUS,
+                IntegrationApiKeys.WEBPAY,
+                "/api" //Environment.Integration
+            )
+        );
+        tx.create(buyOrder, sessionId, amount, returnUrl)
+            .then((newResponse) => {
+                setResponse(newResponse);
+                console.log(newResponse);
+            })
+            .finally(() => setSubmitActive(true));
     };
 
     function Hit(props: any) {
         return (
-            <div>
-                <img src={props.hit.image} alt={props.hit.name} />
-                <div className="hit-name">
-                    <Highlight attribute="name" hit={props.hit} />
-                </div>
-                <div className="hit-description">
-                    <Highlight attribute="description" hit={props.hit} />
-                </div>
-                <div className="hit-price">${props.hit.price}</div>
-            </div>
+            <SearchResultComponent
+                index={props.hit}
+                canSubmit={canSubmit}
+                onSubmit={onClick}
+            />
         );
     }
 
     return (
         <>
             {type != "user" && <Navigate to="/session" replace={true} />}
-            <Button onClick={onSubmit}>Prueba</Button>
-            <div className="ais-InstantSearch">
-                <h1>React InstantSearch e-commerce demo</h1>
+            {response != undefined && response != null && (
+                <form method="post" action={response.url}>
+                    <input
+                        type="hidden"
+                        name="token_ws"
+                        value={response.token}
+                    />
+                    <input type="submit" value="Ir a pagar" />
+                </form>
+            )}
+            <Card
+                className="inputContainer"
+                color="primary"
+                sx={{
+                    maxWidth: "80%",
+                    alignContent: "center",
+                    borderRadius: "2%",
+                }}
+            >
                 <InstantSearch
                     indexName={searchIndex}
                     searchClient={searchClient}
                 >
-                    <div className="right-panel">
-                        <SearchBox />
-                        <Hits hitComponent={Hit} />
-                    </div>
+                    <Box sx={{ display: "flex", flexDirection: "column" }}>
+                        <Box sx={{ flex: 1 }}>
+                            <SearchBox />
+                        </Box>
+                        <Stack
+                            direction={"column"}
+                            spacing={{ xs: 1, sm: 2, md: 4 }}
+                            sx={{
+                                display: "flex",
+                                marginLeft: "auto",
+                                marginRight: "auto",
+                                justifyContent: "center",
+                                alignContent: "center",
+                            }}
+                        >
+                            <Hits hitComponent={Hit} />
+                        </Stack>
+                    </Box>
                 </InstantSearch>
-            </div>
+            </Card>
         </>
     );
 }

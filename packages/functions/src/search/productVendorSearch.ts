@@ -6,8 +6,51 @@ import {
 } from "firebase-functions/v2/firestore";
 import { collectionNames } from "../consts";
 import { ProductListCollectionData } from "../model/productTypes";
-import { ProductVendorIndex } from "../model/indexTypes";
+import { IndexType, ProductVendorIndex } from "../model/indexTypes";
 import { deleteIndex, editIndex } from "./search";
+import { regionCode, regionCommune } from "../model/form";
+
+const formatIndex = (
+    id: string,
+    data: ProductListCollectionData,
+    active: boolean
+): ProductVendorIndex => {
+    const location =
+        data.street +
+        " #" +
+        data.streetNumber +
+        " " +
+        (data.region ? regionCode[data.region - 1][1] : "") +
+        ", " +
+        (data.region && data.commune
+            ? regionCommune[data.region].find(
+                  (el: string | number[]) => el[0] === data.commune
+              )[1]
+            : "");
+
+    const rateCount =
+        data.rating && data.rating != null
+            ? data.rating.positive + data.rating.negative
+            : 1;
+
+    const rate =
+        data.rating && data.rating != null
+            ? data.rating.positive - data.rating.negative / rateCount
+            : 0;
+
+    const formatedData: ProductVendorIndex = {
+        objectID: "productVendor-" + id,
+        id: id,
+        name: data.enterpriseName + " #" + data.localNumber,
+        description: location,
+        rate: rate,
+        image: data.image,
+        type: IndexType.PRODUCTVENDOR,
+        active: active,
+    };
+
+    return formatedData;
+};
 
 export const addProductVendorIndex = onDocumentCreated(
     collectionNames.VENDORPRODUCTS + "/{document}",
@@ -16,21 +59,12 @@ export const addProductVendorIndex = onDocumentCreated(
             event.data?.data() as ProductListCollectionData;
         functions.logger.info("ADDING TO INDEX::", eventData);
 
-        const data: ProductVendorIndex = {
-            objectID: "productVendor-" + event.data?.id,
-            active: !eventData.isDeleted,
-            rating: eventData.rating,
-            enterpriseName: eventData.enterpriseName,
-            rut: eventData.rut,
-            localNumber: eventData.localNumber,
-            region: eventData.region,
-            commune: eventData.commune,
-            street: eventData.street,
-            streetNumber: eventData.streetNumber,
-            image: eventData.image,
-            serviceTime: eventData.serviceTime,
-            contact: eventData.contact,
-        };
+        const data: ProductVendorIndex = formatIndex(
+            event.data?.id as string,
+            eventData,
+            !eventData.isDeleted
+        );
+
         return editIndex(data, process.env.SEARCH_ENGINE_INDEX as string)
             .then((res) =>
                 functions.logger.info("SUCCESS ALGOLIA product list ADD", res)
@@ -50,25 +84,11 @@ export const editProductVendorIndex = onDocumentUpdated(
             event.data?.after.data() as ProductListCollectionData;
         functions.logger.info("EDITING INDEX::", eventDataAfter);
 
-        const data: ProductVendorIndex = {
-            objectID: "productVendor-" + event.data?.after.id,
-            active: !eventDataAfter.isDeleted || eventDataBefore.isDeleted,
-            rating: eventDataAfter.rating || eventDataBefore.rating,
-            enterpriseName:
-                eventDataAfter.enterpriseName || eventDataBefore.enterpriseName,
-            rut: eventDataAfter.rut || eventDataBefore.rut,
-            localNumber:
-                eventDataAfter.localNumber || eventDataBefore.localNumber,
-            region: eventDataAfter.region || eventDataBefore.region,
-            commune: eventDataAfter.commune || eventDataBefore.commune,
-            street: eventDataAfter.street || eventDataBefore.street,
-            streetNumber:
-                eventDataAfter.streetNumber || eventDataBefore.streetNumber,
-            image: eventDataAfter.image || eventDataBefore.image,
-            serviceTime:
-                eventDataAfter.serviceTime || eventDataBefore.serviceTime,
-            contact: eventDataAfter.contact || eventDataBefore.contact,
-        };
+        const data: ProductVendorIndex = formatIndex(
+            event.data?.after.id as string,
+            { ...eventDataBefore, ...eventDataAfter },
+            !eventDataAfter.isDeleted
+        );
         return editIndex(data, process.env.SEARCH_ENGINE_INDEX as string)
             .then((res) =>
                 functions.logger.info("SUCCESS ALGOLIA product list ADD", res)
