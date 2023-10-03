@@ -17,6 +17,7 @@ import { SearchResultProps } from "@feria-a-ti/common/model/props/searchEnginePr
 import { colors } from "@feria-a-ti/common/theme/base";
 
 import "./SearchResultComponent.css";
+import { IndexType } from "@feria-a-ti/common/model/indexTypes";
 
 function SearchResultComponent(props: SearchResultProps) {
     const { index, canSubmit, onSubmit } = props;
@@ -46,6 +47,7 @@ function SearchResultComponent(props: SearchResultProps) {
                     backgroundColor: color,
                     flexDirection: "column",
                     height: "100%",
+                    width: "100%",
                 }}
             >
                 <Avatar
@@ -77,7 +79,13 @@ function SearchResultComponent(props: SearchResultProps) {
                 <IconButton
                     sx={{ alignContent: "end" }}
                     disabled={!canSubmit}
-                    onClick={() => onSubmit(index.id, index.type)}
+                    onClick={() => {
+                        const mainId =
+                            index.type == IndexType.PRODUCT
+                                ? index.vendorId
+                                : index.id;
+                        onSubmit(mainId, index.type);
+                    }}
                 >
                     <ExitToAppIcon />
                 </IconButton>

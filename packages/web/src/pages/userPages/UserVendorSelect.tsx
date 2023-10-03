@@ -26,7 +26,7 @@ const UserVendorSelect = () => {
     const { authToken, type } = useContext(UserContext);
 
     // Selection of vendor
-    const [selectedVendor, setSelectedVendor] = useState<VendorData | null>();
+    const [selectedVendorId, setSelectedVendorId] = useState<string | null>();
     const [productVendor, setProductVendor] =
         useState<ProductListCollectionData | null>();
     // Product stored data
@@ -35,14 +35,21 @@ const UserVendorSelect = () => {
     // Data of vendors stored
     const [vendors, setVendors] = useState<VendorData[]>([]);
     useEffect(() => {
-        getVendors();
+        console.log("HISTORY STATE VALUE::", history.state);
+        if (history.state.usr != null || history.state.usr != null) {
+            loadVendor(history.state.usr.vendorId);
+            history.replaceState({}, "");
+        } else {
+            getVendors();
+        }
     }, []);
 
-    const loadVendor = (data: VendorData) => {
+    const loadVendor = (vendorId: string) => {
+        setSelectedVendorId(vendorId);
         const formatedData: ProductListFields = {
-            idVendor: data.id as string,
+            idVendor: vendorId as string,
         };
-        const check = data.id != null && data.id != "";
+        const check = vendorId != null && vendorId != "";
         console.log("SUBMIT FORM LOAD VENDOR::", check);
         if (check) {
             const getProductVendor = httpsCallable<
@@ -58,18 +65,18 @@ const UserVendorSelect = () => {
                 if (error && msg !== "") {
                     setMessage({ msg, isError: error });
                 } else {
-                    loadProducts(data);
+                    loadProducts(extra.id);
                 }
             });
         }
     };
 
-    const loadProducts = (data?: VendorData) => {
-        const dataSource = data ? data : selectedVendor;
+    const loadProducts = (id: string) => {
+        const dataSource = id ? id : (selectedVendorId as string);
         const formatedData: ProductListFields = {
-            idVendor: dataSource?.id as string,
+            idVendor: id as string,
         };
-        const check = dataSource?.id != null && dataSource?.id != "";
+        const check = id != null && id != "";
         console.log("SUBMIT FORM::", check, dataSource);
         if (check) {
             const addProduct = httpsCallable<
@@ -110,17 +117,17 @@ const UserVendorSelect = () => {
     return (
         <>
             {type !== "user" && <Navigate to="/login" replace={true} />}
-            {selectedVendor ? (
+            {selectedVendorId ? (
                 <>
                     <ProductVendorPage
                         addProduct={addProduct}
-                        vendorId={selectedVendor.id}
+                        vendorId={selectedVendorId}
                         vendorData={productVendor || {}}
                         products={products}
                         isEditable={false}
                     />
                     <CommentList
-                        commentsVendor={selectedVendor.id}
+                        commentsVendor={selectedVendorId}
                         isUser={true}
                     />
                 </>
@@ -146,8 +153,7 @@ const UserVendorSelect = () => {
                                         disablePadding
                                         key={vendor.id}
                                         onClick={() => {
-                                            setSelectedVendor(vendor);
-                                            loadVendor(vendor);
+                                            loadVendor(vendor.id);
                                         }}
                                     >
                                         <ListItemText

@@ -13,24 +13,18 @@ import {
     Typography,
 } from "@mui/material";
 
-import { InstantSearch, Highlight, Hits, SearchBox } from "react-instantsearch";
+import { InstantSearch, Highlight, Hits } from "react-instantsearch";
 import algoliasearch from "algoliasearch/lite";
-import {
-    Environment,
-    IntegrationApiKeys,
-    IntegrationCommerceCodes,
-    Options,
-    WebpayPlus,
-} from "transbank-sdk";
 
 import { colors } from "@feria-a-ti/common/theme/base";
 
 import { UserContext } from "@feria-a-ti/web/src/App";
 
 import { useHeaderContext } from "../HeaderLayout";
-import "../../App.css";
 import SearchResultComponent from "../../components/searchEngine/SearchResultComponent";
 import { IndexType } from "@feria-a-ti/common/model/indexTypes";
+import CustomSearchBoxComponent from "../../components/searchEngine/CustomSearchBoxComponent";
+import "../../App.css";
 
 const searchClient = algoliasearch(
     "88L6KTFHAN",
@@ -56,25 +50,7 @@ function SearchPage() {
     const onClick = async (id: string, type: IndexType) => {
         setSubmitActive(false);
         console.log("GO TO SEARCH ITEM::", id, type);
-
-        const amount = 1000;
-        const buyOrder = "1234567890";
-        const sessionId = authToken + "-1234567890";
-        const returnUrl = window.location.href;
-
-        const tx = new WebpayPlus.Transaction(
-            new Options(
-                IntegrationCommerceCodes.WEBPAY_PLUS,
-                IntegrationApiKeys.WEBPAY,
-                "/api" //Environment.Integration
-            )
-        );
-        tx.create(buyOrder, sessionId, amount, returnUrl)
-            .then((newResponse) => {
-                setResponse(newResponse);
-                console.log(newResponse);
-            })
-            .finally(() => setSubmitActive(true));
+        navigate("/productVendor", { state: { vendorId: id } });
     };
 
     function Hit(props: any) {
@@ -115,7 +91,7 @@ function SearchPage() {
                 >
                     <Box sx={{ display: "flex", flexDirection: "column" }}>
                         <Box sx={{ flex: 1 }}>
-                            <SearchBox />
+                            <CustomSearchBoxComponent />
                         </Box>
                         <Stack
                             direction={"column"}

@@ -13,10 +13,18 @@ export default defineConfig({
                 ws: true,
                 rewrite: (path) => path.replace(/^\/api/, ""),
             },
+            "/firebase": {
+                target: "10.42.32.229",
+                changeOrigin: true,
+                secure: false,
+                ws: true,
+                rewrite: (path) => path.replace(/^\/api/, ""),
+            },
         },
         cors: {
             origin: [
                 "localhost:5173",
+                "localhost:5001",
                 "localhost:4000",
                 "https://webpay3gint.transbank.cl/",
                 /\.webpay3gint.transbank\.cl$/,
