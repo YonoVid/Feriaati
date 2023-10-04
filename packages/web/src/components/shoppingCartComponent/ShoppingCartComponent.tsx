@@ -93,7 +93,7 @@ function ShoppingCartComponent(props: ShoppingCartProps) {
                     color="primary"
                     variant="contained"
                     type="button"
-                    disabled={canSubmit}
+                    disabled={!canSubmit}
                     onClick={onSubmit}
                 >
                     Realizar Comprar

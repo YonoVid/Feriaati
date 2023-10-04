@@ -1,5 +1,8 @@
 import { FormProps } from "react-router-dom";
-import { ProductCollectionData } from "@feria-a-ti/common/model/functionsTypes";
+import {
+    ProductCollectionData,
+    ProductFactureData,
+} from "@feria-a-ti/common/model/functionsTypes";
 
 export type ShoppingCartItem = {
     id: { productId: string; vendorId: string };
@@ -9,7 +12,7 @@ export type ShoppingCartItem = {
 
 export type ShoppingCartProps = FormProps & {
     label: string;
-    products: Array<ShoppingCartItem>;
+    products: ShoppingCartItem[];
     isEditable: boolean;
     canSubmit: boolean;
     onEdit?: (index: number, quantity: number) => void;

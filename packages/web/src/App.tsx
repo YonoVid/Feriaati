@@ -31,6 +31,7 @@ import AdminUserPage from "./pages/adminPages/AdminUserPage";
 import AdminVendorPage from "./pages/adminPages/AdminVendorPage";
 import AdminProductsPage from "./pages/adminPages/AdminProductsPage";
 import SearchPage from "./pages/userPages/SearchPage";
+import BuyProductsPage from "./pages/userPages/BuyProductsPage";
 
 const router = createBrowserRouter([
     {
@@ -68,6 +69,10 @@ const router = createBrowserRouter([
             {
                 path: "/shoppingCart",
                 element: <ShoppingCartPage />,
+            },
+            {
+                path: "/buyProducts",
+                element: <BuyProductsPage />,
             },
             {
                 path: "/search",

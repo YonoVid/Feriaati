@@ -40,9 +40,15 @@ export const HeaderLayout = () => {
 
     const addProduct = (data: ShoppingCartItem) => {
         const checkIndex = shoppingCart.findIndex(
-            (item) => item.id === data.id
+            (item) =>
+                item.id.productId == data.id.productId &&
+                item.id.vendorId == data.id.vendorId
         );
-        if (checkIndex >= 0) {
+        console.log("PRODUCT ID::", data.id);
+        console.log("PRODUCT LIST INDEX::", checkIndex);
+        console.log("PRODUCT LIST KEYS::", shoppingCart.keys);
+
+        if (checkIndex > -1) {
             editProduct(
                 checkIndex,
                 shoppingCart[checkIndex].quantity + data.quantity
