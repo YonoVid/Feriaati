@@ -17,35 +17,54 @@ export const BuyProductViewComponent = (
         <Card sx={{ display: "flex", flexDirection: "column" }}>
             <Box sx={{ display: "flex", flexDirection: "row" }}>
                 <Card sx={{ display: "flex", flex: 4 }}>
-                    <Box sx={{ display: "flex", flexDirection: "column" }}>
+                    <Box sx={{ display: "flex", flexDirection: "row" }}>
                         <CardContent sx={{ flex: "1 0 auto" }}>
-                            <Typography component="div" variant="h5">
+                            <Typography component="div" variant="body1">
                                 {name}
                             </Typography>
                             <Typography
-                                variant="subtitle1"
+                                variant="caption"
                                 color="text.secondary"
                                 component="div"
                             >
-                                {"$" + subtotal / quantity}
+                                {id}
                             </Typography>
                         </CardContent>
                     </Box>
                 </Card>
-                <Card sx={{ display: "flex", flexDirection: "row", flex: 2 }}>
+                <Box
+                    sx={{
+                        textAlign: "center",
+                        alignContent: "center",
+                        alignItems: "center",
+                        display: "flex",
+                        flexDirection: "row",
+                        flex: 1,
+                        margin: "auto",
+                    }}
+                >
+                    <Typography gutterBottom variant="body1" component="div">
+                        {"x" + quantity}
+                    </Typography>
+                </Box>
+                <Box
+                    sx={{
+                        display: "flex",
+                        flexDirection: "row",
+                        flex: 2,
+                        textAlign: "center",
+                        alignContent: "center",
+                        alignItems: "center",
+                        margin: "auto",
+                    }}
+                >
                     <CardContent>
-                        <Typography gutterBottom variant="h6" component="div">
-                            {"Cantidad:" + quantity}
-                        </Typography>
-                        <Typography variant="h6" color="text.primary">
+                        <Typography variant="body1" color="text.primary">
                             {"$" + subtotal}
                         </Typography>
                     </CardContent>
-                </Card>
+                </Box>
             </Box>
-            <Typography component="div" variant="subtitle1">
-                {id}
-            </Typography>
         </Card>
     );
 };

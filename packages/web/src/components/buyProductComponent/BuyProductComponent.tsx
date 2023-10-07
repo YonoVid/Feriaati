@@ -70,7 +70,7 @@ function BuyProductComponent(props: BuyProductComponentProps) {
                     disabled={!canSubmit}
                     onClick={onSubmit}
                 >
-                    Realizar Comprar
+                    Modificar lista
                 </Button>
             </Box>
             <Box sx={{ margin: "1em" }}>{children}</Box>

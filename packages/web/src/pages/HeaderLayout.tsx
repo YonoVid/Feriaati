@@ -6,6 +6,7 @@ import { Alert, Snackbar } from "@mui/material";
 import NavBar from "@feria-a-ti/web/src/components/navBar/NavBar";
 import { ShoppingCartItem } from "@feria-a-ti/common/model/props/shoppingCartProps";
 import { UserContext } from "../App";
+import { VendorData } from "@feria-a-ti/common/model/functionsTypes";
 
 export type HeaderLayoutContext = {
     setMessage: (data: { msg: string; isError: boolean }) => void;
@@ -17,8 +18,9 @@ export type HeaderLayoutContext = {
 };
 
 export const HeaderLayout = () => {
+    // Storage keys
     const shoppingKey = "shoppingCart";
-    //Context variables
+    // Context variables
     const { productQuantity, setProductQuantity } = useContext(UserContext);
 
     const [open, setOpen] = useState(false);

@@ -93,7 +93,7 @@ const BuyProductsPage = () => {
                 },
                 ...(newProductPetition[product.id.vendorId] || []),
             ];
-            newTotal += finalPrice;
+            newTotal += finalPrice * quantity;
         });
         setPriceTotal(newTotal);
         // Store formated data
@@ -215,16 +215,19 @@ const BuyProductsPage = () => {
                     flexDirection: { xs: "column", md: "row" },
                 }}
             >
-                <BuyProductForm
-                    account={accountData}
-                    canSubmit={true}
-                    onSubmit={() => setCanSubmit(true)}
-                />
                 <BuyProductComponent
                     finalPrice={priceTotal}
                     factureData={productPetition}
                     canSubmit={canSubmit}
-                    onSubmit={onClick}
+                    onSubmit={() => navigate("/shoppingCart")}
+                />
+                <BuyProductForm
+                    account={accountData}
+                    canSubmit={true}
+                    onSubmit={(data) => {
+                        console.log(data);
+                        onClick();
+                    }}
                 />
             </Box>
         </>
