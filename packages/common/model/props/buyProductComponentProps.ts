@@ -9,4 +9,5 @@ export type BuyProductComponentProps = {
     factureData: { [id: string]: ProductFactureData[] };
     finalPrice: number;
     onSubmit: () => void;
+    children?: any;
 };

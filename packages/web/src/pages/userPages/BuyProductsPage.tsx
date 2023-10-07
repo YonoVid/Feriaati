@@ -1,5 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
 
 import { useHeaderContext } from "../HeaderLayout";
 import { httpsCallable } from "firebase/functions";
@@ -11,10 +12,11 @@ import {
     WebpayPlus,
 } from "transbank-sdk";
 
-import { Button, Card } from "@mui/material";
+import { Box, Button, Card, Hidden } from "@mui/material";
 // import DeleteIcon from "@mui/icons-material/Delete";
 
 import {
+    AccountData,
     ProductFactureData,
     ProductUnit,
     ResponseData,
@@ -25,8 +27,14 @@ import { ProductFactureFields } from "@feria-a-ti/common/model/fields/buyingFiel
 import BuyProductComponent from "../../components/buyProductComponent/BuyProductComponent";
 
 import { UserContext } from "@feria-a-ti/web/src/App";
+import BuyProductForm from "../../components/forms/buyProductForm/BuyProductForm";
+import { GetAccountFields } from "@feria-a-ti/common/model/account/getAccountFields";
+import { checkGetAccountFields } from "@feria-a-ti/common/check/checkAccountFields";
+import { messagesCode } from "@feria-a-ti/common/constants/errors";
+import { FourMpRounded } from "@mui/icons-material";
 
 const BuyProductsPage = () => {
+    const { handleSubmit } = useForm();
     //Global UI context
     const { products, setMessage, resetProduct } = useHeaderContext();
     //Global state variable
@@ -34,7 +42,12 @@ const BuyProductsPage = () => {
     //Navigation definition
     const navigate = useNavigate();
     // Form variables
-    const [canSubmit, setCanSubmit] = useState(true);
+    const form: HTMLFormElement | null =
+        document.querySelector("#transbankForm") || null;
+
+    const [canSubmit, setCanSubmit] = useState(false);
+
+    const [accountData, setAccountData] = useState<AccountData>();
 
     const [priceTotal, setPriceTotal] = useState<number>(0);
 
@@ -42,9 +55,11 @@ const BuyProductsPage = () => {
         [id: string]: ProductFactureData[];
     }>({});
 
-    const [response, setResponse] = useState<any>();
+    const [response, setResponse] = useState<any>(null);
 
     useEffect(() => {
+        getAccountData();
+
         let newTotal = 0;
         const newProductPetition: { [id: string]: ProductFactureData[] } = {};
 
@@ -85,9 +100,43 @@ const BuyProductsPage = () => {
         setProductPetition(newProductPetition);
     }, []);
 
+    const getAccountData = () => {
+        console.log("SUBMIT FORM");
+        //Format data to send to server
+        const formatedData: GetAccountFields = {
+            token: authToken,
+            type: type,
+        };
+        const check = checkGetAccountFields(formatedData);
+
+        console.log("ERROR CHECK::", check);
+
+        if (check) {
+            //Lock register button
+            setCanSubmit(false);
+            //Call firebase function to create user
+            const getAccount = httpsCallable<
+                GetAccountFields,
+                ResponseData<AccountData>
+            >(functions, "getAccountUser");
+            getAccount(formatedData)
+                .then((result) => {
+                    const { msg, error, extra } = result.data;
+                    console.log(result);
+                    //Show alert message
+                    setMessage({ msg, isError: error });
+                    setAccountData(extra);
+                })
+                .catch((error) => {
+                    console.log(error);
+                    setMessage({ msg: messagesCode["ERR00"], isError: error });
+                })
+                .finally(() => setCanSubmit(true)); //Unlock register button
+        }
+    };
+
     const onClick = async () => {
         setCanSubmit(false);
-
         // Generate facture
         if (productPetition == null) {
             const buyProductUser = httpsCallable<
@@ -113,7 +162,7 @@ const BuyProductsPage = () => {
 
         console.log("TRANSBANK TEST::");
 
-        const amount = 1000;
+        const amount = priceTotal;
         const buyOrder = "1234567890";
         const sessionId = authToken + "-1234567890";
         const returnUrl = window.location.href;
@@ -129,6 +178,16 @@ const BuyProductsPage = () => {
             .then((newResponse) => {
                 setResponse(newResponse);
                 console.log(newResponse);
+                console.log(form);
+                if (newResponse != null && form != null) {
+                    console.log("SUBMIT FORM");
+
+                    form.action = newResponse.url;
+                    form.onformdata = (ev) => {
+                        ev.formData.set("token_ws", newResponse.token);
+                    };
+                    form.requestSubmit();
+                }
             })
             .finally(() => setCanSubmit(true));
     };
@@ -136,27 +195,38 @@ const BuyProductsPage = () => {
     return (
         <>
             {type !== userType.user && <Navigate to="/login" replace={true} />}
-            {response != undefined && response != null && (
-                <form method="post" action={response.url}>
+            <Hidden>
+                <form
+                    id="transbankForm"
+                    name="transbankForm"
+                    method="post"
+                    action={response ? response.url : ""}
+                >
                     <input
                         type="hidden"
                         name="token_ws"
-                        value={response.token}
+                        value={response ? response.token : ""}
                     />
-                    <input type="submit" value="Ir a pagar" />
                 </form>
-            )}
-
-            <BuyProductComponent
-                finalPrice={priceTotal}
-                factureData={productPetition}
-                canSubmit={canSubmit}
-                onSubmit={onClick}
-            />
-
-            <Button onClick={() => setCanSubmit(!canSubmit)}>
-                BUTTON SWITCH
-            </Button>
+            </Hidden>
+            <Box
+                sx={{
+                    display: "flex",
+                    flexDirection: { xs: "column", md: "row" },
+                }}
+            >
+                <BuyProductForm
+                    account={accountData}
+                    canSubmit={true}
+                    onSubmit={() => setCanSubmit(true)}
+                />
+                <BuyProductComponent
+                    finalPrice={priceTotal}
+                    factureData={productPetition}
+                    canSubmit={canSubmit}
+                    onSubmit={onClick}
+                />
+            </Box>
         </>
     );
 };

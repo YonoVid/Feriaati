@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import {
     Box,
     Button,
@@ -37,7 +36,7 @@ function BuyProductComponent(props: BuyProductComponentProps) {
                 {Object.entries(factureData).map((vendor, index) => (
                     <div key={index}>
                         <Typography
-                            sx={{ fontSize: 25 }}
+                            sx={{ fontSize: 14 }}
                             color="text.primary"
                             gutterBottom
                         >
