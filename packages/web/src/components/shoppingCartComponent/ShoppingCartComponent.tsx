@@ -69,8 +69,10 @@ function ShoppingCartComponent(props: ShoppingCartProps) {
             >
                 {products.map((product, index) => (
                     <CartProductView
-                        onEdit={(quantity) => onEdit && onEdit(index, quantity)}
-                        onDelete={() => onDelete && onDelete(index)}
+                        onEdit={(quantity) =>
+                            onEdit && onEdit(product.id, quantity)
+                        }
+                        onDelete={() => onDelete && onDelete(product.id)}
                         key={product.value.name + index}
                         product={product.value}
                         quantity={product.quantity}

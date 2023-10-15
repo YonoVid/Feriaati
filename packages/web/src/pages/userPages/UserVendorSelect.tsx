@@ -120,7 +120,11 @@ const UserVendorSelect = () => {
             {selectedVendorId ? (
                 <>
                     <ProductVendorPage
-                        addProduct={addProduct}
+                        addProduct={(value) => {
+                            console.log("ADD TO CART::", value.id);
+                            productVendor != null &&
+                                addProduct(value, productVendor);
+                        }}
                         vendorId={selectedVendorId}
                         vendorData={productVendor || {}}
                         products={products}

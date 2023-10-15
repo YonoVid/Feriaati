@@ -4,16 +4,30 @@ import { AlertColor, Grid } from "@mui/material";
 import { Alert, Snackbar } from "@mui/material";
 
 import NavBar from "@feria-a-ti/web/src/components/navBar/NavBar";
-import { ShoppingCartItem } from "@feria-a-ti/common/model/props/shoppingCartProps";
+import {
+    ProductId,
+    ShoppingCartItem,
+} from "@feria-a-ti/common/model/props/shoppingCartProps";
 import { UserContext } from "../App";
-import { VendorData } from "@feria-a-ti/common/model/functionsTypes";
+import { ProductListCollectionData } from "@feria-a-ti/common/model/functionsTypes";
+
+import { getFromLocal, saveToLocal } from "@feria-a-ti/common/helpers";
 
 export type HeaderLayoutContext = {
     setMessage: (data: { msg: string; isError: boolean }) => void;
-    products: Array<ShoppingCartItem>;
-    addProduct: (data: ShoppingCartItem) => void;
-    editProduct: (index: number, quantity: number) => void;
-    deleteProduct: (index: number) => void;
+    products: Map<
+        string,
+        {
+            vendor: ProductListCollectionData;
+            products: Map<string, ShoppingCartItem>;
+        }
+    >;
+    addProduct: (
+        data: ShoppingCartItem,
+        vendor: ProductListCollectionData
+    ) => void;
+    editProduct: (id: ProductId, quantity: number) => void;
+    deleteProduct: (id: ProductId) => void;
     resetProduct: () => void;
 };
 
@@ -26,9 +40,15 @@ export const HeaderLayout = () => {
     const [open, setOpen] = useState(false);
     const [snackBarData, setSnackBarData] = useState("");
     const [snackBarType, setSnackBarType] = useState<AlertColor>("success");
-    const [shoppingCart, setShoppingCart] = useState<Array<ShoppingCartItem>>(
-        JSON.parse(localStorage.getItem(shoppingKey) as string) || []
-    );
+    const [shoppingCart, setShoppingCart] = useState<
+        Map<
+            string,
+            {
+                vendor: ProductListCollectionData;
+                products: Map<string, ShoppingCartItem>;
+            }
+        >
+    >(getFromLocal(shoppingKey) || new Map());
 
     // // Alert Related values
     // const [showAlert, setShowAlert] = useState(false);
@@ -40,69 +60,98 @@ export const HeaderLayout = () => {
         setOpen(true);
     };
 
-    const addProduct = (data: ShoppingCartItem) => {
-        const checkIndex = shoppingCart.findIndex(
-            (item) =>
-                item.id.productId == data.id.productId &&
-                item.id.vendorId == data.id.vendorId
-        );
+    const addProduct = (
+        data: ShoppingCartItem,
+        vendor: ProductListCollectionData
+    ) => {
+        let productMap = shoppingCart.get(data.id.vendorId)?.products;
+        let checkIndex = false;
+        if (productMap && productMap != null) {
+            checkIndex = productMap.has(data.id.productId);
+        } else {
+            productMap = new Map();
+        }
+
         console.log("PRODUCT ID::", data.id);
         console.log("PRODUCT LIST INDEX::", checkIndex);
         console.log("PRODUCT LIST KEYS::", shoppingCart.keys);
 
-        if (checkIndex > -1) {
-            editProduct(
-                checkIndex,
-                shoppingCart[checkIndex].quantity + data.quantity
-            );
+        if (checkIndex) {
+            editProduct(data.id, data.quantity);
         } else {
-            const newShoppingCart = shoppingCart.concat(data);
+            const newShoppingCart = new Map(shoppingCart);
+            newShoppingCart.set(data.id.vendorId, {
+                vendor: vendor,
+                products: productMap.set(data.id.productId, data),
+            });
 
             setShoppingCart(newShoppingCart);
             setProductQuantity(productQuantity + 1);
-            setMessage({ msg: "Añadido producto al carro", isError: false });
+            setMessage({
+                msg: "Añadido producto al carro",
+                isError: false,
+            });
             //Store persistent local data
-            localStorage.setItem(shoppingKey, JSON.stringify(newShoppingCart));
+            saveToLocal(shoppingKey, newShoppingCart);
         }
     };
 
-    const editProduct = (index: number, quantity: number) => {
-        const product: ShoppingCartItem | undefined = shoppingCart.at(index);
+    const editProduct = (id: ProductId, quantity: number) => {
+        const { vendorId, productId } = id;
+        const productArray = shoppingCart.get(vendorId);
+        const vendor: ProductListCollectionData | undefined =
+            productArray?.vendor;
+        const products: Map<string, ShoppingCartItem> | undefined =
+            productArray?.products;
 
-        if (product != undefined && product != null) {
-            const newShoppingCart = shoppingCart.concat([]);
-            const newProduct: ShoppingCartItem = {
-                id: product.id,
-                value: product.value,
-                quantity: quantity,
-            };
-            newShoppingCart[index] = newProduct;
+        if (vendor != null && vendor != undefined && products?.has(productId)) {
+            const product = products?.get(productId);
+
+            const newShoppingCart = shoppingCart.set(vendorId, {
+                vendor: vendor,
+                products: products.set(productId, {
+                    id: product!.id,
+                    value: product!.value,
+                    quantity: quantity,
+                }),
+            });
 
             setShoppingCart(newShoppingCart);
             setMessage({ msg: "Editado producto del carro", isError: false });
             //Store persistent local data
-            localStorage.setItem(shoppingKey, JSON.stringify(newShoppingCart));
+            saveToLocal(shoppingKey, newShoppingCart);
         }
     };
 
-    const deleteProduct = (index: number) => {
-        const product: ShoppingCartItem | undefined = shoppingCart.at(index);
+    const deleteProduct = (id: ProductId) => {
+        const { vendorId, productId } = id;
+        const vendor = shoppingCart.get(vendorId);
+        const product = vendor?.products?.get(productId);
 
-        if (product != undefined && product != null) {
-            const newShoppingCart = shoppingCart.filter(
-                (value, valueIndex) => value && valueIndex !== index
-            );
+        if (
+            vendor != null &&
+            vendor != undefined &&
+            product != undefined &&
+            product != null
+        ) {
+            const newShoppingCart = new Map(shoppingCart);
+            if (vendor.products!.size < 2) {
+                newShoppingCart.delete(vendorId);
+            } else {
+                newShoppingCart.get(vendorId)?.products.delete(productId);
+            }
 
             setShoppingCart(newShoppingCart);
+
             setProductQuantity(productQuantity - 1);
             setMessage({ msg: "Eliminado producto del carro", isError: false });
             //Store persisten local data
-            localStorage.setItem(shoppingKey, JSON.stringify(newShoppingCart));
+            saveToLocal(shoppingKey, shoppingCart);
         }
     };
 
     const resetProduct = () => {
-        setShoppingCart([]);
+        setShoppingCart(new Map());
         setProductQuantity(0);
         setMessage({ msg: "Reiniciado carro", isError: false });
         //Store persisten local data
@@ -121,7 +170,13 @@ export const HeaderLayout = () => {
     };
 
     useEffect(() => {
-        setProductQuantity(shoppingCart.length);
+        if (shoppingCart.size > 0) {
+            let quantity = 0;
+            shoppingCart.forEach((value) => {
+                quantity += value.products.size;
+            });
+            setProductQuantity(quantity);
+        }
     }, []);
 
     return (

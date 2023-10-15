@@ -3,6 +3,7 @@ import {
     Button,
     Card,
     CardContent,
+    CardHeader,
     Stack,
     Typography,
 } from "@mui/material";
@@ -12,7 +13,14 @@ import "./BuyProductComponent.css";
 import BuyProductViewComponent from "./BuyProductViewComponent";
 
 function BuyProductComponent(props: BuyProductComponentProps) {
-    const { canSubmit, finalPrice, factureData, onSubmit, children } = props;
+    const {
+        canSubmit,
+        finalPrice,
+        factureData,
+        vendorData,
+        onSubmit,
+        children,
+    } = props;
 
     return (
         <Card
@@ -34,21 +42,21 @@ function BuyProductComponent(props: BuyProductComponentProps) {
                 }}
             >
                 {Object.entries(factureData).map((vendor, index) => (
-                    <div key={index}>
-                        <Typography
-                            sx={{ fontSize: 14 }}
-                            color="text.primary"
-                            gutterBottom
-                        >
-                            {index + ":VENDOR: " + vendor[0]}
-                        </Typography>
+                    <Card key={index}>
+                        <CardHeader
+                            title={
+                                index +
+                                ": " +
+                                vendorData[vendor[0]].enterpriseName
+                            }
+                        ></CardHeader>
                         {vendor[1].map((product, index) => (
                             <BuyProductViewComponent
                                 key={product.id + index}
                                 product={product}
                             />
                         ))}
-                    </div>
+                    </Card>
                 ))}
             </Stack>
             <Card>

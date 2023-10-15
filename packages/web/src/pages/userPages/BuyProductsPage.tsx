@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
+import { Navigate, useNavigate, useSearchParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 
 import { useHeaderContext } from "../HeaderLayout";
@@ -12,26 +12,34 @@ import {
     WebpayPlus,
 } from "transbank-sdk";
 
-import { Box, Button, Card, Hidden } from "@mui/material";
+import { Alert, Box, Hidden } from "@mui/material";
 // import DeleteIcon from "@mui/icons-material/Delete";
 
 import {
     AccountData,
     ProductFactureData,
+    ProductListCollectionData,
     ProductUnit,
     ResponseData,
     userType,
+    VendorCollectionData,
 } from "@feria-a-ti/common/model/functionsTypes";
 import { ProductFactureFields } from "@feria-a-ti/common/model/fields/buyingFields";
-
-import BuyProductComponent from "../../components/buyProductComponent/BuyProductComponent";
-
-import { UserContext } from "@feria-a-ti/web/src/App";
-import BuyProductForm from "../../components/forms/buyProductForm/BuyProductForm";
 import { GetAccountFields } from "@feria-a-ti/common/model/account/getAccountFields";
 import { checkGetAccountFields } from "@feria-a-ti/common/check/checkAccountFields";
 import { messagesCode } from "@feria-a-ti/common/constants/errors";
-import { FourMpRounded } from "@mui/icons-material";
+import { ShoppingCartItem } from "@feria-a-ti/common/model/props/shoppingCartProps";
+
+import BuyProductComponent from "@feria-a-ti/web/src/components/buyProductComponent/BuyProductComponent";
+import BuyProductForm from "@feria-a-ti/web/src/components/forms/buyProductForm/BuyProductForm";
+
+import { UserContext } from "@feria-a-ti/web/src/App";
+
+enum BUYERROR {
+    NONE = 0,
+    REGION = 1,
+    COMMUNE = 2,
+}
 
 const BuyProductsPage = () => {
     const { handleSubmit } = useForm();
@@ -41,63 +49,118 @@ const BuyProductsPage = () => {
     const { authToken, type } = useContext(UserContext);
     //Navigation definition
     const navigate = useNavigate();
+    // Url query data getter
+    const [queryParams] = useSearchParams();
     // Form variables
     const form: HTMLFormElement | null =
         document.querySelector("#transbankForm") || null;
 
     const [canSubmit, setCanSubmit] = useState(false);
+    const [vendorCheck, setVendorCheck] = useState<BUYERROR>(BUYERROR.NONE);
 
     const [accountData, setAccountData] = useState<AccountData>();
 
     const [priceTotal, setPriceTotal] = useState<number>(0);
 
+    const [vendorData, setVendorData] = useState<{
+        [id: string]: ProductListCollectionData;
+    }>({});
+
     const [productPetition, setProductPetition] = useState<{
         [id: string]: ProductFactureData[];
-    }>({});
+    }>();
 
     const [response, setResponse] = useState<any>(null);
 
     useEffect(() => {
         getAccountData();
 
-        let newTotal = 0;
-        const newProductPetition: { [id: string]: ProductFactureData[] } = {};
+        if (products != null && products != undefined) {
+            let newTotal = 0;
+            let lastVendorMap: {
+                vendor: ProductListCollectionData;
+                products: Map<string, ShoppingCartItem>;
+            };
+            const newProductPetition: { [id: string]: ProductFactureData[] } =
+                {};
+            const newVendorData: { [id: string]: ProductListCollectionData } =
+                {};
 
-        console.log("SUBMIT BUYING PETITION");
-        console.log(products);
-        products.forEach((product) => {
-            const { id, value, quantity } = product;
+            console.log("SUBMIT BUYING PETITION");
+            console.log(products);
+            products.forEach((vendorMap, key) => {
+                if (
+                    vendorCheck != BUYERROR.REGION &&
+                    lastVendorMap != null &&
+                    lastVendorMap != undefined
+                ) {
+                    if (
+                        vendorMap.vendor.region != lastVendorMap.vendor.region
+                    ) {
+                        setVendorCheck(BUYERROR.REGION);
+                    } else if (
+                        vendorCheck != BUYERROR.COMMUNE &&
+                        vendorMap.vendor.commune != lastVendorMap.vendor.commune
+                    ) {
+                        setVendorCheck(BUYERROR.COMMUNE);
+                    }
+                }
 
-            const finalPrice =
-                value.price -
-                (value.discount !== "none"
-                    ? value.discount === "percentage"
-                        ? (value.price * value.promotion) / 100
-                        : value.promotion
-                    : 0);
-            const unitLabel =
-                "(" +
-                (value.unitType === ProductUnit.GRAM
-                    ? value.unit + "gr."
-                    : value.unitType === ProductUnit.KILOGRAM
-                    ? "kg."
-                    : "unidad") +
-                ")";
+                lastVendorMap = vendorMap;
+                newVendorData[key] = vendorMap.vendor;
 
-            newProductPetition[id.vendorId] = [
-                {
-                    id: id.productId,
-                    name: product.value.name + unitLabel,
-                    quantity: quantity,
-                    subtotal: finalPrice * quantity,
-                },
-                ...(newProductPetition[product.id.vendorId] || []),
-            ];
-            newTotal += finalPrice * quantity;
-        });
-        setPriceTotal(newTotal);
-        // Store formated data
-        setProductPetition(newProductPetition);
+                vendorMap.products.forEach((product) => {
+                    const { id, value, quantity } = product;
+
+                    const finalPrice =
+                        value.price -
+                        (value.discount !== "none"
+                            ? value.discount === "percentage"
+                                ? (value.price * value.promotion) / 100
+                                : value.promotion
+                            : 0);
+                    const unitLabel =
+                        "(" +
+                        (value.unitType === ProductUnit.GRAM
+                            ? value.unit + "gr."
+                            : value.unitType === ProductUnit.KILOGRAM
+                            ? "kg."
+                            : "unidad") +
+                        ")";
+
+                    newProductPetition[id.vendorId] = [
+                        {
+                            id: id.productId,
+                            name: product.value.name + unitLabel,
+                            quantity: quantity,
+                            subtotal: finalPrice * quantity,
+                        },
+                        ...(newProductPetition[product.id.vendorId] || []),
+                    ];
+                    newTotal += finalPrice * quantity;
+                });
+            });
+            console.log("BUY ERROR::", vendorCheck);
+            setPriceTotal(newTotal);
+            // Store formated data
+            setProductPetition(newProductPetition);
+            setVendorData(newVendorData);
+        }
+
+        const token = queryParams.get("token_ws");
+        console.log("TOKEN_WS::" + token);
+        if (token && token != "") {
+            const tx = new WebpayPlus.Transaction(
+                new Options(
+                    IntegrationCommerceCodes.WEBPAY_PLUS,
+                    IntegrationApiKeys.WEBPAY,
+                    "/api" // Environment.Integration
+                )
+            );
+            tx.commit(token).then((value) => {
+                console.log("TOKEN RESPONSE::", value);
+            });
+        }
     }, []);
 
     const getAccountData = () => {
@@ -138,7 +201,7 @@ const BuyProductsPage = () => {
     const onClick = async () => {
         setCanSubmit(false);
         // Generate facture
-        if (productPetition == null) {
+        if (productPetition && productPetition != null && priceTotal != 0) {
             const buyProductUser = httpsCallable<
                 ProductFactureFields,
                 ResponseData<string>
@@ -154,42 +217,45 @@ const BuyProductsPage = () => {
                     setMessage({ msg, isError: error });
                     if (!error) {
                         resetProduct();
+                        //setIsLogged(result.data as any);
+
+                        console.log("TRANSBANK TEST::");
+
+                        const amount = priceTotal;
+                        const buyOrder = "1234567890";
+                        const sessionId = authToken + "-1234567890";
+                        const returnUrl = window.location.href;
+
+                        const tx = new WebpayPlus.Transaction(
+                            new Options(
+                                IntegrationCommerceCodes.WEBPAY_PLUS,
+                                IntegrationApiKeys.WEBPAY,
+                                "/api" //Environment.Integration
+                            )
+                        );
+                        tx.create(buyOrder, sessionId, amount, returnUrl)
+                            .then((newResponse) => {
+                                setResponse(newResponse);
+                                console.log(newResponse);
+                                console.log(form);
+                                if (newResponse != null && form != null) {
+                                    console.log("SUBMIT FORM");
+
+                                    form.action = newResponse.url;
+                                    form.onformdata = (ev) => {
+                                        ev.formData.set(
+                                            "token_ws",
+                                            newResponse.token
+                                        );
+                                    };
+                                    form.requestSubmit();
+                                }
+                            })
+                            .finally(() => setCanSubmit(true));
                     }
-                    //setIsLogged(result.data as any);
                 })
-                .finally(() => setCanSubmit(true));
+                .catch(() => setCanSubmit(true));
         }
-
-        console.log("TRANSBANK TEST::");
-
-        const amount = priceTotal;
-        const buyOrder = "1234567890";
-        const sessionId = authToken + "-1234567890";
-        const returnUrl = window.location.href;
-
-        const tx = new WebpayPlus.Transaction(
-            new Options(
-                IntegrationCommerceCodes.WEBPAY_PLUS,
-                IntegrationApiKeys.WEBPAY,
-                "/api" //Environment.Integration
-            )
-        );
-        tx.create(buyOrder, sessionId, amount, returnUrl)
-            .then((newResponse) => {
-                setResponse(newResponse);
-                console.log(newResponse);
-                console.log(form);
-                if (newResponse != null && form != null) {
-                    console.log("SUBMIT FORM");
-
-                    form.action = newResponse.url;
-                    form.onformdata = (ev) => {
-                        ev.formData.set("token_ws", newResponse.token);
-                    };
-                    form.requestSubmit();
-                }
-            })
-            .finally(() => setCanSubmit(true));
     };
 
     return (
@@ -209,26 +275,45 @@ const BuyProductsPage = () => {
                     />
                 </form>
             </Hidden>
-            <Box
-                sx={{
-                    display: "flex",
-                    flexDirection: { xs: "column", md: "row" },
-                }}
-            >
-                <BuyProductComponent
-                    finalPrice={priceTotal}
-                    factureData={productPetition}
-                    canSubmit={canSubmit}
-                    onSubmit={() => navigate("/shoppingCart")}
-                />
-                <BuyProductForm
-                    account={accountData}
-                    canSubmit={true}
-                    onSubmit={(data) => {
-                        console.log(data);
-                        onClick();
+            <Box sx={{ display: "flex", flexDirection: "column" }}>
+                {(vendorCheck == BUYERROR.REGION && (
+                    <Alert severity="error" sx={{ margin: 1 }}>
+                        Los productos son entregados por vendedores en regiones
+                        distintas
+                    </Alert>
+                )) ||
+                    (vendorCheck == BUYERROR.COMMUNE && (
+                        <Alert severity="warning" sx={{ margin: 1 }}>
+                            Los productos son entregados por vendedores en
+                            comunas distintas
+                        </Alert>
+                    ))}
+                <Box
+                    sx={{
+                        display: "flex",
+                        flexDirection: { xs: "column", md: "row" },
                     }}
-                />
+                >
+                    <BuyProductComponent
+                        finalPrice={priceTotal}
+                        factureData={productPetition || {}}
+                        vendorData={vendorData}
+                        canSubmit={canSubmit}
+                        onSubmit={() => navigate("/shoppingCart")}
+                    />
+                    <BuyProductForm
+                        account={accountData}
+                        canSubmit={
+                            canSubmit &&
+                            vendorCheck == BUYERROR.NONE &&
+                            priceTotal != 0
+                        }
+                        onSubmit={(data) => {
+                            console.log(data);
+                            onClick();
+                        }}
+                    />
+                </Box>
             </Box>
         </>
     );

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import {
     Box,
     Button,
@@ -7,7 +7,12 @@ import {
     Card,
     CardActions,
     Divider,
+    FormControl,
+    FormControlLabel,
+    FormLabel,
     IconButton,
+    Radio,
+    RadioGroup,
     Typography,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
@@ -19,32 +24,34 @@ import { AccountDirection } from "@feria-a-ti/common/model/account/editAccountFi
 import { numberRegex } from "@feria-a-ti/common/check/checkBase";
 
 import InputComponentAlt from "@feria-a-ti/web/src/components/inputComponent/InputComponentAlt";
-import { BuyProductFormFields } from "@feria-a-ti/common/model/fields/buyingFields";
+import {
+    BuyProductFormFields,
+    BuyTransportOptions,
+} from "@feria-a-ti/common/model/fields/buyingFields";
 import "./BuyProductForm.css";
 import InputDirectionButton from "../../inputDirectionButton/InputDirectionButton";
 
 function BuyProductForm(props: RBuyProductFormProps) {
     const { account, onSubmit } = props;
-    const { watch, handleSubmit, setValue, clearErrors, control } =
-        useForm<BuyProductFormFields>();
+    const { watch, handleSubmit, setValue, reset, clearErrors, control } =
+        useForm<BuyProductFormFields>({
+            defaultValues: { shipping: BuyTransportOptions.DELIVERY },
+        });
 
-    const [userDirection, setUserDirection] =
-        useState<Array<AccountDirection>>();
+    const [userDirection, setUserDirection] = useState<Array<AccountDirection>>(
+        []
+    );
 
     const [addNewDirection, setAddNewDirection] = useState<boolean>(false);
     const [selectedDirection, setSelectedDirection] =
         useState<AccountDirection>();
 
     const addDirectionField = () => {
-        const newValue: AccountDirection = {
-            street: "",
-            streetNumber: NaN,
-            region: NaN,
-            commune: NaN,
-        };
-        setValue("direction", newValue);
-        setAddNewDirection(true);
-        setSelectedDirection(undefined);
+        if (!addNewDirection) {
+            reset();
+            setAddNewDirection(true);
+            setSelectedDirection(undefined);
+        }
     };
 
     const setDirection = (newDirection: AccountDirection) => {
@@ -59,13 +66,19 @@ function BuyProductForm(props: RBuyProductFormProps) {
 
     const removeDirectionField = () => {
         setAddNewDirection(false);
+        if (account && account !== null && account.direction) {
+            setSelectedDirection(account.direction[0]);
+        }
     };
 
     useEffect(() => {
-        if (account && account !== null) {
-            if (account.direction) {
-                setUserDirection(account.direction);
-            }
+        if (account && account !== null && account.direction) {
+            setUserDirection(account.direction);
+            setDirection(account.direction[0]);
+            setSelectedDirection(account.direction[0]);
+            setAddNewDirection(false);
+        } else {
+            setAddNewDirection(true);
         }
     }, [account, setValue]);
 
@@ -90,173 +103,238 @@ function BuyProductForm(props: RBuyProductFormProps) {
                     Finalización de venta
                 </h1>
                 <form onSubmit={handleSubmit(onSubmit)}>
-                    <CardActions>
-                        <Button
-                            sx={{
-                                borderRadius: "20em",
-                                marginLeft: "auto",
-                                marginRight: "auto",
-                            }}
-                            color="primary"
-                            variant="contained"
-                            disabled={
-                                props.canSubmit != null
-                                    ? !props.canSubmit
-                                    : false
-                            }
-                            onClick={() => addDirectionField()}
-                            startIcon={<AddIcon />}
-                        >
-                            Nueva dirección
-                        </Button>
-                    </CardActions>
-                    <Box
-                        sx={{
-                            display: "flex",
-                            flexDirection: "column",
-                            boxShadow: 1,
-                        }}
-                    >
-                        <div
-                            style={{
-                                display: addNewDirection ? "flex" : "none",
-                            }}
-                        >
+                    <FormControl>
+                        <FormLabel id="demo-radio-buttons-group-label">
+                            Opción de recepción
+                        </FormLabel>
+                        <Controller
+                            control={control}
+                            name="shipping"
+                            render={({ field: { onChange, value } }) => (
+                                <RadioGroup
+                                    row
+                                    aria-labelledby="demo-radio-buttons-group-label"
+                                    defaultValue="none"
+                                    name="radio-buttons-group"
+                                    value={
+                                        value || BuyTransportOptions.DELIVERY
+                                    }
+                                    onChange={onChange}
+                                >
+                                    <FormControlLabel
+                                        value={BuyTransportOptions.DELIVERY}
+                                        control={<Radio />}
+                                        label="Envío a casa"
+                                    />
+                                    <FormControlLabel
+                                        value={BuyTransportOptions.RETIRE}
+                                        control={<Radio />}
+                                        label="Retiro en feria"
+                                        onClick={() => {
+                                            if (
+                                                account &&
+                                                account !== null &&
+                                                account.direction
+                                            ) {
+                                                removeDirectionField();
+                                            } else {
+                                                addDirectionField();
+                                            }
+                                        }}
+                                    />
+                                </RadioGroup>
+                            )}
+                        />
+                    </FormControl>
+                    {watch("shipping") == BuyTransportOptions.DELIVERY && (
+                        <>
+                            {!addNewDirection && (
+                                <CardActions>
+                                    <Button
+                                        sx={{
+                                            borderRadius: "20em",
+                                            marginLeft: "auto",
+                                            marginRight: "auto",
+                                        }}
+                                        color="primary"
+                                        variant="contained"
+                                        disabled={
+                                            props.canSubmit != null
+                                                ? !props.canSubmit
+                                                : false
+                                        }
+                                        onClick={() => addDirectionField()}
+                                        startIcon={<AddIcon />}
+                                    >
+                                        Nueva dirección
+                                    </Button>
+                                </CardActions>
+                            )}
                             <Box
                                 sx={{
                                     display: "flex",
-                                    flex: 5,
                                     flexDirection: "column",
+                                    boxShadow: 1,
                                 }}
                             >
-                                <Box>
-                                    <InputComponentAlt
-                                        key={`direction.region`}
-                                        control={control}
-                                        name={`direction.region`}
-                                        label="Región"
-                                        type="select"
-                                        selectOptions={regionCode}
-                                        defaultValue="Elige tú región"
-                                        onChange={() =>
-                                            setValue(`direction.commune`, NaN)
-                                        }
-                                        rules={{
-                                            required: "La región es requerida",
-                                        }}
-                                    />
-                                    <InputComponentAlt
-                                        key={`direction.commune`}
-                                        control={control}
-                                        name={`direction.commune`}
-                                        label="Comuna"
-                                        type="select"
-                                        selectOptions={
-                                            regionCommune[
-                                                watch(`direction.region`)
-                                            ]
-                                        }
-                                        defaultValue="Elige tú comuna"
-                                        rules={{
-                                            required: "La comuna es requerida",
-                                        }}
-                                    />
-                                </Box>
-                                <Box>
-                                    <InputComponentAlt
-                                        key={`direction.street`}
-                                        control={control}
-                                        name={`direction.street`}
-                                        label="Calle"
-                                        type="text"
-                                        rules={{
-                                            required: "La calle es requerida",
-                                            maxLength: {
-                                                value: 128,
-                                                message:
-                                                    "El máximo de caracteres es 128",
-                                            },
-                                        }}
-                                    />
-                                    <InputComponentAlt
-                                        sx={{ maxWidth: "8em" }}
-                                        key={`direction.streetNumber`}
-                                        control={control}
-                                        name={`direction.streetNumber`}
-                                        label="Número de calle"
-                                        type="text"
-                                        rules={{
-                                            required:
-                                                "El número de calle es requerido",
-                                            maxLength: {
-                                                value: 128,
-                                                message:
-                                                    "El máximo de caracteres es 128",
-                                            },
-                                            pattern: {
-                                                value: numberRegex,
-                                                message:
-                                                    "Valor debe ser numérico",
-                                            },
-                                        }}
-                                    />
-                                </Box>
-                                <IconButton
-                                    sx={{
-                                        width: "100%",
-                                        flex: 1,
-                                        borderRadius: "20em",
-                                        marginLeft: "auto",
-                                        marginRight: "auto",
+                                <div
+                                    style={{
+                                        display: addNewDirection
+                                            ? "flex"
+                                            : "none",
                                     }}
-                                    color="error"
-                                    disabled={
-                                        props.canSubmit != null
-                                            ? !props.canSubmit
-                                            : false
-                                    }
-                                    onClick={() => removeDirectionField()}
                                 >
-                                    <RemoveCircleOutlineIcon />
-                                </IconButton>
-                            </Box>
-                        </div>
-                        <Box sx={{ flex: 1 }}></Box>
+                                    <Box
+                                        sx={{
+                                            display: "flex",
+                                            flex: 5,
+                                            flexDirection: "column",
+                                        }}
+                                    >
+                                        <Box>
+                                            <InputComponentAlt
+                                                key={`direction.region`}
+                                                control={control}
+                                                name={`direction.region`}
+                                                label="Región"
+                                                type="select"
+                                                selectOptions={regionCode}
+                                                defaultValue="Elige tú región"
+                                                onChange={() =>
+                                                    setValue(
+                                                        `direction.commune`,
+                                                        NaN
+                                                    )
+                                                }
+                                                rules={{
+                                                    required:
+                                                        "La región es requerida",
+                                                }}
+                                            />
+                                            <InputComponentAlt
+                                                key={`direction.commune`}
+                                                control={control}
+                                                name={`direction.commune`}
+                                                label="Comuna"
+                                                type="select"
+                                                selectOptions={
+                                                    regionCommune[
+                                                        watch(
+                                                            `direction.region`
+                                                        )
+                                                    ]
+                                                }
+                                                defaultValue="Elige tú comuna"
+                                                rules={{
+                                                    required:
+                                                        "La comuna es requerida",
+                                                }}
+                                            />
+                                        </Box>
+                                        <Box>
+                                            <InputComponentAlt
+                                                key={`direction.street`}
+                                                control={control}
+                                                name={`direction.street`}
+                                                label="Calle"
+                                                type="text"
+                                                rules={{
+                                                    required:
+                                                        "La calle es requerida",
+                                                    maxLength: {
+                                                        value: 128,
+                                                        message:
+                                                            "El máximo de caracteres es 128",
+                                                    },
+                                                }}
+                                            />
+                                            <InputComponentAlt
+                                                sx={{ maxWidth: "8em" }}
+                                                key={`direction.streetNumber`}
+                                                control={control}
+                                                name={`direction.streetNumber`}
+                                                label="Número de calle"
+                                                type="text"
+                                                rules={{
+                                                    required:
+                                                        "El número de calle es requerido",
+                                                    maxLength: {
+                                                        value: 128,
+                                                        message:
+                                                            "El máximo de caracteres es 128",
+                                                    },
+                                                    pattern: {
+                                                        value: numberRegex,
+                                                        message:
+                                                            "Valor debe ser numérico",
+                                                    },
+                                                }}
+                                            />
+                                        </Box>
+                                        {userDirection.length > 0 && (
+                                            <IconButton
+                                                sx={{
+                                                    width: "100%",
+                                                    flex: 1,
+                                                    borderRadius: "20em",
+                                                    marginLeft: "auto",
+                                                    marginRight: "auto",
+                                                }}
+                                                color="error"
+                                                disabled={
+                                                    props.canSubmit != null
+                                                        ? !props.canSubmit
+                                                        : false
+                                                }
+                                                onClick={() =>
+                                                    removeDirectionField()
+                                                }
+                                            >
+                                                <RemoveCircleOutlineIcon />
+                                            </IconButton>
+                                        )}
+                                    </Box>
+                                </div>
+                                <Box sx={{ flex: 1 }}></Box>
 
-                        {userDirection?.map((value, index) => (
-                            <InputDirectionButton
-                                sx={{ flex: 1 }}
-                                name={"direction" + index}
-                                key={index}
-                                direction={value}
-                                isSelected={selectedDirection == value}
-                                onClick={(data) => {
-                                    setDirection(data);
-                                    setSelectedDirection(data);
-                                }}
-                            />
-                        ))}
-                    </Box>
+                                {userDirection?.map((value, index) => (
+                                    <InputDirectionButton
+                                        sx={{ flex: 1 }}
+                                        name={"direction" + index}
+                                        key={index}
+                                        direction={value}
+                                        isSelected={selectedDirection == value}
+                                        onClick={(data) => {
+                                            setDirection(data);
+                                            setSelectedDirection(data);
+                                        }}
+                                    />
+                                ))}
+                            </Box>
+                        </>
+                    )}
                     <CardActions>
-                        <Button
-                            sx={{
-                                borderRadius: "20em",
-                                marginLeft: "auto",
-                                marginRight: "auto",
-                                fontSize: "1.3em",
-                                fontWeight: "bold",
-                            }}
-                            color="secondary"
-                            type="submit"
-                            variant="contained"
-                            disabled={
-                                props.canSubmit != null
-                                    ? !props.canSubmit
-                                    : false
-                            }
-                        >
-                            Finalizar compra
-                        </Button>
+                        <>
+                            <Button
+                                sx={{
+                                    borderRadius: "20em",
+                                    marginLeft: "auto",
+                                    marginRight: "auto",
+                                    fontSize: "1.3em",
+                                    fontWeight: "bold",
+                                }}
+                                color="secondary"
+                                type="submit"
+                                variant="contained"
+                                disabled={
+                                    props.canSubmit != null
+                                        ? !props.canSubmit
+                                        : false
+                                }
+                            >
+                                Finalizar compra
+                            </Button>
+                        </>
                     </CardActions>
                 </form>
                 <Divider />

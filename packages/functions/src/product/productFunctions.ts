@@ -20,6 +20,7 @@ import { errorCodes, messagesCode } from "../errors";
 import { uploadProductImage } from "../utilities/storage";
 import { getAccount } from "../utilities/account";
 import { DocumentSnapshot } from "firebase-admin/firestore";
+import { VendorCollectionData } from "../model/accountTypes";
 
 //funciones crud producto
 export const addProduct = functions.https.onCall(
@@ -33,24 +34,25 @@ export const addProduct = functions.https.onCall(
             const { check, code } = checkAddProductFields(data);
 
             if (check) {
-                const queryVendor = db
-                    .collection(collectionNames.VENDORS)
-                    .where("token", "==", data.tokenVendor);
-                const vendor = await queryVendor.get();
-                if (!vendor.empty) {
+                const { code, doc: vendorDoc } = await getAccount(
+                    collectionNames.VENDORS,
+                    { token: data.tokenVendor }
+                );
+
+                if (code == errorCodes.SUCCESFULL) {
+                    const vendorData: VendorCollectionData =
+                        vendorDoc.data() as VendorCollectionData;
+
                     // Get product list reference
                     const productsRef = db.collection(
                         collectionNames.VENDORPRODUCTS
                     );
-
-                    const products = await productsRef
-                        .where("vendorId", "==", vendor.docs[0].id)
-                        .get();
                     // Store document id
-                    const id = products.docs[0].id;
+                    const productVendorRef = await productsRef
+                        .doc(vendorData.productsId as string)
+                        .get();
 
-                    const productRef = await productsRef
-                        .doc(id)
+                    const productRef = await productVendorRef.ref
                         .collection(collectionNames.PRODUCTS)
                         .doc();
                     // Store images data
@@ -97,7 +99,7 @@ export const addProduct = functions.https.onCall(
 
                     // Retornar el ID del producto creado
                     return {
-                        extra: products.docs[0].id,
+                        extra: productRef.id,
                         error: false,
                         code: errorCodes.SUCCESFULL,
                         msg: messagesCode[errorCodes.SUCCESFULL],
@@ -141,13 +143,14 @@ export const deleteProduct = functions.https.onCall(
             });
 
             if (doc.exists) {
+                const vendorData: VendorCollectionData =
+                    doc.data() as VendorCollectionData;
                 // Eliminar el producto de la base de datos
-                const vendorProducts = (
-                    await db
-                        .collection(collectionNames.VENDORPRODUCTS)
-                        .where("vendorId", "==", doc.id)
-                        .get()
-                ).docs[0];
+                const vendorProducts = await db
+                    .collection(collectionNames.VENDORPRODUCTS)
+                    .doc(vendorData.productsId as string)
+                    .get();
+
                 if (vendorProducts.exists) {
                     await db
                         .collection(collectionNames.VENDORPRODUCTS)
@@ -198,15 +201,18 @@ export const editProduct = functions.https.onCall(
                     { token: data.tokenVendor }
                 );
                 if (doc.exists) {
+                    const vendorData: VendorCollectionData =
+                        doc.data() as VendorCollectionData;
+
                     // Obtener la referencia del producto a editar
                     const productVendorRef = await db
                         .collection(collectionNames.VENDORPRODUCTS)
-                        .where("vendorId", "==", doc.id)
+                        .doc(vendorData.productsId as string)
                         .get();
-                    const productVendorId = productVendorRef.docs[0].id || "";
+
                     const productRef = db
                         .collection(collectionNames.VENDORPRODUCTS)
-                        .doc(productVendorId)
+                        .doc(productVendorRef.id)
                         .collection(collectionNames.PRODUCTS)
                         .doc(data.id);
 
@@ -345,12 +351,14 @@ export const listProduct = functions.https.onCall(
                         .collection(collectionNames.VENDORS)
                         .where("token", "==", data.tokenVendor);
                     let docReference = (await queryVendor.get()).docs[0];
-                    vendorProductRef = (
-                        await db
-                            .collection(collectionNames.VENDORPRODUCTS)
-                            .where("vendorId", "==", docReference.id)
-                            .get()
-                    ).docs[0];
+
+                    const vendorData: VendorCollectionData =
+                        docReference.data() as VendorCollectionData;
+
+                    vendorProductRef = await db
+                        .collection(collectionNames.VENDORPRODUCTS)
+                        .doc(vendorData.productsId as string)
+                        .get();
                 }
 
                 functions.logger.info(
@@ -430,12 +438,14 @@ export const getProductVendor = functions.https.onCall(
                     let docReference = (await queryVendor.get()).docs[0];
 
                     functions.logger.info("VENDOR DOC::", docReference.id);
-                    vendorProductsRef = (
-                        await db
-                            .collection(collectionNames.VENDORPRODUCTS)
-                            .where("vendorId", "==", docReference.id)
-                            .get()
-                    ).docs[0];
+
+                    const vendorData: VendorCollectionData =
+                        docReference.data() as VendorCollectionData;
+
+                    vendorProductsRef = await db
+                        .collection(collectionNames.VENDORPRODUCTS)
+                        .doc(vendorData.productsId as string)
+                        .get();
                 }
 
                 functions.logger.info(

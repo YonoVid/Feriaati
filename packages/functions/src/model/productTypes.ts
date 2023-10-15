@@ -25,6 +25,7 @@ export type ProductListCollection = {
     image: string;
     serviceTime?: DayTimeRange;
     contact?: { phone: string; email: string };
+    vendorId: string;
 };
 
 export type ProductListCollectionData = LogicalData & ProductListCollection;
