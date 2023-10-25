@@ -56,6 +56,8 @@ const ShoppingCartPage = () => {
             });
             setProductList(newList);
             console.log(newList);
+        } else {
+            setProductList([]);
         }
     }, [products]);
 

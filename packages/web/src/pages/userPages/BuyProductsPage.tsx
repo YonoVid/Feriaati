@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { Navigate, useNavigate, useSearchParams } from "react-router-dom";
-import { useForm } from "react-hook-form";
+import { FieldValues, useForm } from "react-hook-form";
 
 import { useHeaderContext } from "../HeaderLayout";
 import { httpsCallable } from "firebase/functions";
@@ -22,13 +22,13 @@ import {
     ProductUnit,
     ResponseData,
     userType,
-    VendorCollectionData,
 } from "@feria-a-ti/common/model/functionsTypes";
 import { ProductFactureFields } from "@feria-a-ti/common/model/fields/buyingFields";
 import { GetAccountFields } from "@feria-a-ti/common/model/account/getAccountFields";
 import { checkGetAccountFields } from "@feria-a-ti/common/check/checkAccountFields";
 import { messagesCode } from "@feria-a-ti/common/constants/errors";
 import { ShoppingCartItem } from "@feria-a-ti/common/model/props/shoppingCartProps";
+import { checkBuyProduct } from "@feria-a-ti/common/check/checkBuyProduct";
 
 import BuyProductComponent from "@feria-a-ti/web/src/components/buyProductComponent/BuyProductComponent";
 import BuyProductForm from "@feria-a-ti/web/src/components/forms/buyProductForm/BuyProductForm";
@@ -112,13 +112,20 @@ const BuyProductsPage = () => {
                 vendorMap.products.forEach((product) => {
                     const { id, value, quantity } = product;
 
-                    const finalPrice =
-                        value.price -
-                        (value.discount !== "none"
-                            ? value.discount === "percentage"
-                                ? (value.price * value.promotion) / 100
-                                : value.promotion
-                            : 0);
+                    let finalPrice = value.price;
+                    if (
+                        value.discount != undefined &&
+                        value.discount != null &&
+                        value.promotion != undefined &&
+                        value.promotion != null &&
+                        value?.discount != "none"
+                    ) {
+                        finalPrice -=
+                            value.discount == "percentage"
+                                ? (finalPrice * value.promotion) / 100
+                                : value.promotion;
+                    }
+
                     const unitLabel =
                         "(" +
                         (value.unitType === ProductUnit.GRAM
@@ -145,21 +152,6 @@ const BuyProductsPage = () => {
             // Store formated data
             setProductPetition(newProductPetition);
             setVendorData(newVendorData);
-        }
-
-        const token = queryParams.get("token_ws");
-        console.log("TOKEN_WS::" + token);
-        if (token && token != "") {
-            const tx = new WebpayPlus.Transaction(
-                new Options(
-                    IntegrationCommerceCodes.WEBPAY_PLUS,
-                    IntegrationApiKeys.WEBPAY,
-                    "/api" // Environment.Integration
-                )
-            );
-            tx.commit(token).then((value) => {
-                console.log("TOKEN RESPONSE::", value);
-            });
         }
     }, []);
 
@@ -198,18 +190,21 @@ const BuyProductsPage = () => {
         }
     };
 
-    const onClick = async () => {
-        setCanSubmit(false);
+    const onClick = (data: FieldValues) => {
+        const formatedData: ProductFactureFields = {
+            direction: data.direction || undefined,
+            token: authToken as string,
+            products: productPetition || {},
+        };
+        console.log("DATA::", data);
         // Generate facture
-        if (productPetition && productPetition != null && priceTotal != 0) {
+        if (checkBuyProduct(formatedData)) {
+            setCanSubmit(false);
             const buyProductUser = httpsCallable<
                 ProductFactureFields,
                 ResponseData<string>
             >(functions, "buyProductUser");
-            buyProductUser({
-                token: authToken as string,
-                products: productPetition,
-            })
+            buyProductUser(formatedData)
                 .then((result) => {
                     const { msg, error, extra } = result.data;
                     console.log(result.data);
@@ -222,9 +217,9 @@ const BuyProductsPage = () => {
                         console.log("TRANSBANK TEST::");
 
                         const amount = priceTotal;
-                        const buyOrder = "1234567890";
-                        const sessionId = authToken + "-1234567890";
-                        const returnUrl = window.location.href;
+                        const sessionId = authToken + "-" + extra;
+                        const returnUrl =
+                            window.location.origin + "/transaction/product";
 
                         const tx = new WebpayPlus.Transaction(
                             new Options(
@@ -233,7 +228,7 @@ const BuyProductsPage = () => {
                                 "/api" //Environment.Integration
                             )
                         );
-                        tx.create(buyOrder, sessionId, amount, returnUrl)
+                        tx.create(extra, sessionId, amount, returnUrl)
                             .then((newResponse) => {
                                 setResponse(newResponse);
                                 console.log(newResponse);
@@ -254,7 +249,9 @@ const BuyProductsPage = () => {
                             .finally(() => setCanSubmit(true));
                     }
                 })
-                .catch(() => setCanSubmit(true));
+                .finally(() => setCanSubmit(true));
+        } else {
+            setMessage({ msg: "Datos de pedido incorrectos", isError: true });
         }
     };
 
@@ -310,7 +307,7 @@ const BuyProductsPage = () => {
                         }
                         onSubmit={(data) => {
                             console.log(data);
-                            onClick();
+                            onClick(data);
                         }}
                     />
                 </Box>

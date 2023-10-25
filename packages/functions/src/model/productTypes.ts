@@ -2,8 +2,8 @@
 // VENDOR PRODUCTS RELATED TYPES
 //
 
-import { LogicalData } from "./sharedTypes";
-import { TimeDate } from "./transactionTypes";
+import { ActualSubscription } from "./accountTypes";
+import { LogicalData, TimeDate } from "./sharedTypes";
 
 export type DayTime = {
     hours: number;
@@ -51,6 +51,7 @@ export type ProductCollectionData = {
     discount: ProductDiscount;
     promotion?: number;
     image: [string, string, string] | string;
+    subscription?: ActualSubscription;
 };
 
 export type ProductFactureData = {
@@ -60,8 +61,16 @@ export type ProductFactureData = {
     subtotal: number;
 };
 
+export enum FactureStatus {
+    APPROVED = "approved",
+    PROCESSING = "processing",
+    CANCELED = "canceled",
+    NEGATED = "negated",
+}
+
 export type FactureData = {
     id: string;
+    status: FactureStatus;
     date: TimeDate;
     products: Array<ProductFactureData>;
 };

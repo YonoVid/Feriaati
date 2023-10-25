@@ -125,12 +125,16 @@ function BuyProductForm(props: RBuyProductFormProps) {
                                         value={BuyTransportOptions.DELIVERY}
                                         control={<Radio />}
                                         label="Envío a casa"
+                                        onClick={() => {
+                                            setValue("direction", undefined);
+                                        }}
                                     />
                                     <FormControlLabel
                                         value={BuyTransportOptions.RETIRE}
                                         control={<Radio />}
                                         label="Retiro en feria"
                                         onClick={() => {
+                                            setValue("direction", undefined);
                                             if (
                                                 account &&
                                                 account !== null &&

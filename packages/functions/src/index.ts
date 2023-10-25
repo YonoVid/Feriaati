@@ -73,7 +73,13 @@ export {
     getAccountUser,
     editAccountUser,
     logoutUser,
+    updateUserFacture,
 } from "./account/accountFunctions";
+
+export {
+    getAccountSubscription,
+    setAccountSubscription,
+} from "./account/accountSubscriptionFunctions";
 
 export {
     getComments,

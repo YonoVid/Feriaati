@@ -31,15 +31,24 @@ export type HeaderLayoutContext = {
     resetProduct: () => void;
 };
 
+export interface SnackbarMessage {
+    msg: string;
+    key: number;
+    type: AlertColor;
+}
+
 export const HeaderLayout = () => {
     // Storage keys
     const shoppingKey = "shoppingCart";
     // Context variables
     const { productQuantity, setProductQuantity } = useContext(UserContext);
 
+    // Message variables
+    const [snackPack, setSnackPack] = useState<readonly SnackbarMessage[]>([]);
     const [open, setOpen] = useState(false);
-    const [snackBarData, setSnackBarData] = useState("");
-    const [snackBarType, setSnackBarType] = useState<AlertColor>("success");
+    const [snackBarMsg, setSnackBarMsg] = useState<SnackbarMessage | undefined>(
+        undefined
+    );
     const [shoppingCart, setShoppingCart] = useState<
         Map<
             string,
@@ -55,9 +64,20 @@ export const HeaderLayout = () => {
     // const [alertMessage, setAlertMessage] = useState("TEXT");
 
     const setMessage = (data: { msg: string; isError: boolean }) => {
-        setSnackBarData(data.msg);
-        setSnackBarType(data.isError ? "error" : "success");
+        setSnackPack((prev) => [
+            ...prev,
+            {
+                msg: data.msg,
+                type: data.isError ? "error" : "success",
+                key: new Date().getTime(),
+            },
+        ]);
+
         setOpen(true);
+    };
+
+    const handleExited = () => {
+        setSnackBarMsg(undefined);
     };
 
     const addProduct = (
@@ -77,7 +97,9 @@ export const HeaderLayout = () => {
         console.log("PRODUCT LIST KEYS::", shoppingCart.keys);
 
         if (checkIndex) {
-            editProduct(data.id, data.quantity);
+            const oldData = productMap.get(data.id.productId);
+            const oldQuantity = oldData ? oldData.quantity : 0;
+            editProduct(data.id, oldQuantity + data.quantity);
         } else {
             const newShoppingCart = new Map(shoppingCart);
             newShoppingCart.set(data.id.vendorId, {
@@ -106,8 +128,9 @@ export const HeaderLayout = () => {
 
         if (vendor != null && vendor != undefined && products?.has(productId)) {
             const product = products?.get(productId);
+            const newShoppingCart = new Map(shoppingCart);
 
-            const newShoppingCart = shoppingCart.set(vendorId, {
+            newShoppingCart.set(vendorId, {
                 vendor: vendor,
                 products: products.set(productId, {
                     id: product!.id,
@@ -136,6 +159,7 @@ export const HeaderLayout = () => {
         ) {
             const newShoppingCart = new Map(shoppingCart);
             if (vendor.products!.size < 2) {
+                console.log("DELETED VENDOR ENTRY");
                 newShoppingCart.delete(vendorId);
             } else {
                 newShoppingCart.get(vendorId)?.products.delete(productId);
@@ -146,7 +170,7 @@ export const HeaderLayout = () => {
             setProductQuantity(productQuantity - 1);
             setMessage({ msg: "Eliminado producto del carro", isError: false });
             //Store persisten local data
-            saveToLocal(shoppingKey, shoppingCart);
+            saveToLocal(shoppingKey, newShoppingCart);
         }
     };
 
@@ -177,7 +201,16 @@ export const HeaderLayout = () => {
             });
             setProductQuantity(quantity);
         }
-    }, []);
+        if (snackPack.length && !snackBarMsg) {
+            // Set a new snack when we don't have an active one
+            setSnackBarMsg({ ...snackPack[0] });
+            setSnackPack((prev) => prev.slice(1));
+            setOpen(true);
+        } else if (snackPack.length && snackBarMsg && open) {
+            // Close an active snack when a new one is added
+            setOpen(false);
+        }
+    }, [snackPack, snackBarMsg, open, shoppingCart, setProductQuantity]);
 
     return (
         <>
@@ -214,13 +247,19 @@ export const HeaderLayout = () => {
                 message={alertMessage}
                 handleClose={closeAlert}
             /> */}
-            <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+            <Snackbar
+                key={snackBarMsg ? snackBarMsg.key : undefined}
+                open={open}
+                autoHideDuration={6000}
+                onClose={handleClose}
+                TransitionProps={{ onExited: handleExited }}
+            >
                 <Alert
                     onClose={handleClose}
-                    severity={snackBarType || undefined}
+                    severity={snackBarMsg?.type || undefined}
                     sx={{ width: "100%" }}
                 >
-                    {snackBarData}
+                    {snackBarMsg ? snackBarMsg?.msg : undefined}
                 </Alert>
             </Snackbar>
         </>

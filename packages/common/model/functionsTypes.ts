@@ -99,6 +99,7 @@ export type AccountData = {
     password: string;
     phone?: string;
     direction?: Array<AccountDirection>;
+    subscription?: ActualSubscription;
 };
 
 export type AccountCollectionData = LogicalData &
@@ -161,8 +162,9 @@ export type ProductCollectionData = {
     unit?: number;
     price: number;
     discount: ProductDiscount;
-    promotion: number;
-    image: [string, string, string];
+    promotion?: number;
+    image: [string, string, string] | string;
+    subscription?: ActualSubscription;
 };
 
 export type ProductFactureData = {
@@ -172,10 +174,30 @@ export type ProductFactureData = {
     subtotal: number;
 };
 
+export enum FactureStatus {
+    APPROVED = "approved",
+    PROCESSING = "processing",
+    CANCELED = "canceled",
+    NEGATED = "negated",
+}
+
 export type FactureData = {
     id: string;
+    status: FactureStatus;
     date: TimeDate;
     products: Array<ProductFactureData>;
+};
+
+export type ActualSubscription = {
+    expiration: TimeDate;
+    renovation: true;
+};
+
+export type SubscriptionData = {
+    amountBase: number;
+    amountYear: number;
+    expirationDate?: TimeDate;
+    type: userType;
 };
 
 export type TimeDate = {

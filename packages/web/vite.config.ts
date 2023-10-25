@@ -14,15 +14,14 @@ export default defineConfig({
                 rewrite: (path) => path.replace(/^\/api/, ""),
             },
             "/firebase": {
-                target: "10.42.32.229",
-                changeOrigin: true,
-                secure: false,
-                ws: true,
-                rewrite: (path) => path.replace(/^\/api/, ""),
+                target: "http://10.42.33.33:5001/",
             },
         },
         cors: {
             origin: [
+                "http://10.42.33.33:5173",
+                "http://10.42.33.33:5001",
+                "http://10.42.33.33:4000",
                 "localhost:5173",
                 "localhost:5001",
                 "localhost:4000",

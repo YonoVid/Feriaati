@@ -5,3 +5,8 @@ export type LogicalData = {
     updateDate?: Date;
     userUpdate?: string;
 };
+
+export type TimeDate = {
+    seconds: number;
+    nanoseconds: number;
+};

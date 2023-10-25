@@ -1,4 +1,4 @@
-import { LogicalData } from "./sharedTypes";
+import { LogicalData, TimeDate } from "./sharedTypes";
 
 export enum userType {
     admin = "admin",
@@ -29,6 +29,7 @@ export type AccountData = {
     password: string;
     phone?: string;
     direction?: Array<AccountDirection>;
+    subscription?: ActualSubscription;
 };
 
 export type AccountCollectionData = LogicalData &
@@ -55,4 +56,32 @@ export type VendorCollectionData = AccountCollectionData & {
     surname: string;
     image: string;
     productsId: string | undefined;
+};
+
+export enum SubscriptionStatus {
+    APPROVED = "approved",
+    PROCESSING = "processing",
+    CANCELED = "canceled",
+    EXPIRED = "expired",
+}
+
+export type ActualSubscription = {
+    expiration: TimeDate;
+    renovation: boolean;
+};
+
+export type SubscriptionCollectionData = {
+    amount: number;
+    expiration: TimeDate;
+    date: TimeDate;
+    type: userType;
+    status: SubscriptionStatus;
+    user: string;
+};
+
+export type SubscriptionData = {
+    amountBase: number;
+    amountYear: number;
+    expirationDate?: TimeDate;
+    type: userType;
 };

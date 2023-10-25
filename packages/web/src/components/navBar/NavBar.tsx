@@ -67,6 +67,15 @@ function NavBar() {
                       },
                   },
                   {
+                      label: "PRODUCTOS",
+                      action: () => {
+                          console.log("PRODUCT ACTION");
+                          navigate(
+                              type === "vendor" ? "managerVendor" : "search"
+                          );
+                      },
+                  },
+                  {
                       label: "FACTURAS",
                       action: () => {
                           console.log("FACTURES ACTION");
@@ -115,9 +124,15 @@ function NavBar() {
             },
         },
         {
-            label: "Account",
+            label: "Cuenta",
             action: () => {
                 navigate("/accountPage");
+            },
+        },
+        {
+            label: "Subscripción",
+            action: () => {
+                navigate("/subscription");
             },
         },
         {

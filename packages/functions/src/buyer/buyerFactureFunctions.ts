@@ -48,6 +48,7 @@ export const getFactures = functions.https.onCall(
 
                         const newData: FactureData = {
                             id: doc.id,
+                            status: data.status,
                             date: {
                                 seconds: data.date.seconds,
                                 nanoseconds: data.date.nanoseconds,

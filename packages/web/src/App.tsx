@@ -32,6 +32,8 @@ import AdminVendorPage from "./pages/adminPages/AdminVendorPage";
 import AdminProductsPage from "./pages/adminPages/AdminProductsPage";
 import SearchPage from "./pages/userPages/SearchPage";
 import BuyProductsPage from "./pages/userPages/BuyProductsPage";
+import FactureStatusPage from "./pages/userPages/FactureStatusPage";
+import SubscriptionPage from "./pages/accountPages/SubscriptionPage";
 
 const router = createBrowserRouter([
     {
@@ -59,8 +61,20 @@ const router = createBrowserRouter([
                 element: <SessionPage />,
             },
             {
+                path: "/subscription",
+                element: <SubscriptionPage />,
+            },
+            {
                 path: "/product",
                 element: <ProductPage />,
+            },
+            {
+                path: "/transaction/:type",
+                element: <FactureStatusPage />,
+            },
+            {
+                path: "/factures",
+                element: <FacturesPage />,
             },
             {
                 path: "/factures",

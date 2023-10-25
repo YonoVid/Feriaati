@@ -1,19 +1,14 @@
 import { useContext, useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 
-import {
-    Avatar,
-    Box,
-    Button,
-    Card,
-    CardContent,
-    IconButton,
-    Link,
-    Stack,
-    Typography,
-} from "@mui/material";
+import { Box, Card, Stack } from "@mui/material";
 
-import { InstantSearch, Highlight, Hits } from "react-instantsearch";
+import {
+    InstantSearch,
+    RangeInput,
+    Hits,
+    RefinementList,
+} from "react-instantsearch";
 import algoliasearch from "algoliasearch/lite";
 
 import { colors } from "@feria-a-ti/common/theme/base";
@@ -89,6 +84,10 @@ function SearchPage() {
                     indexName={searchIndex}
                     searchClient={searchClient}
                 >
+                    <Box sx={{ display: "flex", flexDirection: "column" }}>
+                        <RefinementList attribute="type" />
+                        <RangeInput attribute="price" />
+                    </Box>
                     <Box sx={{ display: "flex", flexDirection: "column" }}>
                         <Box sx={{ flex: 1 }}>
                             <CustomSearchBoxComponent />

@@ -18,6 +18,12 @@ export function reviver(key, value) {
     return value;
 }
 
+export function numberWithCommas(x: number) {
+    var parts = x.toString().split(".");
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    return parts.join(",");
+}
+
 export const saveToLocal = (key, value) =>
     localStorage.setItem(key, JSON.stringify(value, replacer));
 export const getFromLocal = (key) =>
