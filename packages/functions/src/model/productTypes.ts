@@ -73,4 +73,5 @@ export type FactureData = {
     status: FactureStatus;
     date: TimeDate;
     products: Array<ProductFactureData>;
+    originalFacture?: string;
 };

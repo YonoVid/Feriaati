@@ -54,6 +54,7 @@ export const getFactures = functions.https.onCall(
                                 nanoseconds: data.date.nanoseconds,
                             },
                             products: products,
+                            originalFacture: data.factureId,
                         };
                         functions.logger.info(newData);
 

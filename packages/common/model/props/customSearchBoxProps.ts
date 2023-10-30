@@ -5,6 +5,7 @@ export type CustomSearchBoxComponentProps = FormProps & {
     label?: string;
     filter?: string;
     loadSize?: number;
+    filterMenu?: () => void;
     onReload?: () => void;
 };
 

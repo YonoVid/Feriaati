@@ -22,7 +22,7 @@ import { colors } from "@feria-a-ti/common/theme/base";
 import "./CustomSearchBoxComponent.css";
 
 function CustomSearchBoxComponent(props: RCustomSearchBoxComponentProps) {
-    const { label, color, children, filter } = props;
+    const { label, color, children, filter, filterMenu } = props;
 
     const colorTheme =
         color != null && color === "secondary" ? "secondary" : "primary";
@@ -80,7 +80,7 @@ function CustomSearchBoxComponent(props: RCustomSearchBoxComponentProps) {
                     <Box sx={{ display: "flex", flexDirection: "row" }}>
                         <TextField
                             sx={{ flex: 1 }}
-                            label="Filtro"
+                            label="Buscar"
                             variant="outlined"
                             value={inputValue}
                             onChange={(event) =>
@@ -107,6 +107,22 @@ function CustomSearchBoxComponent(props: RCustomSearchBoxComponentProps) {
                             <RestartAltIcon />
                         </IconButton>
                     </Box>
+                    {filterMenu != null && (
+                        <Button
+                            sx={{
+                                borderRadius: "20em",
+                                marginLeft: "auto",
+                                marginRight: "auto",
+                                fontWeight: "bold",
+                            }}
+                            color="primary"
+                            type="button"
+                            onClick={filterMenu}
+                            variant="contained"
+                        >
+                            Filtrar
+                        </Button>
+                    )}
                     <Pagination
                         count={Math.floor(1 / 3) + 1}
                         page={1}

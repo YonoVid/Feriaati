@@ -1,23 +1,21 @@
-import { useEffect, useState } from "react";
 import {
     Avatar,
     Box,
-    Button,
     Card,
     CardContent,
     IconButton,
-    Stack,
     Typography,
 } from "@mui/material";
 
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 
 import { SearchResultProps } from "@feria-a-ti/common/model/props/searchEngineProps";
+import { IndexType } from "@feria-a-ti/common/model/indexTypes";
+import { numberWithCommas } from "@feria-a-ti/common/helpers";
 
 import { colors } from "@feria-a-ti/common/theme/base";
 
 import "./SearchResultComponent.css";
-import { IndexType } from "@feria-a-ti/common/model/indexTypes";
 
 function SearchResultComponent(props: SearchResultProps) {
     const { index, canSubmit, onSubmit } = props;
@@ -71,7 +69,7 @@ function SearchResultComponent(props: SearchResultProps) {
             {index.price != null && index.price != undefined && (
                 <Box sx={{ flex: 1, flexDirection: "column" }}>
                     <Typography paragraph fontWeight={"bold"}>
-                        {index.price}
+                        ${numberWithCommas(index.price)}
                     </Typography>
                 </Box>
             )}

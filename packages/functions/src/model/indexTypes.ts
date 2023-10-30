@@ -14,7 +14,7 @@ export type SearchIndex = {
 };
 
 export type ProductIndex = SearchIndex & {
-    price: string;
+    price: number;
     vendorId: string;
 };
 

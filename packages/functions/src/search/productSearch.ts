@@ -44,7 +44,7 @@ const formatIndex = (
         vendorId: vendorId,
         name: data.name + unitLabel,
         description: data.description,
-        price: "$" + finalPrice,
+        price: finalPrice,
         image: data.image[0],
         type: IndexType.PRODUCT,
         active: active,

@@ -6,6 +6,7 @@ export enum collectionNames {
     COMMENTPRODUCTS = "commentProducts",
     PRODUCTS = "products",
     FACTURES = "factures",
+    RESUME = "resumes",
     SUBSCRIPTIONS = "subscriptions",
     CONSTANTS = "serviceData",
 }

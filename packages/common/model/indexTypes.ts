@@ -3,6 +3,11 @@ export enum IndexType {
     PRODUCTVENDOR = 1,
 }
 
+export const indexName: { [code in IndexType]: string } = {
+    [IndexType.PRODUCT]: "Productos",
+    [IndexType.PRODUCTVENDOR]: "Puestos",
+};
+
 export type SearchIndex = {
     objectID: string;
     id: string;

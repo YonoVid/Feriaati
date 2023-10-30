@@ -204,3 +204,20 @@ export type TimeDate = {
     seconds: number;
     nanoseconds: number;
 };
+
+export type FactureResumeCollection = {
+    products: {
+        [id: string]: { name: string; quantity: number; subtotal: number };
+    };
+    transactions: number;
+    totalIncome: number;
+};
+
+export type YearFactureResumeCollection = {
+    day: { [id: number]: FactureResumeCollection };
+    month: { [id: number]: FactureResumeCollection };
+    year: number;
+    transactions: number;
+    totalIncome: number;
+    lastUpdate: Date;
+};

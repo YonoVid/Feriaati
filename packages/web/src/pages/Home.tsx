@@ -21,7 +21,7 @@ function Home() {
                 <Navigate to="/login" replace={true} />
             )}
             {type === userType.vendor && (
-                <Navigate to="/managerVendor" replace={true} />
+                <Navigate to="/dashboard" replace={true} />
             )}
             {type === userType.user && (
                 <Navigate to="/productVendor" replace={true} />

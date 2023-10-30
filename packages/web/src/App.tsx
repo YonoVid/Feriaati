@@ -34,6 +34,7 @@ import SearchPage from "./pages/userPages/SearchPage";
 import BuyProductsPage from "./pages/userPages/BuyProductsPage";
 import FactureStatusPage from "./pages/userPages/FactureStatusPage";
 import SubscriptionPage from "./pages/accountPages/SubscriptionPage";
+import VendorDashboardPage from "./pages/vendorPages/VendorDashboardPage";
 
 const router = createBrowserRouter([
     {
@@ -77,8 +78,8 @@ const router = createBrowserRouter([
                 element: <FacturesPage />,
             },
             {
-                path: "/factures",
-                element: <FacturesPage />,
+                path: "/dashboard",
+                element: <VendorDashboardPage />,
             },
             {
                 path: "/shoppingCart",

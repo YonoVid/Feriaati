@@ -189,6 +189,10 @@ export type DeleteFields = {
     itemId: string;
 };
 
+export type ResumeFields = UserRequestFields & {
+    year: number;
+};
+
 export type FactureFields = UserRequestFields & {
     index: number;
     size: number;

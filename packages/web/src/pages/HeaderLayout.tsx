@@ -222,12 +222,19 @@ export const HeaderLayout = () => {
                 direction="column"
                 alignItems="center"
                 justifyContent="center"
-                sx={{ minHeight: "90vh" }}
+                sx={{
+                    minHeight: "90vh",
+                    marginTop: "10vh",
+                }}
             >
                 <Grid
                     item
                     xs={12}
-                    sx={{ minWidth: "100%", flex: "1", padding: "1em" }}
+                    sx={{
+                        minWidth: "100%",
+                        flex: "1",
+                        padding: "1em",
+                    }}
                 >
                     <Outlet
                         context={{

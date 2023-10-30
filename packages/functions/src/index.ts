@@ -32,7 +32,7 @@ export {
     passUpdateVendor,
 } from "./vendor/vendorAccessFunctions";
 
-export { getVendorFactures } from "./vendor/vendorFactureFunctions";
+export { getVendorFactures, getResume } from "./vendor/vendorFactureFunctions";
 
 export { checkPetitionVendor } from "./vendor/vendorFunctions";
 

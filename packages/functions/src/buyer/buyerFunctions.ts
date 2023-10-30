@@ -9,9 +9,10 @@ import { getAccount } from "../utilities/account";
 
 import { collectionNames } from "../consts";
 import { getProductVendorList } from "../utilities/getList";
-import { FactureData, FactureStatus } from "../model/productTypes";
+import { FactureStatus } from "../model/productTypes";
 import { Timestamp } from "firebase-admin/firestore";
 import { checkBuyProduct } from "./checkBuyer";
+import { registerFactureData } from "../vendor/vendorFactureFunctions";
 
 export const vendorListUser = functions.https.onCall(
     async (data: string): Promise<ResponseData<VendorData[]>> => {
@@ -67,32 +68,7 @@ export const buyProductUser = functions.https.onCall(
 
                     await factureDoc.create(collectionData);
 
-                    // Create product petition
-                    const time = Timestamp.now();
-                    for (let key in data.products) {
-                        const { code, doc } = await getAccount(
-                            collectionNames.VENDORPRODUCTS,
-                            { id: key }
-                        );
-                        if (code === errorCodes.SUCCESFULL) {
-                            const petitionData: FactureData = {
-                                id: collectionDoc.id,
-                                status: FactureStatus.PROCESSING,
-                                date: {
-                                    seconds: time.seconds,
-                                    nanoseconds: time.nanoseconds,
-                                },
-                                products: data.products[key],
-                            };
-                            const newDoc = doc.ref
-                                .collection(collectionNames.FACTURES)
-                                .doc(factureDoc.id);
-
-                            await newDoc.create(petitionData);
-
-                            extra = newDoc.id;
-                        }
-                    }
+                    extra = factureDoc.id;
                 } else {
                     code = errorCodes.DOCUMENT_ALREADY_EXISTS_ERROR;
                 }
@@ -149,18 +125,21 @@ export const updateBuyerFacture = async (
 
                 if (
                     factureDoc.exists &&
-                    factureData.buyer == collectionDoc.id
+                    factureData.buyer == collectionDoc.id &&
+                    factureData.status != FactureStatus.APPROVED
                 ) {
                     // Update facture document status
                     await factureDoc.ref.update({ status: data.status });
 
+                    const time = Timestamp.now();
+
                     for (let key in factureData.products) {
-                        await db
-                            .collection(collectionNames.VENDORPRODUCTS)
-                            .doc(key)
-                            .collection(collectionNames.FACTURES)
-                            .doc(factureDoc.id)
-                            .update({ status: data.status });
+                        registerFactureData({
+                            docId: factureDoc.id,
+                            id: key,
+                            products: factureData.products[key],
+                            time: time,
+                        });
                     }
                 }
             } else {

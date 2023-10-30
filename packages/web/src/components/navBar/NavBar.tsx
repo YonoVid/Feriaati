@@ -10,9 +10,11 @@ import {
     IconButton,
     Menu,
     MenuItem,
+    Slide,
     Toolbar,
     Tooltip,
     Typography,
+    useScrollTrigger,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import AdbIcon from "@mui/icons-material/Adb";
@@ -31,8 +33,10 @@ function NavBar() {
     //Context variables
     const { authUser, authToken, type, productQuantity, resetSession } =
         useContext(UserContext);
-    //Navigation definition
+    // Navigation definition
     const navigate = useNavigate();
+    // Scroll reference
+    const trigger = useScrollTrigger();
 
     const clearAuth = () => {
         resetSession && resetSession();
@@ -61,9 +65,7 @@ function NavBar() {
                       label: "HOME",
                       action: () => {
                           console.log("HOME ACTION");
-                          navigate(
-                              type === "vendor" ? "managerVendor" : "home"
-                          );
+                          navigate(type === "vendor" ? "dashboard" : "home");
                       },
                   },
                   {
@@ -166,247 +168,253 @@ function NavBar() {
     };
 
     return (
-        <AppBar
-            color={
-                type == userType.undefined
-                    ? isVendorPage
+        <Slide appear={false} direction="down" in={!trigger}>
+            <AppBar
+                color={
+                    type == userType.undefined
+                        ? isVendorPage
+                            ? "primary"
+                            : "secondary"
+                        : type == userType.vendor
                         ? "primary"
                         : "secondary"
-                    : type == userType.vendor
-                    ? "primary"
-                    : "secondary"
-            }
-            position="static"
-            sx={{ top: 0 }}
-        >
-            <Container maxWidth="xl">
-                <Toolbar disableGutters>
-                    <AdbIcon
-                        sx={{ display: { xs: "none", md: "flex" }, mr: 1 }}
-                    />
-                    <Typography
-                        variant="h6"
-                        noWrap
-                        component="a"
-                        onClick={() =>
-                            navigate(isVendorPage ? "/loginVendor" : "/")
-                        }
-                        sx={{
-                            mr: 2,
-                            display: { xs: "none", md: "flex" },
-                            fontFamily: "monospace",
-                            fontWeight: 700,
-                            letterSpacing: ".3rem",
-                            color: "inherit",
-                            textDecoration: "none",
-                        }}
-                    >
-                        LOGO
-                    </Typography>
-                    {authUser !== "" && (
-                        <Box
+                }
+                position="fixed"
+                sx={{ top: 0, zIndex: (theme) => theme.zIndex.drawer + 10 }}
+            >
+                <Container maxWidth="xl">
+                    <Toolbar disableGutters>
+                        <AdbIcon
+                            sx={{ display: { xs: "none", md: "flex" }, mr: 1 }}
+                        />
+                        <Typography
+                            variant="h6"
+                            noWrap
+                            component="a"
+                            onClick={() =>
+                                navigate(isVendorPage ? "/loginVendor" : "/")
+                            }
                             sx={{
-                                flexGrow: 1,
-                                display: { xs: "flex", md: "none" },
+                                mr: 2,
+                                display: { xs: "none", md: "flex" },
+                                fontFamily: "monospace",
+                                fontWeight: 700,
+                                letterSpacing: ".3rem",
+                                color: "inherit",
+                                textDecoration: "none",
                             }}
                         >
-                            <IconButton
-                                size="large"
-                                aria-label="account of current user"
-                                aria-controls="menu-appbar"
-                                aria-haspopup="true"
-                                onClick={handleOpenNavMenu}
-                                color="inherit"
-                            >
-                                <MenuIcon />
-                            </IconButton>
-                            <Menu
-                                id="menu-appbar"
-                                anchorEl={anchorElNav}
-                                anchorOrigin={{
-                                    vertical: "bottom",
-                                    horizontal: "left",
-                                }}
-                                keepMounted
-                                transformOrigin={{
-                                    vertical: "top",
-                                    horizontal: "left",
-                                }}
-                                open={Boolean(anchorElNav)}
-                                onClose={handleCloseNavMenu}
-                                sx={{
-                                    display: { xs: "block", md: "none" },
-                                }}
-                            >
-                                {settings.map((page) => (
-                                    <MenuItem
-                                        key={page.label}
-                                        onClick={() => {
-                                            handleCloseNavMenu();
-                                            page.action();
-                                        }}
-                                    >
-                                        <Typography textAlign="center">
-                                            {page.label}
-                                        </Typography>
-                                    </MenuItem>
-                                ))}
-                            </Menu>
-                        </Box>
-                    )}
-                    <AdbIcon
-                        sx={{ display: { xs: "flex", md: "none" }, mr: 1 }}
-                    />
-                    <Typography
-                        variant="h5"
-                        noWrap
-                        component="a"
-                        onClick={() =>
-                            navigate(isVendorPage ? "/loginVendor" : "/")
-                        }
-                        sx={{
-                            mr: 2,
-                            display: { xs: "flex", md: "none" },
-                            flexGrow: 1,
-                            fontFamily: "monospace",
-                            fontWeight: 700,
-                            letterSpacing: ".3rem",
-                            color: "inherit",
-                            textDecoration: "none",
-                        }}
-                    >
-                        LOGO
-                    </Typography>
-                    {(authUser !== "" && (
-                        <>
+                            LOGO
+                        </Typography>
+                        {authUser !== "" && (
                             <Box
                                 sx={{
                                     flexGrow: 1,
-                                    display: { xs: "none", md: "flex" },
+                                    display: { xs: "flex", md: "none" },
                                 }}
                             >
-                                {pages.map((page) => (
-                                    <Button
-                                        key={page.label}
-                                        onClick={() => {
-                                            handleCloseNavMenu();
-                                            page.action();
-                                        }}
-                                        sx={{
-                                            my: 2,
-                                            color: "white",
-                                            display: "block",
-                                        }}
-                                    >
-                                        {page.label}
-                                    </Button>
-                                ))}
-                            </Box>
-
-                            <Box sx={{ flexGrow: 0 }}>
-                                {userType.user == type && (
-                                    <Tooltip
-                                        title="Carro de productos"
-                                        sx={{ p: 0, marginRight: "1em" }}
-                                    >
-                                        <IconButton
-                                            size="large"
-                                            aria-label="shopping cart of current session"
-                                            aria-controls="menu-appbar"
-                                            aria-haspopup="true"
-                                            color="inherit"
-                                            onClick={() =>
-                                                navigate("/shoppingCart")
-                                            }
-                                        >
-                                            <Badge
-                                                badgeContent={productQuantity}
-                                                color="primary"
-                                            >
-                                                <ShoppingCartIcon />
-                                            </Badge>
-                                        </IconButton>
-                                    </Tooltip>
-                                )}
-                                <Tooltip title="Abrir opciones">
-                                    <IconButton
-                                        size="large"
-                                        aria-label="account of current user"
-                                        aria-controls="menu-appbar"
-                                        aria-haspopup="true"
-                                        color="inherit"
-                                        onClick={handleOpenUserMenu}
-                                        sx={{ p: 0 }}
-                                    >
-                                        <AccountCircle />
-                                    </IconButton>
-                                </Tooltip>
+                                <IconButton
+                                    size="large"
+                                    aria-label="account of current user"
+                                    aria-controls="menu-appbar"
+                                    aria-haspopup="true"
+                                    onClick={handleOpenNavMenu}
+                                    color="inherit"
+                                >
+                                    <MenuIcon />
+                                </IconButton>
                                 <Menu
-                                    sx={{ mt: "45px" }}
                                     id="menu-appbar"
-                                    anchorEl={anchorElUser}
+                                    anchorEl={anchorElNav}
                                     anchorOrigin={{
-                                        vertical: "top",
-                                        horizontal: "right",
+                                        vertical: "bottom",
+                                        horizontal: "left",
                                     }}
                                     keepMounted
                                     transformOrigin={{
                                         vertical: "top",
-                                        horizontal: "right",
+                                        horizontal: "left",
                                     }}
-                                    open={Boolean(anchorElUser)}
-                                    onClose={handleCloseUserMenu}
+                                    open={Boolean(anchorElNav)}
+                                    onClose={handleCloseNavMenu}
+                                    sx={{
+                                        display: { xs: "block", md: "none" },
+                                    }}
                                 >
-                                    {settings.map((setting) => (
+                                    {settings.map((page) => (
                                         <MenuItem
-                                            key={setting.label}
+                                            key={page.label}
                                             onClick={() => {
-                                                setting.action();
-                                                handleCloseUserMenu();
+                                                handleCloseNavMenu();
+                                                page.action();
                                             }}
                                         >
                                             <Typography textAlign="center">
-                                                {setting.label}
+                                                {page.label}
                                             </Typography>
                                         </MenuItem>
                                     ))}
                                 </Menu>
                             </Box>
-                        </>
-                    )) || (
-                        <Box
+                        )}
+                        <AdbIcon
+                            sx={{ display: { xs: "flex", md: "none" }, mr: 1 }}
+                        />
+                        <Typography
+                            variant="h5"
+                            noWrap
+                            component="a"
+                            onClick={() =>
+                                navigate(isVendorPage ? "/loginVendor" : "/")
+                            }
                             sx={{
+                                mr: 2,
+                                display: { xs: "flex", md: "none" },
                                 flexGrow: 1,
-                                display: { xs: "flex", md: "flex" },
-                                direction: "rtl",
+                                fontFamily: "monospace",
+                                fontWeight: 700,
+                                letterSpacing: ".3rem",
+                                color: "inherit",
+                                textDecoration: "none",
                             }}
                         >
-                            <Typography
-                                variant="body1"
-                                noWrap
-                                component="a"
-                                onClick={() =>
-                                    navigate(isVendorPage ? "/" : "loginVendor")
-                                }
+                            LOGO
+                        </Typography>
+                        {(authUser !== "" && (
+                            <>
+                                <Box
+                                    sx={{
+                                        flexGrow: 1,
+                                        display: { xs: "none", md: "flex" },
+                                    }}
+                                >
+                                    {pages.map((page) => (
+                                        <Button
+                                            key={page.label}
+                                            onClick={() => {
+                                                handleCloseNavMenu();
+                                                page.action();
+                                            }}
+                                            sx={{
+                                                my: 2,
+                                                color: "white",
+                                                display: "block",
+                                            }}
+                                        >
+                                            {page.label}
+                                        </Button>
+                                    ))}
+                                </Box>
+
+                                <Box sx={{ flexGrow: 0 }}>
+                                    {userType.user == type && (
+                                        <Tooltip
+                                            title="Carro de productos"
+                                            sx={{ p: 0, marginRight: "1em" }}
+                                        >
+                                            <IconButton
+                                                size="large"
+                                                aria-label="shopping cart of current session"
+                                                aria-controls="menu-appbar"
+                                                aria-haspopup="true"
+                                                color="inherit"
+                                                onClick={() =>
+                                                    navigate("/shoppingCart")
+                                                }
+                                            >
+                                                <Badge
+                                                    badgeContent={
+                                                        productQuantity
+                                                    }
+                                                    color="primary"
+                                                >
+                                                    <ShoppingCartIcon />
+                                                </Badge>
+                                            </IconButton>
+                                        </Tooltip>
+                                    )}
+                                    <Tooltip title="Abrir opciones">
+                                        <IconButton
+                                            size="large"
+                                            aria-label="account of current user"
+                                            aria-controls="menu-appbar"
+                                            aria-haspopup="true"
+                                            color="inherit"
+                                            onClick={handleOpenUserMenu}
+                                            sx={{ p: 0 }}
+                                        >
+                                            <AccountCircle />
+                                        </IconButton>
+                                    </Tooltip>
+                                    <Menu
+                                        sx={{ mt: "45px" }}
+                                        id="menu-appbar"
+                                        anchorEl={anchorElUser}
+                                        anchorOrigin={{
+                                            vertical: "top",
+                                            horizontal: "right",
+                                        }}
+                                        keepMounted
+                                        transformOrigin={{
+                                            vertical: "top",
+                                            horizontal: "right",
+                                        }}
+                                        open={Boolean(anchorElUser)}
+                                        onClose={handleCloseUserMenu}
+                                    >
+                                        {settings.map((setting) => (
+                                            <MenuItem
+                                                key={setting.label}
+                                                onClick={() => {
+                                                    setting.action();
+                                                    handleCloseUserMenu();
+                                                }}
+                                            >
+                                                <Typography textAlign="center">
+                                                    {setting.label}
+                                                </Typography>
+                                            </MenuItem>
+                                        ))}
+                                    </Menu>
+                                </Box>
+                            </>
+                        )) || (
+                            <Box
                                 sx={{
-                                    mr: 2,
+                                    flexGrow: 1,
                                     display: { xs: "flex", md: "flex" },
-                                    fontFamily: "monospace",
-                                    fontWeight: 400,
-                                    letterSpacing: ".05rem",
-                                    color: "inherit",
-                                    textDecoration: "none",
+                                    direction: "rtl",
                                 }}
                             >
-                                {isVendorPage
-                                    ? "IR A ACCESO DE COMPRADOR"
-                                    : "IR A ACCESO DE VENDEDOR"}
-                            </Typography>
-                        </Box>
-                    )}
-                </Toolbar>
-            </Container>
-        </AppBar>
+                                <Typography
+                                    variant="body1"
+                                    noWrap
+                                    component="a"
+                                    onClick={() =>
+                                        navigate(
+                                            isVendorPage ? "/" : "loginVendor"
+                                        )
+                                    }
+                                    sx={{
+                                        mr: 2,
+                                        display: { xs: "flex", md: "flex" },
+                                        fontFamily: "monospace",
+                                        fontWeight: 400,
+                                        letterSpacing: ".05rem",
+                                        color: "inherit",
+                                        textDecoration: "none",
+                                    }}
+                                >
+                                    {isVendorPage
+                                        ? "IR A ACCESO DE COMPRADOR"
+                                        : "IR A ACCESO DE VENDEDOR"}
+                                </Typography>
+                            </Box>
+                        )}
+                    </Toolbar>
+                </Container>
+            </AppBar>
+        </Slide>
     );
 }
 

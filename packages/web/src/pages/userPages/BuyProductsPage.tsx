@@ -219,7 +219,7 @@ const BuyProductsPage = () => {
                         const amount = priceTotal;
                         const sessionId = authToken + "-" + extra;
                         const returnUrl =
-                            window.location.origin + "/transaction/product";
+                            window.location.origin + "/transaction/products";
 
                         const tx = new WebpayPlus.Transaction(
                             new Options(
