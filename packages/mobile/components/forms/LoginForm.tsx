@@ -14,9 +14,11 @@ function LoginForm(props: LoginFormProps) {
         formState: { errors },
     } = useForm<LoginFields>();
 
+    const { label } = props;
+
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Login</Text>
+            <Text style={styles.title}>{label || "Login"}</Text>
 
             <InputComponent
                 name="email"

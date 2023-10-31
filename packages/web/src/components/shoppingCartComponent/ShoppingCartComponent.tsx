@@ -34,13 +34,19 @@ function ShoppingCartComponent(props: ShoppingCartProps) {
         let newTotal = 0;
         if (products) {
             products.forEach((item) => {
-                const finalPrice =
-                    item.value.price -
-                    (item.value.discount !== "none"
-                        ? item.value.discount === "percentage"
-                            ? (item.value.price * item.value.promotion) / 100
-                            : item.value.promotion
-                        : 0);
+                let finalPrice = item.value.price;
+                if (
+                    item.value.discount != undefined &&
+                    item.value.discount != null &&
+                    item.value.promotion != undefined &&
+                    item.value.promotion != null &&
+                    item.value?.discount != "none"
+                ) {
+                    finalPrice -=
+                        item.value.discount == "percentage"
+                            ? (finalPrice * item.value.promotion) / 100
+                            : item.value.promotion;
+                }
                 newTotal += item.quantity * finalPrice;
             });
             setTotal(newTotal);

@@ -4,6 +4,8 @@ import { PaperProvider } from "react-native-paper";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
+import { createMaterialBottomTabNavigator } from "react-native-paper/react-navigation";
+
 import AppBar from "@feria-a-ti/mobile/components/AppBar";
 import { Session } from "@feria-a-ti/mobile/app/Session";
 import { LoginClient } from "@feria-a-ti/mobile/app/client/LoginClient";
@@ -20,6 +22,9 @@ import { AccountManager } from "./account/AccountManager";
 import { ShoppingCartPage } from "./client/ShoppingCartPage";
 import { FacturesClient } from "./client/FacturesClient";
 import { FacturesVendor } from "./vendor/FacturesVendor";
+import NavigationSession from "../components/navigation/NavigationSession";
+import NavigationClient from "../components/navigation/NavigationClient";
+import NavigationVendor from "../components/navigation/NavigationVendor";
 
 const Stack = createNativeStackNavigator();
 
@@ -34,9 +39,14 @@ export default function App() {
                     }}
                 >
                     <Stack.Screen
-                        name="loginClient"
-                        component={LoginClient}
-                        options={{ title: "Inicio de sesión de usuario " }}
+                        name="login"
+                        component={NavigationSession}
+                        options={{ title: "Inicio de sesión" }}
+                    />
+                    <Stack.Screen
+                        name="client"
+                        component={NavigationClient}
+                        options={{ title: "Cuenta comprador" }}
                     />
                     <Stack.Screen
                         name="registerClient"
@@ -49,24 +59,9 @@ export default function App() {
                         options={{ title: "Recuperar cuenta de usuario " }}
                     />
                     <Stack.Screen
-                        name="userShoppingCart"
-                        component={ShoppingCartPage}
-                        options={{ title: "Productos de carro " }}
-                    />
-                    <Stack.Screen
-                        name="userVendorSelect"
-                        component={UserVendorSelect}
-                        options={{ title: "Productos de vendedores " }}
-                    />
-                    <Stack.Screen
-                        name="userFactures"
-                        component={FacturesClient}
-                        options={{ title: "Productos de vendedores " }}
-                    />
-                    <Stack.Screen
-                        name="loginVendor"
-                        component={LoginVendor}
-                        options={{ title: "Inicio de sesión de vendedor " }}
+                        name="vendor"
+                        component={NavigationVendor}
+                        options={{ title: "Cuenta de vendedor " }}
                     />
                     <Stack.Screen
                         name="registerVendor"
@@ -77,16 +72,6 @@ export default function App() {
                         name="recoveryVendor"
                         component={RecoveryVendor}
                         options={{ title: "Recuperar cuenta de vendedor " }}
-                    />
-                    <Stack.Screen
-                        name="managerVendor"
-                        component={ManagerVendor}
-                        options={{ title: "Gestionar productos " }}
-                    />
-                    <Stack.Screen
-                        name="facturesVendor"
-                        component={FacturesVendor}
-                        options={{ title: "Facturas de vendedor " }}
                     />
                     <Stack.Screen
                         name="managerAddProduct"

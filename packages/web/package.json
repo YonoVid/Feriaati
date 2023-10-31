@@ -27,6 +27,7 @@
     "react-hook-form": "^7.43.9",
     "react-instantsearch": "^7.2.1",
     "react-router-dom": "^6.10.0",
+    "recharts": "^2.9.1",
     "transbank-sdk": "^4.0.0"
   },
   "devDependencies": {

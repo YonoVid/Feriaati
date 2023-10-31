@@ -27,18 +27,26 @@ export const ShoppingCartComponent = (props: ShoppingCartProps) => {
         color != null && color === "secondary" ? "secondary" : "primary";
 
     useEffect(() => {
-        let newTotal = 0;
-        products.forEach((item) => {
-            const finalPrice =
-                item.value.price -
-                (item.value.discount !== "none"
-                    ? item.value.discount === "percentage"
-                        ? (item.value.price * item.value.promotion) / 100
-                        : item.value.promotion
-                    : 0);
-            newTotal += item.quantity * finalPrice;
-        });
-        setTotal(newTotal);
+        if (products) {
+            let newTotal = 0;
+            products.forEach((item) => {
+                let finalPrice = item.value.price;
+                if (
+                    item.value.discount != undefined &&
+                    item.value.discount != null &&
+                    item.value.promotion != undefined &&
+                    item.value.promotion != null &&
+                    item.value?.discount != "none"
+                ) {
+                    finalPrice -=
+                        item.value.discount == "percentage"
+                            ? (finalPrice * item.value.promotion) / 100
+                            : item.value.promotion;
+                }
+                newTotal += item.quantity * finalPrice;
+            });
+            setTotal(newTotal);
+        }
     }, [products]);
 
     return (
@@ -48,9 +56,9 @@ export const ShoppingCartComponent = (props: ShoppingCartProps) => {
                     <View key={product.value.name + index}>
                         <CartProductView
                             onEdit={(quantity) =>
-                                onEdit && onEdit(index, quantity)
+                                onEdit && onEdit(product.id, quantity)
                             }
-                            onDelete={() => onDelete && onDelete(index)}
+                            onDelete={() => onDelete && onDelete(product.id)}
                             product={product.value}
                             quantity={product.quantity}
                         />

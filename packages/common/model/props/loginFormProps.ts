@@ -7,6 +7,7 @@ import {
 import { FormProps } from "./sharedProps";
 
 export type LoginFormProps = FormProps & {
+    label?: string;
     onSubmit: (data: LoginFields) => void;
 };
 

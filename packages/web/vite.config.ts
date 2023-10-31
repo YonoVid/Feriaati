@@ -14,7 +14,11 @@ export default defineConfig({
                 rewrite: (path) => path.replace(/^\/api/, ""),
             },
             "/firebase": {
-                target: "http://10.42.33.33:5001/",
+                target: "https://us-central1-feria-a-ti.cloudfunctions.net/",
+                changeOrigin: true,
+                secure: false,
+                ws: true,
+                rewrite: (path) => path.replace(/^\/firebase/, ""),
             },
         },
         cors: {

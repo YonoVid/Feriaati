@@ -64,7 +64,11 @@ export const LoginClient = (props: LoginClientProps) => {
                 style={styles.container}
                 contentContainerStyle={styles.innerContainer}
             >
-                <LoginForm onSubmit={onSubmit} canSubmit={submitActive}>
+                <LoginForm
+                    label={"Acceso cliente"}
+                    onSubmit={onSubmit}
+                    canSubmit={submitActive}
+                >
                     <Button
                         mode="text"
                         onPress={() => navigation.navigate("registerClient")}

@@ -69,7 +69,9 @@ function VendorDashboardPage() {
             {type != userType.vendor && (
                 <Navigate to="/session" replace={true} />
             )}
-            <DashboardComponent date={date} resumes={resumes} />
+            {date != null && resumes.size > 0 && (
+                <DashboardComponent date={date} resumes={resumes} />
+            )}
         </>
     );
 }

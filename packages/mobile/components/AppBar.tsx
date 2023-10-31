@@ -76,22 +76,9 @@ export default function AppBar(props: NativeStackHeaderProps) {
                         authToken === "" ? (
                             <Menu.Item
                                 onPress={() => {
-                                    console.log(
-                                        "LAST SCREEN NAME::",
-                                        route.name
-                                    );
-                                    navigation.replace(
-                                        route.name == "loginClient"
-                                            ? "loginVendor"
-                                            : "loginClient"
-                                    );
                                     closeMenu();
                                 }}
-                                title={
-                                    route.name == "loginClient"
-                                        ? "Ir a acceso de vendedor"
-                                        : "Ir a acceso de comprador"
-                                }
+                                title={"About"}
                             />
                         ) : (
                             <>
@@ -102,41 +89,6 @@ export default function AppBar(props: NativeStackHeaderProps) {
                                     }}
                                     title={"HOME"}
                                 />
-                                {type === userType.user && (
-                                    <>
-                                        <Menu.Item
-                                            onPress={() => {
-                                                navigation.replace(
-                                                    "userShoppingCart"
-                                                );
-                                                closeMenu();
-                                            }}
-                                            title={"Carro"}
-                                        />
-                                        <Menu.Item
-                                            onPress={() => {
-                                                navigation.replace(
-                                                    "userFactures"
-                                                );
-                                                closeMenu();
-                                            }}
-                                            title={"Facturas"}
-                                        />
-                                    </>
-                                )}
-                                {type === userType.vendor && (
-                                    <>
-                                        <Menu.Item
-                                            onPress={() => {
-                                                navigation.replace(
-                                                    "facturesVendor"
-                                                );
-                                                closeMenu();
-                                            }}
-                                            title={"Facturas"}
-                                        />
-                                    </>
-                                )}
                                 <Menu.Item
                                     onPress={() => {
                                         navigation.replace("accountManager");
