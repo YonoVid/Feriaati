@@ -2,21 +2,22 @@ import "react-native-get-random-values";
 import React, { useEffect, useState } from "react";
 
 import { StyleSheet } from "react-native";
+import { Avatar, Text, Button, Card, IconButton } from "react-native-paper";
+
 import { colors } from "@feria-a-ti/common/theme/base";
+import { numberWithCommas } from "@feria-a-ti/common/helpers";
 
 import {
-    ProductCollectionData,
     ProductData,
     ProductUnit,
 } from "@feria-a-ti/common/model/functionsTypes";
-import { Avatar, Text, Button, Card, IconButton } from "react-native-paper";
 import { ShoppingCartItem } from "@feria-a-ti/common/model/props/shoppingCartProps";
 
 export type ProductViewProps = {
     vendorId?: string;
     product: ProductData;
     isEditable: boolean;
-    addProduct?: (data: ShoppingCartItem, quantity: number) => void;
+    addProduct?: (data: ShoppingCartItem) => void;
     onEdit?: (product: ProductData) => void;
     onDelete?: (id: string) => void;
 };
@@ -80,7 +81,7 @@ export const ProductView = (props: ProductViewProps) => {
         <Card>
             <Card.Title
                 title={name + " " + unitLabel}
-                subtitle={"$" + finalPrice}
+                subtitle={"$" + numberWithCommas(finalPrice)}
                 left={(props) => (
                     <Avatar.Image
                         {...props}

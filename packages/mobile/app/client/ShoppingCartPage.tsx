@@ -14,15 +14,15 @@ import {
 
 export interface ShoppingCartPageProps {
     navigation: NavigationProp<ParamListBase>;
+    isEditable: boolean;
+    loadedList?: Array<ShoppingCartItem>;
 }
 
 export const ShoppingCartPage = (props: ShoppingCartPageProps) => {
     // Context variables
-    const { authToken, setMessage, resetProduct } = useAppContext();
-    // Context variables
     const { products, editProduct, deleteProduct } = useAppContext();
     // Navigation
-    const { navigation } = props;
+    const { navigation, isEditable, loadedList } = props;
 
     const [productList, setProductList] = useState<Array<ShoppingCartItem>>([]);
 
@@ -30,9 +30,8 @@ export const ShoppingCartPage = (props: ShoppingCartPageProps) => {
     const [canSubmit, setCanSubmit] = useState(true);
 
     const onSubmit = () => {
-        setCanSubmit(false);
         if (products.size > 0) {
-            navigation.navigate("BuyProduct");
+            navigation.navigate("buyClient");
         }
     };
 
@@ -47,9 +46,12 @@ export const ShoppingCartPage = (props: ShoppingCartPageProps) => {
     };
 
     useEffect(() => {
-        console.log("IS CART EMPTY?::", Object.keys(products).length > 0);
-        console.log(products);
-        if (products.size > 0) {
+        if (
+            products.size > 0 &&
+            (loadedList == undefined || loadedList.length == 0)
+        ) {
+            console.log("IS CART EMPTY?::", Object.keys(products).length > 0);
+            console.log(products);
             const newList: Array<ShoppingCartItem> = [];
             products.forEach((vendor, key) => {
                 console.log("VENDOR::", key);
@@ -70,15 +72,15 @@ export const ShoppingCartPage = (props: ShoppingCartPageProps) => {
             >
                 <Card style={styles.containerVendor}>
                     <Text style={{ ...styles.title, flex: 6 }}>
-                        {"Lista de compra"}
+                        {isEditable ? "Lista de compra" : "Factura"}
                     </Text>
                     {products && (
                         <ShoppingCartComponent
                             onSubmit={onSubmit}
                             canSubmit={canSubmit}
                             label={"Carro de compra"}
-                            products={productList || []}
-                            isEditable={true}
+                            products={loadedList || productList || []}
+                            isEditable={isEditable}
                             onEdit={onEdit}
                             onDelete={onDelete}
                         />

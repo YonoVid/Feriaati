@@ -10,16 +10,18 @@ import {
     ProductUnit,
 } from "@feria-a-ti/common/model/functionsTypes";
 import { Avatar, Text, Button, Card, IconButton } from "react-native-paper";
+import { numberWithCommas } from "@feria-a-ti/common/helpers";
 
 export type CartProductViewProps = {
     product: ProductCollectionData;
     quantity: number;
+    isEditable: boolean;
     onEdit: (quantity: number) => void;
     onDelete: () => void;
 };
 
 export const CartProductView = (props: CartProductViewProps) => {
-    const { quantity, product, onEdit, onDelete } = props;
+    const { quantity, product, isEditable, onEdit, onDelete } = props;
     const { name, price, discount, promotion, image, unitType, unit } = product;
 
     const [localQuantity, setLocalQuantity] = useState(quantity);
@@ -55,73 +57,99 @@ export const CartProductView = (props: CartProductViewProps) => {
     }, [product, localQuantity]);
 
     return (
-        <View>
-            <Card>
+        <View style={{ display: "flex", flexDirection: "row" }}>
+            <Card style={{ flex: 4 }}>
                 <Card.Title
-                    title={name + " " + unitLabel}
+                    title={
+                        name +
+                        " " +
+                        unitLabel +
+                        (isEditable ? "" : " x " + quantity)
+                    }
                     subtitle={
                         "$" +
-                        finalPrice +
-                        "| " +
-                        (discount !== "none" &&
-                            "Descuento de " +
-                                (discount === "percentage"
-                                    ? promotion + "%"
-                                    : "$" + promotion))
+                        numberWithCommas(finalPrice) +
+                        (discount !== "none" && isEditable
+                            ? "| " +
+                              "Descuento de " +
+                              (discount === "percentage"
+                                  ? promotion + "%"
+                                  : "$" + numberWithCommas(promotion))
+                            : "")
                     }
-                    left={(props) => (
-                        <Avatar.Image
-                            {...props}
-                            size={50}
-                            source={{
-                                uri: image[0].replace(
-                                    "127.0.0.1",
-                                    "192.168.0.12"
-                                ),
-                            }}
-                        />
-                    )}
+                    left={
+                        isEditable
+                            ? (props) => (
+                                  <Avatar.Image
+                                      {...props}
+                                      size={50}
+                                      source={{
+                                          uri: image[0].replace(
+                                              "127.0.0.1",
+                                              "192.168.0.12"
+                                          ),
+                                      }}
+                                  />
+                              )
+                            : undefined
+                    }
                 />
-                <Card.Actions>
-                    <>
-                        <IconButton
-                            style={{ flex: 1 }}
-                            icon="minus-circle"
-                            size={20}
-                            iconColor={colors.secondary}
-                            onPress={() => {
-                                const actual = localQuantity;
-                                if (localQuantity > 1) {
-                                    setLocalQuantity(actual - 1);
-                                    onEdit(actual - 1);
-                                }
-                            }}
-                        />
-                        <Text style={{ flex: 1 }}>{quantity}</Text>
-                        <IconButton
-                            style={{ flex: 1 }}
-                            icon="plus-circle"
-                            size={20}
-                            iconColor={colors.primary}
-                            onPress={() => {
-                                const actual = localQuantity;
-                                if (localQuantity < 999) {
-                                    setLocalQuantity(actual + 1);
-                                    onEdit(actual + 1);
-                                }
-                            }}
-                        />
-                        <Text style={{ flex: 8 }}>Subtotal ${subtotal}</Text>
-                        <IconButton
-                            style={{ flex: 1 }}
-                            icon="delete"
-                            size={20}
-                            iconColor={colors.secondary}
-                            onPress={() => onDelete && onDelete()}
-                        />
-                    </>
-                </Card.Actions>
+                {isEditable && (
+                    <Card.Actions>
+                        <>
+                            <IconButton
+                                style={{ flex: 1 }}
+                                icon="minus-circle"
+                                size={20}
+                                iconColor={colors.secondary}
+                                onPress={() => {
+                                    const actual = localQuantity;
+                                    if (localQuantity > 1) {
+                                        setLocalQuantity(actual - 1);
+                                        onEdit(actual - 1);
+                                    }
+                                }}
+                            />
+                            <Text style={{ flex: 1 }}>{quantity}</Text>
+                            <IconButton
+                                style={{ flex: 1 }}
+                                icon="plus-circle"
+                                size={20}
+                                iconColor={colors.primary}
+                                onPress={() => {
+                                    const actual = localQuantity;
+                                    if (localQuantity < 999) {
+                                        setLocalQuantity(actual + 1);
+                                        onEdit(actual + 1);
+                                    }
+                                }}
+                            />
+                            <Text style={{ flex: 8 }}>
+                                Subtotal ${subtotal}
+                            </Text>
+                            <IconButton
+                                style={{ flex: 1 }}
+                                icon="delete"
+                                size={20}
+                                iconColor={colors.secondary}
+                                onPress={() => onDelete && onDelete()}
+                            />
+                        </>
+                    </Card.Actions>
+                )}
             </Card>
+            {!isEditable && (
+                <Card style={{ flex: 2 }}>
+                    <Card.Title
+                        titleStyle={{
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                        }}
+                        title={"$" + numberWithCommas(subtotal)}
+                    />
+                </Card>
+            )}
         </View>
     );
 };

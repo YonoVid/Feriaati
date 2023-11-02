@@ -102,6 +102,17 @@ export default function AppBar(props: NativeStackHeaderProps) {
                                             "LAST SCREEN NAME::",
                                             route.name
                                         );
+                                        navigation.navigate("subscription");
+                                        closeMenu();
+                                    }}
+                                    title={"Subscripción"}
+                                />
+                                <Menu.Item
+                                    onPress={() => {
+                                        console.log(
+                                            "LAST SCREEN NAME::",
+                                            route.name
+                                        );
                                         logout();
                                         navigation.replace("session");
                                         console.log("TOKEN::", authToken);

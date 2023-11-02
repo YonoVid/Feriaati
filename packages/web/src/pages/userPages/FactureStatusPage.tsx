@@ -1,10 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import {
-    Navigate,
-    useNavigate,
-    useParams,
-    useSearchParams,
-} from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 
 import { useHeaderContext } from "../HeaderLayout";
 import { httpsCallable } from "firebase/functions";
@@ -24,8 +19,8 @@ import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import {
     FactureStatus,
     ResponseData,
-    userType,
 } from "@feria-a-ti/common/model/functionsTypes";
+import { TransbankTransaction } from "@feria-a-ti/common/model/account/paymenTypes";
 
 import { UserContext } from "@feria-a-ti/web/src/App";
 import {
@@ -33,30 +28,12 @@ import {
     UpdateFactureFields,
 } from "@feria-a-ti/common/model/fields/buyingFields";
 import { messagesCode } from "@feria-a-ti/common/constants/errors";
-import { userStatus } from "@feria-a-ti/common/model/fields/registerFields";
-
-export type TransbankTransaction = {
-    vci: string;
-    amount: number;
-    status: string;
-    buy_order: string;
-    session_id: string;
-    card_detail: any;
-    accounting_date: string;
-    transaction_date: string;
-    authorization_code: string;
-    payment_type_code: string;
-    response_code: number;
-    installments_amount: number;
-    installments_number: number;
-    balance: number;
-};
 
 const FactureStatusPage = () => {
     //Global UI context
     const { setMessage, resetProduct } = useHeaderContext();
     //Global state variable
-    const { authToken, type } = useContext(UserContext);
+    const { authToken } = useContext(UserContext);
     //Navigation definition
     const navigate = useNavigate();
     // Form variables
@@ -135,8 +112,6 @@ const FactureStatusPage = () => {
 
     return (
         <>
-            {type !== userType.user && <Navigate to="/login" replace={true} />}
-
             <Card
                 className="inputContainer"
                 sx={{

@@ -24,6 +24,7 @@ import {
     AccountData,
     ProductFactureData,
     ResponseData,
+    SubscriptionData,
 } from "@feria-a-ti/common/model/functionsTypes";
 import {
     BuyProductFormFields,
@@ -33,71 +34,104 @@ import {
 
 import { BuyForm } from "@feria-a-ti/mobile/components/forms/BuyForm";
 import { useAppContext } from "../AppContext";
-import { errorCodes } from "@feria-a-ti/common/constants/errors";
+import { errorCodes, messagesCode } from "@feria-a-ti/common/constants/errors";
 import { checkBuyProduct } from "@feria-a-ti/common/check/checkBuyProduct";
+import {
+    SubscriptionFields,
+    SubscriptionFormFields,
+} from "@feria-a-ti/common/model/account/subscriptionAccountFields";
+import { FieldValues } from "react-hook-form";
+import { GetAccountFields } from "@feria-a-ti/common/model/account/getAccountFields";
+import { checkGetAccountFields } from "@feria-a-ti/common/check/checkAccountFields";
+import { SubscriptionForm } from "../../components/forms/SubscriptionForm";
 
-export interface BuyProductsProps {
+export interface SubscriptionAccountProps {
     navigation: NavigationProp<ParamListBase>;
-    accountData: AccountData;
-    vendorCheck: BUYERROR;
-    priceTotal: number;
-    productPetition: {
-        [id: string]: ProductFactureData[];
-    };
-    response: { token: string; url: string };
-    setResponse: (data: { token: string; url: string }) => void;
-    canSubmit: boolean;
-    setCanSubmit: (data: boolean) => void;
 }
 
-function BuyProducts(props: BuyProductsProps) {
-    const {
-        navigation,
-        accountData,
-        vendorCheck,
-        priceTotal,
-        productPetition,
-        response,
-        setResponse,
-        canSubmit,
-        setCanSubmit,
-    } = props;
+function SubscriptionAccount(props: SubscriptionAccountProps) {
+    const { navigation } = props;
 
     // Context variables
-    const { authToken, setMessage, resetProduct } = useAppContext();
+    const { authToken, type, setMessage, resetProduct } = useAppContext();
 
     const returnUrl = "https://localhost";
 
-    const [localCanSubmit, setLocalCanSubmit] = useState<boolean>(true);
+    const [canSubmit, setCanSubmit] = useState(false);
 
-    const onSubmit = (data: BuyProductFormFields) => {
-        console.log("ACTUAL RESPONSE::", response);
+    const [subscriptionData, setSubscriptionData] =
+        useState<SubscriptionData>();
 
-        const formatedData: ProductFactureFields = {
-            direction: data.direction || undefined,
-            token: authToken as string,
-            products: productPetition || {},
+    const [response, setResponse] = useState<any>(null);
+
+    useEffect(() => {
+        getSubscriptionData();
+    }, []);
+
+    const getSubscriptionData = () => {
+        console.log("SUBMIT FORM");
+        //Format data to send to server
+        const formatedData: GetAccountFields = {
+            token: authToken,
+            type: type,
         };
-        setCanSubmit(false);
-        setLocalCanSubmit(false);
+        const check = checkGetAccountFields(formatedData);
+
+        console.log("ERROR CHECK::", check);
+
+        if (check) {
+            //Lock register button
+            setCanSubmit(false);
+            //Call firebase function to create user
+            const getAccount = httpsCallable<
+                GetAccountFields,
+                ResponseData<SubscriptionData>
+            >(functions, "getAccountSubscription");
+            getAccount(formatedData)
+                .then((result) => {
+                    const { msg, error, extra } = result.data;
+                    console.log(result);
+                    //Show alert message
+                    setMessage({ msg, isError: error });
+                    setSubscriptionData(extra);
+                })
+                .catch((error) => {
+                    console.log(error);
+                    setMessage({ msg: messagesCode["ERR00"], isError: error });
+                })
+                .finally(() => setCanSubmit(true)); //Unlock register button
+        }
+    };
+
+    const onSubmit = (data: SubscriptionFormFields) => {
+        const formatedData: SubscriptionFields = {
+            type: type,
+            token: authToken as string,
+            amount: data.amount,
+            months: data.months,
+        };
+        console.log("DATA::", formatedData);
         // Generate facture
-        if (checkBuyProduct(formatedData)) {
+        if (canSubmit && subscriptionData && subscriptionData != null) {
+            setCanSubmit(false);
             const buyProductUser = httpsCallable<
-                ProductFactureFields,
+                SubscriptionFields,
                 ResponseData<string>
-            >(functions, "buyProductUser");
+            >(functions, "setAccountSubscription");
             buyProductUser(formatedData)
                 .then((result) => {
                     const { msg, error, extra } = result.data;
                     console.log(result.data);
 
+                    setMessage({ msg, isError: error });
                     if (!error) {
+                        resetProduct();
                         //setIsLogged(result.data as any);
 
                         console.log("TRANSBANK TEST::");
 
-                        const amount = priceTotal;
-                        const sessionId = data.token + "-" + extra;
+                        const amount = formatedData.amount;
+                        const sessionId = authToken + "-" + extra;
 
                         const tx = new WebpayPlus.Transaction(
                             new Options(
@@ -108,35 +142,14 @@ function BuyProducts(props: BuyProductsProps) {
                         );
                         tx.create(extra, sessionId, amount, returnUrl)
                             .then((newResponse) => {
-                                console.log("RESPONSE::", newResponse);
-                                if (
-                                    newResponse != undefined ||
-                                    newResponse != null
-                                ) {
-                                    setResponse(newResponse);
-                                    console.log("::LOAD SHIT::");
-                                } else {
-                                    setMessage({
-                                        msg: "Problemas al realizar transacción",
-                                        isError: true,
-                                    });
-                                }
+                                setResponse(newResponse);
                             })
-                            .finally(() => {
-                                setCanSubmit(true);
-                                setLocalCanSubmit(true);
-                            });
-                    } else {
-                        setMessage({ msg, isError: error });
-                        setCanSubmit(true);
-                        setLocalCanSubmit(true);
+                            .finally(() => setCanSubmit(true));
                     }
                 })
-                .catch((error) => {
-                    console.log(error);
-                    setCanSubmit(true);
-                    setLocalCanSubmit(true);
-                });
+                .finally(() => setCanSubmit(true));
+        } else {
+            setMessage({ msg: "Datos de pedido incorrectos", isError: true });
         }
     };
 
@@ -148,16 +161,11 @@ function BuyProducts(props: BuyProductsProps) {
             {response == null || response == undefined ? (
                 <Card style={styles.containerVendor}>
                     <Text style={{ ...styles.title, flex: 6 }}>
-                        {"Realizar pago"}
+                        {"Estado de subscripción"}
                     </Text>
-                    <BuyForm
-                        account={accountData}
-                        canSubmit={
-                            localCanSubmit &&
-                            canSubmit &&
-                            vendorCheck == BUYERROR.NONE &&
-                            priceTotal != 0
-                        }
+                    <SubscriptionForm
+                        subscription={subscriptionData}
+                        canSubmit={canSubmit}
                         onSubmit={(data) => {
                             console.log(data);
                             onSubmit(data);
@@ -178,7 +186,7 @@ function BuyProducts(props: BuyProductsProps) {
                             navigation.dispatch(
                                 StackActions.replace("factureStatus", {
                                     token_ws: response.token,
-                                    type: FactureTypes.PRODUCTS,
+                                    type: FactureTypes.SUBSCRIPTION,
                                 })
                             );
                         }
@@ -242,4 +250,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default BuyProducts;
+export default SubscriptionAccount;

@@ -25,21 +25,18 @@ import {
 } from "@feria-a-ti/common/model/functionsTypes";
 import { ProductFactureFields } from "@feria-a-ti/common/model/fields/buyingFields";
 import { GetAccountFields } from "@feria-a-ti/common/model/account/getAccountFields";
-import { checkGetAccountFields } from "@feria-a-ti/common/check/checkAccountFields";
-import { messagesCode } from "@feria-a-ti/common/constants/errors";
 import { ShoppingCartItem } from "@feria-a-ti/common/model/props/shoppingCartProps";
+import { BUYERROR } from "@feria-a-ti/common/model/users/buyTypes";
+
+import { getAccountData } from "@feria-a-ti/common/functions/accountFunctions";
+import { formatFacture } from "@feria-a-ti/common/functions/factureFunctions";
+
 import { checkBuyProduct } from "@feria-a-ti/common/check/checkBuyProduct";
 
 import BuyProductComponent from "@feria-a-ti/web/src/components/buyProductComponent/BuyProductComponent";
 import BuyProductForm from "@feria-a-ti/web/src/components/forms/buyProductForm/BuyProductForm";
 
 import { UserContext } from "@feria-a-ti/web/src/App";
-
-enum BUYERROR {
-    NONE = 0,
-    REGION = 1,
-    COMMUNE = 2,
-}
 
 const BuyProductsPage = () => {
     const { handleSubmit } = useForm();
@@ -73,121 +70,30 @@ const BuyProductsPage = () => {
     const [response, setResponse] = useState<any>(null);
 
     useEffect(() => {
-        getAccountData();
+        localGetAccountData();
 
         if (products != null && products != undefined) {
-            let newTotal = 0;
-            let lastVendorMap: {
-                vendor: ProductListCollectionData;
-                products: Map<string, ShoppingCartItem>;
-            };
-            const newProductPetition: { [id: string]: ProductFactureData[] } =
-                {};
-            const newVendorData: { [id: string]: ProductListCollectionData } =
-                {};
+            const { buyError, priceTotal, productPetition, vendorData } =
+                formatFacture(products, vendorCheck);
 
-            console.log("SUBMIT BUYING PETITION");
-            console.log(products);
-            products.forEach((vendorMap, key) => {
-                if (
-                    vendorCheck != BUYERROR.REGION &&
-                    lastVendorMap != null &&
-                    lastVendorMap != undefined
-                ) {
-                    if (
-                        vendorMap.vendor.region != lastVendorMap.vendor.region
-                    ) {
-                        setVendorCheck(BUYERROR.REGION);
-                    } else if (
-                        vendorCheck != BUYERROR.COMMUNE &&
-                        vendorMap.vendor.commune != lastVendorMap.vendor.commune
-                    ) {
-                        setVendorCheck(BUYERROR.COMMUNE);
-                    }
-                }
-
-                lastVendorMap = vendorMap;
-                newVendorData[key] = vendorMap.vendor;
-
-                vendorMap.products.forEach((product) => {
-                    const { id, value, quantity } = product;
-
-                    let finalPrice = value.price;
-                    if (
-                        value.discount != undefined &&
-                        value.discount != null &&
-                        value.promotion != undefined &&
-                        value.promotion != null &&
-                        value?.discount != "none"
-                    ) {
-                        finalPrice -=
-                            value.discount == "percentage"
-                                ? (finalPrice * value.promotion) / 100
-                                : value.promotion;
-                    }
-
-                    const unitLabel =
-                        "(" +
-                        (value.unitType === ProductUnit.GRAM
-                            ? value.unit + "gr."
-                            : value.unitType === ProductUnit.KILOGRAM
-                            ? "kg."
-                            : "unidad") +
-                        ")";
-
-                    newProductPetition[id.vendorId] = [
-                        {
-                            id: id.productId,
-                            name: product.value.name + unitLabel,
-                            quantity: quantity,
-                            subtotal: finalPrice * quantity,
-                        },
-                        ...(newProductPetition[product.id.vendorId] || []),
-                    ];
-                    newTotal += finalPrice * quantity;
-                });
-            });
-            console.log("BUY ERROR::", vendorCheck);
-            setPriceTotal(newTotal);
+            setVendorCheck(buyError);
+            console.log("BUY ERROR::", buyError);
+            setPriceTotal(priceTotal);
             // Store formated data
-            setProductPetition(newProductPetition);
-            setVendorData(newVendorData);
+            setProductPetition(productPetition);
+            setVendorData(vendorData);
         }
     }, []);
 
-    const getAccountData = () => {
+    const localGetAccountData = () => {
         console.log("SUBMIT FORM");
         //Format data to send to server
         const formatedData: GetAccountFields = {
             token: authToken,
             type: type,
         };
-        const check = checkGetAccountFields(formatedData);
 
-        console.log("ERROR CHECK::", check);
-
-        if (check) {
-            //Lock register button
-            setCanSubmit(false);
-            //Call firebase function to create user
-            const getAccount = httpsCallable<
-                GetAccountFields,
-                ResponseData<AccountData>
-            >(functions, "getAccountUser");
-            getAccount(formatedData)
-                .then((result) => {
-                    const { msg, error, extra } = result.data;
-                    console.log(result);
-                    //Show alert message
-                    setMessage({ msg, isError: error });
-                    setAccountData(extra);
-                })
-                .catch((error) => {
-                    console.log(error);
-                    setMessage({ msg: messagesCode["ERR00"], isError: error });
-                })
-                .finally(() => setCanSubmit(true)); //Unlock register button
-        }
+        getAccountData(formatedData, setAccountData, setCanSubmit, setMessage);
     };
 
     const onClick = (data: FieldValues) => {

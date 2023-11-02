@@ -3,7 +3,6 @@ import { Controller, useForm } from "react-hook-form";
 import {
     Box,
     Button,
-    ButtonBase,
     Card,
     CardActions,
     Divider,
@@ -13,23 +12,22 @@ import {
     IconButton,
     Radio,
     RadioGroup,
-    Typography,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
 
+import {
+    BuyProductFormFields,
+    BuyTransportOptions,
+} from "@feria-a-ti/common/model/fields/buyingFields";
 import { regionCode, regionCommune } from "@feria-a-ti/common/constants/form";
 import { RBuyProductFormProps } from "@feria-a-ti/common/model/props/buyProductFormProps";
 import { AccountDirection } from "@feria-a-ti/common/model/account/editAccountFields";
 import { numberRegex } from "@feria-a-ti/common/check/checkBase";
 
 import InputComponentAlt from "@feria-a-ti/web/src/components/inputComponent/InputComponentAlt";
-import {
-    BuyProductFormFields,
-    BuyTransportOptions,
-} from "@feria-a-ti/common/model/fields/buyingFields";
+import InputDirectionButton from "@feria-a-ti/web/src/components/inputDirectionButton/InputDirectionButton";
 import "./BuyProductForm.css";
-import InputDirectionButton from "../../inputDirectionButton/InputDirectionButton";
 
 function BuyProductForm(props: RBuyProductFormProps) {
     const { account, onSubmit } = props;

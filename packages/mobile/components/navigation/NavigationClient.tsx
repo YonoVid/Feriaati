@@ -40,7 +40,7 @@ export default function NavigationClient(props: NavigationBarProps) {
 
     const renderScene = BottomNavigation.SceneMap({
         vendorClient: () => UserVendorSelect(props),
-        cartClient: () => ShoppingCartPage(props),
+        cartClient: () => ShoppingCartPage({ ...props, isEditable: true }),
         facturesClient: () => FacturesClient(props),
     });
     return (

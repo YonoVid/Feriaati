@@ -1,29 +1,26 @@
 import React, { useEffect, useState } from "react";
-import { HttpsCallableResult } from "firebase/functions";
-import { ScrollView, StyleSheet } from "react-native";
+import { ScrollView, StyleSheet, View } from "react-native";
 import { NavigationProp, ParamListBase } from "@react-navigation/native";
 
-import { checkLoginFields } from "@feria-a-ti/common/check/checkLoginFields";
-import { LoginFields } from "@feria-a-ti/common/model/fields/loginFields";
 import { functions } from "@feria-a-ti/common/firebase";
-import LoginForm from "@feria-a-ti/mobile/components/forms/LoginForm";
 import { httpsCallable } from "@firebase/functions";
 import { Button, IconButton, List } from "react-native-paper";
+
 import {
     ProductData,
     ProductListCollectionData,
     ResponseData,
-    UserToken,
-    VendorCollectionData,
     VendorData,
 } from "@feria-a-ti/common/model/functionsTypes";
-import { useAppContext } from "../AppContext";
 import { ProductListFields } from "@feria-a-ti/common/model/props/productAddFormProps";
-import { ProductList } from "../../components/productList/ProductList";
-import { colors } from "@feria-a-ti/common/theme/base";
-import { CommentList } from "../../components/commentList/commentList";
-import { ProductVendorPage } from "../vendor/ProductVendorPage";
 import { ShoppingCartItem } from "@feria-a-ti/common/model/props/shoppingCartProps";
+
+import { colors } from "@feria-a-ti/common/theme/base";
+
+import { CommentList } from "@feria-a-ti/mobile/components/commentList/commentList";
+import { ProductVendorPage } from "@feria-a-ti/mobile/app/vendor/ProductVendorPage";
+
+import { useAppContext } from "../AppContext";
 
 export interface UserVendorSelectProps {
     navigation: NavigationProp<ParamListBase>;
@@ -176,6 +173,15 @@ export const UserVendorSelect = (props: UserVendorSelectProps) => {
                     </>
                 )}
             </ScrollView>
+            <View style={styles.button}>
+                <Button
+                    mode="contained"
+                    color={styles.buttonInner.color}
+                    onPress={() => navigation.navigate("searchProduct")}
+                >
+                    {"Pagar"}
+                </Button>
+            </View>
         </>
     );
 };

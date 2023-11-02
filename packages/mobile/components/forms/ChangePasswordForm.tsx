@@ -6,7 +6,7 @@ import { Text, View, Button, StyleSheet } from "react-native";
 import { colors } from "@feria-a-ti/common/theme/base";
 import { UpdatePassFields } from "@feria-a-ti/common/model/fields/loginFields";
 import { RRecoveryFormProps } from "@feria-a-ti/common/model/props/loginFormProps";
-import { passwordFormatRegex } from "@feria-a-ti/common/check/checkRegisterFields";
+import { passwordFormatRegex } from "@feria-a-ti/common/check/checkBase";
 
 export const ChangePasswordForm = (props: RRecoveryFormProps) => {
     const { canSubmit } = props;

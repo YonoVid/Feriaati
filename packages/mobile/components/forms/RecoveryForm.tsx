@@ -6,7 +6,7 @@ import { Text, View, Button, StyleSheet } from "react-native";
 import { colors } from "@feria-a-ti/common/theme/base";
 import { RecoveryFields } from "@feria-a-ti/common/model/fields/loginFields";
 import { RRecoveryFormProps } from "@feria-a-ti/common/model/props/loginFormProps";
-import { emailFormatRegex } from "@feria-a-ti/common/check/checkRegisterFields";
+import { emailFormatRegex } from "@feria-a-ti/common/check/checkBase";
 import { Link } from "expo-router";
 
 function RecoveryForm(props: RRecoveryFormProps) {

@@ -1,12 +1,14 @@
 import "react-native-get-random-values";
 import React, { useEffect, useState } from "react";
 import { Text, View, StyleSheet } from "react-native";
+import { Button, Card } from "react-native-paper";
 
 import { colors } from "@feria-a-ti/common/theme/base";
+import { numberWithCommas } from "@feria-a-ti/common/helpers";
 
 import { ShoppingCartProps } from "@feria-a-ti/common/model/props/shoppingCartProps";
+
 import { CartProductView } from "./CartProductView";
-import { Button, Card } from "react-native-paper";
 
 export const ShoppingCartComponent = (props: ShoppingCartProps) => {
     const {
@@ -55,6 +57,7 @@ export const ShoppingCartComponent = (props: ShoppingCartProps) => {
                 {products.map((product, index) => (
                     <View key={product.value.name + index}>
                         <CartProductView
+                            isEditable={isEditable}
                             onEdit={(quantity) =>
                                 onEdit && onEdit(product.id, quantity)
                             }
@@ -65,18 +68,20 @@ export const ShoppingCartComponent = (props: ShoppingCartProps) => {
                     </View>
                 ))}
                 <Card>
-                    <Card.Title title={"TOTAL: $" + total} />
+                    <Card.Title title={"TOTAL: $" + numberWithCommas(total)} />
                 </Card>
-                <View style={styles.button}>
-                    <Button
-                        mode="contained"
-                        color={styles.buttonInner.color}
-                        disabled={!canSubmit}
-                        onPress={props.onSubmit}
-                    >
-                        Realizar compra
-                    </Button>
-                </View>
+                {isEditable && (
+                    <View style={styles.button}>
+                        <Button
+                            mode="contained"
+                            color={styles.buttonInner.color}
+                            disabled={!canSubmit}
+                            onPress={props.onSubmit}
+                        >
+                            Realizar compra
+                        </Button>
+                    </View>
+                )}
             </View>
         </View>
     );

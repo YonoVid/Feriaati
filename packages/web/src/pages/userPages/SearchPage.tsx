@@ -19,29 +19,23 @@ import {
     useTheme,
 } from "@mui/material";
 
-import {
-    InstantSearch,
-    RangeInput,
-    Hits,
-    RefinementList,
-} from "react-instantsearch";
+import { InstantSearch, Hits } from "react-instantsearch";
 import algoliasearch from "algoliasearch/lite";
 
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 
-import { colors } from "@feria-a-ti/common/theme/base";
 import { IndexType } from "@feria-a-ti/common/model/indexTypes";
 
 import SearchResultComponent from "@feria-a-ti/web/src/components/searchEngine/SearchResultComponent";
 import CustomSearchBoxComponent from "@feria-a-ti/web/src/components/searchEngine/CustomSearchBoxComponent";
+import CustomRangeSliderComponent from "@feria-a-ti/web/src/components/searchEngine/CustomRangeSliderComponent";
+import CustomRefinementListComponent from "@feria-a-ti/web/src/components/searchEngine/CustomRefinementListComponent";
 
 import { UserContext } from "@feria-a-ti/web/src/App";
 import { useHeaderContext } from "../HeaderLayout";
 
 import "../../App.css";
-import CustomRangeSliderComponent from "../../components/searchEngine/CustomRangeSliderComponent";
-import CustomRefinementListComponent from "../../components/searchEngine/CustomRefinementListComponent";
 
 const searchClient = algoliasearch(
     "88L6KTFHAN",
@@ -89,12 +83,8 @@ function SearchPage() {
     const navigate = useNavigate();
     // Theme reference
     const theme = useTheme();
-    // Text input
-    const [searchString, setSearchString] = useState("search");
     // Form variables
     const [canSubmit, setSubmitActive] = useState(true);
-
-    const [response, setResponse] = useState<any>();
 
     const [open, setOpen] = useState(true);
 
@@ -121,16 +111,6 @@ function SearchPage() {
     return (
         <>
             {type != "user" && <Navigate to="/session" replace={true} />}
-            {response != undefined && response != null && (
-                <form method="post" action={response.url}>
-                    <input
-                        type="hidden"
-                        name="token_ws"
-                        value={response.token}
-                    />
-                    <input type="submit" value="Ir a pagar" />
-                </form>
-            )}
             <Main open={open}>
                 <Card
                     className="inputContainer"

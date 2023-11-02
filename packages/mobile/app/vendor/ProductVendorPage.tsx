@@ -44,7 +44,7 @@ export const ProductVendorPage = (props: ProductVendorPageProps) => {
 
     const rateColor =
         Math.abs(rate) < 0.1
-            ? "none"
+            ? "transparent"
             : rate > 0
             ? colors.primary
             : colors.secondary;

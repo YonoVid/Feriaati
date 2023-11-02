@@ -6,16 +6,11 @@ import { httpsCallable } from "@firebase/functions";
 
 import {
     FactureData,
-    ProductFactureData,
-    ProductUnit,
     ResponseData,
-    VendorCollectionData,
 } from "@feria-a-ti/common/model/functionsTypes";
 import { colors } from "@feria-a-ti/common/theme/base";
 
 import { functions } from "@feria-a-ti/common/firebase";
-import { ShoppingCartComponent } from "@feria-a-ti/mobile/components/productList/ShoppingCartComponent";
-import { ProductFactureFields } from "@feria-a-ti/common/model/fields/buyingFields";
 import { useAppContext } from "../AppContext";
 import { FactureFields } from "@feria-a-ti/common/model/fields/factureFields";
 import { FactureList } from "../../components/factureList/factureList";

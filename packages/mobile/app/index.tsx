@@ -6,25 +6,22 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 import { createMaterialBottomTabNavigator } from "react-native-paper/react-navigation";
 
-import AppBar from "@feria-a-ti/mobile/components/AppBar";
-import { Session } from "@feria-a-ti/mobile/app/Session";
-import { LoginClient } from "@feria-a-ti/mobile/app/client/LoginClient";
 import { RegisterClient } from "@feria-a-ti/mobile/app/client/RegisterClient";
 import { RecoveryClient } from "@feria-a-ti/mobile/app/client/RecoveryClient";
-import { LoginVendor } from "@feria-a-ti/mobile/app/vendor/LoginVendor";
+import { SearchProducts } from "@feria-a-ti/mobile/app/client/SearchProducts";
 import { RegisterVendor } from "@feria-a-ti/mobile/app/vendor/RegisterVendor";
 import { RecoveryVendor } from "@feria-a-ti/mobile/app/vendor/RecoveryVendor";
+import { ManagerAddProduct } from "@feria-a-ti/mobile/app/vendor/ManagerAddProduct";
+import { AccountManager } from "@feria-a-ti/mobile/app/account/AccountManager";
+import { FactureResult } from "@feria-a-ti/mobile/app/account/FacturePage";
+import SubscriptionAccount from "@feria-a-ti/mobile/app/account/SubscriptionAccount";
+import NavigationSession from "@feria-a-ti/mobile/components/navigation/NavigationSession";
+import NavigationClient from "@feria-a-ti/mobile/components/navigation/NavigationClient";
+import NavigationVendor from "@feria-a-ti/mobile/components/navigation/NavigationVendor";
+import NavigationBuy from "@feria-a-ti/mobile/components/navigation/NavigationBuy";
+import AppBar from "@feria-a-ti/mobile/components/AppBar";
+import { Session } from "@feria-a-ti/mobile/app/Session";
 import HomeLayout from "./_layout";
-import { ManagerAddProduct } from "./vendor/ManagerAddProduct";
-import { ManagerVendor } from "./vendor/ManagerVendor";
-import { UserVendorSelect } from "./client/UserVendorSelect";
-import { AccountManager } from "./account/AccountManager";
-import { ShoppingCartPage } from "./client/ShoppingCartPage";
-import { FacturesClient } from "./client/FacturesClient";
-import { FacturesVendor } from "./vendor/FacturesVendor";
-import NavigationSession from "../components/navigation/NavigationSession";
-import NavigationClient from "../components/navigation/NavigationClient";
-import NavigationVendor from "../components/navigation/NavigationVendor";
 
 const Stack = createNativeStackNavigator();
 
@@ -59,6 +56,11 @@ export default function App() {
                         options={{ title: "Recuperar cuenta de usuario " }}
                     />
                     <Stack.Screen
+                        name="buyClient"
+                        component={NavigationBuy}
+                        options={{ title: "Realizar compra" }}
+                    />
+                    <Stack.Screen
                         name="vendor"
                         component={NavigationVendor}
                         options={{ title: "Cuenta de vendedor " }}
@@ -82,6 +84,21 @@ export default function App() {
                         name="accountManager"
                         component={AccountManager}
                         options={{ title: "Gestionar cuenta" }}
+                    />
+                    <Stack.Screen
+                        name="factureStatus"
+                        component={FactureResult}
+                        options={{ title: "Estado de factura" }}
+                    />
+                    <Stack.Screen
+                        name="searchProduct"
+                        component={SearchProducts}
+                        options={{ title: "Buscar productos" }}
+                    />
+                    <Stack.Screen
+                        name="subscription"
+                        component={SubscriptionAccount}
+                        options={{ title: "Subscripción" }}
                     />
                     <Stack.Screen
                         name="session"
