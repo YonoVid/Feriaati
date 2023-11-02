@@ -24,18 +24,19 @@ import {
 } from "@feria-a-ti/common/model/fields/factureFields";
 
 export interface DashboardVendorProps {
+    resumes?: Map<number, YearFactureResumeCollection>;
+    setResumes?: (data: Map<number, YearFactureResumeCollection>) => void;
     navigation: NavigationProp<ParamListBase>;
 }
 
 export const DashboardVendor = (props: DashboardVendorProps) => {
+    const { resumes, setResumes, navigation } = props;
     // Context variables
     const { authUser, type, authToken, setMessage, resetProduct } =
         useAppContext();
-    // Context variables
-    const { products, editProduct, deleteProduct } = useAppContext();
 
     // Retrived data
-    const [resumes, setResumes] = useState<
+    const [localResumes, setLocalResumes] = useState<
         Map<number, YearFactureResumeCollection>
     >(new Map());
 
@@ -62,7 +63,11 @@ export const DashboardVendor = (props: DashboardVendorProps) => {
 
                     newResumes?.set(extra.year, extra);
 
-                    setResumes && setResumes(newResumes);
+                    if (resumes && setResumes) {
+                        setResumes && setResumes(newResumes);
+                    } else {
+                        localResumes && setLocalResumes(newResumes);
+                    }
                     setDate && setDate(new Date());
                 }
             });
@@ -70,7 +75,7 @@ export const DashboardVendor = (props: DashboardVendorProps) => {
     };
 
     useEffect(() => {
-        if (resumes?.size < 1) {
+        if (resumes?.size < 1 && localResumes.size < 1) {
             loadResume(date.getFullYear());
         }
     }, []);
@@ -85,7 +90,12 @@ export const DashboardVendor = (props: DashboardVendorProps) => {
                     <Text style={{ ...styles.title, flex: 6 }}>
                         {"Resumen"}
                     </Text>
-                    <DashboardComponent date={date} resumes={resumes} />
+                    {resumes.size > 0 && (
+                        <DashboardComponent
+                            date={date}
+                            resumes={resumes || localResumes}
+                        />
+                    )}
                 </Card>
             </ScrollView>
         </>

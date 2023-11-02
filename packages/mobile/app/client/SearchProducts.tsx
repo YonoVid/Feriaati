@@ -13,6 +13,7 @@ import { IndexType } from "@feria-a-ti/common/model/indexTypes";
 
 import CustomSearchBoxComponent from "@feria-a-ti/mobile/components/algolia/CustomSearchBoxComponent";
 import SearchResultComponent from "@feria-a-ti/mobile/components/algolia/SearchResultComponent";
+import { FilterModalComponent } from "@feria-a-ti/mobile/components/algolia/FilterModalComponent";
 
 import { useAppContext } from "../AppContext";
 
@@ -33,6 +34,7 @@ export const SearchProducts = (props: SearchProductsProps) => {
     // Navigation
     const { navigation } = props;
     // Form variables
+    const [isModalOpen, setModalOpen] = useState(false);
     const [canSubmit, setSubmitActive] = useState(true);
 
     const [open, setOpen] = useState(true);
@@ -65,6 +67,11 @@ export const SearchProducts = (props: SearchProductsProps) => {
                     }}
                 >
                     <CustomSearchBoxComponent />
+                    <FilterModalComponent
+                        isModalOpen={isModalOpen}
+                        onToggleModal={() => setModalOpen((isOpen) => !isOpen)}
+                        onChange={() => false} //scrollToTop
+                    />
                     <SearchResultComponent
                         canSubmit={canSubmit}
                         onSubmit={onClick}

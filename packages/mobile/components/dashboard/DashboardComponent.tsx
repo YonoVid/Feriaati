@@ -78,49 +78,53 @@ export const DashboardComponent = (props: DashboardComponentProps) => {
                 }
             }
         }
-    }, []);
+    }, [resumes]);
+
     return (
         <View style={styles.container}>
-            <Text>{resumes.size}</Text>
-            {chartData.length > 0 && chartLabel.length > 0 && (
-                <LineChart
-                    data={{
-                        labels: chartLabel,
-                        datasets: [
-                            {
-                                data: chartData,
+            {activeResume != null &&
+                activeResume != undefined &&
+                chartData.length > 0 &&
+                chartLabel.length > 0 && (
+                    <LineChart
+                        data={{
+                            labels: chartLabel,
+                            datasets: [
+                                {
+                                    data: chartData,
+                                },
+                            ],
+                        }}
+                        verticalLabelRotation={60}
+                        width={Dimensions.get("window").width * 0.9} // from react-native
+                        height={Dimensions.get("window").height * 0.55}
+                        yAxisLabel="$"
+                        yAxisInterval={1} // optional, defaults to 1
+                        chartConfig={{
+                            backgroundColor: colors.secondaryShadow,
+                            backgroundGradientFrom: colors.primaryShadow,
+                            backgroundGradientTo: colors.primary,
+                            decimalPlaces: 2, // optional, defaults to 2dp
+                            color: (opacity = 1) =>
+                                `rgba(255, 255, 255, ${opacity})`,
+                            labelColor: (opacity = 1) =>
+                                `rgba(255, 255, 255, ${opacity})`,
+                            style: {
+                                borderRadius: 16,
                             },
-                        ],
-                    }}
-                    width={Dimensions.get("window").width} // from react-native
-                    height={220}
-                    yAxisLabel="$"
-                    yAxisInterval={1} // optional, defaults to 1
-                    chartConfig={{
-                        backgroundColor: colors.light,
-                        backgroundGradientFrom: "#fb8c00",
-                        backgroundGradientTo: "#ffa726",
-                        decimalPlaces: 2, // optional, defaults to 2dp
-                        color: (opacity = 1) =>
-                            `rgba(255, 255, 255, ${opacity})`,
-                        labelColor: (opacity = 1) =>
-                            `rgba(255, 255, 255, ${opacity})`,
-                        style: {
+                            propsForDots: {
+                                r: "6",
+                                strokeWidth: "2",
+                                stroke: colors.secondary,
+                            },
+                        }}
+                        bezier
+                        style={{
+                            marginVertical: 8,
                             borderRadius: 16,
-                        },
-                        propsForDots: {
-                            r: "6",
-                            strokeWidth: "2",
-                            stroke: "#ffa726",
-                        },
-                    }}
-                    bezier
-                    style={{
-                        marginVertical: 8,
-                        borderRadius: 16,
-                    }}
-                />
-            )}
+                        }}
+                    />
+                )}
         </View>
     );
 };

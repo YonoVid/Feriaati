@@ -35,7 +35,7 @@ if (
 ) {
     let localAddress = "localhost";
     if (navigator.product == "ReactNative" && __DEV__) {
-        localAddress = "192.168.214.106" || "/firebase";
+        localAddress = "192.168.0.12" || "/firebase";
     }
     // Point to function emulator on localhost.
     connectFunctionsEmulator(functions, localAddress, 5001);
