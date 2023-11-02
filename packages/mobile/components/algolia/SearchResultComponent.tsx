@@ -70,31 +70,49 @@ function Hit({ hit, onSubmit }) {
                     borderColor: colorShadow,
                 }}
             >
-                <View
-                    style={{
-                        flex: 1,
-                        backgroundColor: color,
-                        flexDirection: "column",
-                    }}
-                >
-                    <Avatar.Image
+                <Card.Title
+                    title={hit.name}
+                    subtitle={
+                        hit.price
+                            ? "$" + numberWithCommas(hit.price)
+                            : `Valoración ${
+                                  hit.rate >= 0.5 ? "positiva" : "negativa"
+                              }`
+                    }
+                    subtitleStyle={
+                        hit.price == null || hit.price == undefined
+                            ? {
+                                  backgroundColor: color,
+                                  color: colors.light,
+                                  paddingLeft: "20%",
+                                  marginRight: "10%",
+                                  justifyContent: "center",
+                                  alignContent: "center",
+                              }
+                            : {}
+                    }
+                    style={{ width: "100%" }}
+                    left={(props) => (
+                        <Avatar.Image
+                            {...props}
+                            size={50}
+                            source={{
+                                uri: hit.image,
+                            }}
+                        />
+                    )}
+                />
+                <Card.Content>
+                    <View
                         style={{
+                            flex: 5,
                             width: "100%",
-                            height: "100%",
-                            display: "flex",
+                            flexDirection: "column",
                         }}
-                        source={{ uri: hit.image }}
-                    />
-                </View>
-                <View style={{ flex: 5, flexDirection: "column" }}>
-                    <Text>{hit.name}</Text>
-                    <Text>{hit.description}</Text>
-                </View>
-                {hit.price != null && hit.price != undefined && (
-                    <View style={{ flex: 1, flexDirection: "column" }}>
-                        <Text>${numberWithCommas(hit.price)}</Text>
+                    >
+                        <Text>{hit.description}</Text>
                     </View>
-                )}
+                </Card.Content>
             </Card>
         </TouchableRipple>
     );

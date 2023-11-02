@@ -5,7 +5,7 @@ import { Button } from "react-native-paper";
 
 import { colors } from "@feria-a-ti/common/theme/base";
 
-import { RFormProps } from "@feria-a-ti/common/model/props/registerFormProps";
+import { CommentFormProps } from "@feria-a-ti/common/model/props/registerFormProps";
 import {
     CommentFields,
     OpinionValue,
@@ -14,7 +14,7 @@ import { stringRegex } from "@feria-a-ti/common/check/checkBase";
 
 import InputComponent from "@feria-a-ti/mobile/components/inputs/InputComponent";
 
-function CommentForm(props: RFormProps) {
+function CommentForm(props: CommentFormProps) {
     const { children, canSubmit, comment, onSubmit } = props;
     const {
         handleSubmit,

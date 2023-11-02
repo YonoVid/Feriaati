@@ -6,7 +6,12 @@ import {
     RegisterFields,
     RegisterVendorFields,
 } from "@feria-a-ti/common/model/fields/registerFields";
-import { CommentCollectionData } from "../functionsTypes";
+import { CommentCollectionData, UserComment } from "../functionsTypes";
+
+export type CommentFormProps = FormProps & {
+    comment?: UserComment;
+    onSubmit: (data: FieldValues) => void;
+};
 
 export type RFormProps = FormProps & {
     comment?: CommentCollectionData;

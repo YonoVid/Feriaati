@@ -19,7 +19,7 @@ import { checkGetAccountFields } from "@feria-a-ti/common/check/checkAccountFiel
 
 import { messagesCode } from "@feria-a-ti/common/constants/errors";
 
-import { ShoppingCartPage } from "@feria-a-ti/mobile/app/client/ShoppingCartPage";
+import { ShoppingCart } from "@feria-a-ti/mobile/app/client/ShoppingCart";
 import BuyProducts from "@feria-a-ti/mobile/app/client/BuyProducts";
 
 import { useAppContext } from "@feria-a-ti/mobile/app/AppContext";
@@ -109,7 +109,7 @@ export default function NavigationBuy(props: NavigationBarProps) {
 
     const renderScene = BottomNavigation.SceneMap({
         factureBuy: () =>
-            ShoppingCartPage({
+            ShoppingCart({
                 ...props,
                 isEditable: false,
                 loadedList: productList,

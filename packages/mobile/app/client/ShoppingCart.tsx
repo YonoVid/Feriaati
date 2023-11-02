@@ -12,13 +12,13 @@ import {
     ShoppingCartItem,
 } from "@feria-a-ti/common/model/props/shoppingCartProps";
 
-export interface ShoppingCartPageProps {
+export interface ShoppingCartProps {
     navigation: NavigationProp<ParamListBase>;
     isEditable: boolean;
     loadedList?: Array<ShoppingCartItem>;
 }
 
-export const ShoppingCartPage = (props: ShoppingCartPageProps) => {
+export const ShoppingCart = (props: ShoppingCartProps) => {
     // Context variables
     const { products, editProduct, deleteProduct } = useAppContext();
     // Navigation

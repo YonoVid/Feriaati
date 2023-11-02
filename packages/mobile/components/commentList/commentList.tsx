@@ -139,6 +139,7 @@ export const CommentList = (props: RListCommentsProps) => {
                 </Text>
                 {isUser && (
                     <CommentForm
+                        comment={ownComments}
                         canSubmit={canSubmit}
                         onSubmit={uploadComment}
                     />

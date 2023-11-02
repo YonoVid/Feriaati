@@ -1,10 +1,7 @@
 import React from "react";
 import { StyleSheet } from "react-native";
-import { PaperProvider } from "react-native-paper";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-
-import { createMaterialBottomTabNavigator } from "react-native-paper/react-navigation";
 
 import { RegisterClient } from "@feria-a-ti/mobile/app/client/RegisterClient";
 import { RecoveryClient } from "@feria-a-ti/mobile/app/client/RecoveryClient";
@@ -22,6 +19,7 @@ import NavigationBuy from "@feria-a-ti/mobile/components/navigation/NavigationBu
 import AppBar from "@feria-a-ti/mobile/components/AppBar";
 import { Session } from "@feria-a-ti/mobile/app/Session";
 import HomeLayout from "./_layout";
+import { VendorProducts } from "./client/VendorProducts";
 
 const Stack = createNativeStackNavigator();
 
@@ -89,6 +87,11 @@ export default function App() {
                         name="factureStatus"
                         component={FactureResult}
                         options={{ title: "Estado de factura" }}
+                    />
+                    <Stack.Screen
+                        name="vendorProducts"
+                        component={VendorProducts}
+                        options={{ title: "Página de vendedor" }}
                     />
                     <Stack.Screen
                         name="searchProduct"

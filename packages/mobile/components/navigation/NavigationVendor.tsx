@@ -2,6 +2,7 @@ import React, { useState } from "react";
 
 import { NavigationProp, ParamListBase } from "@react-navigation/native";
 
+import { DashboardVendor } from "@feria-a-ti/mobile/app/vendor/DashboardVendor";
 import { ManagerVendor } from "@feria-a-ti/mobile/app/vendor/ManagerVendor";
 import { FacturesVendor } from "@feria-a-ti/mobile/app/vendor/FacturesVendor";
 
@@ -20,6 +21,12 @@ export default function NavigationVendor(props: NavigationBarProps) {
     const [index, setIndex] = React.useState(0);
     const [routes] = React.useState([
         {
+            key: "dashboardVendor",
+            title: "Dashboard",
+            focusedIcon: "store",
+            unfocusedIcon: "store-outline",
+        },
+        {
             key: "managerVendor",
             title: "Productos",
             focusedIcon: "store",
@@ -34,6 +41,7 @@ export default function NavigationVendor(props: NavigationBarProps) {
     ]);
 
     const renderScene = BottomNavigation.SceneMap({
+        dashboardVendor: () => DashboardVendor(props),
         managerVendor: () => ManagerVendor(props),
         facturesVendor: () => FacturesVendor(props),
     });

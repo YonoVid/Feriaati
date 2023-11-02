@@ -5,7 +5,7 @@ import { BottomNavigation } from "react-native-paper";
 import { createMaterialBottomTabNavigator } from "react-native-paper/react-navigation";
 
 import { UserVendorSelect } from "@feria-a-ti/mobile/app/client/UserVendorSelect";
-import { ShoppingCartPage } from "@feria-a-ti/mobile/app/client/ShoppingCartPage";
+import { ShoppingCart } from "@feria-a-ti/mobile/app/client/ShoppingCart";
 import { FacturesClient } from "@feria-a-ti/mobile/app/client/FacturesClient";
 
 export interface NavigationBarProps {
@@ -40,7 +40,7 @@ export default function NavigationClient(props: NavigationBarProps) {
 
     const renderScene = BottomNavigation.SceneMap({
         vendorClient: () => UserVendorSelect(props),
-        cartClient: () => ShoppingCartPage({ ...props, isEditable: true }),
+        cartClient: () => ShoppingCart({ ...props, isEditable: true }),
         facturesClient: () => FacturesClient(props),
     });
     return (

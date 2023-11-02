@@ -44,7 +44,7 @@ export const SearchProducts = (props: SearchProductsProps) => {
     const onClick = async (id: string, type: IndexType) => {
         setSubmitActive(false);
         console.log("GO TO SEARCH ITEM::", id, type);
-        navigation.navigate("productVendor", { vendorId: id });
+        navigation.navigate("vendorProducts", { vendorId: id });
     };
 
     return (
@@ -54,6 +54,7 @@ export const SearchProducts = (props: SearchProductsProps) => {
                     backgroundColor: colors.light,
                     maxWidth: "100%",
                     alignContent: "center",
+                    paddingBottom: "20%",
                 }}
             >
                 <InstantSearch
