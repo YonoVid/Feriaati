@@ -126,6 +126,7 @@ export enum FactureTypes {
 
 export type UpdateFactureFields = {
     token: string;
+    userType: userType;
     facture: string;
     status: FactureStatus;
     type: FactureTypes;

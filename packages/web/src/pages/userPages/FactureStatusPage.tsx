@@ -33,7 +33,7 @@ const FactureStatusPage = () => {
     //Global UI context
     const { setMessage, resetProduct } = useHeaderContext();
     //Global state variable
-    const { authToken } = useContext(UserContext);
+    const { authToken, type } = useContext(UserContext);
     //Navigation definition
     const navigate = useNavigate();
     // Form variables
@@ -83,6 +83,7 @@ const FactureStatusPage = () => {
 
                         const formatedData: UpdateFactureFields = {
                             token: authToken as string,
+                            userType: type,
                             facture: value.buy_order,
                             status: status,
                             type: factureType as FactureTypes,

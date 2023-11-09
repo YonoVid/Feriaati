@@ -222,7 +222,9 @@ export const updateSubscriptionFacture = async (
 
         if (data.token != null && data.status != null && data.facture != null) {
             const { code: accountCode, doc: collectionDoc } = await getAccount(
-                collectionNames.USERS,
+                data.userType == userType.user
+                    ? collectionNames.USERS
+                    : collectionNames.VENDORS,
                 {
                     token: data.token,
                 },

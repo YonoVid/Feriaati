@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
     Button,
     StyleSheet,
@@ -17,41 +17,21 @@ import {
 
 import { colors } from "@feria-a-ti/common/theme/base";
 import Slider from "@react-native-community/slider";
+import { indexName, IndexType } from "@feria-a-ti/common/model/indexTypes";
+import CustomRangeSliderComponent from "./CustomRangeSliderComponent";
 
 export function FilterModalComponent({ isModalOpen, onToggleModal, onChange }) {
-    const { items, refine } = useRefinementList({ attribute: "price" });
-    const {
-        start,
-        range,
-        canRefine,
-        refine: RefinePrice,
-    } = useRange({ attribute: "price" });
+    const { items, refine: refineType } = useRefinementList({
+        attribute: "type",
+    });
+    const { canRefine: canClearType, refine: clearType } = useClearRefinements({
+        includedAttributes: ["type"],
+    });
     const { canRefine: canClear, refine: clear } = useClearRefinements();
     const { items: currentRefinements } = useCurrentRefinements();
     const totalRefinements = currentRefinements.reduce(
         (acc, { refinements }) => acc + refinements.length,
         0
-    );
-
-    const { min, max } = range;
-    const [localRange, setLocalRange] = useState<number[]>([
-        min?.valueOf() || 0,
-        max?.valueOf() || 0,
-    ]);
-
-    const numberStartMin = start[0]?.valueOf() || 0;
-    const numberStartMax = start[1]?.valueOf() || 0;
-
-    const numberMin = min?.valueOf() || 0;
-    const numberMax = max?.valueOf() || 0;
-
-    const from = Math.max(
-        numberMin,
-        Number.isFinite(numberStartMin) ? numberStartMin : numberMin
-    );
-    const to = Math.min(
-        numberMax,
-        Number.isFinite(numberStartMax) ? numberStartMax : numberMax
     );
 
     return (
@@ -60,7 +40,7 @@ export function FilterModalComponent({ isModalOpen, onToggleModal, onChange }) {
                 style={styles.filtersButton}
                 onPress={onToggleModal}
             >
-                <Text style={styles.filtersButtonText}>Filters</Text>
+                <Text style={styles.filtersButtonText}>Filtros</Text>
                 {totalRefinements > 0 && (
                     <View style={styles.itemCount}>
                         <Text style={styles.itemCountText}>
@@ -74,7 +54,7 @@ export function FilterModalComponent({ isModalOpen, onToggleModal, onChange }) {
                 <SafeAreaView>
                     <View style={styles.container}>
                         <View style={styles.title}>
-                            <Text style={styles.titleText}>Brand</Text>
+                            <Text style={styles.titleText}>Tipo</Text>
                         </View>
                         <View style={styles.list}>
                             {items.map((item) => {
@@ -83,7 +63,8 @@ export function FilterModalComponent({ isModalOpen, onToggleModal, onChange }) {
                                         key={item.value}
                                         style={styles.item}
                                         onPress={() => {
-                                            refine(item.value);
+                                            clearType();
+                                            refineType(item.value);
                                             onChange();
                                         }}
                                     >
@@ -95,7 +76,13 @@ export function FilterModalComponent({ isModalOpen, onToggleModal, onChange }) {
                                                     : "400",
                                             }}
                                         >
-                                            {item.label}
+                                            {Object.keys(IndexType).includes(
+                                                item.value
+                                            ) && !isNaN(+item.value)
+                                                ? indexName[
+                                                      +item.value as IndexType
+                                                  ]
+                                                : item.value}
                                         </Text>
                                         <View style={styles.itemCount}>
                                             <Text style={styles.itemCountText}>
@@ -105,13 +92,40 @@ export function FilterModalComponent({ isModalOpen, onToggleModal, onChange }) {
                                     </TouchableOpacity>
                                 );
                             })}
+                            <TouchableOpacity
+                                key={"all"}
+                                style={styles.item}
+                                onPress={() => {
+                                    clearType();
+                                    onChange();
+                                }}
+                            >
+                                <Text
+                                    style={{
+                                        ...styles.labelText,
+                                        fontWeight:
+                                            items.findIndex(
+                                                (value) => value.isRefined
+                                            ) == -1
+                                                ? "800"
+                                                : "400",
+                                    }}
+                                >
+                                    {"Todo"}
+                                </Text>
+                            </TouchableOpacity>
                         </View>
                     </View>
-                    <Slider></Slider>
+                    <View style={styles.title}>
+                        <Text style={styles.titleText}>Rango de precio</Text>
+                    </View>
+                    <View style={styles.container}>
+                        <CustomRangeSliderComponent attribute="price" />
+                    </View>
                     <View style={styles.filterListButtonContainer}>
                         <View style={styles.filterListButton}>
                             <Button
-                                title="Clear all"
+                                title="Eliminar filtros"
                                 color={colors.secondaryShadow}
                                 disabled={!canClear}
                                 onPress={() => {
@@ -124,7 +138,7 @@ export function FilterModalComponent({ isModalOpen, onToggleModal, onChange }) {
                         <View style={styles.filterListButton}>
                             <Button
                                 onPress={onToggleModal}
-                                title="See results"
+                                title="Volver"
                                 color={colors.primaryShadow}
                             />
                         </View>

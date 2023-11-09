@@ -7,7 +7,7 @@ import { useSearchBox } from "react-instantsearch";
 
 import { colors } from "@feria-a-ti/common/theme/base";
 
-import { CustomSearchBoxComponentProps } from "@feria-a-ti/common/model/props/customSearchBoxProps";
+import { CustomSearchBoxComponentProps } from "@feria-a-ti/common/model/props/customSearchProps";
 
 const CustomSearchBoxComponent = (props: CustomSearchBoxComponentProps) => {
     const { label, color, children, filter, filterMenu } = props;

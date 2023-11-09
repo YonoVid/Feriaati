@@ -156,7 +156,9 @@ const SubscriptionPage = () => {
 
     return (
         <>
-            {type !== userType.user && <Navigate to="/login" replace={true} />}
+            {!(type === userType.user || type === userType.vendor) && (
+                <Navigate to="/login" replace={true} />
+            )}
             <Hidden>
                 <form
                     id="transbankForm"

@@ -17,9 +17,9 @@ function Home() {
 
     return (
         <>
-            {type === userType.undefined && (
-                <Navigate to="/login" replace={true} />
-            )}
+            {(type === userType.undefined ||
+                type == null ||
+                type == undefined) && <Navigate to="/login" replace={true} />}
             {type === userType.vendor && (
                 <Navigate to="/dashboard" replace={true} />
             )}

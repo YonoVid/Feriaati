@@ -132,14 +132,8 @@ export const ProductVendorPage = (props: ProductVendorPageProps) => {
                                               .padStart(2, "0") || "")
                                     : ":"}
                             </Text>
+                            <Text style={{ flex: 6 }}>Método de contacto:</Text>
                             <Text style={{ flex: 6 }}>
-                                Método de contacto:
-                                {(contact &&
-                                    contact?.phone + "-" + contact?.email) ||
-                                    "-"}
-                            </Text>
-                            <Text style={{ flex: 6 }}>
-                                Método de contacto:
                                 {(contact &&
                                     contact?.phone + "-" + contact?.email) ||
                                     "-"}

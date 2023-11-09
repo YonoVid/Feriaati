@@ -15,7 +15,7 @@ import {
 import SearchIcon from "@mui/icons-material/Search";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
 
-import { RCustomSearchBoxComponentProps } from "@feria-a-ti/common/model/props/customSearchBoxProps";
+import { RCustomSearchBoxComponentProps } from "@feria-a-ti/common/model/props/customSearchProps";
 
 import { colors } from "@feria-a-ti/common/theme/base";
 

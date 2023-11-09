@@ -36,7 +36,12 @@ export interface FactureResultProps {
 
 export const FactureResult = (props: FactureResultProps) => {
     // Context variables
-    const { authToken, resetProduct, setMessage } = useAppContext();
+    const {
+        authToken,
+        type: authType,
+        resetProduct,
+        setMessage,
+    } = useAppContext();
     // Navigation
     const { route, navigation } = props;
     const { token_ws, type } = route.params;
@@ -84,6 +89,7 @@ export const FactureResult = (props: FactureResultProps) => {
 
                         const formatedData: UpdateFactureFields = {
                             token: authToken as string,
+                            userType: authType,
                             facture: value.buy_order,
                             status: status,
                             type: type as FactureTypes,
