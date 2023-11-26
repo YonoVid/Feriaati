@@ -72,7 +72,7 @@ function LoginPage() {
                 canSubmit={canSubmit}
             >
                 <Link component="button" onClick={() => navigate("/register")}>
-                    ¿No tienes una cuenta? Registrate
+                    ¿No tienes una cuenta? Regístrate
                 </Link>
                 <br />
                 <Link component="button" onClick={() => navigate("/recovery")}>

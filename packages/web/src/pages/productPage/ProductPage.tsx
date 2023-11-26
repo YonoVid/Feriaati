@@ -8,7 +8,7 @@ import {
 } from "@mui/material";
 import { functions } from "@feria-a-ti/common/firebase";
 
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 export const ProductPage = () => {
     const [product, setProduct] = useState<Array<any>>();

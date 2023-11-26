@@ -104,6 +104,7 @@ export const addUser = functions.https.onCall(
                 ) {
                     //Setup document of user data
                     const collectionData: UserCollectionData = {
+                        creationDate: new Date(),
                         isDeleted: false,
                         type: userType.user,
                         username: data.username,
@@ -120,7 +121,7 @@ export const addUser = functions.https.onCall(
                     sendVerificationMail(
                         data.username,
                         data.email,
-                        collectionData.code
+                        collectionData.code as string
                     );
                     if (collectionDoc && collectionDoc.exists) {
                         //Update document in collection if exists

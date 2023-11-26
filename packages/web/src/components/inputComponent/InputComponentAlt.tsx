@@ -93,9 +93,14 @@ const InputComponentAlt = <T extends FieldValues>({
                             value={value || ""}
                             placeholder={defaultValue || inputLabel}
                             defaultValue={defaultValue}
+                            onSubmit={() => onChange(value.trim())}
                             onChange={(value) => {
                                 onChangeWrapper(onChange, value);
                             }}
+                            onLostPointerCapture={() =>
+                                console.log("ON LOST ENDED")
+                            }
+                            onEnded={() => console.log("ON ENDED")}
                             onBlur={onBlur}
                             helperText={error?.message || ""}
                         >

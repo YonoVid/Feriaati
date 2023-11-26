@@ -5,7 +5,11 @@ import { sendRecoveryMail } from "./mail";
 import { errorCodes, messagesCode } from "../errors";
 import { checkUpdatePassFields } from "./checkUpdate";
 import { encryption, config } from "./encryption";
-import { AccountCollectionData, userStatus } from "../model/accountTypes";
+import {
+    AccountCollectionData,
+    PasswordData,
+    userStatus,
+} from "../model/accountTypes";
 import { getAccount } from "./account";
 import { collectionNames } from "../consts";
 
@@ -97,5 +101,14 @@ export const updateAccountPassword = async (
     return {
         email: data.email,
         code: errorCodes.DOCUMENT_NOT_EXISTS_ERROR,
+    };
+};
+
+export const updatePasswordValues = (data: UpdatePassFields): PasswordData => {
+    return {
+        password: encryption.encrypt(data.password),
+        iv: config.iv,
+        algorithm: config.algorithm as string,
+        code: "",
     };
 };

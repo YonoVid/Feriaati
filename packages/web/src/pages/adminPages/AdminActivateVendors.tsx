@@ -1,6 +1,5 @@
 import { useContext, useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
-import { FieldValues } from "react-hook-form";
 import { httpsCallable } from "firebase/functions";
 
 import { Card } from "@mui/material";
@@ -26,7 +25,6 @@ const AdminActivateVendors = () => {
     // Data of vendors stored
     const [newVendors, setNewVendors] = useState<VendorData[]>([]);
 
-    const [imageData, setImageData] = useState<string>("");
     const [canSubmit, setCanSubmit] = useState<boolean>(true);
 
     useEffect(() => {

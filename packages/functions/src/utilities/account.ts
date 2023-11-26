@@ -1,6 +1,11 @@
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
-import { userStatus, userType } from "../model/accountTypes";
+import {
+    AccountUser,
+    PasswordData,
+    userStatus,
+    userType,
+} from "../model/accountTypes";
 import Encryption, { getRandomBytes } from "./encryption";
 import { errorCodes } from "../errors";
 import { collectionNames } from "../consts";
@@ -19,13 +24,14 @@ export const accountLoginVerification = async (
             { email: email }
         );
         if (accountCode == errorCodes.SUCCESFULL) {
-            let userData = userSnapshot.data();
+            let userData = userSnapshot.data() as AccountUser & PasswordData;
             functions.logger.info("DATA COLLECTION::", userData);
             if (
-                userData?.status === userStatus.activated &&
-                (userData?.token == null ||
-                    userData?.token == undefined ||
-                    userData?.token == "")
+                userData?.type === userType.contributor ||
+                (userData?.status === userStatus.activated &&
+                    (userData?.token == null ||
+                        userData?.token == undefined ||
+                        userData?.token == ""))
             ) {
                 const eConfig = {
                     algorithm: userData?.algorithm,
@@ -144,6 +150,51 @@ export const getAccount = async (
         doc: docReference,
         code:
             !docReference || !docReference.exists
+                ? errorCodes.DOCUMENT_NOT_EXISTS_ERROR
+                : errorCodes.SUCCESFULL,
+    };
+};
+
+export const getAccountCount = async (search: {
+    collection: collectionNames;
+    value: any;
+    field: string;
+    exactSearch?: boolean;
+}): Promise<{ code: errorCodes; quantity: number }> => {
+    const { collection, value, field, exactSearch } = search;
+
+    const db = admin.firestore();
+    let docReference;
+    if (
+        value != null &&
+        value != undefined &&
+        field != null &&
+        field != undefined
+    ) {
+        functions.logger.info("ACCOUNT FROM EMAIL");
+        if (exactSearch) {
+            const queryAccount = db
+                .collection(collection)
+                .where(field, "==", value);
+            docReference = await queryAccount.get();
+        } else {
+            const queryAccount = db
+                .collection(collection)
+                .where(field, ">=", value)
+                .where(field, "<=", value + "\uf8ff");
+            docReference = await queryAccount.get();
+        }
+    } else {
+        return {
+            quantity: 0,
+            code: errorCodes.MISSING_REQUIRED_DATA_ERROR,
+        };
+    }
+
+    return {
+        quantity: docReference.docs.length || 0,
+        code:
+            !docReference || docReference.docs.length == 0
                 ? errorCodes.DOCUMENT_NOT_EXISTS_ERROR
                 : errorCodes.SUCCESFULL,
     };

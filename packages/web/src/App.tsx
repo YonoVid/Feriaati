@@ -35,6 +35,7 @@ import BuyProductsPage from "./pages/userPages/BuyProductsPage";
 import FactureStatusPage from "./pages/userPages/FactureStatusPage";
 import SubscriptionPage from "./pages/accountPages/SubscriptionPage";
 import VendorDashboardPage from "./pages/vendorPages/VendorDashboardPage";
+import ManageContributorsPage from "./pages/vendorPages/ManageContributorsPage";
 
 const router = createBrowserRouter([
     {
@@ -122,6 +123,10 @@ const router = createBrowserRouter([
                 element: <ManagerVendorPage />,
             },
             {
+                path: "/manageContributor",
+                element: <ManageContributorsPage />,
+            },
+            {
                 path: "/addProduct",
                 element: <ProductAddManager />,
             },
@@ -160,6 +165,7 @@ const router = createBrowserRouter([
 const theme = createTheme(themeOptions);
 export const UserContext = React.createContext<RSessionUserData>({
     authUser: "",
+    emailUser: "",
     authToken: "",
     type: userType.undefined,
     productQuantity: NaN,
@@ -172,7 +178,8 @@ export const UserContext = React.createContext<RSessionUserData>({
 });
 
 function App() {
-    const [user, setUser] = useState(localStorage.getItem("email") || "");
+    const [user, setUser] = useState(localStorage.getItem("id") || "");
+    const [email, setEmail] = useState(localStorage.getItem("email") || "");
     const [token, setToken] = useState(localStorage.getItem("token") || "");
     const [type, setType] = useState<userType>(
         (localStorage.getItem("type") as userType) || undefined
@@ -181,9 +188,11 @@ function App() {
 
     const setSessionData = (user: UserToken) => {
         console.log("SET SESSION::", user);
-        setUser(user.email);
+        setUser(user.id);
+        setEmail(user.email);
         setToken(user.token);
         setType(user.type);
+        localStorage.setItem("id", user.id);
         localStorage.setItem("email", user.email);
         localStorage.setItem("token", user.token);
         localStorage.setItem("type", user.type);
@@ -212,6 +221,7 @@ function App() {
                 <UserContext.Provider
                     value={{
                         authUser: user,
+                        emailUser: email,
                         authToken: token,
                         type: type,
                         productQuantity: productQuantity,

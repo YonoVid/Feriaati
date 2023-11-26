@@ -1,4 +1,5 @@
 import { userStatus } from "@feria-a-ti/common/model/functionsTypes";
+import { UserRequestFields } from "./fields";
 import { DayTimeRange } from "./updateFields";
 
 export type UpdateStateFields = {
@@ -71,7 +72,6 @@ export type FormUpdateFullUserFields = {
     username?: string;
 };
 
-export type DeleteFields = {
-    token: string;
+export type DeleteFields = UserRequestFields & {
     itemId: string;
 };

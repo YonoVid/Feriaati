@@ -20,7 +20,7 @@ function VendorDashboardPage() {
     //Global UI context
     const { setMessage } = useHeaderContext();
     //Global state variable
-    const { authUser, authToken, type } = useContext(UserContext);
+    const { authUser, authToken, emailUser, type } = useContext(UserContext);
     //Navigation definition
     const navigate = useNavigate();
     // Retrived data
@@ -34,6 +34,7 @@ function VendorDashboardPage() {
         console.log("LOAD RESUME::", year);
         console.log("USER TYPE::", type);
         const formatedData: ResumeFields = {
+            email: emailUser as string,
             token: authToken as string,
             year: year,
         };

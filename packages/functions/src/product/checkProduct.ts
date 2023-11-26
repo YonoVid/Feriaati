@@ -104,7 +104,8 @@ export const checkProductVendorUpdate = (
     input: UpdateProductVendorFields
 ): { check: boolean; code: errorCodes } => {
     const {
-        tokenVendor,
+        token,
+        email,
         productVendorId,
         image,
         serviceTime,
@@ -113,8 +114,10 @@ export const checkProductVendorUpdate = (
     } = input;
 
     const requiredCheck =
-        tokenVendor != undefined &&
-        tokenVendor != null &&
+        token != undefined &&
+        token != null &&
+        email != undefined &&
+        email != null &&
         productVendorId != undefined &&
         productVendorId != null &&
         ((image != undefined && image != null && image != "") ||
@@ -179,7 +182,8 @@ export const checkProductVendorFullUpdate = (
     } = input;
 
     const { check, code } = checkProductVendorUpdate({
-        tokenVendor: "ignore",
+        token: "ignore",
+        email: "ignore",
         productVendorId: "ignore",
         image: image || undefined,
         serviceTime: serviceTime || undefined,

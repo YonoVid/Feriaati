@@ -1,5 +1,6 @@
 import { DayTime } from "./baseTypes";
 import { OpinionValue } from "./comments/commentsFields";
+import { DayTimeRange } from "./fields/updateFields";
 
 //Response Data
 export type ResponseData<T> = {
@@ -74,6 +75,7 @@ export enum userType {
     admin = "admin",
     user = "user",
     vendor = "vendor",
+    contributor = "contributor",
     temp = "temp",
     undefined = "undefined",
 }
@@ -93,17 +95,38 @@ export type AccountDirection = {
     extra?: string;
 };
 
-export type AccountData = {
+export type AccountUser = {
+    id?: string;
     type: userType;
     email: string;
     password: string;
+    creationDate: Date;
+    status: string;
+    token?: string;
+};
+
+export type AccountData = AccountUser & {
     phone?: string;
     direction?: Array<AccountDirection>;
     subscription?: ActualSubscription;
 };
 
+export enum ContributorLevel {
+    MANAGER = "manager",
+    CASHIER = "cashier",
+    VIEWER = "viewer",
+}
+
+export type ContributorData = AccountData & {
+    status: userStatus;
+    name: string;
+    surname: string;
+    permissions: ContributorLevel;
+    productsId: string;
+};
+
 export type AccountCollectionData = LogicalData &
-    AccountData & {
+    AccountUser & {
         algorithm: string;
         status: string;
         iv: ArrayBuffer;
@@ -128,6 +151,10 @@ export type VendorCollectionData = AccountCollectionData & {
     productsId: string | undefined;
 };
 
+//
+// PRODUCTS RELATED DATA
+//
+
 export type ProductListCollectionData = LogicalData & {
     rating?: { positive: number; negative: number };
     enterpriseName: string;
@@ -138,9 +165,9 @@ export type ProductListCollectionData = LogicalData & {
     street: string;
     streetNumber: number;
     image: string;
-    products: Array<ProductCollectionData>;
-    serviceTime?: { start: DayTime; end: DayTime };
+    serviceTime?: DayTimeRange;
     contact?: { phone: string; email: string };
+    vendorId: string;
 };
 
 export enum ProductDiscount {

@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 
 import {
@@ -7,20 +7,14 @@ import {
     Divider,
     Drawer,
     IconButton,
-    List,
-    ListItem,
-    ListItemButton,
-    ListItemIcon,
-    ListItemText,
     Stack,
     styled,
-    Toolbar,
-    Typography,
     useTheme,
 } from "@mui/material";
 
 import { InstantSearch, Hits } from "react-instantsearch";
 import algoliasearch from "algoliasearch/lite";
+import algoliaInsights from "search-insights";
 
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
@@ -78,7 +72,7 @@ function SearchPage() {
     //Global UI context
     const { setMessage } = useHeaderContext();
     //Global state variable
-    const { authToken, type } = useContext(UserContext);
+    const { authUser, type } = useContext(UserContext);
     //Navigation definition
     const navigate = useNavigate();
     // Theme reference
@@ -92,6 +86,18 @@ function SearchPage() {
         setOpen(state);
     };
 
+    useEffect(() => {
+        console.log("Start up");
+        if (authUser != undefined) {
+            console.log("init algolia insights");
+            algoliaInsights("init", {
+                appId: "88L6KTFHAN",
+                apiKey: "13aac81f9fd4266e778405059612bf9e",
+                userToken: authUser,
+            });
+        }
+    }, [authUser]);
+
     const onClick = async (id: string, type: IndexType) => {
         setSubmitActive(false);
         console.log("GO TO SEARCH ITEM::", id, type);
@@ -103,7 +109,10 @@ function SearchPage() {
             <SearchResultComponent
                 index={props.hit}
                 canSubmit={canSubmit}
-                onSubmit={onClick}
+                onSubmit={(id: string, type: IndexType) => {
+                    props.sendEvent("click", props.hit, "Hit Clicked");
+                    onClick(id, type);
+                }}
             />
         );
     }
@@ -127,6 +136,7 @@ function SearchPage() {
                         future={{
                             preserveSharedStateOnUnmount: true,
                         }}
+                        insights={true}
                     >
                         <Box sx={{ display: "flex", flexDirection: "column" }}>
                             <Drawer

@@ -76,6 +76,7 @@ export const addVendor = functions.https.onCall(
                     );
                     //Setup document of user data
                     const collectionData: VendorCollectionData = {
+                        creationDate: new Date(),
                         isDeleted: false,
                         productsId: "ungenerated",
                         type: userType.vendor,
@@ -98,12 +99,6 @@ export const addVendor = functions.https.onCall(
                     };
                     functions.logger.info("TO UPLOAD DATA::", collectionData);
 
-                    //Send email to user with verification code
-                    // sendVerificationMail(
-                    //     data.username,
-                    //     data.email,
-                    //     collectionData.code
-                    // );
                     if (collectionDoc.exists) {
                         //Update document in collection if exists
                         collectionDoc.ref.update(collectionData);
@@ -141,8 +136,12 @@ export const loginVendor = functions.https.onCall(
             let { check, code } = checkAccountFields(data);
 
             if (check) {
+                const isContributor = data.email.includes("@feriaati.cl");
+
                 let { token, code, id } = await accountLoginVerification(
-                    collectionNames.VENDORS,
+                    isContributor
+                        ? collectionNames.CONTRIBUTORS
+                        : collectionNames.VENDORS,
                     data.email,
                     data.password,
                     data.attempts

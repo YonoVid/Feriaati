@@ -47,7 +47,7 @@ function ManagerProductList(props: ManagerProductListProps) {
     //Global UI context
     const { setMessage } = useHeaderContext();
     //Global state variable
-    const { authToken } = useContext(UserContext);
+    const { authToken, emailUser } = useContext(UserContext);
     // Dom redirection variable
     const navigate = useNavigate();
 
@@ -60,7 +60,8 @@ function ManagerProductList(props: ManagerProductListProps) {
 
     const onEditVendor = (data: FieldValues) => {
         const formatedData: UpdateProductVendorFields = {
-            tokenVendor: authToken as string,
+            token: authToken as string,
+            email: emailUser as string,
             productVendorId: productVendor?.vendorId as string,
             image:
                 imageData && imageData != null && imageData != ""
@@ -104,6 +105,7 @@ function ManagerProductList(props: ManagerProductListProps) {
             {!updateVendorPage ? (
                 <>
                     <ProductVendorPage
+                        vendorId={productVendor?.vendorId as string}
                         vendorData={productVendor || {}}
                         products={products}
                         isEditable={true}

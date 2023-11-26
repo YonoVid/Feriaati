@@ -21,7 +21,8 @@ export const productVendorUpdate = functions.https.onCall(
 
         if (check) {
             let { code, doc } = await getAccount(collectionNames.VENDORS, {
-                token: data.tokenVendor,
+                token: data.token,
+                email: data.email,
             });
             if (code === errorCodes.SUCCESFULL) {
                 const db = admin.firestore();

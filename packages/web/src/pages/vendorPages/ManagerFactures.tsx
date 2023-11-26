@@ -1,10 +1,8 @@
 import { ReactNode, useContext, useState } from "react";
 import { FieldValues } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import { httpsCallable } from "firebase/functions";
 
-import { functions } from "@feria-a-ti/common/firebase";
-import { checkProductVendorUpdate } from "@feria-a-ti/common/check/checkProductVendorUpdate";
+import { updateVendor } from "@feria-a-ti/common/functions/adminFunctions";
 import {
     ProductData,
     ProductListCollectionData,
@@ -47,7 +45,7 @@ function ManagerFactures(props: ManagerFacturesProps) {
     //Global UI context
     const { setMessage } = useHeaderContext();
     //Global state variable
-    const { authToken } = useContext(UserContext);
+    const { authToken, emailUser } = useContext(UserContext);
     // Dom redirection variable
     const navigate = useNavigate();
 
@@ -60,7 +58,8 @@ function ManagerFactures(props: ManagerFacturesProps) {
 
     const onEditVendor = (data: FieldValues) => {
         const formatedData: UpdateProductVendorFields = {
-            tokenVendor: authToken as string,
+            token: authToken as string,
+            email: emailUser as string,
             productVendorId: productVendor?.vendorId as string,
             image:
                 imageData && imageData != null && imageData != ""
@@ -70,33 +69,21 @@ function ManagerFactures(props: ManagerFacturesProps) {
             contactEmail: data.contactEmail as string,
             serviceTime: data.serviceTime as { start: DayTime; end: DayTime },
         };
-        const check = checkProductVendorUpdate(formatedData);
-        console.log("SUBMIT FORM ON EDIT VENDOR::", check);
-        if (check) {
-            setCanSubmit(false);
-            console.log("DATA FORM ON EDIT VENDOR::", formatedData);
-            // setCanSubmit(false);
-            const editProduct = httpsCallable<
-                UpdateProductVendorFields,
-                ResponseData<string>
-            >(functions, "productVendorUpdate");
-            editProduct(formatedData)
-                .then((result) => {
-                    const { msg, error } = result.data as ResponseData<string>;
-                    console.log(result.data);
-                    //setIsLogged(result.data as any);
-                    if (!error) {
-                        setProductEditable(null);
-                        loadVendor();
-                        setImageData("");
-                        setUpdateVendorPage(false);
-                    }
-                    if (msg !== "") {
-                        setMessage({ msg, isError: error });
-                    }
-                })
-                .finally(() => setCanSubmit(true));
-        }
+
+        updateVendor({ formatedData, setCanSubmit }, (data) => {
+            const { msg, error } = data as ResponseData<string>;
+            console.log(data);
+            //setIsLogged(result.data as any);
+            if (!error) {
+                setProductEditable(null);
+                loadVendor();
+                setImageData("");
+                setUpdateVendorPage(false);
+            }
+            if (msg !== "") {
+                setMessage({ msg, isError: error });
+            }
+        });
     };
 
     return (
@@ -104,6 +91,7 @@ function ManagerFactures(props: ManagerFacturesProps) {
             {!updateVendorPage ? (
                 <>
                     <ProductVendorPage
+                        vendorId={productVendor?.vendorId as string}
                         vendorData={productVendor || {}}
                         products={products}
                         isEditable={true}

@@ -1,4 +1,5 @@
 export enum collectionNames {
+    CONTRIBUTORS = "contributors",
     VENDORS = "vendors",
     USERS = "users",
     ADMINS = "admins",

@@ -65,7 +65,9 @@ function NavBar() {
                       label: "HOME",
                       action: () => {
                           console.log("HOME ACTION");
-                          navigate(type === "vendor" ? "dashboard" : "home");
+                          navigate(
+                              type === userType.vendor ? "dashboard" : "home"
+                          );
                       },
                   },
                   {
@@ -73,7 +75,9 @@ function NavBar() {
                       action: () => {
                           console.log("PRODUCT ACTION");
                           navigate(
-                              type === "vendor" ? "managerVendor" : "search"
+                              type === userType.vendor
+                                  ? "managerVendor"
+                                  : "search"
                           );
                       },
                   },
@@ -82,7 +86,9 @@ function NavBar() {
                       action: () => {
                           console.log("FACTURES ACTION");
                           navigate(
-                              type === "vendor" ? "facturesVendor" : "factures"
+                              type === userType.vendor
+                                  ? "facturesVendor"
+                                  : "factures"
                           );
                       },
                   },
@@ -117,6 +123,16 @@ function NavBar() {
                       },
                   },
               ];
+
+    if (type === userType.vendor) {
+        pages.push({
+            label: "CONTRIBUIDORES",
+            action: () => {
+                console.log("CONTRIBUTORS ACTIONS");
+                navigate("manageContributor");
+            },
+        });
+    }
 
     const settings = [
         {
@@ -191,9 +207,7 @@ function NavBar() {
                             variant="h6"
                             noWrap
                             component="a"
-                            onClick={() =>
-                                navigate(isVendorPage ? "/loginVendor" : "/")
-                            }
+                            onClick={() => navigate("/")}
                             sx={{
                                 mr: 2,
                                 display: { xs: "none", md: "flex" },
@@ -264,9 +278,7 @@ function NavBar() {
                             variant="h5"
                             noWrap
                             component="a"
-                            onClick={() =>
-                                navigate(isVendorPage ? "/loginVendor" : "/")
-                            }
+                            onClick={() => navigate("/")}
                             sx={{
                                 mr: 2,
                                 display: { xs: "flex", md: "none" },
@@ -280,7 +292,7 @@ function NavBar() {
                         >
                             LOGO
                         </Typography>
-                        {(authUser !== "" && (
+                        {(authToken !== "" && (
                             <>
                                 <Box
                                     sx={{
@@ -392,7 +404,9 @@ function NavBar() {
                                     component="a"
                                     onClick={() =>
                                         navigate(
-                                            isVendorPage ? "/" : "loginVendor"
+                                            isVendorPage
+                                                ? "login"
+                                                : "loginVendor"
                                         )
                                     }
                                     sx={{

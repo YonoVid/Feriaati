@@ -19,7 +19,7 @@ function FacturesPage() {
     //Global UI context
     const { setMessage } = useHeaderContext();
     //Global state variable
-    const { authUser, authToken, type } = useContext(UserContext);
+    const { authUser, authToken, emailUser, type } = useContext(UserContext);
     //Navigation definition
     const navigate = useNavigate();
     // Retrived data
@@ -28,6 +28,7 @@ function FacturesPage() {
     const loadFactures = (index: number) => {
         console.log("LOAD FACTURES");
         const formatedData: FactureFields = {
+            email: emailUser as string,
             token: authToken as string,
             index: index,
             size: 10,

@@ -1,3 +1,4 @@
+import { UserRequestFields } from "../fields/fields";
 import { AccountData, userType } from "../functionsTypes";
 
 export type AccountDirection = {
@@ -9,10 +10,10 @@ export type AccountDirection = {
     extra?: string;
 };
 
-export type EditAccountFields = Partial<AccountData> & {
-    token?: string;
-    id?: string;
-};
+export type EditAccountFields = Partial<AccountData> &
+    UserRequestFields & {
+        updateEmail?: string;
+    };
 
 export type EditFormAccountFields = EditAccountFields & {
     confirmPassword: string;

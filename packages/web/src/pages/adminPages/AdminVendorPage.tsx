@@ -27,7 +27,7 @@ const AdminVendorPage = () => {
     //Global UI context
     const { setMessage } = useHeaderContext();
     //Global state variable
-    const { authToken, type } = useContext(UserContext);
+    const { authToken, emailUser, type } = useContext(UserContext);
 
     //Selected product list data
     const [selectedVendor, setselectedVendor] = useState<
@@ -104,6 +104,7 @@ const AdminVendorPage = () => {
             );
 
             updateState({
+                email: emailUser as string,
                 token: authToken as string,
                 itemId: id,
             }).then((response) => {

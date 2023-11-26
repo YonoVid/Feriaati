@@ -6,11 +6,10 @@ import {
     RegisterConfirm,
     RegisterFields,
     userStatus,
-} from "@feria-a-ti/common/model/registerFields";
+} from "@feria-a-ti/common/model/fields/registerFields";
 import { checkRegisterFields } from "@feria-a-ti/common/check/checkRegisterFields";
 import RegisterForm from "@feria-a-ti/web/src/components/forms/registerUserForm/RegisterUserForm";
-import ConfirmRegisterForm from "@feria-a-ti/web/src/components/confirmRegisterForm/ConfirmRegisterForm";
-import { DialogMessage } from "@feria-a-ti/web/src/components/dialogMessage/DialogMessage";
+import ConfirmRegisterForm from "@feria-a-ti/web/src/components/forms/confirmRegisterForm/ConfirmRegisterForm";
 import "../../App.css";
 
 function RegisterPage() {
@@ -84,7 +83,6 @@ function RegisterPage() {
                     canSubmit={canRegister}
                 />
             )}
-            <DialogMessage trigger={registerComplete} />
         </>
     );
 }

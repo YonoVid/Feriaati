@@ -32,6 +32,8 @@ export {
     passUpdateVendor,
 } from "./vendor/vendorAccessFunctions";
 
+export { contributorList } from "./vendor/vendorContributorFunctions";
+
 export { getVendorFactures, getResume } from "./vendor/vendorFactureFunctions";
 
 export { checkPetitionVendor } from "./vendor/vendorFunctions";
@@ -80,6 +82,14 @@ export {
     getAccountSubscription,
     setAccountSubscription,
 } from "./account/accountSubscriptionFunctions";
+
+export {
+    addContributor,
+    updateContributor,
+    deleteContributor,
+} from "./account/accountContributorFunctions";
+
+export { editAccountVendor } from "./account/accountVendorFunctions";
 
 export {
     getComments,

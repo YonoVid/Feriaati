@@ -24,7 +24,7 @@ function AccountPage() {
     //Global UI context
     const { setMessage } = useHeaderContext();
     //Global state variable
-    const { authToken, type } = useContext(UserContext);
+    const { authToken, emailUser, type } = useContext(UserContext);
 
     const [accountData, setAccountData] = useState<AccountData | "loading">();
 
@@ -69,9 +69,10 @@ function AccountPage() {
         console.log("SUBMIT FORM");
         //Format data to send to server
         const formatedData: EditAccountFields = {
+            email: emailUser as string,
             token: authToken,
             type: type,
-            email: data.email,
+            updateEmail: data.email,
             password: data.password,
             direction: data.direction,
             phone: data.phone,

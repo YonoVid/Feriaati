@@ -58,8 +58,10 @@ function ProductAddForm(props: RProductAddFormProps) {
             setValue("promotion", editableState.promotion);
             setValue("unit", editableState.unit);
             setValue("unitType", editableState.unitType);
-            setLocalImageData(editableState.image);
-            setImageData(editableState.image);
+            if (editableState.image.constructor === Array) {
+                setLocalImageData(editableState.image);
+                setImageData(editableState.image);
+            }
         }
     }, [editableState, setImageData, setValue]);
 

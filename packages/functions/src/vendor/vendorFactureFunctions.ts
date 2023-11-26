@@ -20,7 +20,8 @@ import {
     VendorProductData,
     YearFactureResumeCollection,
 } from "../model/transactionTypes";
-import { VendorCollectionData } from "../model/accountTypes";
+import { ContributorLevel, VendorCollectionData } from "../model/accountTypes";
+import { getAccountVendor } from "../account/accountVendorFunctions";
 /**
  * Function to log in user in the platform requires data of type LoginFields
  * @typeparam LoginFields - is the data from a login form
@@ -34,12 +35,14 @@ export const getVendorFactures = functions.https.onCall(
             var { code, check } = checkFactureFields(data);
 
             if (check) {
-                const { doc: docVendor, code: vendorCode } = await getAccount(
-                    collectionNames.VENDORS,
-                    {
-                        token: data.token,
-                    }
-                );
+                const { doc: docVendor, code: vendorCode } =
+                    await getAccountVendor(
+                        {
+                            token: data.token,
+                            email: data.email,
+                        },
+                        ContributorLevel.VIEWER
+                    );
                 if (vendorCode == errorCodes.SUCCESFULL) {
                     const { doc, code: productsCode } = await getAccount(
                         collectionNames.VENDORPRODUCTS,
@@ -139,12 +142,14 @@ export const getResume = functions.https.onCall(
             var { code, check } = checkResumeFields(data);
 
             if (check) {
-                const { doc: docVendor, code: vendorCode } = await getAccount(
-                    collectionNames.VENDORS,
-                    {
-                        token: data.token,
-                    }
-                );
+                const { doc: docVendor, code: vendorCode } =
+                    await getAccountVendor(
+                        {
+                            token: data.token,
+                            email: data.email,
+                        },
+                        ContributorLevel.VIEWER
+                    );
                 if (vendorCode == errorCodes.SUCCESFULL) {
                     const { doc, code: productsCode } = await getAccount(
                         collectionNames.VENDORPRODUCTS,

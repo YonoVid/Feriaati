@@ -48,7 +48,7 @@ function VendorLoginPage() {
                     const {
                         msg,
                         error,
-                        extra: { token, email, type },
+                        extra: { id, token, email, type },
                     } = result.data as ResponseData<UserToken>;
                     localStorage.setItem("token", token);
                     console.log(result);
@@ -58,7 +58,7 @@ function VendorLoginPage() {
                         setMessage({ msg, isError: error });
                     }
                     if (token != null && token !== "") {
-                        setSession && setSession({ token, type, email });
+                        setSession && setSession({ id, token, type, email });
                         navigate("/session");
                     }
                 })
@@ -78,14 +78,14 @@ function VendorLoginPage() {
                     component="button"
                     onClick={() => navigate("/registerVendor")}
                 >
-                    No tienes una cuenta? Registrate
+                    ¿No tienes una cuenta? Regístrate
                 </Link>
                 <br />
                 <Link
                     component="button"
                     onClick={() => navigate("/recoveryVendor")}
                 >
-                    Olvidaste tu contraseña?
+                    ¿Olvidaste tu contraseña?
                 </Link>
             </LoginForm>
         </>
