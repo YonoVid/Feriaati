@@ -20,7 +20,7 @@ function Home() {
             {(type === userType.undefined ||
                 type == null ||
                 type == undefined) && <Navigate to="/login" replace={true} />}
-            {type === userType.vendor && (
+            {(type === userType.vendor || type === userType.contributor) && (
                 <Navigate to="/dashboard" replace={true} />
             )}
             {type === userType.user && (

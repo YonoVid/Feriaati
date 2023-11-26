@@ -6,6 +6,7 @@ import { functions } from "@feria-a-ti/common/firebase";
 import {
     FactureData,
     ResponseData,
+    userType,
 } from "@feria-a-ti/common/model/functionsTypes";
 import { FactureFields } from "@feria-a-ti/common/model/fields/factureFields";
 
@@ -57,7 +58,9 @@ function VendorFacturesPage() {
 
     return (
         <>
-            {type === "user" && <Navigate to="/session" replace={true} />}
+            {type !== userType.vendor && type !== userType.contributor && (
+                <Navigate to="/session" replace={true} />
+            )}
             <FacturesList
                 userId={authUser || "userId"}
                 factures={factures}

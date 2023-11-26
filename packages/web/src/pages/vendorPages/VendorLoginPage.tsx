@@ -10,6 +10,7 @@ import { LoginFields } from "@feria-a-ti/common/model/fields/loginFields";
 import {
     ResponseData,
     UserToken,
+    userType,
 } from "@feria-a-ti/common/model/functionsTypes";
 import LoginForm from "@feria-a-ti/web/src/components/forms/loginForm/LoginForm";
 
@@ -67,7 +68,9 @@ function VendorLoginPage() {
     };
     return (
         <>
-            {type === "vendor" && <Navigate to="/session" replace={true} />}
+            {(type === userType.vendor || type === userType.contributor) && (
+                <Navigate to="/session" replace={true} />
+            )}
             <LoginForm
                 label="Iniciar sesión de vendedor"
                 color="secondary"

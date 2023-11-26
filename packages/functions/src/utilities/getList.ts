@@ -10,7 +10,12 @@ import {
     VendorData,
 } from "../model/reponseFields";
 import { getAccount } from "./account";
-import { ContributorData, VendorCollectionData } from "../model/accountTypes";
+import {
+    ContributorData,
+    ContributorLevel,
+    VendorCollectionData,
+} from "../model/accountTypes";
+import { getAccountVendor } from "../account/accountVendorFunctions";
 
 export const getUserList = async (
     token: string,
@@ -98,13 +103,17 @@ export const getVendorList = async (
 
 export const getContributorList = async (
     token: string,
-    userCollection: collectionNames,
+    email: string,
     userError: errorCodes = errorCodes.USER_NOT_EXISTS_ERROR
 ): Promise<ResponseData<ContributorData[]>> => {
     try {
-        const { code: userCode, doc } = await getAccount(userCollection, {
-            token,
-        });
+        const { code: userCode, doc } = await getAccountVendor(
+            {
+                token,
+                email,
+            },
+            ContributorLevel.MANAGER
+        );
         if (userCode == errorCodes.SUCCESFULL) {
             const vendorData = doc.data() as VendorCollectionData;
 

@@ -1,6 +1,6 @@
 import { ReactNode, useContext, useState } from "react";
 import { FieldValues } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import { httpsCallable } from "firebase/functions";
 
 import { functions } from "@feria-a-ti/common/firebase";
@@ -9,6 +9,7 @@ import {
     ProductData,
     ProductListCollectionData,
     ResponseData,
+    userType,
 } from "@feria-a-ti/common/model/functionsTypes";
 import { UpdateProductVendorFields } from "@feria-a-ti/common/model/fields/updateFields";
 
@@ -47,7 +48,7 @@ function ManagerProductList(props: ManagerProductListProps) {
     //Global UI context
     const { setMessage } = useHeaderContext();
     //Global state variable
-    const { authToken, emailUser } = useContext(UserContext);
+    const { authToken, emailUser, type } = useContext(UserContext);
     // Dom redirection variable
     const navigate = useNavigate();
 
@@ -102,6 +103,9 @@ function ManagerProductList(props: ManagerProductListProps) {
 
     return (
         <>
+            {type !== userType.vendor && type !== userType.contributor && (
+                <Navigate to="/session" replace={true} />
+            )}
             {!updateVendorPage ? (
                 <>
                     <ProductVendorPage

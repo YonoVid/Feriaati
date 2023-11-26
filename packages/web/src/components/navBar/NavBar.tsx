@@ -124,7 +124,7 @@ function NavBar() {
                   },
               ];
 
-    if (type === userType.vendor) {
+    if (type === userType.vendor || type === userType.contributor) {
         pages.push({
             label: "CONTRIBUIDORES",
             action: () => {
@@ -134,7 +134,7 @@ function NavBar() {
         });
     }
 
-    const settings = [
+    let settings = [
         {
             label: "Home",
             action: () => {
@@ -162,11 +162,17 @@ function NavBar() {
         },
     ];
 
+    if (type === userType.contributor) {
+        settings = settings.filter((value) => value.label !== "Cuenta");
+    }
+
     const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
     const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
 
     const isVendorPage =
-        window.location.pathname.includes("Vendor") || type === userType.vendor;
+        window.location.pathname.includes("Vendor") ||
+        type === userType.vendor ||
+        type === userType.contributor;
 
     const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorElNav(event.currentTarget);
@@ -187,12 +193,10 @@ function NavBar() {
         <Slide appear={false} direction="down" in={!trigger}>
             <AppBar
                 color={
-                    type == userType.undefined
+                    type !== userType.undefined
                         ? isVendorPage
                             ? "primary"
                             : "secondary"
-                        : type == userType.vendor
-                        ? "primary"
                         : "secondary"
                 }
                 position="fixed"

@@ -10,6 +10,7 @@ import { getContributorList } from "@feria-a-ti/common/functions/listFunctions";
 import {
     ContributorData,
     ContributorLevel,
+    userType,
 } from "@feria-a-ti/common/model/functionsTypes";
 import { UserRequestFields } from "@feria-a-ti/common/model/fields/fields";
 import { RegisterContributorFields } from "@feria-a-ti/common/model/fields/registerFields";
@@ -22,12 +23,13 @@ import { useHeaderContext } from "../HeaderLayout";
 import "../../App.css";
 import { UpdateContributorFields } from "@feria-a-ti/common/model/fields/updateFields";
 import { DeleteFields } from "@feria-a-ti/common/model/fields/adminFields";
+import { Navigate } from "react-router-dom";
 
 function ManageContributorsPage() {
     //Global UI context
     const { setMessage } = useHeaderContext();
     //Global state variable
-    const { authToken, emailUser } = useContext(UserContext);
+    const { authToken, emailUser, type } = useContext(UserContext);
 
     //Page stored data
     const [usersData, setUsersData] = useState<ContributorData[]>([]);
@@ -156,6 +158,9 @@ function ManageContributorsPage() {
 
     return (
         <>
+            {type !== userType.vendor && type !== userType.contributor && (
+                <Navigate to="/session" replace={true} />
+            )}
             {updateContributorPage && (
                 <>
                     <RegisterContributorForm

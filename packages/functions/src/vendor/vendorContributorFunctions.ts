@@ -1,10 +1,12 @@
 import * as functions from "firebase-functions";
+
 import { ContributorData } from "../model/accountTypes";
-import { getContributorList } from "../utilities/getList";
-import { collectionNames } from "../consts";
 import { ResponseData } from "../model/reponseFields";
-import { errorCodes } from "../errors";
 import { UserRequestFields } from "../model/types";
+
+import { getContributorList } from "../utilities/getList";
+
+import { errorCodes } from "../errors";
 
 export const contributorList = functions.https.onCall(
     async (
@@ -13,7 +15,7 @@ export const contributorList = functions.https.onCall(
         try {
             return await getContributorList(
                 data.token as string,
-                collectionNames.VENDORS,
+                data.email as string,
                 errorCodes.VENDOR_NOT_EXISTS_ERROR
             );
         } catch (error) {

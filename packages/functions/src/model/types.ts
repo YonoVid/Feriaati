@@ -123,9 +123,8 @@ export type ProductFields = {
     image: [string, string, string] | string;
 };
 
-export type ProductListFields = {
-    tokenVendor?: string;
-    idVendor?: string;
+export type ProductListFields = UserRequestFields & {
+    idProducts?: string;
 };
 
 export type ProductDeleteFields = ProductListFields & {

@@ -4,6 +4,7 @@ import { ResponseData } from "../model/reponseFields";
 import {
     AccountCollectionData,
     ActualSubscription,
+    ContributorLevel,
     SubscriptionCollectionData,
     SubscriptionData,
     SubscriptionStatus,
@@ -22,6 +23,7 @@ import { getAccount } from "../utilities/account";
 import { SubscriptionConstants } from "../model/dataTypes";
 import { Timestamp } from "firebase-admin/firestore";
 import { getConstant } from "../utilities/getConstant";
+import { getAccountVendor } from "./accountVendorFunctions";
 
 export const getAccountSubscription = functions.https.onCall(
     async (
@@ -29,15 +31,21 @@ export const getAccountSubscription = functions.https.onCall(
         context: any
     ): Promise<ResponseData<SubscriptionData>> => {
         try {
+            const { id, token, email } = data;
+
             let { check, code } = checkGetAccountFields(data);
 
             if (check) {
-                let { doc: docAccount, code: accountCode } = await getAccount(
-                    data.type === userType.vendor
-                        ? collectionNames.VENDORS
-                        : collectionNames.USERS,
-                    { id: data.id, token: data.token }
-                );
+                let { doc: docAccount, code: accountCode } =
+                    await (data.type === userType.user
+                        ? getAccount(collectionNames.USERS, {
+                              id: data.id,
+                              token: data.token,
+                          })
+                        : getAccountVendor(
+                              { id, token, email },
+                              ContributorLevel.VIEWER
+                          ));
 
                 let subscriptionData: SubscriptionData | undefined;
                 if (code === errorCodes.SUCCESFULL) {
@@ -102,15 +110,20 @@ export const setAccountSubscription = functions.https.onCall(
         context: any
     ): Promise<ResponseData<string>> => {
         try {
+            const { id, token, email } = data;
             let { check, code } = checkGetAccountFields(data);
 
             if (check) {
-                let { doc, code: accountCode } = await getAccount(
-                    data.type === userType.vendor
-                        ? collectionNames.VENDORS
-                        : collectionNames.USERS,
-                    { id: data.id, token: data.token }
-                );
+                let { doc: doc, code: accountCode } = await (data.type ===
+                userType.user
+                    ? getAccount(collectionNames.USERS, {
+                          id: data.id,
+                          token: data.token,
+                      })
+                    : getAccountVendor(
+                          { id, token, email },
+                          ContributorLevel.MANAGER
+                      ));
 
                 let subscriptionData: SubscriptionCollectionData | undefined;
                 if (code === errorCodes.SUCCESFULL) {

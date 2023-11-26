@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
-import { Navigate, useNavigate, useSearchParams } from "react-router-dom";
-import { FieldValues, useForm } from "react-hook-form";
+import { Navigate, useNavigate } from "react-router-dom";
+import { FieldValues } from "react-hook-form";
 
 import { useHeaderContext } from "../HeaderLayout";
 import { httpsCallable } from "firebase/functions";
@@ -12,22 +12,20 @@ import {
     WebpayPlus,
 } from "transbank-sdk";
 
-import { Button, Card, CardActions, Hidden } from "@mui/material";
+import { Hidden } from "@mui/material";
 // import DeleteIcon from "@mui/icons-material/Delete";
 
 import {
-    AccountData,
     ResponseData,
     SubscriptionData,
     userType,
 } from "@feria-a-ti/common/model/functionsTypes";
-import { ProductSubscriptionFields } from "@feria-a-ti/common/model/fields/buyingFields";
 import { GetAccountFields } from "@feria-a-ti/common/model/account/getAccountFields";
 import { checkGetAccountFields } from "@feria-a-ti/common/check/checkAccountFields";
 import { messagesCode } from "@feria-a-ti/common/constants/errors";
 
 import { UserContext } from "@feria-a-ti/web/src/App";
-import SubscriptionForm from "../../components/forms/subscriptionForm/SubscriptionForm";
+import SubscriptionForm from "@feria-a-ti/web/src/components/forms/subscriptionForm/SubscriptionForm";
 import { SubscriptionFields } from "@feria-a-ti/common/model/account/subscriptionAccountFields";
 
 const SubscriptionPage = () => {
@@ -156,9 +154,11 @@ const SubscriptionPage = () => {
 
     return (
         <>
-            {!(type === userType.user || type === userType.vendor) && (
-                <Navigate to="/login" replace={true} />
-            )}
+            {!(
+                type === userType.user ||
+                type === userType.vendor ||
+                type === userType.contributor
+            ) && <Navigate to="/login" replace={true} />}
             <Hidden>
                 <form
                     id="transbankForm"

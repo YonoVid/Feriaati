@@ -73,11 +73,11 @@ export const checkAddProductFields = (
 export const checkProductListFields = (
     input: ProductListFields
 ): { check: boolean; code: errorCodes } => {
-    const { idVendor, tokenVendor } = input;
+    const { token, email, idProducts } = input;
     //Check required values exist
     const requiredCheck =
-        (idVendor != null && idVendor != "") ||
-        (tokenVendor != "" && tokenVendor != null);
+        (idProducts != null && idProducts != "") ||
+        (token != "" && token != null && email != "" && email != null);
     if (!requiredCheck) {
         return { check: false, code: errorCodes.MISSING_REQUIRED_DATA_ERROR };
     }

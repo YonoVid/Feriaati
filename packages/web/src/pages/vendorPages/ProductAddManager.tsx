@@ -1,11 +1,14 @@
 import { useContext, useState } from "react";
 import { FieldValues } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import { httpsCallable } from "firebase/functions";
 
 import { functions } from "@feria-a-ti/common/firebase";
 import { checkAddProductFields } from "@feria-a-ti/common/check/checkProductFields";
-import { ResponseData } from "@feria-a-ti/common/model/functionsTypes";
+import {
+    ResponseData,
+    userType,
+} from "@feria-a-ti/common/model/functionsTypes";
 import { ProductFields } from "@feria-a-ti/common/model/props/productAddFormProps";
 import ProductAddForm from "@feria-a-ti/web/src/components/forms/productAddForm/ProductAddForm";
 
@@ -17,7 +20,7 @@ function ProductAddManager() {
     //Global UI context
     const { setMessage } = useHeaderContext();
     //Global state variable
-    const { authToken } = useContext(UserContext);
+    const { authToken, type } = useContext(UserContext);
     //Router dom
     const navigate = useNavigate();
 
@@ -70,6 +73,9 @@ function ProductAddManager() {
 
     return (
         <>
+            {type !== userType.vendor && type !== userType.contributor && (
+                <Navigate to="/session" replace={true} />
+            )}
             <ProductAddForm
                 label="Nuevo producto"
                 buttonLabel="Agregar producto"

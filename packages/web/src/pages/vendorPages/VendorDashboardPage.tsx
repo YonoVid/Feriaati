@@ -67,7 +67,7 @@ function VendorDashboardPage() {
 
     return (
         <>
-            {type != userType.vendor && (
+            {type !== userType.vendor && type !== userType.contributor && (
                 <Navigate to="/session" replace={true} />
             )}
             {date != null && resumes.size > 0 && (

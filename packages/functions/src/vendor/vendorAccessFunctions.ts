@@ -154,7 +154,9 @@ export const loginVendor = functions.https.onCall(
                     extra: error
                         ? {}
                         : {
-                              type: userType.vendor,
+                              type: isContributor
+                                  ? userType.contributor
+                                  : userType.vendor,
                               token: token,
                               email: data.email,
                               id: id,
