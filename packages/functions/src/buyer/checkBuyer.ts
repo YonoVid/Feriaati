@@ -7,7 +7,7 @@ export const checkUserFullUpdate = (
 ): { check: boolean; code: errorCodes } => {
     const { adminToken, id, email, password, username } = input;
 
-    //Check required values exist
+    // Check required values exist
     const requiredCheck =
         adminToken != null &&
         adminToken != "" &&
@@ -33,7 +33,7 @@ export const checkBuyProduct = (
 ): { check: boolean; code: errorCodes } => {
     const { token, direction, products } = input;
 
-    //Check required values exist
+    // Check required values exist
     const requiredCheck =
         token != null &&
         token != "" &&

@@ -16,15 +16,15 @@ export const accountLoginVerification = async (
     password: string,
     attempt?: number
 ): Promise<{ token: string; code: errorCodes; id: string }> => {
-    let token,
-        code = errorCodes.SUCCESFULL;
+    let token;
+    let code = errorCodes.SUCCESFULL;
     try {
         const { code: accountCode, doc: userSnapshot } = await getAccount(
             collection,
             { email: email }
         );
         if (accountCode == errorCodes.SUCCESFULL) {
-            let userData = userSnapshot.data() as AccountUser & PasswordData;
+            const userData = userSnapshot.data() as AccountUser & PasswordData;
             functions.logger.info("DATA COLLECTION::", userData);
             if (
                 userData?.type === userType.contributor ||
@@ -94,7 +94,7 @@ export const getAccount = async (
         token?: string;
         email?: string;
     },
-    createOnFail: boolean = false
+    createOnFail = false
 ): Promise<{ code: errorCodes; doc: admin.firestore.DocumentSnapshot }> => {
     const db = admin.firestore();
     let docReference;

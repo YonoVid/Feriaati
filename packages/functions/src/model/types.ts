@@ -11,8 +11,7 @@ import {
     ProductDiscount,
     ProductFactureData,
     ProductUnit,
-} from "./productTypes";
-import { DayTime } from "./productTypes";
+ DayTime } from "./productTypes";
 
 export type UserRequestFields = {
     token?: string;

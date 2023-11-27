@@ -22,11 +22,11 @@ export const adminLogin = functions.https.onCall(
     async (data: LoginFields, context): Promise<ResponseData<UserToken>> => {
         try {
             const { email, password, attempts } = data;
-            //Check fields format
-            let { check, code } = checkAccountFields(data);
+            // Check fields format
+            const { check, code } = checkAccountFields(data);
 
             if (check) {
-                let { token, code } = await accountLoginVerification(
+                const { token, code } = await accountLoginVerification(
                     collectionNames.ADMINS,
                     email,
                     password,

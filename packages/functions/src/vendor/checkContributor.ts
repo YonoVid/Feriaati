@@ -14,7 +14,7 @@ export const checkUpdateContributorFields = (
         token,
         id,
     } = input;
-    //Check required values exist
+    // Check required values exist
     const requiredCheck =
         productsId != null &&
         (token != null || id != null) &&
@@ -37,7 +37,7 @@ export const checkUpdateContributorFields = (
         return { check: false, code: errorCodes.MISSING_REQUIRED_DATA_ERROR };
     }
 
-    //Check passwords are equal
+    // Check passwords are equal
     const passwordCheck =
         password == undefined ||
         password == null ||

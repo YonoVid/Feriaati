@@ -17,9 +17,9 @@ export const updateAccountCode = async (
     collection: collectionNames,
     data: RecoveryFields
 ) => {
-    //Checks of data and database
-    let check = data.email != null && data.email != "";
-    //Get collection of email data
+    // Checks of data and database
+    const check = data.email != null && data.email != "";
+    // Get collection of email data
     const { code, doc: userDoc } = await getAccount(collection, {
         email: data.email,
     });
@@ -58,22 +58,22 @@ export const updateAccountCode = async (
 export const updateAccountPassword = async (
     collection: collectionNames,
     data: UpdatePassFields,
-    checkCode: boolean = true
+    checkCode = true
 ): Promise<{ code: errorCodes; email: string }> => {
     functions.logger.info(data);
 
-    //Get collection of email data
+    // Get collection of email data
     const { code, doc: collectionDoc } = await getAccount(collection, {
         email: data.email,
     });
     if (code == errorCodes.SUCCESFULL) {
-        //Checks of data and database
-        let { code, check } = checkUpdatePassFields(data);
+        // Checks of data and database
+        const { code, check } = checkUpdatePassFields(data);
         if (check) {
             const userDoc = collectionDoc.data();
             if (userDoc?.status === userStatus.activated) {
                 if (!checkCode || userDoc?.passwordCode === data.codigo) {
-                    let updateData: Partial<AccountCollectionData> = {
+                    const updateData: Partial<AccountCollectionData> = {
                         password: encryption.encrypt(data.password),
                         iv: config.iv,
                         algorithm: config.algorithm,

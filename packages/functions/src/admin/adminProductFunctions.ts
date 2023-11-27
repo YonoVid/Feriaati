@@ -17,7 +17,7 @@ export const updateProductList = functions.https.onCall(
     ): Promise<ResponseData<string>> => {
         try {
             functions.logger.info("DATA::", data);
-            let { check, code } = checkProductVendorFullUpdate(data);
+            const { check, code } = checkProductVendorFullUpdate(data);
 
             if (check) {
                 const adminAccount = await getAccount(collectionNames.ADMINS, {

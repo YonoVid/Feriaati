@@ -26,7 +26,7 @@ export const checkAddProductFields = (
         unit,
         unitType,
     } = input;
-    //Check required values exist
+    // Check required values exist
     const requiredCheck =
         name != null &&
         description != null &&
@@ -74,7 +74,7 @@ export const checkProductListFields = (
     input: ProductListFields
 ): { check: boolean; code: errorCodes } => {
     const { token, email, idProducts } = input;
-    //Check required values exist
+    // Check required values exist
     const requiredCheck =
         (idProducts != null && idProducts != "") ||
         (token != "" && token != null && email != "" && email != null);
@@ -191,7 +191,7 @@ export const checkProductVendorFullUpdate = (
         contactEmail: contact?.email || undefined,
     });
     if (!check) {
-        //Check required values exist
+        // Check required values exist
         const requiredCheck =
             adminToken != null &&
             adminToken != "" &&

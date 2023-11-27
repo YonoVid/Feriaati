@@ -34,10 +34,10 @@ import { collectionNames } from "../consts";
 export const login = functions.https.onCall(
     async (data: LoginFields, context): Promise<ResponseData<UserToken>> => {
         try {
-            let { code, check } = checkAccountFields(data);
+            const { code, check } = checkAccountFields(data);
 
             if (check) {
-                let { token, code, id } = await accountLoginVerification(
+                const { token, code, id } = await accountLoginVerification(
                     collectionNames.USERS,
                     data.email,
                     data.password,
@@ -80,15 +80,15 @@ export const login = functions.https.onCall(
 export const addUser = functions.https.onCall(
     async (data: RegisterFields, context): Promise<ResponseData<string>> => {
         try {
-            //Checks of data and database
+            // Checks of data and database
             let { check, code } = checkRegisterFields(data);
             let error = false;
-            //Get collection of email data
+            // Get collection of email data
 
             functions.logger.info("DATA::", data);
 
             if (check) {
-                let { code: accountCode, doc: collectionDoc } =
+                const { code: accountCode, doc: collectionDoc } =
                     await getAccount(
                         collectionNames.USERS,
                         {
@@ -102,7 +102,7 @@ export const addUser = functions.https.onCall(
                     accountCode === errorCodes.DOCUMENT_NOT_EXISTS_ERROR ||
                     collectionDoc.get("status") === userStatus.registered
                 ) {
-                    //Setup document of user data
+                    // Setup document of user data
                     const collectionData: UserCollectionData = {
                         creationDate: new Date(),
                         isDeleted: false,
@@ -117,17 +117,17 @@ export const addUser = functions.https.onCall(
                     };
                     functions.logger.info("TO UPLOAD DATA::", collectionData);
 
-                    //Send email to user with verification code
+                    // Send email to user with verification code
                     sendVerificationMail(
                         data.username,
                         data.email,
                         collectionData.code as string
                     );
                     if (collectionDoc && collectionDoc.exists) {
-                        //Update document in collection if exists
+                        // Update document in collection if exists
                         collectionDoc.ref.update(collectionData);
                     } else {
-                        //Creates document in collection of users
+                        // Creates document in collection of users
                         collectionDoc.ref.create(collectionData);
                     }
                     code = errorCodes.SUCCESFULL;
@@ -160,11 +160,11 @@ export const addUser = functions.https.onCall(
 export const confirmRegister = functions.https.onCall(
     async (data: RegisterConfirm, context): Promise<ResponseData<string>> => {
         try {
-            //Store return message
+            // Store return message
             let code = errorCodes.SUCCESFULL;
             functions.logger.info("DATA", data);
-            //Checks of data and database
-            let { code: accountCode, doc: collectionDoc } = await getAccount(
+            // Checks of data and database
+            const { code: accountCode, doc: collectionDoc } = await getAccount(
                 collectionNames.USERS,
                 {
                     email: data.email,
@@ -177,7 +177,7 @@ export const confirmRegister = functions.https.onCall(
                 accountCode !== errorCodes.DOCUMENT_NOT_EXISTS_ERROR &&
                 collectionDoc.get("code") === data.code
             ) {
-                //Update document of user data
+                // Update document of user data
                 collectionDoc.ref.update({
                     status: userStatus.activated as string,
                 });

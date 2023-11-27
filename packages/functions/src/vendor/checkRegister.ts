@@ -21,7 +21,7 @@ export const checkRegisterVendorFields = (
         password,
         confirmPassword,
     } = input;
-    //Check required values exist
+    // Check required values exist
     const requiredCheck =
         name != null &&
         surname != null &&
@@ -33,7 +33,7 @@ export const checkRegisterVendorFields = (
         streetNumber != null;
     // console.log("Username check", userCheck);
 
-    //Check account data rules
+    // Check account data rules
     if (!requiredCheck) {
         return { check: false, code: errorCodes.MISSING_REQUIRED_DATA_ERROR };
     }
@@ -45,7 +45,7 @@ export const checkRegisterVendorFields = (
         return { check: accountCheck, code: accountCode };
     }
 
-    //Check passwords are equal
+    // Check passwords are equal
     const passwordCheck = password === confirmPassword;
     // console.log("Password check", passwordCheck);
     if (!passwordCheck) {
@@ -62,11 +62,11 @@ export const checkRegisterContributorFields = (
     input: RegisterContributorFields
 ): { check: boolean; code: errorCodes } => {
     const { email, password, confirmPassword } = input;
-    //Check required values exist
+    // Check required values exist
     const requiredCheck = email != null && password != null;
     // console.log("Username check", userCheck);
 
-    //Check account data rules
+    // Check account data rules
     if (!requiredCheck) {
         return { check: false, code: errorCodes.MISSING_REQUIRED_DATA_ERROR };
     }
@@ -78,7 +78,7 @@ export const checkRegisterContributorFields = (
         return { check: accountCheck, code: accountCode };
     }
 
-    //Check passwords are equal
+    // Check passwords are equal
     const passwordCheck = password === confirmPassword;
     // console.log("Password check", passwordCheck);
     if (!passwordCheck) {

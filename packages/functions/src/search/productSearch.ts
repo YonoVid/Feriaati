@@ -4,7 +4,7 @@ import {
     onDocumentUpdated,
     onDocumentDeleted,
 } from "firebase-functions/v2/firestore";
-import { collectionNames } from "../consts";
+import { collectionNames, indexMaxInstances } from "../consts";
 import {
     ProductCollectionData,
     ProductDiscount,
@@ -27,8 +27,8 @@ const formatIndex = (
         (data.unitType === ProductUnit.GRAM
             ? data.unit + "gr."
             : data.unitType === ProductUnit.KILOGRAM
-            ? "kg."
-            : "unidad") +
+              ? "kg."
+              : "unidad") +
         ")";
     const finalPrice =
         data.price -
@@ -54,10 +54,14 @@ const formatIndex = (
 };
 
 export const addProductIndex = onDocumentCreated(
-    collectionNames.VENDORPRODUCTS +
-        "/{productsDocument}/" +
-        collectionNames.PRODUCTS +
-        "/{document}",
+    {
+        document:
+            collectionNames.VENDORPRODUCTS +
+            "/{productsDocument}/" +
+            collectionNames.PRODUCTS +
+            "/{document}",
+        maxInstances: indexMaxInstances,
+    },
     (event) => {
         const eventData: ProductCollectionData =
             event.data?.data() as ProductCollectionData;
@@ -81,10 +85,14 @@ export const addProductIndex = onDocumentCreated(
 );
 
 export const editProductIndex = onDocumentUpdated(
-    collectionNames.VENDORPRODUCTS +
-        "/{productsDocument}/" +
-        collectionNames.PRODUCTS +
-        "/{document}/",
+    {
+        document:
+            collectionNames.VENDORPRODUCTS +
+            "/{productsDocument}/" +
+            collectionNames.PRODUCTS +
+            "/{document}/",
+        maxInstances: indexMaxInstances,
+    },
     (event) => {
         const eventDataBefore: ProductCollectionData =
             event.data?.before.data() as ProductCollectionData;
@@ -113,10 +121,14 @@ export const editProductIndex = onDocumentUpdated(
 );
 
 export const deleteProductIndex = onDocumentDeleted(
-    collectionNames.VENDORPRODUCTS +
-        "/{productsDocument}/" +
-        collectionNames.PRODUCTS +
-        "/{document}",
+    {
+        document:
+            collectionNames.VENDORPRODUCTS +
+            "/{productsDocument}/" +
+            collectionNames.PRODUCTS +
+            "/{document}",
+        maxInstances: indexMaxInstances,
+    },
     (event) => {
         const indexId = "product-" + event.data?.id;
         functions.logger.info("DELETE INDEX::", indexId);

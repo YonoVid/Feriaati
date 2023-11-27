@@ -1,6 +1,5 @@
 import { EditAccountFields, GetAccountFields } from "../model/types";
-import { AccountDirection } from "../model/accountTypes";
-import { userType } from "../model/accountTypes";
+import { AccountDirection , userType } from "../model/accountTypes";
 import { errorCodes } from "../errors";
 import { emailFormatRegex, phoneFormatRegex } from "../utilities/checkDataType";
 import { passwordFormatRegex } from "../utilities/checkAccount";
@@ -56,7 +55,7 @@ export const checkEditAccountFields = (
     if (!emailCheck) {
         return { check: false, code: errorCodes.PHONE_FORMAT_ERROR };
     }
-    let directionCheck: boolean = true;
+    let directionCheck = true;
     direction?.forEach((element) => {
         directionCheck = directionCheck && checkDirection(element);
     });

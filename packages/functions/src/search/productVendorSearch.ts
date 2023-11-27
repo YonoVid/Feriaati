@@ -4,7 +4,7 @@ import {
     onDocumentUpdated,
     onDocumentDeleted,
 } from "firebase-functions/v2/firestore";
-import { collectionNames } from "../consts";
+import { collectionNames, indexMaxInstances } from "../consts";
 import { ProductListCollectionData } from "../model/productTypes";
 import { IndexType, ProductVendorIndex } from "../model/indexTypes";
 import { deleteIndex, editIndex } from "./search";
@@ -53,7 +53,10 @@ const formatIndex = (
 };
 
 export const addProductVendorIndex = onDocumentCreated(
-    collectionNames.VENDORPRODUCTS + "/{document}",
+    {
+        document: collectionNames.VENDORPRODUCTS + "/{document}",
+        maxInstances: indexMaxInstances,
+    },
     (event) => {
         const eventData: ProductListCollectionData =
             event.data?.data() as ProductListCollectionData;
@@ -76,7 +79,10 @@ export const addProductVendorIndex = onDocumentCreated(
 );
 
 export const editProductVendorIndex = onDocumentUpdated(
-    collectionNames.VENDORPRODUCTS + "/{document}",
+    {
+        document: collectionNames.VENDORPRODUCTS + "/{document}",
+        maxInstances: indexMaxInstances,
+    },
     (event) => {
         const eventDataBefore: ProductListCollectionData =
             event.data?.before.data() as ProductListCollectionData;
@@ -100,7 +106,10 @@ export const editProductVendorIndex = onDocumentUpdated(
 );
 
 export const deleteProductVendorIndex = onDocumentDeleted(
-    collectionNames.VENDORPRODUCTS + "/{document}",
+    {
+        document: collectionNames.VENDORPRODUCTS + "/{document}",
+        maxInstances: indexMaxInstances,
+    },
     (event) => {
         const indexId = "productVendor-" + event.data?.id;
         functions.logger.info("DELETE INDEX::", indexId);

@@ -4,7 +4,10 @@ import * as mime from "mime";
 
 /**
  * Function to upload a image to firebase cloud storage
- * @location string - Should be of format 'location/sublocation'
+ * @param {string} id Id of related user
+ * @param {string} location Location to store the image
+ * @param {string} image Data of the image as a string
+ * @param {boolean} privateAccess If the permission to access is private
  */
 export const uploadImage = async (
     id: string,
@@ -45,11 +48,24 @@ export const uploadImage = async (
     return file.publicUrl();
 };
 
+/**
+ * Function to upload a image to register of vendor location
+ * @param {string} email Email of the related user
+ * @param {string} image Data of the image as a string
+ */
 export const uploadRegisterImage = async (email: string, image: string) =>
     uploadImage(email, "register/vendor", image);
-
+/**
+ * Function to upload a image to vendor product location
+ * @param {string} id Id of the related product
+ * @param {string} image Data of the image as a string
+ */
 export const uploadProductImage = async (id: string, image: string) =>
     uploadImage(id, "vendor/products", image);
-
+/**
+ * Function to upload a image to vendor location
+ * @param {string} id Id of the related related vendor
+ * @param {string} image Data of the image as a string
+ */
 export const uploadVendorProductImage = async (id: string, image: string) =>
     uploadImage(id, "vendor", image);

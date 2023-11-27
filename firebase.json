@@ -1,54 +1,436 @@
 {
-  "firestore": {
-    "rules": "firestore.rules",
-    "indexes": "firestore.indexes.json"
-  },
-  "functions": [
-    {
-      "source": "packages/functions",
-      "codebase": "default",
-      "ignore": [
-        "node_modules",
-        ".git",
-        "firebase-debug.log",
-        "firebase-debug.*.log"
-      ],
-      "predeploy": [
-        "yarn --prefix \"$RESOURCE_DIR\" run lint",
-        "yarn --prefix \"$RESOURCE_DIR\" run build"
-      ]
-    }
-  ],
-  "hosting": {
-    "public": "packages/web/public",
-    "ignore": [
-      "firebase.json",
-      "**/.*",
-      "**/node_modules/**"
-    ]
-  },
-  "emulators": {
-    "functions": {
-      "host": "0.0.0.0",
-      "port": 5001
-    },
     "firestore": {
-      "host": "0.0.0.0",
-      "port": 8080
+        "rules": "firestore.rules",
+        "indexes": "firestore.indexes.json"
     },
+    "functions": [
+        {
+            "source": "packages/functions",
+            "codebase": "default",
+            "ignore": [
+                "node_modules",
+                ".git",
+                "firebase-debug.log",
+                "firebase-debug.*.log"
+            ],
+            "predeploy": [
+                "npm --prefix \"$RESOURCE_DIR\" run lint",
+                "npm --prefix \"$RESOURCE_DIR\" run build"
+            ]
+        }
+    ],
     "hosting": {
-      "host": "0.0.0.0",
-      "port": 5000
+        "public": "packages/web/dist",
+        "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+        "rewrites": [
+            {
+                "source": "/addComment",
+                "function": {
+                    "functionId": "addComment",
+                    "region": "us-central1",
+                    "pinTag": true
+                }
+            },
+            {
+                "source": "/addContributor",
+                "function": {
+                    "functionId": "addContributor",
+                    "region": "us-central1",
+                    "pinTag": true
+                }
+            },
+            {
+                "source": "/addProduct",
+                "function": {
+                    "functionId": "addProduct",
+                    "region": "us-central1",
+                    "pinTag": true
+                }
+            },
+            {
+                "source": "/addUser",
+                "function": {
+                    "functionId": "addUser",
+                    "region": "us-central1",
+                    "pinTag": true
+                }
+            },
+            {
+                "source": "/addVendor",
+                "function": {
+                    "functionId": "addVendor",
+                    "region": "us-central1",
+                    "pinTag": true
+                }
+            },
+            {
+                "source": "/adminLogin",
+                "function": {
+                    "functionId": "adminLogin",
+                    "region": "us-central1",
+                    "pinTag": true
+                }
+            },
+            {
+                "source": "/buyProductUser",
+                "function": {
+                    "functionId": "buyProductUser",
+                    "region": "us-central1",
+                    "pinTag": true
+                }
+            },
+            {
+                "source": "/checkPetitionVendor",
+                "function": {
+                    "functionId": "checkPetitionVendor",
+                    "region": "us-central1",
+                    "pinTag": true
+                }
+            },
+            {
+                "source": "/confirmRegister",
+                "function": {
+                    "functionId": "confirmRegister",
+                    "region": "us-central1",
+                    "pinTag": true
+                }
+            },
+            {
+                "source": "/contributorList",
+                "function": {
+                    "functionId": "contributorList",
+                    "region": "us-central1",
+                    "pinTag": true
+                }
+            },
+            {
+                "source": "/deleteContributor",
+                "function": {
+                    "functionId": "deleteContributor",
+                    "region": "us-central1",
+                    "pinTag": true
+                }
+            },
+            {
+                "source": "/deleteProduct",
+                "function": {
+                    "functionId": "deleteProduct",
+                    "region": "us-central1",
+                    "pinTag": true
+                }
+            },
+            {
+                "source": "/deleteProductList",
+                "function": {
+                    "functionId": "deleteProductList",
+                    "region": "us-central1",
+                    "pinTag": true
+                }
+            },
+            {
+                "source": "/deleteUser",
+                "function": {
+                    "functionId": "deleteUser",
+                    "region": "us-central1",
+                    "pinTag": true
+                }
+            },
+            {
+                "source": "/deleteVendor",
+                "function": {
+                    "functionId": "deleteVendor",
+                    "region": "us-central1",
+                    "pinTag": true
+                }
+            },
+            {
+                "source": "/editAccountUser",
+                "function": {
+                    "functionId": "editAccountUser",
+                    "region": "us-central1",
+                    "pinTag": true
+                }
+            },
+            {
+                "source": "/editProduct",
+                "function": {
+                    "functionId": "editProduct",
+                    "region": "us-central1",
+                    "pinTag": true
+                }
+            },
+            {
+                "source": "/getAccountSubscription",
+                "function": {
+                    "functionId": "getAccountSubscription",
+                    "region": "us-central1",
+                    "pinTag": true
+                }
+            },
+            {
+                "source": "/getAccountUser",
+                "function": {
+                    "functionId": "getAccountUser",
+                    "region": "us-central1",
+                    "pinTag": true
+                }
+            },
+            {
+                "source": "/getComments",
+                "function": {
+                    "functionId": "getComments",
+                    "region": "us-central1",
+                    "pinTag": true
+                }
+            },
+            {
+                "source": "/getFactures",
+                "function": {
+                    "functionId": "getFactures",
+                    "region": "us-central1",
+                    "pinTag": true
+                }
+            },
+            {
+                "source": "/getProductVendor",
+                "function": {
+                    "functionId": "getProductVendor",
+                    "region": "us-central1",
+                    "pinTag": true
+                }
+            },
+            {
+                "source": "/getResume",
+                "function": {
+                    "functionId": "getResume",
+                    "region": "us-central1",
+                    "pinTag": true
+                }
+            },
+            {
+                "source": "/getVendorFactures",
+                "function": {
+                    "functionId": "addContributor",
+                    "region": "us-central1",
+                    "pinTag": true
+                }
+            },
+            {
+                "source": "/listProduct",
+                "function": {
+                    "functionId": "listProduct",
+                    "region": "us-central1",
+                    "pinTag": true
+                }
+            },
+            {
+                "source": "/login",
+                "function": {
+                    "functionId": "login",
+                    "region": "us-central1",
+                    "pinTag": true
+                }
+            },
+            {
+                "source": "/loginVendor",
+                "function": {
+                    "functionId": "loginVendor",
+                    "region": "us-central1",
+                    "pinTag": true
+                }
+            },
+            {
+                "source": "/logoutUser",
+                "function": {
+                    "functionId": "logoutUser",
+                    "region": "us-central1",
+                    "pinTag": true
+                }
+            },
+            {
+                "source": "/passRecovery",
+                "function": {
+                    "functionId": "passRecovery",
+                    "region": "us-central1",
+                    "pinTag": true
+                }
+            },
+            {
+                "source": "/passRecoveryVendor",
+                "function": {
+                    "functionId": "passRecoveryVendor",
+                    "region": "us-central1",
+                    "pinTag": true
+                }
+            },
+            {
+                "source": "/passUpdate",
+                "function": {
+                    "functionId": "passUpdate",
+                    "region": "us-central1",
+                    "pinTag": true
+                }
+            },
+            {
+                "source": "/passUpdateVendor",
+                "function": {
+                    "functionId": "passUpdateVendor",
+                    "region": "us-central1",
+                    "pinTag": true
+                }
+            },
+            {
+                "source": "/productListPagination",
+                "function": {
+                    "functionId": "productListPagination",
+                    "region": "us-central1",
+                    "pinTag": true
+                }
+            },
+            {
+                "source": "/productVendorList",
+                "function": {
+                    "functionId": "productVendorList",
+                    "region": "us-central1",
+                    "pinTag": true
+                }
+            },
+            {
+                "source": "/productVendorUpdate",
+                "function": {
+                    "functionId": "productVendorUpdate",
+                    "region": "us-central1",
+                    "pinTag": true
+                }
+            },
+            {
+                "source": "/registerVendorList",
+                "function": {
+                    "functionId": "registerVendorList",
+                    "region": "us-central1",
+                    "pinTag": true
+                }
+            },
+            {
+                "source": "/reportComment",
+                "function": {
+                    "functionId": "reportComment",
+                    "region": "us-central1",
+                    "pinTag": true
+                }
+            },
+            {
+                "source": "/setAccountSubscription",
+                "function": {
+                    "functionId": "setAccountSubscription",
+                    "region": "us-central1",
+                    "pinTag": true
+                }
+            },
+            {
+                "source": "/updateContributor",
+                "function": {
+                    "functionId": "updateContributor",
+                    "region": "us-central1",
+                    "pinTag": true
+                }
+            },
+            {
+                "source": "/updateProductList",
+                "function": {
+                    "functionId": "updateProductList",
+                    "region": "us-central1",
+                    "pinTag": true
+                }
+            },
+            {
+                "source": "/updateUser",
+                "function": {
+                    "functionId": "updateUser",
+                    "region": "us-central1",
+                    "pinTag": true
+                }
+            },
+            {
+                "source": "/updateUserFacture",
+                "function": {
+                    "functionId": "updateUserFacture",
+                    "region": "us-central1",
+                    "pinTag": true
+                }
+            },
+            {
+                "source": "/updateVendor",
+                "function": {
+                    "functionId": "updateVendor",
+                    "region": "us-central1",
+                    "pinTag": true
+                }
+            },
+            {
+                "source": "/userList",
+                "function": {
+                    "functionId": "userList",
+                    "region": "us-central1",
+                    "pinTag": true
+                }
+            },
+            {
+                "source": "/userStateUpdate",
+                "function": {
+                    "functionId": "userStateUpdate",
+                    "region": "us-central1",
+                    "pinTag": true
+                }
+            },
+            {
+                "source": "/vendorList",
+                "function": {
+                    "functionId": "vendorList",
+                    "region": "us-central1",
+                    "pinTag": true
+                }
+            },
+            {
+                "source": "/vendorListUser",
+                "function": {
+                    "functionId": "vendorListUser",
+                    "region": "us-central1",
+                    "pinTag": true
+                }
+            },
+            {
+                "source": "/vendorStateUpdate",
+                "function": {
+                    "functionId": "vendorStateUpdate",
+                    "region": "us-central1",
+                    "pinTag": true
+                }
+            }
+        ]
     },
-    "ui": {
-      "enabled": true
+    "emulators": {
+        "functions": {
+            "host": "0.0.0.0",
+            "port": 5001
+        },
+        "firestore": {
+            "host": "0.0.0.0",
+            "port": 8080
+        },
+        "hosting": {
+            "host": "0.0.0.0",
+            "port": 5000
+        },
+        "ui": {
+            "enabled": true
+        },
+        "singleProjectMode": true,
+        "storage": {
+            "port": 9199
+        }
     },
-    "singleProjectMode": true,
     "storage": {
-      "port": 9199
+        "rules": "storage.rules"
     }
-  },
-  "storage": {
-    "rules": "storage.rules"
-  }
 }

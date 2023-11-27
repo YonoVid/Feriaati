@@ -17,10 +17,10 @@ import { VendorCollectionData } from "../model/accountTypes";
 export const productVendorUpdate = functions.https.onCall(
     async (data: UpdateProductVendorFields): Promise<ResponseData<string>> => {
         functions.logger.info("DATA::", data);
-        let { check, code } = checkProductVendorUpdate(data);
+        const { check, code } = checkProductVendorUpdate(data);
 
         if (check) {
-            let { code, doc } = await getAccount(collectionNames.VENDORS, {
+            const { code, doc } = await getAccount(collectionNames.VENDORS, {
                 token: data.token,
                 email: data.email,
             });

@@ -178,7 +178,7 @@ export const updateVendor = functions.https.onCall(
     ): Promise<ResponseData<string>> => {
         try {
             functions.logger.info("DATA::", data);
-            let { check, code } = checkVendorFullUpdate(data);
+            const { check, code } = checkVendorFullUpdate(data);
 
             if (check) {
                 const adminAccount = await getAccount(collectionNames.ADMINS, {

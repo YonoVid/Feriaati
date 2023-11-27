@@ -95,7 +95,7 @@ export const updateBuyerFacture = async (
     data: UpdateFactureFields
 ): Promise<ResponseData<string>> => {
     try {
-        let extra = data.facture;
+        const extra = data.facture;
         // Checks of data and database
         let code = errorCodes.SUCCESFULL;
 
@@ -133,13 +133,15 @@ export const updateBuyerFacture = async (
 
                     const time = Timestamp.now();
 
-                    for (let key in factureData.products) {
-                        registerFactureData({
-                            docId: factureDoc.id,
-                            id: key,
-                            products: factureData.products[key],
-                            time: time,
-                        });
+                    for (const key in factureData.products) {
+                        if (key) {
+                            registerFactureData({
+                                docId: factureDoc.id,
+                                id: key,
+                                products: factureData.products[key],
+                                time: time,
+                            });
+                        }
                     }
                 }
             } else {

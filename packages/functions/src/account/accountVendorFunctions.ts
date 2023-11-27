@@ -22,7 +22,7 @@ export const getAccountVendor = async (
         email: string;
     },
     permission: ContributorLevel,
-    createOnFail: boolean = false
+    createOnFail = false
 ): Promise<{ code: errorCodes; doc: admin.firestore.DocumentSnapshot }> => {
     try {
         const { id, token, email } = identificator;

@@ -36,15 +36,15 @@ export const addContributor = functions.https.onCall(
         context
     ): Promise<ResponseData<ContributorData>> => {
         try {
-            //Checks of data and database
+            // Checks of data and database
             let { check, code } = checkRegisterContributorFields(data);
-            let error = true;
-            //Get collection of email data
+            const error = true;
+            // Get collection of email data
 
             functions.logger.info("DATA::", data);
 
             if (check) {
-                let { doc, code: vendorCode } = await getAccountVendor(
+                const { doc, code: vendorCode } = await getAccountVendor(
                     {
                         token: data.token,
                         email: data.email,
@@ -52,14 +52,14 @@ export const addContributor = functions.https.onCall(
                     ContributorLevel.MANAGER
                 );
                 if (vendorCode === errorCodes.SUCCESFULL) {
-                    let vendorData = doc.data() as VendorCollectionData;
+                    const vendorData = doc.data() as VendorCollectionData;
 
                     const { user: testUser } = generateContributorIdentifier({
                         first: data.name,
                         second: data.surname,
                     });
 
-                    let { code: accountCode, quantity: docQuantity } =
+                    const { code: accountCode, quantity: docQuantity } =
                         await getAccountCount({
                             collection: collectionNames.CONTRIBUTORS,
                             value: testUser,
@@ -78,7 +78,7 @@ export const addContributor = functions.https.onCall(
                                 index: docQuantity,
                             });
 
-                        //Setup document of user data
+                        // Setup document of user data
                         const collectionData: ContributorCollectionData = {
                             creationDate: new Date(),
                             name: data.name,
@@ -100,7 +100,7 @@ export const addContributor = functions.https.onCall(
                             collectionData
                         );
                         const db = admin.firestore();
-                        //Creates document in collection of users
+                        // Creates document in collection of users
                         const document = db
                             .collection(collectionNames.CONTRIBUTORS)
                             .doc();
@@ -153,7 +153,7 @@ export const updateContributor = functions.https.onCall(
             let { check, code } = checkUpdateContributorFields(data);
 
             if (check) {
-                let { doc, code: vendorCode } = await getAccountVendor(
+                const { doc, code: vendorCode } = await getAccountVendor(
                     {
                         token: data.token,
                         email: data.email,
@@ -239,7 +239,7 @@ export const updateContributor = functions.https.onCall(
                             functions.logger.info(contributorUpdate);
                             await docContributor.ref.update(contributorUpdate);
                         }
-                        //Hide password for return message
+                        // Hide password for return message
                         const returnData: ContributorData = {
                             id: docContributor.id,
                             status: contributorUpdate.status,
@@ -295,7 +295,7 @@ export const deleteContributor = functions.https.onCall(
                 data.token != null &&
                 data.token != undefined
             ) {
-                let { doc, code: vendorCode } = await getAccountVendor(
+                const { doc, code: vendorCode } = await getAccountVendor(
                     {
                         token: data.token,
                         email: data.email,

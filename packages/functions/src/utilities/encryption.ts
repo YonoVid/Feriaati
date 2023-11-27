@@ -1,4 +1,4 @@
-import * as crypto from "crypto";
+import crypto from "crypto";
 
 interface IConfig {
     algorithm?: string;
@@ -13,15 +13,22 @@ export const generativeIvOfSize = (size: number): Buffer => {
 
 export const getRandomBytes = (size: number) => crypto.randomBytes(size);
 
+/**
+ * Class to make a encryptor object with initial settings
+ */
 export default class Encryption {
     private algorithm: string;
     private key: Buffer | string;
-    //private salt: string;
+    // private salt: string;
     private iv: Buffer | null;
 
+    /**
+     * Function to construct class
+     * @param {IConfig} config Initial settings with algorithm and keys
+     */
     constructor(config: IConfig) {
         this.algorithm = config.algorithm || "";
-        //this.salt = config.salt || "";
+        // this.salt = config.salt || "";
         // encode encryption key from utf8 to hex
         const ENCRYPTION_KEY = config.encryptionKey
             ? Buffer.from(config.encryptionKey).toString("hex")
@@ -44,7 +51,7 @@ export default class Encryption {
 
     /**
      * Function to get avalible encryption algorithms
-     * @return string []
+     * @return {string[]}
      */
     getHashes = () => {
         return crypto.getHashes();
@@ -52,11 +59,11 @@ export default class Encryption {
 
     /**
      * Function to encrypt a string into a url slug
-     * @param value string
-     * @param isInt boolean
-     * @return string | null
+     * @param {string }value Value to encrypt
+     * @param {boolean } isInt If the value is a number or not
+     * @return {string | null} Value encrypted
      */
-    encrypt = (value?: string | number, isInt: boolean = false): string => {
+    encrypt = (value?: string | number, isInt = false): string => {
         // Validate missing value
         if (!value) {
             throw Error("A value is required!");
@@ -94,11 +101,11 @@ export default class Encryption {
 
     /**
      * Function to decrypt a url token
-     * @param token string
-     * @param isInt boolean
-     * @returns string | null
+     * @param {string} token Value to be decrypted
+     * @param {boolean} isInt If the value is a number
+     * @return {string | null} Value decrypted
      */
-    decrypt = (token?: string, isInt: boolean = false): string => {
+    decrypt = (token?: string, isInt = false): string => {
         // Validate missing token
         if (!token) {
             throw Error("A token is required!");
@@ -120,7 +127,6 @@ export default class Encryption {
         const buffer = Buffer.from(token, "base64").toString("hex");
 
         // Get decrypted data from decipher instance
-        // @ts-ignore
         const firstPart = decipher.update(buffer, "hex", "base64");
         const finalPart = decipher.final("base64") || "";
 
@@ -141,12 +147,12 @@ export default class Encryption {
     };
 }
 
-//Setup encryption configuration
-//IF YOU USE .env first install dotenv (npm install dotenv --save)
+// Setup encryption configuration
+// IF YOU USE .env first install dotenv (npm install dotenv --save)
 export const config = {
-    algorithm: process.env.ENCRYPTION_ALGORITHM, //"aes-256-cbc"
-    encryptionKey: process.env.ENCRYPTION_KEY, //"KQIusXppu9dIj0JHa6yRtMOgqW7qUyJQ"
-    salt: process.env.ENCRYPTION_SALT, //"123" IRRELEVANTE
+    algorithm: process.env.ENCRYPTION_ALGORITHM, // "aes-256-cbc"
+    encryptionKey: process.env.ENCRYPTION_KEY, // "KQIusXppu9dIj0JHa6yRtMOgqW7qUyJQ"
+    salt: process.env.ENCRYPTION_SALT, // "123" IRRELEVANTE
     iv: generativeIvOfSize(16),
 };
 export const encryption = new Encryption(config);

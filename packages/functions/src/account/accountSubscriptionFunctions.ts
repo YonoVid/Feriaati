@@ -36,7 +36,7 @@ export const getAccountSubscription = functions.https.onCall(
             let { check, code } = checkGetAccountFields(data);
 
             if (check) {
-                let { doc: docAccount, code: accountCode } =
+                const { doc: docAccount, code: accountCode } =
                     await (data.type === userType.user
                         ? getAccount(collectionNames.USERS, {
                               id: data.id,
@@ -49,7 +49,7 @@ export const getAccountSubscription = functions.https.onCall(
 
                 let subscriptionData: SubscriptionData | undefined;
                 if (code === errorCodes.SUCCESFULL) {
-                    let { doc: constantReference, code: constantCode } =
+                    const { doc: constantReference, code: constantCode } =
                         await getConstant(constantNames.SUBSCRIPTIONS);
                     if (code === errorCodes.SUCCESFULL) {
                         const constantData: SubscriptionConstants =
@@ -114,7 +114,7 @@ export const setAccountSubscription = functions.https.onCall(
             let { check, code } = checkGetAccountFields(data);
 
             if (check) {
-                let { doc: doc, code: accountCode } = await (data.type ===
+                const { doc: doc, code: accountCode } = await (data.type ===
                 userType.user
                     ? getAccount(collectionNames.USERS, {
                           id: data.id,
@@ -127,7 +127,7 @@ export const setAccountSubscription = functions.https.onCall(
 
                 let subscriptionData: SubscriptionCollectionData | undefined;
                 if (code === errorCodes.SUCCESFULL) {
-                    let { doc: constantReference, code: constantCode } =
+                    const { doc: constantReference, code: constantCode } =
                         await getConstant(constantNames.SUBSCRIPTIONS);
                     if (code === errorCodes.SUCCESFULL) {
                         const constantData: SubscriptionConstants =
@@ -227,7 +227,7 @@ export const updateSubscriptionFacture = async (
     data: UpdateFactureFields
 ): Promise<ResponseData<string>> => {
     try {
-        let extra = data.facture;
+        const extra = data.facture;
         // Checks of data and database
         let code = errorCodes.SUCCESFULL;
 

@@ -25,10 +25,10 @@ export const getAccountUserLocal = async (
     context: any
 ): Promise<ResponseData<AccountCollectionData>> => {
     try {
-        let { check, code } = checkGetAccountFields(data);
+        const { check, code } = checkGetAccountFields(data);
 
         if (check) {
-            let { doc, code } = await getAccount(UserCollection[data.type], {
+            const { doc, code } = await getAccount(UserCollection[data.type], {
                 id: data.id,
                 token: data.token,
                 email: data.email,
@@ -79,7 +79,7 @@ export const editAccountUserLocal = async (
 ): Promise<ResponseData<AccountCollectionData>> => {
     try {
         functions.logger.info("DATA::", data);
-        let { check, code } = checkEditAccountFields(data);
+        const { check, code } = checkEditAccountFields(data);
 
         if (check) {
             const accountCollection =
@@ -126,7 +126,7 @@ export const editAccountUserLocal = async (
                     await doc.ref.update({ ...docData, ...accountData });
                 }
             }
-            //Hide password for return message
+            // Hide password for return message
             accountData && (accountData.password = "**********");
 
             const error = code !== errorCodes.SUCCESFULL;
@@ -156,7 +156,7 @@ export const logoutUser = functions.https.onCall(
     async (data: LogoutFields, context: any): Promise<ResponseData<null>> => {
         try {
             functions.logger.info("DATA::", data);
-            let check =
+            const check =
                 data.token != null &&
                 data.token != undefined &&
                 data.type != null &&
@@ -164,7 +164,7 @@ export const logoutUser = functions.https.onCall(
 
             if (check) {
                 const accountCollection = UserCollection[data.type];
-                let { doc, code } = await getAccount(accountCollection, {
+                const { doc, code } = await getAccount(accountCollection, {
                     token: data.token,
                 });
                 if (code === errorCodes.SUCCESFULL) {

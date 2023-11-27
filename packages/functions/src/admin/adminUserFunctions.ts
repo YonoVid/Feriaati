@@ -87,7 +87,7 @@ export const updateUser = functions.https.onCall(
     ): Promise<ResponseData<string>> => {
         try {
             functions.logger.info("DATA::", data);
-            let { check, code } = checkUserFullUpdate(data);
+            const { check, code } = checkUserFullUpdate(data);
 
             if (check) {
                 const adminAccount = await getAccount(collectionNames.ADMINS, {
