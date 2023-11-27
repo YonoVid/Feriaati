@@ -1,4 +1,4 @@
-import { ChangeEvent, useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 
 import { Box, Button, Card, Divider } from "@mui/material";
@@ -17,7 +17,7 @@ import InputComponentAlt from "@feria-a-ti/web/src/components/inputComponent/Inp
 import "./AdminUserUpdateForm.css";
 
 function AdminUserUpdateForm(props: RUserFullUpdateProps) {
-    const { label, color, children, user, onSubmit, onCancel } = props;
+    const { color, children, user, onSubmit, onCancel } = props;
 
     const { setValue, handleSubmit, watch, control } =
         useForm<FormUpdateFullUserFields>();

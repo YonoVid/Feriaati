@@ -12,7 +12,7 @@ export const getContributorList = async (
     onSuccess: (data: ResponseData<string>) => void
 ) => {
     try {
-        const { formatedData, setCanSubmit } = data;
+        const { formatedData } = data;
 
         const users = httpsCallable<
             UserRequestFields,

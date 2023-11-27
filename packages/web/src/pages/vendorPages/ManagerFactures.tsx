@@ -15,7 +15,7 @@ import ProductVendorPage from "@feria-a-ti/web/src/components/productPage/Produc
 import ProductVendorUpdateForm from "@feria-a-ti/web/src/components/forms/productVendorUpdateForm/ProductVendorUpdateForm";
 
 import { UserContext } from "@feria-a-ti/web/src/App";
-import { useHeaderContext } from "../HeaderLayout";
+import { useHeaderContext } from "../HeaderFunction";
 import "../../App.css";
 import { DayTime } from "@feria-a-ti/common/model/baseTypes";
 

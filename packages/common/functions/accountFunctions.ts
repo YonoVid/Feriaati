@@ -11,7 +11,7 @@ import { checkGetAccountFields } from "../check/checkAccountFields";
 
 export const getAccountData = (
     user: GetAccountFields,
-    setAccountData: (AccountData) => void,
+    setAccountData: (value: AccountData) => void,
     setCanSubmit: (value: boolean) => void,
     setMessage: (value: MessageData) => void
 ) => {

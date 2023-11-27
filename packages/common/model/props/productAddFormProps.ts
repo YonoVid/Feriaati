@@ -29,7 +29,7 @@ export type ProductListFields = UserRequestFields & {
 };
 
 export type ProductDeleteFields = ProductListFields & {
-    productId: string;
+    idProducts: string;
 };
 
 export type ProductAddFormProps = FormProps & {

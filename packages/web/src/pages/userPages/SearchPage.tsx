@@ -27,7 +27,6 @@ import CustomRangeSliderComponent from "@feria-a-ti/web/src/components/searchEng
 import CustomRefinementListComponent from "@feria-a-ti/web/src/components/searchEngine/CustomRefinementListComponent";
 
 import { UserContext } from "@feria-a-ti/web/src/App";
-import { useHeaderContext } from "../HeaderLayout";
 
 import "../../App.css";
 
@@ -70,7 +69,7 @@ const DrawerHeader = styled("div")(({ theme }) => ({
 
 function SearchPage() {
     //Global UI context
-    const { setMessage } = useHeaderContext();
+    //const { setMessage } = useHeaderContext();
     //Global state variable
     const { authUser, type } = useContext(UserContext);
     //Navigation definition

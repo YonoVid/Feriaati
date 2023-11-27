@@ -11,7 +11,6 @@ import {
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 
-import { colors } from "@feria-a-ti/common/theme/base";
 import {
     ContributorData,
     userStatus,
@@ -28,11 +27,11 @@ export type ContributorViewProps = {
 
 export const ContributorView = (props: ContributorViewProps) => {
     const { sx, contributor, onEdit, onDelete } = props;
-    const { email, password, name, surname, status } = contributor;
+    const { email, name, surname, status } = contributor;
 
     return (
         <>
-            <Box sx={{ display: "flex" }}>
+            <Box sx={{ ...sx, display: "flex" }}>
                 <Card
                     sx={{
                         display: "flex",

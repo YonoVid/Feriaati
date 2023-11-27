@@ -15,13 +15,12 @@ import {
     UpdateFullProductVendorFields,
 } from "@feria-a-ti/common/model/fields/adminFields";
 
-import VendorList from "@feria-a-ti/web/src/components/vendorList/VendorList";
 import AdminProductListUpdateForm from "@feria-a-ti/web/src/components/forms/adminProductListUpdateForm/AdminProductListUpdateForm";
 
 import { UserContext } from "@feria-a-ti/web/src/App";
-import { useHeaderContext } from "../HeaderLayout";
+import { useHeaderContext } from "../HeaderFunction";
 import { checkProductVendorFullUpdate } from "@feria-a-ti/common/check/checkProductVendorUpdate";
-import ProductVendorList from "../../components/productVendorList/ProductVendorList";
+import ProductVendorList from "@feria-a-ti/web/src/components/productVendorList/ProductVendorList";
 
 const AdminProductsPage = () => {
     //Global UI context
@@ -40,7 +39,7 @@ const AdminProductsPage = () => {
     const [canSubmit, setCanSubmit] = useState<boolean>(true);
 
     useEffect(() => {
-        if (vendors == [] || productList == undefined) {
+        if (vendors.length == 0 || productList == undefined) {
             getVendors();
         }
     }, []);

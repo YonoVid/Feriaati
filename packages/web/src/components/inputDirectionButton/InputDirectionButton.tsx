@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { FieldValues, UseControllerProps } from "react-hook-form";
 
 import {
@@ -17,7 +16,7 @@ import { colors } from "@feria-a-ti/common/theme/base";
 
 import "./InputDirectionButton.css";
 
-interface Props<T> extends UseControllerProps<T> {
+interface Props<T extends FieldValues> extends UseControllerProps<T> {
     sx?: SxProps<Theme>;
     label?: string;
     disabled?: boolean;
@@ -29,7 +28,6 @@ interface Props<T> extends UseControllerProps<T> {
 
 const InputDirectionButton = <T extends FieldValues>({
     sx,
-    label,
     direction,
     disabled,
     isSelected,

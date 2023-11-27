@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import {
     Box,
     Card,
@@ -13,11 +12,7 @@ import {
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import DisabledByDefaultIcon from "@mui/icons-material/DisabledByDefault";
 
-import { colors } from "@feria-a-ti/common/theme/base";
-import {
-    ProductListCollectionData,
-    VendorData,
-} from "@feria-a-ti/common/model/functionsTypes";
+import { VendorData } from "@feria-a-ti/common/model/functionsTypes";
 
 import "./VendorList.css";
 import { regionCode, regionCommune } from "@feria-a-ti/common/constants/form";
@@ -25,12 +20,13 @@ import { regionCode, regionCommune } from "@feria-a-ti/common/constants/form";
 export type VendorRegisterViewProps = {
     vendor: VendorData;
     sx?: SxProps<Theme>;
+    canSubmit?: boolean;
     onAccept?: () => void;
     onDelete?: () => void;
 };
 
 export const VendorRegisterView = (props: VendorRegisterViewProps) => {
-    const { sx, vendor, onAccept, onDelete } = props;
+    const { sx, vendor, canSubmit, onAccept, onDelete } = props;
     const {
         rut,
         enterpriseName,
@@ -46,7 +42,7 @@ export const VendorRegisterView = (props: VendorRegisterViewProps) => {
 
     return (
         <>
-            <Box sx={{ display: "flex", flex: 1 }}>
+            <Box sx={{ ...sx, display: "flex", flex: 1 }}>
                 <Card sx={{ display: "flex", flex: 1 }}>
                     <CardMedia
                         component="img"
@@ -113,7 +109,7 @@ export const VendorRegisterView = (props: VendorRegisterViewProps) => {
                             sx={{ size: "3em" }}
                             aria-label="previous"
                             color="secondary"
-                            onClick={() => onAccept && onAccept()}
+                            onClick={() => canSubmit && onAccept && onAccept()}
                         >
                             <CheckCircleIcon sx={{ fontSize: "2em" }} />
                         </IconButton>
@@ -121,7 +117,7 @@ export const VendorRegisterView = (props: VendorRegisterViewProps) => {
                             sx={{ size: "3em" }}
                             aria-label="next"
                             color="primary"
-                            onClick={() => onDelete && onDelete()}
+                            onClick={() => canSubmit && onDelete && onDelete()}
                         >
                             <DisabledByDefaultIcon sx={{ fontSize: "2em" }} />
                         </IconButton>

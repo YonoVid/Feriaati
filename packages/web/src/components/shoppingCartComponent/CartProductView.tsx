@@ -6,7 +6,6 @@ import {
     CardMedia,
     IconButton,
     Typography,
-    useTheme,
 } from "@mui/material";
 
 import AddCircleIcon from "@mui/icons-material/AddCircle";
@@ -27,17 +26,18 @@ export type CartProductViewProps = {
 };
 
 export const CartProductView = (props: CartProductViewProps) => {
-    const theme = useTheme();
     const { quantity, product, onEdit, onDelete } = props;
     const { name, price, discount, promotion, image, unitType, unit } = product;
+
+    const promotionLocal: number = promotion || 0;
 
     const [localQuantity, setLocalQuantity] = useState(quantity);
     const [finalPrice, setFinalPrice] = useState(
         price -
             (discount !== "none"
                 ? discount === "percentage"
-                    ? (price * promotion) / 100
-                    : promotion
+                    ? (price * promotionLocal) / 100
+                    : promotionLocal
                 : 0)
     );
     const [subtotal, setSubtotal] = useState(finalPrice * localQuantity);
@@ -56,8 +56,8 @@ export const CartProductView = (props: CartProductViewProps) => {
             price -
                 (discount !== "none"
                     ? discount === "percentage"
-                        ? (price * promotion) / 100
-                        : promotion
+                        ? (price * promotionLocal) / 100
+                        : promotionLocal
                     : 0)
         );
         setSubtotal(finalPrice * localQuantity);

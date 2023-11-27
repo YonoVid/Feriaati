@@ -3,22 +3,18 @@ import { Box, Card, Divider, Pagination, Stack } from "@mui/material";
 
 import { ListVendorProps } from "@feria-a-ti/common/model/vendors/listVendorProps";
 
-import { useHeaderContext } from "@feria-a-ti/web/src/pages/HeaderLayout";
-
 import { VendorView } from "./VendorView";
 import "./VendorList.css";
 
 function VendorList(props: ListVendorProps) {
-    //Global UI context
-    const { setMessage } = useHeaderContext();
-
-    const { label, color, children, vendors, onEdit, onDelete } = props;
+    const { color, children, vendors, onEdit, onDelete } = props;
 
     const colorTheme =
         color != null && color === "secondary" ? "secondary" : "primary";
 
     const [page, setPage] = useState(1);
     const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
+        console.log(event);
         setPage(value);
     };
 

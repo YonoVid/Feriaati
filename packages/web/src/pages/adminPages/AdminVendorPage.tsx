@@ -19,7 +19,7 @@ import {
 import VendorList from "@feria-a-ti/web/src/components/vendorList/VendorList";
 
 import { UserContext } from "@feria-a-ti/web/src/App";
-import { useHeaderContext } from "../HeaderLayout";
+import { useHeaderContext } from "../HeaderFunction";
 import { checkProductVendorFullUpdate } from "@feria-a-ti/common/check/checkProductVendorUpdate";
 import AdminVendorUpdateForm from "../../components/forms/adminVendorUpdateForm/AdminVendorUpdateForm";
 
@@ -39,7 +39,7 @@ const AdminVendorPage = () => {
     const [canSubmit, setCanSubmit] = useState<boolean>(true);
 
     useEffect(() => {
-        if (vendors == [] || selectedVendor == undefined) {
+        if (vendors.length == 0 || selectedVendor == undefined) {
             getVendors();
         }
     }, []);

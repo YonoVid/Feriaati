@@ -12,7 +12,7 @@ import { DayTime } from "@feria-a-ti/common/model/baseTypes";
 import "./TimeInputComponent.css";
 import { useEffect, useState } from "react";
 
-interface Props<T> extends UseControllerProps<T> {
+interface Props<T extends FieldValues> extends UseControllerProps<T> {
     sx?: SxProps<Theme>;
     label: string;
     type?: "time" | "date";
@@ -21,7 +21,6 @@ interface Props<T> extends UseControllerProps<T> {
 }
 
 const today = dayjs();
-const pastTwelve = today.set("hour", 23).set("minutes", 59);
 
 export const TimeInputComponent = <T extends FieldValues>({
     sx,
@@ -72,7 +71,7 @@ export const TimeInputComponent = <T extends FieldValues>({
                     control={control}
                     rules={rules}
                     render={({
-                        field: { onChange, onBlur, value },
+                        field: { onChange, onBlur },
                         fieldState: { error },
                     }) => (
                         <LocalizationProvider dateAdapter={AdapterDayjs}>

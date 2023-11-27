@@ -1,8 +1,8 @@
 import { useContext, useEffect, useState } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import { FieldValues } from "react-hook-form";
 
-import { useHeaderContext } from "../HeaderLayout";
+import { useHeaderContext } from "../HeaderFunction";
 import { httpsCallable } from "firebase/functions";
 import { functions } from "@feria-a-ti/common/firebase";
 import {
@@ -34,7 +34,7 @@ const SubscriptionPage = () => {
     //Global state variable
     const { authToken, type } = useContext(UserContext);
     //Navigation definition
-    const navigate = useNavigate();
+    //const navigate = useNavigate();
     // Form variables
     const form: HTMLFormElement | null =
         document.querySelector("#transbankForm") || null;

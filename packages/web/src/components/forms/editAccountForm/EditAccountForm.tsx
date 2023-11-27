@@ -48,7 +48,7 @@ function EditAccountForm(props: REditAccountFormProps) {
 
     const removeDirectionField = (index: number) => {
         const newValue = userDirections.filter(
-            (value, valueIndex, valueArray) => index !== valueIndex
+            (value, valueIndex) => value != null && index !== valueIndex
         );
         setUserDirections(newValue);
     };
@@ -177,7 +177,7 @@ function EditAccountForm(props: REditAccountFormProps) {
                             Añadir dirección
                         </Button>
                     </CardActions>
-                    {userDirections?.map((value, index, array) => (
+                    {userDirections?.map((value, index) => (
                         <Box
                             sx={{
                                 display: "flex",
@@ -195,7 +195,9 @@ function EditAccountForm(props: REditAccountFormProps) {
                                         label="Región"
                                         type="select"
                                         selectOptions={regionCode}
-                                        defaultValue="Elige tú región"
+                                        defaultValue={
+                                            value.region || "Elige tú región"
+                                        }
                                         onChange={() =>
                                             setValue(
                                                 `direction.${index}.commune`,
@@ -219,7 +221,9 @@ function EditAccountForm(props: REditAccountFormProps) {
                                                 )
                                             ]
                                         }
-                                        defaultValue="Elige tú comuna"
+                                        defaultValue={
+                                            value.region || "Elige tú comuna"
+                                        }
                                         rules={{
                                             required: "La comuna es requerida",
                                         }}
@@ -240,6 +244,9 @@ function EditAccountForm(props: REditAccountFormProps) {
                                                     "El máximo de caracteres es 128",
                                             },
                                         }}
+                                        defaultValue={
+                                            value.street || "Ingresa la calle"
+                                        }
                                     />
                                     <InputComponentAlt
                                         sx={{ maxWidth: "8em" }}
@@ -262,6 +269,10 @@ function EditAccountForm(props: REditAccountFormProps) {
                                                     "Valor debe ser numérico",
                                             },
                                         }}
+                                        defaultValue={
+                                            value.streetNumber ||
+                                            "Ingresa el número de la calle"
+                                        }
                                     />
                                 </Box>
                             </Box>

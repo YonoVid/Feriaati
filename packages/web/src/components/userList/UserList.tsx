@@ -3,22 +3,18 @@ import { Box, Card, Divider, Pagination, Stack } from "@mui/material";
 
 import { ListUserProps } from "@feria-a-ti/common/model/users/listUserProps";
 
-import { useHeaderContext } from "@feria-a-ti/web/src/pages/HeaderLayout";
-
 import { UserView } from "./UserView";
 import "./UserList.css";
 
 function UserList(props: ListUserProps) {
-    //Global UI context
-    const { setMessage } = useHeaderContext();
-
-    const { label, color, children, users, onEdit, onDelete } = props;
+    const { color, children, users, onEdit, onDelete } = props;
 
     const colorTheme =
         color != null && color === "secondary" ? "secondary" : "primary";
 
     const [page, setPage] = useState(1);
     const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
+        console.log(event);
         setPage(value);
     };
 

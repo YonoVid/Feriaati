@@ -1,8 +1,8 @@
 import { useContext, useEffect, useState } from "react";
-import { Navigate, useNavigate, useSearchParams } from "react-router-dom";
-import { FieldValues, useForm } from "react-hook-form";
+import { Navigate, useNavigate } from "react-router-dom";
+import { FieldValues } from "react-hook-form";
 
-import { useHeaderContext } from "../HeaderLayout";
+import { useHeaderContext } from "../HeaderFunction";
 import { httpsCallable } from "firebase/functions";
 import { functions } from "@feria-a-ti/common/firebase";
 import {
@@ -19,13 +19,11 @@ import {
     AccountData,
     ProductFactureData,
     ProductListCollectionData,
-    ProductUnit,
     ResponseData,
     userType,
 } from "@feria-a-ti/common/model/functionsTypes";
 import { ProductFactureFields } from "@feria-a-ti/common/model/fields/buyingFields";
 import { GetAccountFields } from "@feria-a-ti/common/model/account/getAccountFields";
-import { ShoppingCartItem } from "@feria-a-ti/common/model/props/shoppingCartProps";
 import { BUYERROR } from "@feria-a-ti/common/model/users/buyTypes";
 
 import { getAccountData } from "@feria-a-ti/common/functions/accountFunctions";
@@ -39,15 +37,12 @@ import BuyProductForm from "@feria-a-ti/web/src/components/forms/buyProductForm/
 import { UserContext } from "@feria-a-ti/web/src/App";
 
 const BuyProductsPage = () => {
-    const { handleSubmit } = useForm();
     //Global UI context
     const { products, setMessage, resetProduct } = useHeaderContext();
     //Global state variable
     const { authToken, type } = useContext(UserContext);
     //Navigation definition
     const navigate = useNavigate();
-    // Url query data getter
-    const [queryParams] = useSearchParams();
     // Form variables
     const form: HTMLFormElement | null =
         document.querySelector("#transbankForm") || null;

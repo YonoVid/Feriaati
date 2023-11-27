@@ -1,8 +1,5 @@
 import { FormProps } from "react-router-dom";
-import {
-    ProductCollectionData,
-    ProductFactureData,
-} from "@feria-a-ti/common/model/functionsTypes";
+import { ProductCollectionData } from "@feria-a-ti/common/model/functionsTypes";
 
 export type ProductId = {
     vendorId: string;

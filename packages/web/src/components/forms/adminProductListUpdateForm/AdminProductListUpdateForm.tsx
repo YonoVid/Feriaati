@@ -34,7 +34,6 @@ import { regionCode, regionCommune } from "@feria-a-ti/common/constants/form";
 
 function AdminProductListUpdateForm(props: RProductVendorFullUpdateProps) {
     const {
-        label,
         color,
         children,
         imageData,
@@ -92,7 +91,7 @@ function AdminProductListUpdateForm(props: RProductVendorFullUpdateProps) {
             target != null &&
             target.files != null
         ) {
-            const img = await compressImage(target!.files![0]);
+            const img = await compressImage(target?.files![0]);
             fileReader?.readAsDataURL(img as File);
         }
         setIsLoading(false);

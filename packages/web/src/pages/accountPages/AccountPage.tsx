@@ -16,7 +16,7 @@ import {
 } from "@feria-a-ti/common/check/checkAccountFields";
 import EditAccountForm from "@feria-a-ti/web/src/components/forms/editAccountForm/EditAccountForm";
 
-import { useHeaderContext } from "../HeaderLayout";
+import { useHeaderContext } from "../HeaderFunction";
 import { UserContext } from "../../App";
 import "@feria-a-ti/web/src/App.css";
 

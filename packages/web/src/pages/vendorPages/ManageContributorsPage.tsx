@@ -19,7 +19,7 @@ import RegisterContributorForm from "@feria-a-ti/web/src/components/forms/regist
 import ContributorList from "@feria-a-ti/web/src/components/contributorList/ContributorList";
 
 import { UserContext } from "@feria-a-ti/web/src/App";
-import { useHeaderContext } from "../HeaderLayout";
+import { useHeaderContext } from "../HeaderFunction";
 import "../../App.css";
 import { UpdateContributorFields } from "@feria-a-ti/common/model/fields/updateFields";
 import { DeleteFields } from "@feria-a-ti/common/model/fields/adminFields";

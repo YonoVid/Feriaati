@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { FieldValues } from "react-hook-form";
-import { Navigate, useNavigate } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 
 import {
     ProductData,
@@ -26,7 +26,7 @@ import CommentList from "@feria-a-ti/web/src/components/commentList/CommentList"
 
 import { UserContext } from "@feria-a-ti/web/src/App";
 import ManagerProductList from "./ManagerProductList";
-import { useHeaderContext } from "../HeaderLayout";
+import { useHeaderContext } from "../HeaderFunction";
 import "../../App.css";
 
 function ManagerVendorPage() {
@@ -35,7 +35,7 @@ function ManagerVendorPage() {
     //Global state variable
     const { authToken, emailUser, type } = useContext(UserContext);
     // Dom redirection variable
-    const navigate = useNavigate();
+    //const navigate = useNavigate();
 
     //Page stored data
     const [productVendor, setProductVendor] = useState<ProductListData>();
@@ -119,7 +119,7 @@ function ManagerVendorPage() {
         const formatedData: ProductDeleteFields = {
             token: authToken as string,
             email: emailUser as string,
-            productId: id,
+            idProducts: id,
         };
 
         deleteProduct({ formatedData, setCanSubmit }, (data) => {
@@ -128,7 +128,7 @@ function ManagerVendorPage() {
             !error &&
                 setProducts(
                     products.filter(
-                        (product) => product.id !== formatedData.productId
+                        (product) => product.id !== formatedData.idProducts
                     )
                 );
             //setIsLogged(result.data as any);

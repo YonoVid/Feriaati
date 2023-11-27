@@ -3,7 +3,7 @@ import { RInputComponentProps } from "@feria-a-ti/common/model/props/inputProps"
 import {
     emailFormatRegex,
     passwordFormatRegex,
-} from "@feria-a-ti/common/check/checkRegisterFields";
+} from "@feria-a-ti/common/check/checkBase";
 import { colors } from "@feria-a-ti/common/theme/base";
 
 import "./InputComponent.css";
@@ -51,25 +51,41 @@ function InputComponent(data: RInputComponentProps) {
     return (
         <>
             <div className="inputContainer" style={style}>
-                <input
-                    id={name + "Form"}
-                    className="inputComponent"
-                    style={{
-                        color: colors.primaryShadow,
-                        backgroundColor: colors.light,
-                        borderColor: colors.primary,
-                    }}
-                    placeholder={inputLabel}
-                    type={type != null ? type : "text"}
-                    minLength={minLength}
-                    maxLength={maxLength}
-                    {...registerForm(name, {
-                        required: required,
-                        maxLength: maxLength,
-                        minLength: minLength,
-                        onChange: onChangeWrapper,
-                    })}
-                />
+                {registerForm ? (
+                    <input
+                        id={name + "Form"}
+                        className="inputComponent"
+                        style={{
+                            color: colors.primaryShadow,
+                            backgroundColor: colors.light,
+                            borderColor: colors.primary,
+                        }}
+                        placeholder={inputLabel}
+                        type={type != null ? type : "text"}
+                        minLength={minLength}
+                        maxLength={maxLength}
+                        {...registerForm(name, {
+                            required: required,
+                            maxLength: maxLength,
+                            minLength: minLength,
+                            onChange: onChangeWrapper,
+                        })}
+                    />
+                ) : (
+                    <input
+                        id={name + "Form"}
+                        className="inputComponent"
+                        style={{
+                            color: colors.primaryShadow,
+                            backgroundColor: colors.light,
+                            borderColor: colors.primary,
+                        }}
+                        placeholder={inputLabel}
+                        type={type != null ? type : "text"}
+                        minLength={minLength}
+                        maxLength={maxLength}
+                    />
+                )}
                 {value !== "" && (
                     <div className="inputLabelWrapper">
                         <span

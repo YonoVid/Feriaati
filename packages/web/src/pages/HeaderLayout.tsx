@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import { Outlet, useOutletContext } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 import { AlertColor, Grid } from "@mui/material";
 import { Alert, Snackbar } from "@mui/material";
 
@@ -9,7 +9,10 @@ import {
     ShoppingCartItem,
 } from "@feria-a-ti/common/model/props/shoppingCartProps";
 import { UserContext } from "../App";
-import { ProductListCollectionData } from "@feria-a-ti/common/model/functionsTypes";
+import {
+    ProductCollectionData,
+    ProductListCollectionData,
+} from "@feria-a-ti/common/model/functionsTypes";
 
 import { getFromLocal, saveToLocal } from "@feria-a-ti/common/helpers";
 
@@ -133,8 +136,8 @@ export const HeaderLayout = () => {
             newShoppingCart.set(vendorId, {
                 vendor: vendor,
                 products: products.set(productId, {
-                    id: product!.id,
-                    value: product!.value,
+                    id: product?.id as ProductId,
+                    value: product?.value as ProductCollectionData,
                     quantity: quantity,
                 }),
             });
@@ -158,7 +161,7 @@ export const HeaderLayout = () => {
             product != null
         ) {
             const newShoppingCart = new Map(shoppingCart);
-            if (vendor.products!.size < 2) {
+            if (vendor.products?.size < 2) {
                 console.log("DELETED VENDOR ENTRY");
                 newShoppingCart.delete(vendorId);
             } else {
@@ -186,6 +189,7 @@ export const HeaderLayout = () => {
         event?: React.SyntheticEvent | Event,
         reason?: string
     ) => {
+        console.log(event);
         if (reason === "clickaway") {
             return;
         }
@@ -248,12 +252,6 @@ export const HeaderLayout = () => {
                     />
                 </Grid>
             </Grid>
-            {/* <MessageAlert
-                open={showAlert}
-                title="Estado de acción"
-                message={alertMessage}
-                handleClose={closeAlert}
-            /> */}
             <Snackbar
                 key={snackBarMsg ? snackBarMsg.key : undefined}
                 open={open}
@@ -272,5 +270,3 @@ export const HeaderLayout = () => {
         </>
     );
 };
-
-export const useHeaderContext = () => useOutletContext<HeaderLayoutContext>();

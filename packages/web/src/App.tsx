@@ -169,7 +169,7 @@ export const UserContext = React.createContext<RSessionUserData>({
     authToken: "",
     type: userType.undefined,
     productQuantity: NaN,
-    setProductQuantity: (quantity: number) => NaN,
+    setProductQuantity: (quantity: number) => quantity,
     setSession: (data: UserToken) => {
         data;
     },

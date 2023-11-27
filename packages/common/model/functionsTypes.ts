@@ -1,4 +1,3 @@
-import { DayTime } from "./baseTypes";
 import { OpinionValue } from "./comments/commentsFields";
 import { DayTimeRange } from "./fields/updateFields";
 

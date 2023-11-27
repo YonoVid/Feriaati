@@ -17,7 +17,7 @@ import { ResponseData } from "@feria-a-ti/common/model/functionsTypes";
 import PassRecoveryForm from "@feria-a-ti/web/src/components/forms/loginForm/PassRecoveryForm";
 import UpdatePassword from "@feria-a-ti/web/src/components/forms/loginForm/UpdatePassword";
 
-import { useHeaderContext } from "../HeaderLayout";
+import { useHeaderContext } from "../HeaderFunction";
 import "../../App.css";
 
 function VendorRecoveryPage() {

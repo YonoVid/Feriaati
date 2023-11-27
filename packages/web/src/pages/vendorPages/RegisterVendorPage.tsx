@@ -13,7 +13,7 @@ import {
 import { ResponseData } from "@feria-a-ti/common/model/functionsTypes";
 import RegisterVendorForm from "@feria-a-ti/web/src/components/forms/registerVendorForm/RegisterVendorForm";
 
-import { useHeaderContext } from "../HeaderLayout";
+import { useHeaderContext } from "../HeaderFunction";
 import "@feria-a-ti/web/src/App.css";
 import { Link } from "@mui/material";
 

@@ -1,20 +1,11 @@
-import {
-    Box,
-    Button,
-    Card,
-    CardContent,
-    CardHeader,
-    Typography,
-} from "@mui/material";
+import { Box, Card, CardContent, CardHeader, Typography } from "@mui/material";
 import { DashboardComponentProps } from "@feria-a-ti/common/model/props/dashboardComponentProps";
 import { YearFactureResumeCollection } from "@feria-a-ti/common/model/functionsTypes";
 import { useEffect, useState } from "react";
 import {
     CartesianGrid,
-    Legend,
     Line,
     LineChart,
-    ResponsiveContainer,
     Tooltip,
     XAxis,
     YAxis,

@@ -1,35 +1,24 @@
-import { useState } from "react";
 import { FieldValues, UseControllerProps } from "react-hook-form";
 
-import {
-    Box,
-    ButtonBase,
-    Radio,
-    SxProps,
-    Theme,
-    Typography,
-} from "@mui/material";
-
-import { AccountDirection } from "@feria-a-ti/common/model/functionsTypes";
-import { regionCode, regionCommune } from "@feria-a-ti/common/constants/form";
+import { Box, ButtonBase, Radio, SxProps, Theme } from "@mui/material";
 
 import { colors } from "@feria-a-ti/common/theme/base";
 
 import "./InputRadioComponent.css";
+import { ReactNode } from "react";
 
-interface Props<T> extends UseControllerProps<T> {
+interface Props<T extends FieldValues> extends UseControllerProps<T> {
     sx?: SxProps<Theme>;
     label?: string;
     disabled?: boolean;
     hidden?: boolean;
     isSelected?: boolean;
-    children: any;
+    children: ReactNode;
     onClick: () => void;
 }
 
 const InputRadioComponent = <T extends FieldValues>({
     sx,
-    label,
     children,
     disabled,
     isSelected,

@@ -5,7 +5,7 @@ import {
 } from "@feria-a-ti/common/model/fields/registerFields";
 import { stringRegex } from "./checkBase";
 import { emailFormatRegex } from "./checkBase";
-import { passwordFormatRegex } from "./checkLoginFields";
+import { passwordFormatRegex } from "./checkBase";
 
 export const rutFormatRegex = new RegExp(/\b[0-9]{1,8}\-[K|k|0-9]$/gim);
 

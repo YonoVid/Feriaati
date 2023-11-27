@@ -13,7 +13,7 @@ import { UpdateStateFields } from "@feria-a-ti/common/model/fields/adminFields";
 import { userStatus } from "@feria-a-ti/common/model/fields/registerFields";
 
 import { UserContext } from "@feria-a-ti/web/src/App";
-import { useHeaderContext } from "../HeaderLayout";
+import { useHeaderContext } from "../HeaderFunction";
 import RegisterVendorList from "../../components/vendorList/RegisterVendorList";
 
 const AdminActivateVendors = () => {
@@ -90,6 +90,7 @@ const AdminActivateVendors = () => {
                     <h1 style={{ maxWidth: "100%" }}>{"Solicitudes"}</h1>
                     <RegisterVendorList
                         vendors={newVendors}
+                        canSubmit={canSubmit}
                         updateState={updateState}
                     />
                 </Card>

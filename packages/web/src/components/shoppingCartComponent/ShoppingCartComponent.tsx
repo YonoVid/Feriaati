@@ -13,17 +13,8 @@ import "./ShoppingCartComponent.css";
 import CartProductView from "./CartProductView";
 
 function ShoppingCartComponent(props: ShoppingCartProps) {
-    const {
-        label,
-        color,
-        children,
-        products,
-        isEditable,
-        canSubmit,
-        onEdit,
-        onDelete,
-        onSubmit,
-    } = props;
+    const { color, children, products, canSubmit, onEdit, onDelete, onSubmit } =
+        props;
 
     const [total, setTotal] = useState(0);
 

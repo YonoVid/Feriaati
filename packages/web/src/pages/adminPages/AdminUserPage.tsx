@@ -14,15 +14,13 @@ import {
     DeleteFields,
     UpdateFullProductVendorFields,
     UpdateFullUserFields,
-    UpdateStateFields,
 } from "@feria-a-ti/common/model/fields/adminFields";
-import { userStatus } from "@feria-a-ti/common/model/fields/registerFields";
 
 import { UserContext } from "@feria-a-ti/web/src/App";
-import { useHeaderContext } from "../HeaderLayout";
+import { useHeaderContext } from "../HeaderFunction";
 import { checkProductVendorFullUpdate } from "@feria-a-ti/common/check/checkProductVendorUpdate";
-import UserList from "../../components/userList/UserList";
-import AdminUserUpdateForm from "../../components/forms/adminUserUpdateForm/AdminUserUpdateForm";
+import UserList from "@feria-a-ti/web/src/components/userList/UserList";
+import AdminUserUpdateForm from "@feria-a-ti/web/src/components/forms/adminUserUpdateForm/AdminUserUpdateForm";
 
 const AdminUserPage = () => {
     //Global UI context

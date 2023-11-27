@@ -1,4 +1,3 @@
-import { FieldValues } from "react-hook-form";
 import { FormProps } from "react-router-dom";
 import { FactureData } from "@feria-a-ti/common/model/functionsTypes";
 

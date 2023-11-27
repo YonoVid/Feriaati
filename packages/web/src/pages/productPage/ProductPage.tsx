@@ -66,6 +66,7 @@ export const ProductPage = () => {
     }, [filterValue, currentPage]);
 
     const handlePageChange = (event: any, page: number) => {
+        console.log("EVENT::", event);
         setCurrentPage(page);
     };
 

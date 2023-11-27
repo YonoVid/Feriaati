@@ -1,5 +1,5 @@
 import { useEffect, useContext, useState } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import { httpsCallable } from "firebase/functions";
 
 import { functions } from "@feria-a-ti/common/firebase";
@@ -13,7 +13,7 @@ import { ResumeFields } from "@feria-a-ti/common/model/fields/factureFields";
 import DashboardComponent from "@feria-a-ti/web/src/components/dashboard/DashboardComponent";
 import { UserContext } from "@feria-a-ti/web/src/App";
 
-import { useHeaderContext } from "../HeaderLayout";
+import { useHeaderContext } from "../HeaderFunction";
 import "../../App.css";
 
 function VendorDashboardPage() {
@@ -22,7 +22,7 @@ function VendorDashboardPage() {
     //Global state variable
     const { authUser, authToken, emailUser, type } = useContext(UserContext);
     //Navigation definition
-    const navigate = useNavigate();
+    //const navigate = useNavigate();
     // Retrived data
     const [resumes, setResumes] = useState<
         Map<number, YearFactureResumeCollection>

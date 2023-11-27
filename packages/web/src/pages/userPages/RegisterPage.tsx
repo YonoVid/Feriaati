@@ -16,7 +16,7 @@ import { checkRegisterFields } from "@feria-a-ti/common/check/checkRegisterField
 import RegisterUserForm from "@feria-a-ti/web/src/components/forms/registerUserForm/RegisterUserForm";
 import ConfirmRegisterForm from "@feria-a-ti/web/src/components/forms/confirmRegisterForm/ConfirmRegisterForm";
 
-import { useHeaderContext } from "../HeaderLayout";
+import { useHeaderContext } from "../HeaderFunction";
 
 function RegisterPage() {
     //Global UI context

@@ -22,7 +22,7 @@ export type FactureViewProps = {
 };
 
 export const FactureView = (props: FactureViewProps) => {
-    const { color, vendorId, facture } = props;
+    const { color, facture } = props;
     const { id, products } = facture;
 
     const [finalPrice, setFinalPrice] = useState(0);

@@ -1,5 +1,5 @@
 import { FormProps } from "@feria-a-ti/common/model/props/sharedProps";
-import { ContributorData, ProductListData, UserData } from "../functionsTypes";
+import { ContributorData } from "../functionsTypes";
 
 export type ListContributorProps = FormProps & {
     contributors: ContributorData[];

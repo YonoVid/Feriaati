@@ -13,7 +13,7 @@ import {
 import LoginForm from "@feria-a-ti/web/src/components/forms/loginForm/LoginForm";
 
 import { UserContext } from "@feria-a-ti/web/src/App";
-import { useHeaderContext } from "../HeaderLayout";
+import { useHeaderContext } from "../HeaderFunction";
 import "../../App.css";
 
 function AdminLoginPage() {
@@ -44,7 +44,7 @@ function AdminLoginPage() {
                     const {
                         msg,
                         error,
-                        extra: { email, token, type },
+                        extra: { id, email, token, type },
                     } = result.data as ResponseData<UserToken>;
                     console.log(result);
                     console.log(attempt);
@@ -55,7 +55,7 @@ function AdminLoginPage() {
                     }
                     console.log("TOKEN::", token);
                     if (token != null && token !== "") {
-                        setSession && setSession({ token, type, email });
+                        setSession && setSession({ id, token, type, email });
                         navigate("/admin");
                     }
                 })

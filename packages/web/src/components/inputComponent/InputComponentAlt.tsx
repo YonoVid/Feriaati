@@ -8,10 +8,8 @@ import {
     Theme,
 } from "@mui/material";
 import "./InputComponent.css";
-// import { Box, TextField } from "@mui/material";
-// import { Controller } from "react-hook-form";
 
-interface Props<T> extends UseControllerProps<T> {
+interface Props<T extends FieldValues> extends UseControllerProps<T> {
     sx?: SxProps<Theme>;
     inputProps?: InputBaseComponentProps | undefined;
     label: string;

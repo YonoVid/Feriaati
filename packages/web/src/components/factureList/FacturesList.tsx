@@ -31,6 +31,7 @@ function FacturesList(props: RFacturesListProps) {
     const [page, setPage] = useState(1);
 
     const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
+        console.log(event);
         if (value * pageSize > factures.length && loadData != undefined) {
             loadData(factures.length);
         }

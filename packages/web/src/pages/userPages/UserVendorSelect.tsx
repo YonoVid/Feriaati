@@ -15,15 +15,15 @@ import {
 import { ProductListFields } from "@feria-a-ti/common/model/props/productAddFormProps";
 
 import { UserContext } from "@feria-a-ti/web/src/App";
-import { useHeaderContext } from "../HeaderLayout";
-import CommentList from "../../components/commentList/CommentList";
-import ProductVendorPage from "../../components/productPage/ProductVendorPage";
+import { useHeaderContext } from "../HeaderFunction";
+import CommentList from "@feria-a-ti/web/src/components/commentList/CommentList";
+import ProductVendorPage from "@feria-a-ti/web/src/components/productPage/ProductVendorPage";
 
 const UserVendorSelect = () => {
     //Global UI context
     const { setMessage, addProduct } = useHeaderContext();
     //Global state variable
-    const { authToken, type } = useContext(UserContext);
+    const { authToken, emailUser, type } = useContext(UserContext);
 
     // Selection of vendor
     const [selectedVendorId, setSelectedVendorId] = useState<string | null>();
@@ -47,7 +47,9 @@ const UserVendorSelect = () => {
     const loadVendor = (vendorId: string) => {
         setSelectedVendorId(vendorId);
         const formatedData: ProductListFields = {
-            idVendor: vendorId as string,
+            token: authToken as string,
+            email: emailUser as string,
+            idProducts: vendorId as string,
         };
         const check = vendorId != null && vendorId != "";
         console.log("SUBMIT FORM LOAD VENDOR::", check);
@@ -74,7 +76,9 @@ const UserVendorSelect = () => {
     const loadProducts = (id: string) => {
         const dataSource = id ? id : (selectedVendorId as string);
         const formatedData: ProductListFields = {
-            idVendor: id as string,
+            token: authToken as string,
+            email: emailUser as string,
+            idProducts: id as string,
         };
         const check = id != null && id != "";
         console.log("SUBMIT FORM::", check, dataSource);

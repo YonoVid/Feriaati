@@ -1,27 +1,20 @@
-import { useState } from "react";
-import {
-    Divider,
-    IconButton,
-    List,
-    ListItem,
-    ListItemText,
-} from "@mui/material";
+import { Divider, List, ListItem } from "@mui/material";
 
 import {
     userStatus,
     VendorData,
 } from "@feria-a-ti/common/model/functionsTypes";
 
-import { useHeaderContext } from "@feria-a-ti/web/src/pages/HeaderLayout";
 import VendorRegisterView from "./VendorRegisterView";
 
 interface RegisterVendorListProps {
     vendors: VendorData[];
+    canSubmit: boolean;
     updateState: (id: string, status: userStatus) => void;
 }
 
 function RegisterVendorList(props: RegisterVendorListProps) {
-    const { vendors, updateState } = props;
+    const { vendors, canSubmit, updateState } = props;
 
     return (
         <List>
@@ -30,6 +23,7 @@ function RegisterVendorList(props: RegisterVendorListProps) {
                     <VendorRegisterView
                         sx={{ flex: 1, flexGrow: 1 }}
                         vendor={vendor}
+                        canSubmit={canSubmit}
                         onAccept={() =>
                             updateState(vendor.id, userStatus.activated)
                         }
