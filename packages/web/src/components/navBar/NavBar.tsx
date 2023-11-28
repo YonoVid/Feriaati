@@ -82,7 +82,7 @@ function NavBar() {
                       },
                   },
                   {
-                      label: "FACTURAS",
+                      label: "PEDIDOS",
                       action: () => {
                           console.log("FACTURES ACTION");
                           navigate(

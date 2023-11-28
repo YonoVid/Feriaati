@@ -15,6 +15,8 @@ import LoginForm from "@feria-a-ti/web/src/components/forms/loginForm/LoginForm"
 import { UserContext } from "@feria-a-ti/web/src/App";
 import { useHeaderContext } from "../HeaderFunction";
 import "../../App.css";
+import { Link } from "@mui/material";
+import { colors } from "@feria-a-ti/common/theme/base";
 
 function AdminLoginPage() {
     //Global UI context
@@ -73,6 +75,19 @@ function AdminLoginPage() {
                 onSubmit={onSubmit}
                 canSubmit={canSubmit}
             />
+            <Link
+                style={{
+                    color: colors.light,
+                    position: "absolute",
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                }}
+                component="button"
+                onClick={() => navigate("/login")}
+            >
+                All Copyright reserved to Feria a ti company
+            </Link>
         </>
     );
 }

@@ -17,6 +17,7 @@ import { UserContext } from "@feria-a-ti/web/src/App";
 
 import { useHeaderContext } from "../HeaderFunction";
 import "../../App.css";
+import { colors } from "@feria-a-ti/common/theme/base";
 
 function LoginPage() {
     //Global UI context
@@ -79,6 +80,19 @@ function LoginPage() {
                     ¿Olvidaste tu contraseña?
                 </Link>
             </LoginForm>
+            <Link
+                style={{
+                    color: colors.light,
+                    position: "absolute",
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                }}
+                component="button"
+                onClick={() => navigate("/adminLogin")}
+            >
+                All Copyright reserved to Feria a ti company
+            </Link>
         </>
     );
 }

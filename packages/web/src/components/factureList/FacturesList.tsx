@@ -2,22 +2,24 @@ import { useState } from "react";
 
 import {
     Box,
-    Button,
     Card,
     Divider,
+    IconButton,
     Pagination,
     Stack,
     TextField,
 } from "@mui/material";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+
 import { RFacturesListProps } from "@feria-a-ti/common/model/props/facturesListProps";
 import { FactureData } from "@feria-a-ti/common/model/functionsTypes";
 
 import FactureView from "./FactureView";
 import "./FacturesList.css";
+import FactureButton from "./FactureButton";
 
 function FacturesList(props: RFacturesListProps) {
-    const { userId, label, factures, loadSize, color, children, loadData } =
-        props;
+    const { userId, factures, loadSize, color, children, loadData } = props;
 
     const colorTheme =
         color != null && color === "secondary" ? "secondary" : "primary";
@@ -44,7 +46,7 @@ function FacturesList(props: RFacturesListProps) {
                 value.name.toUpperCase().includes(filter.toUpperCase())
             );
         }
-        return factures || [];
+        return factures.sort((a, b) => b.date.seconds - a.date.seconds) || [];
     };
 
     return (
@@ -53,13 +55,13 @@ function FacturesList(props: RFacturesListProps) {
             color={colorTheme}
             sx={{
                 maxWidth: "80%",
+                maxHeight: "90vh",
                 alignContent: "center",
                 borderRadius: "10%",
+                paddingTop: "5%",
+                paddingBottom: "5%",
             }}
         >
-            <h1 style={{ maxWidth: "100%" }}>
-                {label != null ? label : "Iniciar Sesion"}
-            </h1>
             <Box sx={{ display: "flex", flexDirection: "row" }}>
                 <Pagination
                     count={Math.floor(factures.length / 3) + 1}
@@ -80,53 +82,69 @@ function FacturesList(props: RFacturesListProps) {
                 />
             </Box>
             <Divider />
-            <Stack
-                direction={{ xs: "row", sm: "row" }}
-                spacing={{ xs: 1, sm: 2, md: 4 }}
+            <Box
                 sx={{
-                    marginLeft: "auto",
-                    marginRight: "auto",
-                    justifyContent: "center",
-                    alignContent: "center",
+                    display: "flex",
+                    width: "100%",
+                    flexDirection: "row",
                 }}
             >
-                {getList()
-                    .slice((page - 1) * pageSize, page * pageSize)
-                    .map((facture, index) => (
-                        <Button
-                            color="info"
-                            type="button"
-                            variant="outlined"
-                            onClick={() => setSelectedFacture(facture)}
-                            key={index + "facture"}
+                <Stack
+                    direction={"column"}
+                    spacing={{ xs: 1, sm: 2, md: 4 }}
+                    sx={{
+                        flex: 1,
+                        marginLeft: "auto",
+                        marginRight: "auto",
+                        justifyContent: "flex-start",
+                        alignContent: "center",
+                        display: {
+                            md: "flex",
+                            sm: selectedFacture ? "none" : "flex",
+                            xs: selectedFacture ? "none" : "flex",
+                        },
+                    }}
+                >
+                    {getList()
+                        .slice((page - 1) * pageSize, page * pageSize)
+                        .map((facture, index) => (
+                            <FactureButton
+                                facture={facture}
+                                onClick={() => setSelectedFacture(facture)}
+                                isSimple={selectedFacture != undefined}
+                                key={index + "facture"}
+                            />
+                        ))}
+                </Stack>
+                {selectedFacture && (
+                    <Box sx={{ margin: "1em", flex: 3, width: "100%" }}>
+                        <Box
+                            sx={{
+                                display: "flex",
+                                width: "90%",
+                                margin: "auto",
+                            }}
                         >
-                            <Box
-                                sx={{
-                                    display: "flex",
-                                    flexDirection: "column",
-                                }}
+                            <IconButton
+                                sx={{ justifyContent: "flex-start" }}
+                                onClick={() => setSelectedFacture(undefined)}
                             >
-                                <h4>
-                                    {new Date(
-                                        facture.date.seconds * 1000
-                                    ).toISOString()}
-                                </h4>
-                                <p>{facture.id}</p>
-                            </Box>
-                        </Button>
-                    ))}
-            </Stack>
-            <Box sx={{ margin: "1em" }}>
-                {selectedFacture != undefined && selectedFacture != null ? (
-                    <FactureView
-                        color={color || ""}
-                        vendorId={userId}
-                        facture={selectedFacture}
-                    />
-                ) : (
-                    <h2>No hay factura seleccionada</h2>
+                                <ArrowBackIcon />
+                            </IconButton>
+                        </Box>
+                        {selectedFacture != undefined &&
+                        selectedFacture != null ? (
+                            <FactureView
+                                color={color || ""}
+                                vendorId={userId}
+                                facture={selectedFacture}
+                            />
+                        ) : (
+                            <h2>No hay factura seleccionada</h2>
+                        )}
+                        {children}
+                    </Box>
                 )}
-                {children}
             </Box>
         </Card>
     );

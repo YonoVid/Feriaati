@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import {
     Card,
     CardContent,
+    Chip,
     Stack,
     Table,
     TableBody,
@@ -13,7 +14,10 @@ import {
 } from "@mui/material";
 import Paper from "@mui/material/Paper";
 
-import { FactureData } from "@feria-a-ti/common/model/functionsTypes";
+import {
+    FactureData,
+    FactureStatus,
+} from "@feria-a-ti/common/model/functionsTypes";
 
 export type FactureViewProps = {
     color: string;
@@ -23,7 +27,7 @@ export type FactureViewProps = {
 
 export const FactureView = (props: FactureViewProps) => {
     const { color, facture } = props;
-    const { id, products } = facture;
+    const { id, products, status } = facture;
 
     const [finalPrice, setFinalPrice] = useState(0);
 
@@ -40,6 +44,21 @@ export const FactureView = (props: FactureViewProps) => {
         }
     }, [products]);
 
+    const renderStatus = (status: FactureStatus) => {
+        switch (status) {
+            case FactureStatus.APPROVED:
+                return <Chip label="Completado" color="success" />;
+            case FactureStatus.CANCELED:
+                return <Chip label="Cancelado" color="warning" />;
+            case FactureStatus.PROCESSING:
+                return <Chip label="Procesando" color="info" />;
+            case FactureStatus.NEGATED:
+                return <Chip label="Negado" color="warning" />;
+            default:
+                break;
+        }
+    };
+
     return (
         <Card
             className="inputContainer"
@@ -51,8 +70,12 @@ export const FactureView = (props: FactureViewProps) => {
             }}
         >
             <Typography component="div" variant="h6">
-                {id + "-" + new Date(facture.date.seconds * 1000).toISOString()}
+                Pedido {id}
             </Typography>
+            <Typography component="div" variant="subtitle1">
+                Fecha: {new Date(facture.date.seconds * 1000).toLocaleString()}
+            </Typography>
+            {renderStatus(status)}
             <Stack
                 direction={{ xs: "column" }}
                 spacing={{ xs: 1, sm: 2, md: 4 }}
