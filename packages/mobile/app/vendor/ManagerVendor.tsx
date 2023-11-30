@@ -39,7 +39,8 @@ export interface ManagerVendorProps {
 
 export const ManagerVendor = (props: ManagerVendorProps) => {
     // Context variables
-    const { type, authToken, checkSession, setMessage } = useAppContext();
+    const { type, emailUser, authToken, checkSession, setMessage } =
+        useAppContext();
     // Navigation
     const {
         productVendor,
@@ -68,7 +69,8 @@ export const ManagerVendor = (props: ManagerVendorProps) => {
 
     const loadVendor = () => {
         const formatedData: ProductListFields = {
-            tokenVendor: authToken as string,
+            email: emailUser,
+            token: authToken as string,
         };
         const check = authToken != null && authToken != "";
         console.log("SUBMIT FORM LOAD VENDOR::", check);
@@ -96,7 +98,8 @@ export const ManagerVendor = (props: ManagerVendorProps) => {
 
     const loadProducts = () => {
         const formatedData: ProductListFields = {
-            tokenVendor: authToken as string,
+            email: emailUser,
+            token: authToken as string,
         };
         console.log(formatedData);
         const check = authToken != null && authToken != "";
@@ -156,8 +159,9 @@ export const ManagerVendor = (props: ManagerVendorProps) => {
 
     const onDelete = (id: string) => {
         const formatedData: ProductDeleteFields = {
-            tokenVendor: authToken as string,
-            productId: id,
+            email: emailUser,
+            token: authToken as string,
+            idProducts: id,
         };
         const check = checkDeleteProductFields(formatedData);
         console.log("SUBMIT FORM::", check);
@@ -176,7 +180,7 @@ export const ManagerVendor = (props: ManagerVendorProps) => {
                         setProducts(
                             products.filter(
                                 (product) =>
-                                    product.id !== formatedData.productId
+                                    product.id !== formatedData.idProducts
                             )
                         );
                     //setIsLogged(result.data as any);
@@ -199,7 +203,10 @@ export const ManagerVendor = (props: ManagerVendorProps) => {
 
     useFocusEffect(() => {
         console.log("CHECK SESSION TYPE::", type);
-        if (!checkSession() || type !== userType.vendor) {
+        if (
+            !checkSession() ||
+            !(type === userType.vendor || type === userType.contributor)
+        ) {
             navigation.reset({
                 index: 0,
                 routes: [{ name: "session" }],

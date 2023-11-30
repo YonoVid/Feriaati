@@ -89,13 +89,18 @@ export default function AppBar(props: NativeStackHeaderProps) {
                                     }}
                                     title={"HOME"}
                                 />
-                                <Menu.Item
-                                    onPress={() => {
-                                        navigation.replace("accountManager");
-                                        closeMenu();
-                                    }}
-                                    title={"Account"}
-                                />
+                                {(type === userType.user ||
+                                    type === userType.vendor) && (
+                                    <Menu.Item
+                                        onPress={() => {
+                                            navigation.replace(
+                                                "accountManager"
+                                            );
+                                            closeMenu();
+                                        }}
+                                        title={"Account"}
+                                    />
+                                )}
                                 <Menu.Item
                                     onPress={() => {
                                         console.log(

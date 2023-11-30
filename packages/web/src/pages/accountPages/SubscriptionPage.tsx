@@ -32,7 +32,7 @@ const SubscriptionPage = () => {
     //Global UI context
     const { setMessage, resetProduct } = useHeaderContext();
     //Global state variable
-    const { authToken, type } = useContext(UserContext);
+    const { authToken, emailUser, type } = useContext(UserContext);
     //Navigation definition
     //const navigate = useNavigate();
     // Form variables
@@ -55,6 +55,7 @@ const SubscriptionPage = () => {
         //Format data to send to server
         const formatedData: GetAccountFields = {
             token: authToken,
+            email: emailUser as string,
             type: type,
         };
         const check = checkGetAccountFields(formatedData);
@@ -88,6 +89,7 @@ const SubscriptionPage = () => {
     const onClick = (data: FieldValues) => {
         const formatedData: SubscriptionFields = {
             type: type,
+            email: emailUser as string,
             token: authToken as string,
             amount: data.amount,
             months: data.months,

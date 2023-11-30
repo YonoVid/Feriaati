@@ -53,7 +53,7 @@ export const ManagerProductList = (props: ManagerProductListProps) => {
         children,
     } = props;
     // Context variables
-    const { type, authToken, checkSession, setMessage } = useAppContext();
+    const { emailUser, authToken, checkSession, setMessage } = useAppContext();
     // Navigation
     const { navigation } = props;
     //Page stored data
@@ -65,7 +65,8 @@ export const ManagerProductList = (props: ManagerProductListProps) => {
 
     const onEditVendor = (data: UpdateProductVendorFields) => {
         const formatedData: UpdateProductVendorFields = {
-            tokenVendor: authToken as string,
+            email: emailUser,
+            token: authToken as string,
             productVendorId: productVendor?.vendorId as string,
             image:
                 imageData && imageData != null && imageData != ""

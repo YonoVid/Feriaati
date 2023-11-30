@@ -53,7 +53,8 @@ function SubscriptionAccount(props: SubscriptionAccountProps) {
     const { navigation } = props;
 
     // Context variables
-    const { authToken, type, setMessage, resetProduct } = useAppContext();
+    const { authToken, emailUser, type, setMessage, resetProduct } =
+        useAppContext();
 
     const returnUrl = "https://localhost";
 
@@ -73,6 +74,7 @@ function SubscriptionAccount(props: SubscriptionAccountProps) {
         //Format data to send to server
         const formatedData: GetAccountFields = {
             token: authToken,
+            email: emailUser,
             type: type,
         };
         const check = checkGetAccountFields(formatedData);
@@ -106,6 +108,7 @@ function SubscriptionAccount(props: SubscriptionAccountProps) {
     const onSubmit = (data: SubscriptionFormFields) => {
         const formatedData: SubscriptionFields = {
             type: type,
+            email: emailUser,
             token: authToken as string,
             amount: data.amount,
             months: data.months,

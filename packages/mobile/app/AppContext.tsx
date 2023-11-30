@@ -45,6 +45,7 @@ export type AppContext = SessionUserData &
 export const ComponentContext = createContext<AppContext>({
     authUser: "",
     authToken: "",
+    emailUser: "",
     type: userType.undefined,
     setSession: (data: UserToken) => {
         data;
@@ -62,6 +63,7 @@ export const ComponentContext = createContext<AppContext>({
 
 export const AppContext = (props: { children: any }) => {
     const [user, setUser] = useState<string>();
+    const [emailUser, setEmailUser] = useState<string>();
     const [token, setToken] = useState<string>("");
     const [type, setType] = useState<userType>(userType.undefined);
     const [productQuantity, setProductQuantity] = useState<number>(0);
@@ -77,27 +79,35 @@ export const AppContext = (props: { children: any }) => {
 
     //Session related variables
     getSession().then((value) => {
-        setUser(value.email);
+        setUser(value.id);
         setToken(value.token);
         setType(value.type);
+        setEmailUser(value.email);
     });
 
     const setSessionData = (user: UserToken) => {
-        setUser(user.email);
+        setUser(user.id);
         setToken(user.token);
         setType(user.type);
+        setEmailUser(user.email);
         setSession(user);
     };
 
     const resetSessionData = () => {
         setUser("");
         setToken("");
+        setEmailUser("");
         setType(userType.undefined);
         resetSession();
     };
 
     const checkSessionData = (): boolean => {
-        if (user === "" || token === "" || type === userType.undefined) {
+        if (
+            user === "" ||
+            token === "" ||
+            emailUser === "" ||
+            type === userType.undefined
+        ) {
             resetSessionData();
             return false;
         }
@@ -220,6 +230,7 @@ export const AppContext = (props: { children: any }) => {
                 value={{
                     authUser: user,
                     authToken: token,
+                    emailUser,
                     type,
                     products: shoppingCart,
                     resetProduct: resetProduct,

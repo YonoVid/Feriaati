@@ -32,7 +32,7 @@ export interface DashboardVendorProps {
 export const DashboardVendor = (props: DashboardVendorProps) => {
     const { resumes, setResumes, navigation } = props;
     // Context variables
-    const { authUser, type, authToken, setMessage, resetProduct } =
+    const { authUser, emailUser, type, authToken, setMessage, resetProduct } =
         useAppContext();
 
     // Retrived data
@@ -46,6 +46,7 @@ export const DashboardVendor = (props: DashboardVendorProps) => {
         console.log("LOAD RESUME::", year);
         console.log("USER TYPE::", type);
         const formatedData: ResumeFields = {
+            email: emailUser,
             token: authToken as string,
             year: year,
         };

@@ -26,7 +26,8 @@ export interface FacturesVendorProps {
 
 export const FacturesVendor = (props: FacturesVendorProps) => {
     // Context variables
-    const { authUser, authToken, setMessage, resetProduct } = useAppContext();
+    const { authUser, authToken, emailUser, setMessage, resetProduct } =
+        useAppContext();
     // Context variables
     const { products, editProduct, deleteProduct } = useAppContext();
 
@@ -37,6 +38,7 @@ export const FacturesVendor = (props: FacturesVendorProps) => {
         console.log("LOAD FACTURES");
         const formatedData: FactureFields = {
             token: authToken as string,
+            email: emailUser,
             index: index,
             size: 10,
         };

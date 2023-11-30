@@ -75,9 +75,9 @@ function NavBar() {
                       action: () => {
                           console.log("PRODUCT ACTION");
                           navigate(
-                              type === userType.vendor
-                                  ? "managerVendor"
-                                  : "search"
+                              type === userType.user
+                                  ? "search"
+                                  : "managerVendor"
                           );
                       },
                   },
@@ -86,9 +86,9 @@ function NavBar() {
                       action: () => {
                           console.log("FACTURES ACTION");
                           navigate(
-                              type === userType.vendor
-                                  ? "facturesVendor"
-                                  : "factures"
+                              type === userType.user
+                                  ? "factures"
+                                  : "facturesVendor"
                           );
                       },
                   },

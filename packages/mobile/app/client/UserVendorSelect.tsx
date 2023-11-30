@@ -28,7 +28,8 @@ export interface UserVendorSelectProps {
 
 export const UserVendorSelect = (props: UserVendorSelectProps) => {
     // Context variables
-    const { authToken, setSession, setMessage, addProduct } = useAppContext();
+    const { authToken, emailUser, type, setSession, setMessage, addProduct } =
+        useAppContext();
     // Navigation
     const { navigation } = props;
     // Selection of vendor
@@ -54,7 +55,9 @@ export const UserVendorSelect = (props: UserVendorSelectProps) => {
     const loadVendor = (vendorId: string) => {
         setSelectedVendorId(vendorId);
         const formatedData: ProductListFields = {
-            idVendor: vendorId as string,
+            token: authToken,
+            email: emailUser as string,
+            idProducts: vendorId as string,
         };
         const check = vendorId != null && vendorId != "";
         console.log("SUBMIT FORM LOAD VENDOR::", check);
@@ -81,7 +84,9 @@ export const UserVendorSelect = (props: UserVendorSelectProps) => {
     const loadProducts = (id: string) => {
         const dataSource = id ? id : (selectedVendorId as string);
         const formatedData: ProductListFields = {
-            idVendor: id as string,
+            token: authToken,
+            email: emailUser as string,
+            idProducts: id as string,
         };
         const check = id != null && id != "";
         console.log("SUBMIT FORM::", check, dataSource);
@@ -151,6 +156,25 @@ export const UserVendorSelect = (props: UserVendorSelectProps) => {
                     </>
                 ) : (
                     <>
+                        <View
+                            style={{
+                                ...styles.button,
+                                alignItems: "center",
+                                alignContent: "center",
+                                justifyContent: "center",
+                                width: "100%",
+                            }}
+                        >
+                            <Button
+                                mode="contained"
+                                color={styles.buttonInner.color}
+                                onPress={() =>
+                                    navigation.navigate("searchProduct")
+                                }
+                            >
+                                {"Buscar productos"}
+                            </Button>
+                        </View>
                         <List.Section style={styles.container}>
                             <List.Subheader>
                                 {"Lista de Vendedores"}
@@ -173,15 +197,6 @@ export const UserVendorSelect = (props: UserVendorSelectProps) => {
                     </>
                 )}
             </ScrollView>
-            <View style={styles.button}>
-                <Button
-                    mode="contained"
-                    color={styles.buttonInner.color}
-                    onPress={() => navigation.navigate("searchProduct")}
-                >
-                    {"Pagar"}
-                </Button>
-            </View>
         </>
     );
 };

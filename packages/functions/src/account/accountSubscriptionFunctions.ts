@@ -148,14 +148,32 @@ export const setAccountSubscription = functions.https.onCall(
                                 doc.data() as AccountCollectionData;
 
                             const now = Timestamp.now();
-                            const dateNow = new Date();
-                            const expiration = Timestamp.fromDate(
-                                new Date(
-                                    dateNow.setMonth(
-                                        dateNow.getMonth() + data.months
+                            let expiration;
+                            if (
+                                docData.subscription &&
+                                docData.subscription != null
+                            ) {
+                                const oldDate = new Date(1970, 0, 1);
+                                oldDate.setSeconds(
+                                    docData.subscription.expiration.seconds
+                                );
+                                expiration = Timestamp.fromDate(
+                                    new Date(
+                                        oldDate.setMonth(
+                                            oldDate.getMonth() + data.months
+                                        )
                                     )
-                                )
-                            );
+                                );
+                            } else {
+                                const dateNow = new Date();
+                                expiration = Timestamp.fromDate(
+                                    new Date(
+                                        dateNow.setMonth(
+                                            dateNow.getMonth() + data.months
+                                        )
+                                    )
+                                );
+                            }
 
                             subscriptionData = {
                                 status: SubscriptionStatus.PROCESSING,
@@ -187,7 +205,7 @@ export const setAccountSubscription = functions.https.onCall(
                             };
 
                             doc.ref.update({
-                                actualSubscription: actualSubscription,
+                                subscription: actualSubscription,
                             });
 
                             const error = code !== errorCodes.SUCCESFULL;
