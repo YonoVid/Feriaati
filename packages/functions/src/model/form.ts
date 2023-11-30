@@ -3,7 +3,7 @@ export const testCode = new Map<number, string>([
     [2, "dsa"],
 ]);
 
-export const regionCode = [
+export const regionCode: Array<[number, string]> = [
     [1, "Tarapacá"],
     [2, "Antofagasta"],
     [3, "Atacama"],
@@ -21,7 +21,7 @@ export const regionCode = [
     [15, "Arica y Parinacota"],
 ];
 
-export const regionCommune: { [index: string]: any } = {
+export const regionCommune: { [index: number]: Array<[number, string]> } = {
     1: [
         [1101, "Iquique"],
         [1107, "Alto Hospicio"],

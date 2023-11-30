@@ -65,8 +65,10 @@ export const FactureView = (props: FactureViewProps) => {
             color={colorTheme}
             sx={{
                 maxWidth: "80%",
+                maxHeight: "90%",
                 alignContent: "center",
                 borderRadius: "10%",
+                overflow: "auto",
             }}
         >
             <Typography component="div" variant="h6">
@@ -87,10 +89,20 @@ export const FactureView = (props: FactureViewProps) => {
                 }}
             >
                 <TableContainer component={Paper}>
-                    <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                    <Table
+                        sx={{
+                            minWidth: 650,
+                            maxWidth: "100%",
+                            overflowWrap: "break-word",
+                            overflow: "auto",
+                        }}
+                        aria-label="simple table"
+                    >
                         <TableHead>
                             <TableRow>
-                                <TableCell>Producto</TableCell>
+                                <TableCell size="small" width={"10em"}>
+                                    Producto
+                                </TableCell>
                                 <TableCell align="right">Cantidad</TableCell>
                                 <TableCell align="right">Precio</TableCell>
                                 <TableCell align="right">Subtotal</TableCell>
@@ -106,7 +118,7 @@ export const FactureView = (props: FactureViewProps) => {
                                         },
                                     }}
                                 >
-                                    <TableCell component="th" scope="row">
+                                    <TableCell scope="row" width={"10em"}>
                                         {product.name}
                                     </TableCell>
                                     <TableCell align="right">

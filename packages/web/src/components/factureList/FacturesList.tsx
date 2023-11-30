@@ -7,9 +7,9 @@ import {
     IconButton,
     Pagination,
     Stack,
-    TextField,
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import EventBusyIcon from "@mui/icons-material/EventBusy";
 
 import { RFacturesListProps } from "@feria-a-ti/common/model/props/facturesListProps";
 import { FactureData } from "@feria-a-ti/common/model/functionsTypes";
@@ -17,6 +17,9 @@ import { FactureData } from "@feria-a-ti/common/model/functionsTypes";
 import FactureView from "./FactureView";
 import "./FacturesList.css";
 import FactureButton from "./FactureButton";
+import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import dayjs, { Dayjs } from "dayjs";
 
 function FacturesList(props: RFacturesListProps) {
     const { userId, factures, loadSize, color, children, loadData } = props;
@@ -27,7 +30,9 @@ function FacturesList(props: RFacturesListProps) {
     const pageSize = loadSize || 3;
 
     // Stored variables
-    const [filter, setFilter] = useState<string | null>();
+    const [filterStart, setFilterStart] = useState<Date>();
+    const [filterEnd, setFilterEnd] = useState<Date>();
+
     const [selectedFacture, setSelectedFacture] = useState<FactureData>();
 
     const [page, setPage] = useState(1);
@@ -41,12 +46,20 @@ function FacturesList(props: RFacturesListProps) {
     };
 
     const getList = (): FactureData[] => {
-        if (filter && filter != null && filter != "" && factures.length != 0) {
-            return factures.filter((value: any) =>
-                value.name.toUpperCase().includes(filter.toUpperCase())
+        let list = factures.concat([]);
+        if (filterStart && filterStart != null && factures.length != 0) {
+            list = list.filter(
+                (value: FactureData) =>
+                    value.date.seconds >= filterStart.getTime() / 1000
             );
         }
-        return factures.sort((a, b) => b.date.seconds - a.date.seconds) || [];
+        if (filterEnd && filterEnd != null && factures.length != 0) {
+            list = list.filter(
+                (value: FactureData) =>
+                    value.date.seconds <= filterEnd.getTime() / 1000
+            );
+        }
+        return list.sort((a, b) => b.date.seconds - a.date.seconds) || [];
     };
 
     return (
@@ -55,10 +68,10 @@ function FacturesList(props: RFacturesListProps) {
             color={colorTheme}
             sx={{
                 maxWidth: "80%",
-                maxHeight: "90vh",
+                height: "70vh",
                 alignContent: "center",
                 borderRadius: "10%",
-                paddingTop: "5%",
+                paddingTop: "2%",
                 paddingBottom: "5%",
             }}
         >
@@ -74,18 +87,41 @@ function FacturesList(props: RFacturesListProps) {
                         borderRadius: "10%",
                     }}
                 />
-                <TextField
-                    sx={{ flex: 1 }}
-                    label="Filtro"
-                    variant="outlined"
-                    onChange={(event) => setFilter(event.target.value)}
-                />
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <DatePicker
+                        label="Fecha inicial"
+                        value={filterStart ? dayjs(filterStart) : null}
+                        onAccept={(value: Dayjs | null) =>
+                            value != null && setFilterStart(value.toDate())
+                        }
+                    />
+                    <DatePicker
+                        label="Fecha final"
+                        value={filterEnd ? dayjs(filterEnd) : null}
+                        onAccept={(value: Dayjs | null) =>
+                            value != null && setFilterEnd(value.toDate())
+                        }
+                    />
+                </LocalizationProvider>
+                {(filterStart || filterEnd) && (
+                    <IconButton
+                        sx={{ justifyContent: "flex-end" }}
+                        color="error"
+                        onClick={() => {
+                            setFilterStart(undefined);
+                            setFilterEnd(undefined);
+                        }}
+                    >
+                        <EventBusyIcon />
+                    </IconButton>
+                )}
             </Box>
             <Divider />
             <Box
                 sx={{
                     display: "flex",
                     width: "100%",
+                    height: "100%",
                     flexDirection: "row",
                 }}
             >
@@ -117,7 +153,14 @@ function FacturesList(props: RFacturesListProps) {
                         ))}
                 </Stack>
                 {selectedFacture && (
-                    <Box sx={{ margin: "1em", flex: 3, width: "100%" }}>
+                    <Box
+                        sx={{
+                            margin: "1em",
+                            flex: 3,
+                            width: "100%",
+                            height: "80%",
+                        }}
+                    >
                         <Box
                             sx={{
                                 display: "flex",

@@ -7,6 +7,7 @@ export type AccountDirection = {
     commune: number;
     street: string;
     streetNumber: number;
+    optionalNumber?: number;
     extra?: string;
 };
 

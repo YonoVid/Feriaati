@@ -79,7 +79,7 @@ export const editAccountUserLocal = async (
 ): Promise<ResponseData<AccountCollectionData>> => {
     try {
         functions.logger.info("DATA::", data);
-        const { check, code } = checkEditAccountFields(data);
+        const { check, code } = await checkEditAccountFields(data);
 
         if (check) {
             const accountCollection =

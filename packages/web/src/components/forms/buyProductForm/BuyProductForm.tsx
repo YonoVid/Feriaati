@@ -9,28 +9,24 @@ import {
     FormControl,
     FormControlLabel,
     FormLabel,
-    IconButton,
     Radio,
     RadioGroup,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
-import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
 
 import {
     BuyProductFormFields,
     BuyTransportOptions,
 } from "@feria-a-ti/common/model/fields/buyingFields";
-import { regionCode, regionCommune } from "@feria-a-ti/common/constants/form";
 import { RBuyProductFormProps } from "@feria-a-ti/common/model/props/buyProductFormProps";
 import { AccountDirection } from "@feria-a-ti/common/model/account/editAccountFields";
-import { numberRegex } from "@feria-a-ti/common/check/checkBase";
 
-import InputComponentAlt from "@feria-a-ti/web/src/components/inputComponent/InputComponentAlt";
 import InputDirectionButton from "@feria-a-ti/web/src/components/inputDirectionButton/InputDirectionButton";
+import DirectionInput from "../../directionInput/DirectionInput";
 import "./BuyProductForm.css";
 
 function BuyProductForm(props: RBuyProductFormProps) {
-    const { account, onSubmit } = props;
+    const { account, canSubmit, onSubmit } = props;
     const { watch, handleSubmit, setValue, reset, clearErrors, control } =
         useForm<BuyProductFormFields>({
             defaultValues: { shipping: BuyTransportOptions.DELIVERY },
@@ -193,108 +189,46 @@ function BuyProductForm(props: RBuyProductFormProps) {
                                             flexDirection: "column",
                                         }}
                                     >
-                                        <Box>
-                                            <InputComponentAlt
-                                                key={`direction.region`}
-                                                control={control}
-                                                name={`direction.region`}
-                                                label="Región"
-                                                type="select"
-                                                selectOptions={regionCode}
-                                                defaultValue="Elige tú región"
-                                                onChange={() =>
+                                        <DirectionInput
+                                            onChange={(value) => {
+                                                console.log(
+                                                    "DIRECTION INPUT CHANGE::"
+                                                );
+                                                if (value.region) {
                                                     setValue(
-                                                        `direction.commune`,
-                                                        NaN
-                                                    )
+                                                        "direction.region",
+                                                        value.region
+                                                    );
                                                 }
-                                                rules={{
-                                                    required:
-                                                        "La región es requerida",
-                                                }}
-                                            />
-                                            <InputComponentAlt
-                                                key={`direction.commune`}
-                                                control={control}
-                                                name={`direction.commune`}
-                                                label="Comuna"
-                                                type="select"
-                                                selectOptions={
-                                                    regionCommune[
-                                                        watch(
-                                                            `direction.region`
-                                                        )
-                                                    ]
+                                                if (value.commune) {
+                                                    setValue(
+                                                        "direction.commune",
+                                                        value.commune
+                                                    );
                                                 }
-                                                defaultValue="Elige tú comuna"
-                                                rules={{
-                                                    required:
-                                                        "La comuna es requerida",
-                                                }}
-                                            />
-                                        </Box>
-                                        <Box>
-                                            <InputComponentAlt
-                                                key={`direction.street`}
-                                                control={control}
-                                                name={`direction.street`}
-                                                label="Calle"
-                                                type="text"
-                                                rules={{
-                                                    required:
-                                                        "La calle es requerida",
-                                                    maxLength: {
-                                                        value: 128,
-                                                        message:
-                                                            "El máximo de caracteres es 128",
-                                                    },
-                                                }}
-                                            />
-                                            <InputComponentAlt
-                                                sx={{ maxWidth: "8em" }}
-                                                key={`direction.streetNumber`}
-                                                control={control}
-                                                name={`direction.streetNumber`}
-                                                label="Número de calle"
-                                                type="text"
-                                                rules={{
-                                                    required:
-                                                        "El número de calle es requerido",
-                                                    maxLength: {
-                                                        value: 128,
-                                                        message:
-                                                            "El máximo de caracteres es 128",
-                                                    },
-                                                    pattern: {
-                                                        value: numberRegex,
-                                                        message:
-                                                            "Valor debe ser numérico",
-                                                    },
-                                                }}
-                                            />
-                                        </Box>
-                                        {userDirection.length > 0 && (
-                                            <IconButton
-                                                sx={{
-                                                    width: "100%",
-                                                    flex: 1,
-                                                    borderRadius: "20em",
-                                                    marginLeft: "auto",
-                                                    marginRight: "auto",
-                                                }}
-                                                color="error"
-                                                disabled={
-                                                    props.canSubmit != null
-                                                        ? !props.canSubmit
-                                                        : false
+                                                if (value.street) {
+                                                    setValue(
+                                                        "direction.street",
+                                                        value.street
+                                                    );
                                                 }
-                                                onClick={() =>
-                                                    removeDirectionField()
+                                                if (value.streetNumber) {
+                                                    setValue(
+                                                        "direction.streetNumber",
+                                                        value.streetNumber
+                                                    );
                                                 }
-                                            >
-                                                <RemoveCircleOutlineIcon />
-                                            </IconButton>
-                                        )}
+                                            }}
+                                            canCancel={
+                                                userDirection.length > 0 &&
+                                                (canSubmit != null
+                                                    ? canSubmit
+                                                    : true)
+                                            }
+                                            onCancel={() =>
+                                                removeDirectionField()
+                                            }
+                                        />
                                     </Box>
                                 </div>
                                 <Box sx={{ flex: 1 }}></Box>

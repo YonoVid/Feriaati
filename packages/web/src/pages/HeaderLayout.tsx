@@ -17,6 +17,8 @@ import {
 import { getFromLocal, saveToLocal } from "@feria-a-ti/common/helpers";
 
 export type HeaderLayoutContext = {
+    mapsAvailable: boolean;
+    setMapsAvailable: (value: boolean) => void;
     setMessage: (data: { msg: string; isError: boolean }) => void;
     products: Map<
         string,
@@ -43,6 +45,11 @@ export interface SnackbarMessage {
 export const HeaderLayout = () => {
     // Storage keys
     const shoppingKey = "shoppingCart";
+
+    // API state variables
+
+    const [mapsAvailable, setMapsAvailable] = useState<boolean>(false);
+
     // Context variables
     const { productQuantity, setProductQuantity } = useContext(UserContext);
 
@@ -186,10 +193,9 @@ export const HeaderLayout = () => {
     };
 
     const handleClose = (
-        event?: React.SyntheticEvent | Event,
+        _event?: React.SyntheticEvent | Event,
         reason?: string
     ) => {
-        console.log(event);
         if (reason === "clickaway") {
             return;
         }
@@ -242,6 +248,8 @@ export const HeaderLayout = () => {
                 >
                     <Outlet
                         context={{
+                            mapsAvailable,
+                            setMapsAvailable,
                             setMessage,
                             products: shoppingCart,
                             addProduct,

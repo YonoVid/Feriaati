@@ -170,7 +170,7 @@ function NavBar() {
     const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
 
     const isVendorPage =
-        window.location.pathname.includes("Vendor") ||
+        window.location.pathname.includes("loginVendor") ||
         type === userType.vendor ||
         type === userType.contributor;
 

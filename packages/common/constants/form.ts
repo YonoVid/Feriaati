@@ -21,7 +21,7 @@ export const regionCode = [
     [15, "Arica y Parinacota"],
 ];
 
-export const regionCommune: { [index: string]: any } = {
+export const regionCommune: { [index: number]: any } = {
     1: [
         [1101, "Iquique"],
         [1107, "Alto Hospicio"],

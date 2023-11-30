@@ -28,9 +28,9 @@ export const checkUserFullUpdate = (
     };
 };
 
-export const checkBuyProduct = (
+export const checkBuyProduct = async (
     input: ProductFactureFields
-): { check: boolean; code: errorCodes } => {
+): Promise<{ check: boolean; code: errorCodes }> => {
     const { token, direction, products } = input;
 
     // Check required values exist
@@ -47,7 +47,7 @@ export const checkBuyProduct = (
     const directionCheck =
         direction == undefined || direction == null
             ? true
-            : direction != undefined && checkDirection(direction);
+            : direction != undefined && (await checkDirection(direction));
     if (!directionCheck) {
         return {
             check: false,

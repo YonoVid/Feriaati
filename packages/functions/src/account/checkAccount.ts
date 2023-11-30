@@ -1,8 +1,9 @@
 import { EditAccountFields, GetAccountFields } from "../model/types";
-import { AccountDirection , userType } from "../model/accountTypes";
+import { AccountDirection, userType } from "../model/accountTypes";
 import { errorCodes } from "../errors";
 import { emailFormatRegex, phoneFormatRegex } from "../utilities/checkDataType";
 import { passwordFormatRegex } from "../utilities/checkAccount";
+import { validateAddress } from "../utilities/directionValidation";
 
 export const checkGetAccountFields = (
     input: GetAccountFields
@@ -27,9 +28,9 @@ export const checkGetAccountFields = (
     };
 };
 
-export const checkEditAccountFields = (
+export const checkEditAccountFields = async (
     input: EditAccountFields
-): { check: boolean; code: errorCodes } => {
+): Promise<{ check: boolean; code: errorCodes }> => {
     const { email, password, phone, direction } = input;
 
     const emailCheck =
@@ -56,9 +57,14 @@ export const checkEditAccountFields = (
         return { check: false, code: errorCodes.PHONE_FORMAT_ERROR };
     }
     let directionCheck = true;
-    direction?.forEach((element) => {
-        directionCheck = directionCheck && checkDirection(element);
-    });
+    if (direction) {
+        for (const element of direction) {
+            directionCheck = directionCheck && (await checkDirection(element));
+            if (!directionCheck) break;
+        }
+    } else {
+        directionCheck = false;
+    }
     if (!directionCheck) {
         return { check: false, code: errorCodes.DIRECTION_FORMAT_ERROR };
     }
@@ -69,8 +75,8 @@ export const checkEditAccountFields = (
     };
 };
 
-export const checkDirection = (data: AccountDirection) => {
-    return (
+export const checkDirection = async (data: AccountDirection) => {
+    if (
         data.commune != null &&
         !isNaN(data.commune) &&
         data.region != null &&
@@ -78,5 +84,9 @@ export const checkDirection = (data: AccountDirection) => {
         data.street != null &&
         data.streetNumber != null &&
         !isNaN(data.streetNumber)
-    );
+    ) {
+        return await validateAddress(data);
+    }
+
+    return false;
 };

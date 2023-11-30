@@ -34,7 +34,7 @@ export const buyProductUser = functions.https.onCall(
             // Return facture data
             let extra = data.token;
             // Checks of data and database
-            let { check, code } = checkBuyProduct(data);
+            let { check, code } = await checkBuyProduct(data);
             // Get collection of email data
 
             functions.logger.info("DATA::", data);

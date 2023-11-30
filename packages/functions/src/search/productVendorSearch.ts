@@ -15,18 +15,20 @@ const formatIndex = (
     data: ProductListCollectionData,
     active: boolean
 ): ProductVendorIndex => {
+    const region = regionCode[data.region - 1];
+
+    const commune = regionCommune[data.region].find(
+        (el) => el[0] === data.commune
+    );
+
     const location =
         data.street +
         " #" +
         data.streetNumber +
         " " +
-        (data.region ? regionCode[data.region - 1][1] : "") +
+        (data.region && region ? region[1] : "") +
         ", " +
-        (data.region && data.commune
-            ? regionCommune[data.region].find(
-                  (el: string | number[]) => el[0] === data.commune
-              )[1]
-            : "");
+        (data.region && data.commune && commune ? commune[1] : "");
 
     const rateCount =
         data.rating && data.rating != null

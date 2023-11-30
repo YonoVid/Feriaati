@@ -18,6 +18,7 @@
     },
     "main": "lib/index.js",
     "dependencies": {
+        "@googlemaps/addressvalidation": "^2.0.1",
         "@sendgrid/mail": "^7.7.0",
         "algoliasearch": "^4.20.0",
         "dotenv": "^16.3.1",
@@ -26,6 +27,7 @@
         "mime": "^3.0.0"
     },
     "devDependencies": {
+        "@types/google.maps": "^3.54.10",
         "@typescript-eslint/eslint-plugin": "^5.12.0",
         "@typescript-eslint/parser": "^5.12.0",
         "eslint": "^8.9.0",

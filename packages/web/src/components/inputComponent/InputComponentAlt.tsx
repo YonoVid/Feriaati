@@ -11,6 +11,7 @@ import "./InputComponent.css";
 
 interface Props<T extends FieldValues> extends UseControllerProps<T> {
     sx?: SxProps<Theme>;
+    value?: unknown;
     inputProps?: InputBaseComponentProps | undefined;
     label: string;
     disabled?: boolean;
@@ -35,6 +36,7 @@ const InputComponentAlt = <T extends FieldValues>({
     type,
     control,
     rules,
+    value,
     onChange,
 }: Props<T>) => {
     const inputLabel = label != null ? label : name;
@@ -138,6 +140,7 @@ const InputComponentAlt = <T extends FieldValues>({
                     onChange={(value) => {
                         onChange && onChange(value);
                     }}
+                    value={value}
                 >
                     {type === "select" && selectOptions ? (
                         selectOptions?.map((value) => (
