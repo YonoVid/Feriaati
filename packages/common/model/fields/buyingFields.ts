@@ -10,6 +10,7 @@ export type ProductFactureFields = {
     token: string;
     direction?: AccountDirection;
     products: { [id: string]: ProductFactureData[] };
+    amount?: number;
 };
 
 export type ProductSubscriptionFields = {

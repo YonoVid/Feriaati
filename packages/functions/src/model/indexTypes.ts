@@ -15,9 +15,13 @@ export type SearchIndex = {
 
 export type ProductIndex = SearchIndex & {
     price: number;
+    region: number;
+    commune: number;
     vendorId: string;
 };
 
 export type ProductVendorIndex = SearchIndex & {
+    region: number;
+    commune: number;
     rate: number;
 };

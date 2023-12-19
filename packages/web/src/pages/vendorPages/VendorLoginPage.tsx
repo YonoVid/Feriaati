@@ -1,23 +1,17 @@
 import { useContext, useState } from "react";
 import { FieldValues } from "react-hook-form";
 import { Navigate, useNavigate } from "react-router-dom";
-import { httpsCallable } from "firebase/functions";
 import { Link } from "@mui/material";
 
-import { functions } from "@feria-a-ti/common/firebase";
-import { checkLoginFields } from "@feria-a-ti/common/check/checkLoginFields";
 import { LoginFields } from "@feria-a-ti/common/model/fields/loginFields";
-import {
-    ResponseData,
-    UserToken,
-    userType,
-} from "@feria-a-ti/common/model/functionsTypes";
+import { UserToken, userType } from "@feria-a-ti/common/model/functionsTypes";
+import { loginVendor } from "@feria-a-ti/common/functions/accessFunctions";
+
 import LoginForm from "@feria-a-ti/web/src/components/forms/loginForm/LoginForm";
 
 import { UserContext } from "@feria-a-ti/web/src/App";
-import { useHeaderContext } from "../HeaderFunction";
-import "../../App.css";
-import { colors } from "@feria-a-ti/common/theme/base";
+import { useHeaderContext } from "@feria-a-ti/web/src/pages/HeaderFunction";
+import "@feria-a-ti/web/src/App.css";
 
 function VendorLoginPage() {
     //Global UI context
@@ -40,32 +34,14 @@ function VendorLoginPage() {
             attempts: attempt,
         };
         console.log(formatedData);
-        const check = checkLoginFields(formatedData);
-        if (check) {
-            //Lock button
-            setCanSubmit(false);
-            const login = httpsCallable(functions, "loginVendor");
-            login(formatedData)
-                .then((result) => {
-                    const {
-                        msg,
-                        error,
-                        extra: { id, token, email, type },
-                    } = result.data as ResponseData<UserToken>;
-                    localStorage.setItem("token", token);
-                    console.log(result);
-                    console.log(attempt);
-                    //setIsLogged(result.data as any);
-                    if (msg !== "") {
-                        setMessage({ msg, isError: error });
-                    }
-                    if (token != null && token !== "") {
-                        setSession && setSession({ id, token, type, email });
-                        navigate("/session");
-                    }
-                })
-                .finally(() => setCanSubmit(true));
-        }
+
+        loginVendor(
+            { formatedData, setCanSubmit, setMessage },
+            (value: UserToken) => {
+                setSession && setSession(value);
+                navigate("/session");
+            }
+        );
     };
     return (
         <>
@@ -92,19 +68,6 @@ function VendorLoginPage() {
                     ¿Olvidaste tu contraseña?
                 </Link>
             </LoginForm>
-            <Link
-                style={{
-                    color: colors.light,
-                    position: "absolute",
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                }}
-                component="button"
-                onClick={() => navigate("/adminLogin")}
-            >
-                All Copyright reserved to Feria a ti company
-            </Link>
         </>
     );
 }

@@ -36,6 +36,8 @@ import FactureStatusPage from "./pages/userPages/FactureStatusPage";
 import SubscriptionPage from "./pages/accountPages/SubscriptionPage";
 import VendorDashboardPage from "./pages/vendorPages/VendorDashboardPage";
 import ManageContributorsPage from "./pages/vendorPages/ManageContributorsPage";
+import AboutPage from "./pages/servicePages/About";
+import ContactPage from "./pages/servicePages/Contact";
 
 const router = createBrowserRouter([
     {
@@ -44,6 +46,16 @@ const router = createBrowserRouter([
             {
                 path: "/",
                 element: <Home />,
+                errorElement: <ErrorPage />,
+            },
+            {
+                path: "/contact",
+                element: <ContactPage />,
+                errorElement: <ErrorPage />,
+            },
+            {
+                path: "/about",
+                element: <AboutPage />,
                 errorElement: <ErrorPage />,
             },
             {

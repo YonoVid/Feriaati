@@ -61,7 +61,7 @@ export type UpdateFullUserFields = {
     id: string;
     email?: string;
     password?: string;
-    username?: number;
+    username?: string;
 };
 
 export type FormUpdateFullUserFields = {

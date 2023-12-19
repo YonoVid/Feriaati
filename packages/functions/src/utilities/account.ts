@@ -79,6 +79,12 @@ export const accountLoginVerification = async (
             } else if (code === errorCodes.BLOCKED_ACCOUNT_ERROR) {
                 userSnapshot.ref.update({ status: userStatus.blocked });
             }
+        } else {
+            return {
+                token: "",
+                code: accountCode,
+                id: "",
+            };
         }
         return { token: token || "", code: code, id: userSnapshot.id || "" };
     } catch (e) {

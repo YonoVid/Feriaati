@@ -46,6 +46,8 @@ const formatIndex = (
         name: data.enterpriseName + " #" + data.localNumber,
         description: location,
         rate: rate,
+        region: data.region,
+        commune: data.commune,
         image: data.image,
         type: IndexType.PRODUCTVENDOR,
         active: active,

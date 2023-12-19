@@ -22,389 +22,352 @@
     "hosting": {
         "public": "packages/web/dist",
         "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+        "headers": [
+            {
+                "source": "*",
+                "headers": [
+                    {
+                        "key": "Access-Control-Allow-Origin",
+                        "value": "*"
+                    }
+                ]
+            }
+        ],
         "rewrites": [
             {
                 "source": "/addComment",
                 "function": {
                     "functionId": "addComment",
-                    "region": "us-central1",
-                    "pinTag": true
+                    "region": "us-central1"
                 }
             },
             {
                 "source": "/addContributor",
                 "function": {
                     "functionId": "addContributor",
-                    "region": "us-central1",
-                    "pinTag": true
+                    "region": "us-central1"
                 }
             },
             {
                 "source": "/addProduct",
                 "function": {
                     "functionId": "addProduct",
-                    "region": "us-central1",
-                    "pinTag": true
+                    "region": "us-central1"
                 }
             },
             {
                 "source": "/addUser",
                 "function": {
                     "functionId": "addUser",
-                    "region": "us-central1",
-                    "pinTag": true
+                    "region": "us-central1"
                 }
             },
             {
                 "source": "/addVendor",
                 "function": {
                     "functionId": "addVendor",
-                    "region": "us-central1",
-                    "pinTag": true
+                    "region": "us-central1"
                 }
             },
             {
                 "source": "/adminLogin",
                 "function": {
                     "functionId": "adminLogin",
-                    "region": "us-central1",
-                    "pinTag": true
+                    "region": "us-central1"
                 }
             },
             {
                 "source": "/buyProductUser",
                 "function": {
                     "functionId": "buyProductUser",
-                    "region": "us-central1",
-                    "pinTag": true
+                    "region": "us-central1"
                 }
             },
             {
                 "source": "/checkPetitionVendor",
                 "function": {
                     "functionId": "checkPetitionVendor",
-                    "region": "us-central1",
-                    "pinTag": true
+                    "region": "us-central1"
                 }
             },
             {
                 "source": "/confirmRegister",
                 "function": {
                     "functionId": "confirmRegister",
-                    "region": "us-central1",
-                    "pinTag": true
+                    "region": "us-central1"
                 }
             },
             {
                 "source": "/contributorList",
                 "function": {
                     "functionId": "contributorList",
-                    "region": "us-central1",
-                    "pinTag": true
+                    "region": "us-central1"
                 }
             },
             {
                 "source": "/deleteContributor",
                 "function": {
                     "functionId": "deleteContributor",
-                    "region": "us-central1",
-                    "pinTag": true
+                    "region": "us-central1"
                 }
             },
             {
                 "source": "/deleteProduct",
                 "function": {
                     "functionId": "deleteProduct",
-                    "region": "us-central1",
-                    "pinTag": true
+                    "region": "us-central1"
                 }
             },
             {
                 "source": "/deleteProductList",
                 "function": {
                     "functionId": "deleteProductList",
-                    "region": "us-central1",
-                    "pinTag": true
+                    "region": "us-central1"
                 }
             },
             {
                 "source": "/deleteUser",
                 "function": {
                     "functionId": "deleteUser",
-                    "region": "us-central1",
-                    "pinTag": true
+                    "region": "us-central1"
                 }
             },
             {
                 "source": "/deleteVendor",
                 "function": {
                     "functionId": "deleteVendor",
-                    "region": "us-central1",
-                    "pinTag": true
+                    "region": "us-central1"
                 }
             },
             {
                 "source": "/editAccountUser",
                 "function": {
                     "functionId": "editAccountUser",
-                    "region": "us-central1",
-                    "pinTag": true
+                    "region": "us-central1"
                 }
             },
             {
                 "source": "/editProduct",
                 "function": {
                     "functionId": "editProduct",
-                    "region": "us-central1",
-                    "pinTag": true
+                    "region": "us-central1"
                 }
             },
             {
                 "source": "/getAccountSubscription",
                 "function": {
                     "functionId": "getAccountSubscription",
-                    "region": "us-central1",
-                    "pinTag": true
+                    "region": "us-central1"
                 }
             },
             {
                 "source": "/getAccountUser",
                 "function": {
                     "functionId": "getAccountUser",
-                    "region": "us-central1",
-                    "pinTag": true
+                    "region": "us-central1"
                 }
             },
             {
                 "source": "/getComments",
                 "function": {
                     "functionId": "getComments",
-                    "region": "us-central1",
-                    "pinTag": true
+                    "region": "us-central1"
                 }
             },
             {
                 "source": "/getFactures",
                 "function": {
                     "functionId": "getFactures",
-                    "region": "us-central1",
-                    "pinTag": true
+                    "region": "us-central1"
                 }
             },
             {
                 "source": "/getProductVendor",
                 "function": {
                     "functionId": "getProductVendor",
-                    "region": "us-central1",
-                    "pinTag": true
+                    "region": "us-central1"
                 }
             },
             {
                 "source": "/getResume",
                 "function": {
                     "functionId": "getResume",
-                    "region": "us-central1",
-                    "pinTag": true
+                    "region": "us-central1"
                 }
             },
             {
                 "source": "/getVendorFactures",
                 "function": {
                     "functionId": "addContributor",
-                    "region": "us-central1",
-                    "pinTag": true
+                    "region": "us-central1"
                 }
             },
             {
                 "source": "/listProduct",
                 "function": {
                     "functionId": "listProduct",
-                    "region": "us-central1",
-                    "pinTag": true
+                    "region": "us-central1"
                 }
             },
             {
                 "source": "/login",
                 "function": {
                     "functionId": "login",
-                    "region": "us-central1",
-                    "pinTag": true
+                    "region": "us-central1"
                 }
             },
             {
                 "source": "/loginVendor",
                 "function": {
                     "functionId": "loginVendor",
-                    "region": "us-central1",
-                    "pinTag": true
+                    "region": "us-central1"
                 }
             },
             {
                 "source": "/logoutUser",
                 "function": {
                     "functionId": "logoutUser",
-                    "region": "us-central1",
-                    "pinTag": true
+                    "region": "us-central1"
                 }
             },
             {
                 "source": "/passRecovery",
                 "function": {
                     "functionId": "passRecovery",
-                    "region": "us-central1",
-                    "pinTag": true
+                    "region": "us-central1"
                 }
             },
             {
                 "source": "/passRecoveryVendor",
                 "function": {
                     "functionId": "passRecoveryVendor",
-                    "region": "us-central1",
-                    "pinTag": true
+                    "region": "us-central1"
                 }
             },
             {
                 "source": "/passUpdate",
                 "function": {
                     "functionId": "passUpdate",
-                    "region": "us-central1",
-                    "pinTag": true
+                    "region": "us-central1"
                 }
             },
             {
                 "source": "/passUpdateVendor",
                 "function": {
                     "functionId": "passUpdateVendor",
-                    "region": "us-central1",
-                    "pinTag": true
+                    "region": "us-central1"
                 }
             },
             {
                 "source": "/productListPagination",
                 "function": {
                     "functionId": "productListPagination",
-                    "region": "us-central1",
-                    "pinTag": true
+                    "region": "us-central1"
                 }
             },
             {
                 "source": "/productVendorList",
                 "function": {
                     "functionId": "productVendorList",
-                    "region": "us-central1",
-                    "pinTag": true
+                    "region": "us-central1"
                 }
             },
             {
                 "source": "/productVendorUpdate",
                 "function": {
                     "functionId": "productVendorUpdate",
-                    "region": "us-central1",
-                    "pinTag": true
+                    "region": "us-central1"
                 }
             },
             {
                 "source": "/registerVendorList",
                 "function": {
                     "functionId": "registerVendorList",
-                    "region": "us-central1",
-                    "pinTag": true
+                    "region": "us-central1"
                 }
             },
             {
                 "source": "/reportComment",
                 "function": {
                     "functionId": "reportComment",
-                    "region": "us-central1",
-                    "pinTag": true
+                    "region": "us-central1"
                 }
             },
             {
                 "source": "/setAccountSubscription",
                 "function": {
                     "functionId": "setAccountSubscription",
-                    "region": "us-central1",
-                    "pinTag": true
+                    "region": "us-central1"
                 }
             },
             {
                 "source": "/updateContributor",
                 "function": {
                     "functionId": "updateContributor",
-                    "region": "us-central1",
-                    "pinTag": true
+                    "region": "us-central1"
                 }
             },
             {
                 "source": "/updateProductList",
                 "function": {
                     "functionId": "updateProductList",
-                    "region": "us-central1",
-                    "pinTag": true
+                    "region": "us-central1"
                 }
             },
             {
                 "source": "/updateUser",
                 "function": {
                     "functionId": "updateUser",
-                    "region": "us-central1",
-                    "pinTag": true
+                    "region": "us-central1"
                 }
             },
             {
                 "source": "/updateUserFacture",
                 "function": {
                     "functionId": "updateUserFacture",
-                    "region": "us-central1",
-                    "pinTag": true
+                    "region": "us-central1"
                 }
             },
             {
                 "source": "/updateVendor",
                 "function": {
                     "functionId": "updateVendor",
-                    "region": "us-central1",
-                    "pinTag": true
+                    "region": "us-central1"
                 }
             },
             {
                 "source": "/userList",
                 "function": {
                     "functionId": "userList",
-                    "region": "us-central1",
-                    "pinTag": true
+                    "region": "us-central1"
                 }
             },
             {
                 "source": "/userStateUpdate",
                 "function": {
                     "functionId": "userStateUpdate",
-                    "region": "us-central1",
-                    "pinTag": true
+                    "region": "us-central1"
                 }
             },
             {
                 "source": "/vendorList",
                 "function": {
                     "functionId": "vendorList",
-                    "region": "us-central1",
-                    "pinTag": true
+                    "region": "us-central1"
                 }
             },
             {
                 "source": "/vendorListUser",
                 "function": {
                     "functionId": "vendorListUser",
-                    "region": "us-central1",
-                    "pinTag": true
+                    "region": "us-central1"
                 }
             },
             {
                 "source": "/vendorStateUpdate",
                 "function": {
                     "functionId": "vendorStateUpdate",
-                    "region": "us-central1",
-                    "pinTag": true
+                    "region": "us-central1"
                 }
             }
         ]

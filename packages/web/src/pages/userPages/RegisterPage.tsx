@@ -12,7 +12,12 @@ import {
 } from "@feria-a-ti/common/model/fields/registerFields";
 import { ResponseData } from "@feria-a-ti/common/model/functionsTypes";
 import { messagesCode } from "@feria-a-ti/common/constants/errors";
-import { checkRegisterFields } from "@feria-a-ti/common/check/checkRegisterFields";
+
+import {
+    confirmRegisterUser,
+    registerAccountUser,
+} from "@feria-a-ti/common/functions/account/registerFunctions";
+
 import RegisterUserForm from "@feria-a-ti/web/src/components/forms/registerUserForm/RegisterUserForm";
 import ConfirmRegisterForm from "@feria-a-ti/web/src/components/forms/confirmRegisterForm/ConfirmRegisterForm";
 
@@ -39,37 +44,16 @@ function RegisterPage() {
             confirmPassword: data.confirmPassword as string,
             status: userStatus.registered,
         };
-        const check = checkRegisterFields(formatedData);
 
-        console.log("ERROR CHECK::", check);
-
-        if (check) {
-            //Lock register button
-            setCanSubmit(false);
-            //Call firebase function to create user
-            const addUser = httpsCallable<RegisterFields, ResponseData<string>>(
-                functions,
-                "addUser"
-            );
-            addUser(formatedData)
-                .then((result) => {
-                    const { msg, error } = result.data;
-                    console.log(result);
-                    //Show alert message
-                    setMessage({ msg, isError: error });
-                    if (!error) {
-                        //Set registered email
-                        setEmailRegistered(data.email);
-                        //Set register complete
-                        setRegisterComplete(true);
-                    }
-                })
-                .catch((error) => {
-                    console.log(error);
-                    setMessage({ msg: messagesCode["ERR00"], isError: true });
-                })
-                .finally(() => setCanSubmit(true)); //Unlock register button
-        }
+        registerAccountUser(
+            { formatedData, setCanSubmit, setMessage },
+            (value: string) => {
+                //Set registered email
+                setEmailRegistered(value);
+                //Set register complete
+                setRegisterComplete(true);
+            }
+        );
     };
 
     const onSubmitConfirmRegister = (data: FieldValues) => {
@@ -80,24 +64,12 @@ function RegisterPage() {
         };
 
         if (registerComplete) {
-            setCanSubmit(false);
-            const confirmRegister = httpsCallable<
-                RegisterConfirm,
-                ResponseData<string>
-            >(functions, "confirmRegister");
-            confirmRegister(formatedData)
-                .then((result) => {
-                    const { msg, error } = result.data;
-                    console.log(result);
-                    //Show alert message
-                    setMessage({ msg, isError: error });
+            confirmRegisterUser(
+                { formatedData, setCanSubmit, setMessage },
+                () => {
                     navigate("/login");
-                })
-                .catch((error) => {
-                    console.log(error);
-                    setMessage({ msg: messagesCode["ERR00"], isError: error });
-                })
-                .finally(() => setCanSubmit(true)); //Unlock register button
+                }
+            );
         }
     };
 

@@ -15,6 +15,7 @@ import {
 } from "@feria-a-ti/common/model/functionsTypes";
 
 import { getFromLocal, saveToLocal } from "@feria-a-ti/common/helpers";
+import AppFooter from "../components/footer/AppFooter";
 
 export type HeaderLayoutContext = {
     mapsAvailable: boolean;
@@ -260,6 +261,9 @@ export const HeaderLayout = () => {
                     />
                 </Grid>
             </Grid>
+            <footer>
+                <AppFooter />
+            </footer>
             <Snackbar
                 key={snackBarMsg ? snackBarMsg.key : undefined}
                 open={open}

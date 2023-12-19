@@ -124,6 +124,7 @@ function ManagerProductList(props: ManagerProductListProps) {
                 </>
             ) : (
                 <ProductVendorUpdateForm
+                    label="Actualizar puesto"
                     imageData={productVendor?.image as string}
                     canSubmit={canSubmit}
                     buttonLabel="Actualizar local"

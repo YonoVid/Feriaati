@@ -3,30 +3,23 @@ import { Navigate } from "react-router-dom";
 import { FieldValues } from "react-hook-form";
 
 import { useHeaderContext } from "../HeaderFunction";
-import { httpsCallable } from "firebase/functions";
-import { functions } from "@feria-a-ti/common/firebase";
-import {
-    IntegrationApiKeys,
-    IntegrationCommerceCodes,
-    Options,
-    WebpayPlus,
-} from "transbank-sdk";
 
 import { Hidden } from "@mui/material";
 // import DeleteIcon from "@mui/icons-material/Delete";
 
 import {
-    ResponseData,
     SubscriptionData,
     userType,
 } from "@feria-a-ti/common/model/functionsTypes";
 import { GetAccountFields } from "@feria-a-ti/common/model/account/getAccountFields";
-import { checkGetAccountFields } from "@feria-a-ti/common/check/checkAccountFields";
-import { messagesCode } from "@feria-a-ti/common/constants/errors";
 
 import { UserContext } from "@feria-a-ti/web/src/App";
 import SubscriptionForm from "@feria-a-ti/web/src/components/forms/subscriptionForm/SubscriptionForm";
 import { SubscriptionFields } from "@feria-a-ti/common/model/account/subscriptionAccountFields";
+import {
+    getSubscription,
+    paySubscriptionWeb,
+} from "@feria-a-ti/common/functions/payment/subscriptionFunctions";
 
 const SubscriptionPage = () => {
     //Global UI context
@@ -58,32 +51,13 @@ const SubscriptionPage = () => {
             email: emailUser as string,
             type: type,
         };
-        const check = checkGetAccountFields(formatedData);
 
-        console.log("ERROR CHECK::", check);
-
-        if (check) {
-            //Lock register button
-            setCanSubmit(false);
-            //Call firebase function to create user
-            const getAccount = httpsCallable<
-                GetAccountFields,
-                ResponseData<SubscriptionData>
-            >(functions, "getAccountSubscription");
-            getAccount(formatedData)
-                .then((result) => {
-                    const { msg, error, extra } = result.data;
-                    console.log(result);
-                    //Show alert message
-                    setMessage({ msg, isError: error });
-                    setSubscriptionData(extra);
-                })
-                .catch((error) => {
-                    console.log(error);
-                    setMessage({ msg: messagesCode["ERR00"], isError: error });
-                })
-                .finally(() => setCanSubmit(true)); //Unlock register button
-        }
+        getSubscription(
+            { formatedData, setCanSubmit, setMessage },
+            (value: SubscriptionData) => {
+                setSubscriptionData(value);
+            }
+        );
     };
 
     const onClick = (data: FieldValues) => {
@@ -97,58 +71,25 @@ const SubscriptionPage = () => {
         console.log("DATA::", formatedData);
         // Generate facture
         if (canSubmit && subscriptionData && subscriptionData != null) {
-            setCanSubmit(false);
-            const buyProductUser = httpsCallable<
-                SubscriptionFields,
-                ResponseData<string>
-            >(functions, "setAccountSubscription");
-            buyProductUser(formatedData)
-                .then((result) => {
-                    const { msg, error, extra } = result.data;
-                    console.log(result.data);
+            paySubscriptionWeb(
+                { formatedData, setCanSubmit, setMessage },
+                (value: any) => {
+                    resetProduct();
 
-                    setMessage({ msg, isError: error });
-                    if (!error) {
-                        resetProduct();
-                        //setIsLogged(result.data as any);
+                    setResponse(value);
+                    console.log(value);
+                    console.log(form);
+                    if (value != null && form != null) {
+                        console.log("SUBMIT FORM");
 
-                        console.log("TRANSBANK TEST::");
-
-                        const amount = formatedData.amount;
-                        const sessionId = authToken + "-" + extra;
-                        const returnUrl =
-                            window.location.origin +
-                            "/transaction/subscription";
-
-                        const tx = new WebpayPlus.Transaction(
-                            new Options(
-                                IntegrationCommerceCodes.WEBPAY_PLUS,
-                                IntegrationApiKeys.WEBPAY,
-                                "/api" //Environment.Integration
-                            )
-                        );
-                        tx.create(extra, sessionId, amount, returnUrl)
-                            .then((newResponse) => {
-                                setResponse(newResponse);
-                                console.log(newResponse);
-                                console.log(form);
-                                if (newResponse != null && form != null) {
-                                    console.log("SUBMIT FORM");
-
-                                    form.action = newResponse.url;
-                                    form.onformdata = (ev) => {
-                                        ev.formData.set(
-                                            "token_ws",
-                                            newResponse.token
-                                        );
-                                    };
-                                    form.requestSubmit();
-                                }
-                            })
-                            .finally(() => setCanSubmit(true));
+                        form.action = value.url;
+                        form.onformdata = (ev) => {
+                            ev.formData.set("token_ws", value.token);
+                        };
+                        form.requestSubmit();
                     }
-                })
-                .finally(() => setCanSubmit(true));
+                }
+            );
         } else {
             setMessage({ msg: "Datos de pedido incorrectos", isError: true });
         }

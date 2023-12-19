@@ -1,23 +1,18 @@
 import { useContext, useState } from "react";
 import { FieldValues } from "react-hook-form";
 import { Navigate, useNavigate } from "react-router-dom";
-import { httpsCallable } from "firebase/functions";
 
 import { Link } from "@mui/material";
-import { functions } from "@feria-a-ti/common/firebase";
-import { checkLoginFields } from "@feria-a-ti/common/check/checkLoginFields";
-import {
-    ResponseData,
-    UserToken,
-} from "@feria-a-ti/common/model/functionsTypes";
+import { UserToken } from "@feria-a-ti/common/model/functionsTypes";
 import { LoginFields } from "@feria-a-ti/common/model/fields/loginFields";
+
+import { loginBuyer } from "@feria-a-ti/common/functions/accessFunctions";
 
 import LoginForm from "@feria-a-ti/web/src/components/forms/loginForm/LoginForm";
 import { UserContext } from "@feria-a-ti/web/src/App";
 
-import { useHeaderContext } from "../HeaderFunction";
-import "../../App.css";
-import { colors } from "@feria-a-ti/common/theme/base";
+import { useHeaderContext } from "@feria-a-ti/web/src/pages/HeaderFunction";
+import "@feria-a-ti/web/src/App.css";
 
 function LoginPage() {
     //Global UI context
@@ -28,10 +23,10 @@ function LoginPage() {
     const navigate = useNavigate();
     const [attempt, setAttempt] = useState(0);
     // Form variables
-    const [canSubmit, setSubmitActive] = useState(true);
+    const [canSubmit, setCanSubmit] = useState(true);
 
     const onSubmit = (data: FieldValues) => {
-        setSubmitActive(false);
+        setCanSubmit(false);
         console.log("SUBMIT FORM");
         setAttempt(attempt + 1);
         const formatedData: LoginFields = {
@@ -39,30 +34,14 @@ function LoginPage() {
             password: data.password as string,
             attempts: attempt,
         };
-        const check = checkLoginFields(formatedData);
-        if (check) {
-            const login = httpsCallable(functions, "login");
-            login(formatedData)
-                .then((result) => {
-                    const {
-                        msg,
-                        error,
-                        extra: { email, type, token, id },
-                    } = result.data as ResponseData<UserToken>;
-                    console.log(result);
-                    console.log(attempt);
-                    setSubmitActive(true);
-                    //setIsLogged(result.data as any);
-                    if (msg !== "") {
-                        setMessage({ msg, isError: error });
-                    }
-                    if (token != null && token !== "") {
-                        setSession && setSession({ email, type, token, id });
-                        navigate("/session");
-                    }
-                })
-                .finally(() => setSubmitActive(true));
-        }
+
+        loginBuyer(
+            { formatedData, setCanSubmit, setMessage },
+            (value: UserToken) => {
+                setSession && setSession(value);
+                navigate("/session");
+            }
+        );
     };
     return (
         <>
@@ -80,19 +59,6 @@ function LoginPage() {
                     ¿Olvidaste tu contraseña?
                 </Link>
             </LoginForm>
-            <Link
-                style={{
-                    color: colors.light,
-                    position: "absolute",
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                }}
-                component="button"
-                onClick={() => navigate("/adminLogin")}
-            >
-                All Copyright reserved to Feria a ti company
-            </Link>
         </>
     );
 }

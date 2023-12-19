@@ -17,7 +17,6 @@ import { regionCode, regionCommune } from "@feria-a-ti/common/constants/form";
 import { numberRegex, stringRegex } from "@feria-a-ti/common/check/checkBase";
 
 import InputComponentAlt from "@feria-a-ti/web/src/components/inputComponent/InputComponentAlt";
-import { useHeaderContext } from "@feria-a-ti/web/src/pages/HeaderFunction";
 import DirectionAutocompleteInput from "./DirectionAutocompleteInput";
 import { getCommune } from "@feria-a-ti/common/helpers";
 

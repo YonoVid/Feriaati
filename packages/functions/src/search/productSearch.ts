@@ -1,4 +1,6 @@
 import * as functions from "firebase-functions";
+import * as admin from "firebase-admin";
+
 import {
     onDocumentCreated,
     onDocumentUpdated,
@@ -8,17 +10,26 @@ import { collectionNames, indexMaxInstances } from "../consts";
 import {
     ProductCollectionData,
     ProductDiscount,
+    ProductListCollectionData,
     ProductUnit,
 } from "../model/productTypes";
 import { IndexType, ProductIndex } from "../model/indexTypes";
 import { deleteIndex, editIndex } from "./search";
 
-const formatIndex = (
+const formatIndex = async (
     id: string,
     vendorId: string,
     data: ProductCollectionData,
     active: boolean
-): ProductIndex => {
+): Promise<ProductIndex> => {
+    // Get vendor data
+    const db = admin.firestore();
+    const vendorProductsRef = await db
+        .collection(collectionNames.VENDORPRODUCTS)
+        .doc(vendorId);
+    const docVendorProducts = await vendorProductsRef.get();
+    const vendorData = docVendorProducts.data() as ProductListCollectionData;
+
     const discount: ProductDiscount = data.discount || ProductDiscount.NONE;
     const promotion: number = data.promotion || 0;
 
@@ -45,6 +56,8 @@ const formatIndex = (
         name: data.name + unitLabel,
         description: data.description,
         price: finalPrice,
+        commune: vendorData.commune,
+        region: vendorData.region,
         image: data.image[0],
         type: IndexType.PRODUCT,
         active: active,
@@ -67,20 +80,30 @@ export const addProductIndex = onDocumentCreated(
             event.data?.data() as ProductCollectionData;
         functions.logger.info("ADDING TO INDEX::", eventData);
 
-        const data: ProductIndex = formatIndex(
+        formatIndex(
             event.data?.id as string,
             event.params.productsDocument as string,
             eventData,
             true
-        );
-
-        return editIndex(data, process.env.SEARCH_ENGINE_INDEX as string)
-            .then((res) =>
-                functions.logger.info("SUCCESS ALGOLIA product ADD", res)
-            )
-            .catch((err) =>
-                functions.logger.error("ERROR ALGOLIA product ADD", err)
-            );
+        )
+            .then((value: ProductIndex) => {
+                return editIndex(
+                    value,
+                    process.env.SEARCH_ENGINE_INDEX as string
+                )
+                    .then((res) =>
+                        functions.logger.info(
+                            "SUCCESS ALGOLIA product ADD",
+                            res
+                        )
+                    )
+                    .catch((err) =>
+                        functions.logger.error("ERROR ALGOLIA product ADD", err)
+                    );
+            })
+            .catch((err) => {
+                functions.logger.error("ERROR ALGOLIA product ADD", err);
+            });
     }
 );
 
@@ -100,7 +123,7 @@ export const editProductIndex = onDocumentUpdated(
             event.data?.after.data() as ProductCollectionData;
         functions.logger.info("EDITING INDEX::", eventDataAfter);
 
-        const data = formatIndex(
+        formatIndex(
             event.data?.after.id as string,
             event.params.productsDocument as string,
             {
@@ -108,12 +131,22 @@ export const editProductIndex = onDocumentUpdated(
                 ...eventDataAfter,
             },
             true
-        );
-
-        return editIndex(data, process.env.SEARCH_ENGINE_INDEX as string)
-            .then((res) =>
-                functions.logger.info("SUCCESS ALGOLIA product ADD", res)
-            )
+        )
+            .then((value: ProductIndex) => {
+                return editIndex(
+                    value,
+                    process.env.SEARCH_ENGINE_INDEX as string
+                )
+                    .then((res) =>
+                        functions.logger.info(
+                            "SUCCESS ALGOLIA product ADD",
+                            res
+                        )
+                    )
+                    .catch((err) =>
+                        functions.logger.error("ERROR ALGOLIA product ADD", err)
+                    );
+            })
             .catch((err) =>
                 functions.logger.error("ERROR ALGOLIA product ADD", err)
             );

@@ -169,6 +169,7 @@ function ManagerVendorPage() {
                 </ManagerProductList>
             ) : (
                 <ProductAddForm
+                    label="Actualizar"
                     editableState={productEditable}
                     imageData={imageData}
                     setImageData={setImageData}

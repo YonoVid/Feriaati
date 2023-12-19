@@ -1,20 +1,19 @@
 import { useContext, useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
-import { httpsCallable } from "firebase/functions";
 
 import { Card } from "@mui/material";
 
-import { functions } from "@feria-a-ti/common/firebase"; // Importa la configuración de Firebase, incluyendo las funciones
-import {
-    ResponseData,
-    VendorData,
-} from "@feria-a-ti/common/model/functionsTypes";
+import { VendorData } from "@feria-a-ti/common/model/functionsTypes";
 import { UpdateStateFields } from "@feria-a-ti/common/model/fields/adminFields";
 import { userStatus } from "@feria-a-ti/common/model/fields/registerFields";
 
 import { UserContext } from "@feria-a-ti/web/src/App";
 import { useHeaderContext } from "../HeaderFunction";
 import RegisterVendorList from "../../components/vendorList/RegisterVendorList";
+import {
+    editVendorState,
+    getNewVendorList,
+} from "@feria-a-ti/common/functions/admin/adminVendorFunctions";
 
 const AdminActivateVendors = () => {
     //Global UI context
@@ -34,43 +33,28 @@ const AdminActivateVendors = () => {
     }, []);
 
     const getNewVendors = async () => {
-        try {
-            const vendors = httpsCallable<string, ResponseData<VendorData[]>>(
-                functions,
-                "registerVendorList"
-            );
-            vendors(authToken).then((response) => {
-                const vendorsData = response.data.extra as VendorData[];
-                setNewVendors(vendorsData);
-                console.log("NEW VENDORS DATA::", vendorsData);
-            });
-        } catch (error) {
-            console.error("Error al obtener los vendedores:", error);
-        }
+        const formatedData: string = authToken as string;
+
+        getNewVendorList(
+            { formatedData, setCanSubmit, setMessage },
+            (value: VendorData[]) => {
+                setNewVendors(value);
+                console.log("NEW VENDORS DATA::", value);
+            }
+        );
     };
 
     const updateState = async (id: string, status: userStatus) => {
-        try {
-            const updateState = httpsCallable<
-                UpdateStateFields,
-                ResponseData<null>
-            >(functions, "vendorStateUpdate");
-            console.log("SELECTED USER::", id);
-            updateState({ token: authToken as string, itemId: id, status })
-                .then((response) => {
-                    const { msg, error } = response.data;
-                    console.log(response.data);
-                    setMessage({ msg, isError: error });
-                    if (!error) {
-                        setNewVendors(
-                            newVendors.filter((value) => value.id !== id)
-                        );
-                    }
-                })
-                .finally(() => setCanSubmit(true));
-            // .finally(() => setShowAlert(true));
-        } catch (error) {
-            console.error("Error al actualizar el estado del vendedor:", error);
+        if (id != null && id !== "" && status) {
+            const formatedData: UpdateStateFields = {
+                token: authToken as string,
+                itemId: id,
+                status,
+            };
+
+            editVendorState({ formatedData, setCanSubmit, setMessage }, () => {
+                setNewVendors(newVendors.filter((value) => value.id !== id));
+            });
         }
     };
 

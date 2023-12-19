@@ -7,6 +7,7 @@ export type FacturesListProps = FormProps & {
     factures: Array<FactureData>;
     filter?: string;
     loadSize?: number;
+    canSubmit?: boolean;
     onReload?: () => void;
 };
 

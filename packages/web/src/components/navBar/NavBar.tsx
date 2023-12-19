@@ -171,6 +171,7 @@ function NavBar() {
 
     const isVendorPage =
         window.location.pathname.includes("loginVendor") ||
+        window.location.pathname.includes("registerVendor") ||
         type === userType.vendor ||
         type === userType.contributor;
 
@@ -192,13 +193,7 @@ function NavBar() {
     return (
         <Slide appear={false} direction="down" in={!trigger}>
             <AppBar
-                color={
-                    type !== userType.undefined
-                        ? isVendorPage
-                            ? "primary"
-                            : "secondary"
-                        : "secondary"
-                }
+                color={isVendorPage ? "primary" : "secondary"}
                 position="fixed"
                 sx={{ top: 0, zIndex: (theme) => theme.zIndex.drawer + 10 }}
             >
@@ -222,7 +217,7 @@ function NavBar() {
                                 textDecoration: "none",
                             }}
                         >
-                            LOGO
+                            FERIA A TI
                         </Typography>
                         {authUser !== "" && (
                             <Box
@@ -259,7 +254,7 @@ function NavBar() {
                                         display: { xs: "block", md: "none" },
                                     }}
                                 >
-                                    {settings.map((page) => (
+                                    {pages.map((page) => (
                                         <MenuItem
                                             key={page.label}
                                             onClick={() => {
@@ -349,7 +344,7 @@ function NavBar() {
                                             </IconButton>
                                         </Tooltip>
                                     )}
-                                    <Tooltip title="Abrir opciones">
+                                    <Tooltip title="Opciones de usuario">
                                         <IconButton
                                             size="large"
                                             aria-label="account of current user"
