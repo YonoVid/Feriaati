@@ -41,6 +41,7 @@ export const getNewVendorList = (
         .catch((error) => {
             console.log(error);
             setMessage({ msg: messagesCode["ERR00"], isError: error });
+            setCanSubmit(true);
         })
         .finally(() => setCanSubmit(true));
 };
@@ -72,6 +73,7 @@ export const editVendorState = (
         .catch((error) => {
             console.log(error);
             setMessage({ msg: messagesCode["ERR00"], isError: error });
+            setCanSubmit(true);
         })
         .finally(() => setCanSubmit(true));
 };
@@ -105,6 +107,7 @@ export const getVendorList = (
             .catch((error) => {
                 console.log(error);
                 setMessage({ msg: messagesCode["ERR00"], isError: error });
+                setCanSubmit(true);
             })
             .finally(() => setCanSubmit(true));
     }
@@ -141,6 +144,7 @@ export const editVendor = (
             .catch((error) => {
                 console.log(error);
                 setMessage({ msg: messagesCode["ERR00"], isError: error });
+                setCanSubmit(true);
             })
             .finally(() => setCanSubmit(true));
     }
@@ -179,6 +183,7 @@ export const deleteVendor = (
             .catch((error) => {
                 console.log(error);
                 setMessage({ msg: messagesCode["ERR00"], isError: error });
+                setCanSubmit(true);
             })
             .finally(() => setCanSubmit(true));
     }

@@ -3,6 +3,8 @@ import { FieldValues } from "react-hook-form";
 import { Navigate, useNavigate } from "react-router-dom";
 import { Link } from "@mui/material";
 
+import LoadingOverlay from "react-loading-overlay-ts";
+
 import { LoginFields } from "@feria-a-ti/common/model/fields/loginFields";
 import { UserToken, userType } from "@feria-a-ti/common/model/functionsTypes";
 import { loginVendor } from "@feria-a-ti/common/functions/accessFunctions";
@@ -48,26 +50,32 @@ function VendorLoginPage() {
             {(type === userType.vendor || type === userType.contributor) && (
                 <Navigate to="/session" replace={true} />
             )}
-            <LoginForm
-                label="Iniciar sesión de vendedor"
-                color="secondary"
-                onSubmit={onSubmit}
-                canSubmit={canSubmit}
+            <LoadingOverlay
+                active={!canSubmit}
+                spinner
+                text="Realizando petición..."
             >
-                <Link
-                    component="button"
-                    onClick={() => navigate("/registerVendor")}
+                <LoginForm
+                    label="Iniciar sesión de vendedor"
+                    color="secondary"
+                    onSubmit={onSubmit}
+                    canSubmit={canSubmit}
                 >
-                    ¿No tienes una cuenta? Regístrate
-                </Link>
-                <br />
-                <Link
-                    component="button"
-                    onClick={() => navigate("/recoveryVendor")}
-                >
-                    ¿Olvidaste tu contraseña?
-                </Link>
-            </LoginForm>
+                    <Link
+                        component="button"
+                        onClick={() => navigate("/registerVendor")}
+                    >
+                        ¿No tienes una cuenta? Regístrate
+                    </Link>
+                    <br />
+                    <Link
+                        component="button"
+                        onClick={() => navigate("/recoveryVendor")}
+                    >
+                        ¿Olvidaste tu contraseña?
+                    </Link>
+                </LoginForm>
+            </LoadingOverlay>
         </>
     );
 }

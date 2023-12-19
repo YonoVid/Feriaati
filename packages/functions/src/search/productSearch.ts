@@ -14,7 +14,7 @@ import {
     ProductUnit,
 } from "../model/productTypes";
 import { IndexType, ProductIndex } from "../model/indexTypes";
-import { deleteIndex, editIndex } from "./search";
+import { deleteIndex, editIndex, productIndex } from "./search";
 
 const formatIndex = async (
     id: string,
@@ -50,7 +50,7 @@ const formatIndex = async (
             : 0);
 
     const formatedData: ProductIndex = {
-        objectID: "product-" + id,
+        objectID: productIndex(id),
         id: id,
         vendorId: vendorId,
         name: data.name + unitLabel,

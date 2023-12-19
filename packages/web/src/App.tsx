@@ -38,10 +38,15 @@ import VendorDashboardPage from "./pages/vendorPages/VendorDashboardPage";
 import ManageContributorsPage from "./pages/vendorPages/ManageContributorsPage";
 import AboutPage from "./pages/servicePages/About";
 import ContactPage from "./pages/servicePages/Contact";
+import ScrollToTop from "./components/scrollTopComponent/scrollTopComponent";
 
 const router = createBrowserRouter([
     {
-        element: <HeaderLayout />,
+        element: (
+            <ScrollToTop>
+                <HeaderLayout />
+            </ScrollToTop>
+        ),
         children: [
             {
                 path: "/",

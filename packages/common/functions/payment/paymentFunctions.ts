@@ -93,14 +93,15 @@ export const payProducts = async (
                                 msg: messagesCode["ERR00"],
                                 isError: error,
                             });
+                            setCanSubmit(true);
                         })
                         .finally(() => setCanSubmit(true));
                 }
             })
             .catch((error) => {
                 console.log(error);
-                setCanSubmit(true);
                 setMessage({ msg: messagesCode["ERR00"], isError: error });
+                setCanSubmit(true);
             })
             .finally(() => setCanSubmit(true));
     } else {

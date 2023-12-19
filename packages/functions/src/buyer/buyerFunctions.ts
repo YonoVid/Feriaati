@@ -13,6 +13,7 @@ import { FactureStatus } from "../model/productTypes";
 import { Timestamp } from "firebase-admin/firestore";
 import { checkBuyProduct } from "./checkBuyer";
 import { registerFactureData } from "../vendor/vendorFactureFunctions";
+import { sendBuyEvent } from "../search/insights";
 
 export const vendorListUser = functions.https.onCall(
     async (data: string): Promise<ResponseData<VendorData[]>> => {
@@ -133,14 +134,22 @@ export const updateBuyerFacture = async (
 
                     const time = Timestamp.now();
 
-                    for (const key in factureData.products) {
-                        if (key) {
-                            registerFactureData({
-                                docId: factureDoc.id,
-                                id: key,
-                                products: factureData.products[key],
-                                time: time,
-                            });
+                    if (data.status == FactureStatus.APPROVED) {
+                        for (const key in factureData.products) {
+                            if (key) {
+                                sendBuyEvent(
+                                    collectionDoc.id,
+                                    key,
+                                    factureData.products[key]
+                                );
+
+                                registerFactureData({
+                                    docId: factureDoc.id,
+                                    id: key,
+                                    products: factureData.products[key],
+                                    time: time,
+                                });
+                            }
                         }
                     }
                 }

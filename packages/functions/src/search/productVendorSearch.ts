@@ -7,7 +7,7 @@ import {
 import { collectionNames, indexMaxInstances } from "../consts";
 import { ProductListCollectionData } from "../model/productTypes";
 import { IndexType, ProductVendorIndex } from "../model/indexTypes";
-import { deleteIndex, editIndex } from "./search";
+import { deleteIndex, editIndex, productVendorIndex } from "./search";
 import { regionCode, regionCommune } from "../model/form";
 
 const formatIndex = (
@@ -41,7 +41,7 @@ const formatIndex = (
             : 0;
 
     const formatedData: ProductVendorIndex = {
-        objectID: "productVendor-" + id,
+        objectID: productVendorIndex(id),
         id: id,
         name: data.enterpriseName + " #" + data.localNumber,
         description: location,

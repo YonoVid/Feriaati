@@ -46,6 +46,13 @@ export const deleteContributor = (
 
                 onSuccess(result.data as ResponseData<string>);
             })
+            .catch(() => {
+                // setMessage({
+                //     msg: "Error de conexión con el servidor",
+                //     isError: true,
+                // });
+                setCanSubmit(true);
+            })
             .finally(() => setCanSubmit(true));
     }
 };
@@ -75,6 +82,13 @@ export const updateContributor = (
 
                 onSuccess(result.data as ResponseData<ContributorData>);
             })
+            .catch(() => {
+                // setMessage({
+                //     msg: "Error de conexión con el servidor",
+                //     isError: true,
+                // });
+                setCanSubmit(true);
+            })
             .finally(() => setCanSubmit(true));
     }
 };
@@ -103,6 +117,13 @@ export const addContributor = (
                 console.log(result.data);
 
                 onSuccess(result.data as ResponseData<ContributorData>);
+            })
+            .catch(() => {
+                // setMessage({
+                //     msg: "Error de conexión con el servidor",
+                //     isError: true,
+                // });
+                setCanSubmit(true);
             })
             .finally(() => setCanSubmit(true));
     }

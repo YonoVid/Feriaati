@@ -2,6 +2,8 @@ import { useContext, useState } from "react";
 import { FieldValues } from "react-hook-form";
 import { Navigate, useNavigate } from "react-router-dom";
 
+import LoadingOverlay from "react-loading-overlay-ts";
+
 import { Link } from "@mui/material";
 import { UserToken } from "@feria-a-ti/common/model/functionsTypes";
 import { LoginFields } from "@feria-a-ti/common/model/fields/loginFields";
@@ -46,19 +48,31 @@ function LoginPage() {
     return (
         <>
             {type === "user" && <Navigate to="/session" replace={true} />}
-            <LoginForm
-                label="Iniciar sesión"
-                onSubmit={onSubmit}
-                canSubmit={canSubmit}
+            <LoadingOverlay
+                active={!canSubmit}
+                spinner
+                text="Realizando petición..."
             >
-                <Link component="button" onClick={() => navigate("/register")}>
-                    ¿No tienes una cuenta? Regístrate
-                </Link>
-                <br />
-                <Link component="button" onClick={() => navigate("/recovery")}>
-                    ¿Olvidaste tu contraseña?
-                </Link>
-            </LoginForm>
+                <LoginForm
+                    label="Iniciar sesión"
+                    onSubmit={onSubmit}
+                    canSubmit={canSubmit}
+                >
+                    <Link
+                        component="button"
+                        onClick={() => navigate("/register")}
+                    >
+                        ¿No tienes una cuenta? Regístrate
+                    </Link>
+                    <br />
+                    <Link
+                        component="button"
+                        onClick={() => navigate("/recovery")}
+                    >
+                        ¿Olvidaste tu contraseña?
+                    </Link>
+                </LoginForm>
+            </LoadingOverlay>
         </>
     );
 }

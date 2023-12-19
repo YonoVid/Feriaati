@@ -53,6 +53,7 @@ export const getAccountUser = (
             .catch((error) => {
                 console.log(error);
                 setMessage({ msg: messagesCode["ERR00"], isError: error });
+                setCanSubmit(true);
             })
             .finally(() => setCanSubmit(true)); //Unlock register button
     }
@@ -91,6 +92,7 @@ export const editAccountUser = (
             .catch((error) => {
                 console.log(error);
                 setMessage({ msg: messagesCode["ERR00"], isError: error });
+                setCanSubmit(true);
             })
             .finally(() => setCanSubmit(true)); //Unlock register button
     }
@@ -126,6 +128,7 @@ export const recoverPasswordUser = (
             .catch((error) => {
                 console.log(error);
                 setMessage({ msg: messagesCode["ERR00"], isError: error });
+                setCanSubmit(true);
             })
             .finally(() => setCanSubmit(true));
     }
@@ -161,6 +164,7 @@ export const editPasswordUser = (
             .catch((error) => {
                 console.log(error);
                 setMessage({ msg: messagesCode["ERR00"], isError: error });
+                setCanSubmit(true);
             })
             .finally(() => setCanSubmit(true));
     }

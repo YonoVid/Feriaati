@@ -43,8 +43,8 @@ export const registerAccountUser = (
             })
             .catch((error) => {
                 console.log(error);
-                setCanSubmit(true);
                 setMessage({ msg: messagesCode["ERR00"], isError: error });
+                setCanSubmit(true);
             })
             .finally(() => setCanSubmit(true));
     }
@@ -80,10 +80,6 @@ export const confirmRegisterUser = (
                 if (!error) {
                     onSuccess();
                 }
-            })
-            .catch((error) => {
-                console.log(error);
-                setMessage({ msg: messagesCode["ERR00"], isError: error });
             })
             .catch((error) => {
                 console.log(error);

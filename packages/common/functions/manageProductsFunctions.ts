@@ -85,6 +85,13 @@ export const updateProduct = (
                 console.log(result.data);
                 onSuccess(result.data);
             })
+            .catch(() => {
+                // setMessage({
+                //     msg: "Error de conexión con el servidor",
+                //     isError: true,
+                // });
+                setCanSubmit(true);
+            })
             .finally(() => setCanSubmit(true));
     }
 };
@@ -111,6 +118,13 @@ export const deleteProduct = (
                 console.log(result.data);
 
                 onSuccess(result.data);
+            })
+            .catch(() => {
+                // setMessage({
+                //     msg: "Error de conexión con el servidor",
+                //     isError: true,
+                // });
+                setCanSubmit(true);
             })
             .finally(() => setCanSubmit(true));
     }

@@ -46,6 +46,7 @@ export const getBuyerList = (
             .catch((error) => {
                 console.log(error);
                 setMessage({ msg: messagesCode["ERR00"], isError: error });
+                setCanSubmit(true);
             })
             .finally(() => setCanSubmit(true));
     }
@@ -82,6 +83,7 @@ export const editBuyer = (
             .catch((error) => {
                 console.log(error);
                 setMessage({ msg: messagesCode["ERR00"], isError: error });
+                setCanSubmit(true);
             })
             .finally(() => setCanSubmit(true));
     }
@@ -120,6 +122,7 @@ export const deleteBuyer = (
             .catch((error) => {
                 console.log(error);
                 setMessage({ msg: messagesCode["ERR00"], isError: error });
+                setCanSubmit(true);
             })
             .finally(() => setCanSubmit(true));
     }

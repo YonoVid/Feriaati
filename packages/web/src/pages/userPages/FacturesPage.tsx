@@ -1,6 +1,8 @@
 import { useEffect, useContext, useState } from "react";
 import { Navigate } from "react-router-dom";
 
+import LoadingOverlay from "react-loading-overlay-ts";
+
 import { FactureData } from "@feria-a-ti/common/model/functionsTypes";
 import { FactureFields } from "@feria-a-ti/common/model/fields/factureFields";
 
@@ -49,13 +51,19 @@ function FacturesPage() {
     return (
         <>
             {type === "vendor" && <Navigate to="/session" replace={true} />}
-            <FacturesList
-                userId={authUser || "userId"}
-                factures={factures}
-                label="Facturas de compras"
-                loadData={loadFactures}
-                canSubmit={canSubmit}
-            />
+            <LoadingOverlay
+                active={!canSubmit}
+                spinner
+                text="Cargando datos..."
+            >
+                <FacturesList
+                    userId={authUser || "userId"}
+                    factures={factures}
+                    label="Facturas de compras"
+                    loadData={loadFactures}
+                    canSubmit={canSubmit}
+                />
+            </LoadingOverlay>
         </>
     );
 }

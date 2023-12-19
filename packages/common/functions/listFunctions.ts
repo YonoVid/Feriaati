@@ -12,17 +12,26 @@ export const getContributorList = async (
     onSuccess: (data: ResponseData<string>) => void
 ) => {
     try {
-        const { formatedData } = data;
+        const { formatedData, setCanSubmit } = data;
 
         const users = httpsCallable<
             UserRequestFields,
             ResponseData<ContributorData[]>
         >(functions, "contributorList");
-        users(formatedData).then((result) => {
-            console.log(result.data);
+        users(formatedData)
+            .then((result) => {
+                console.log(result.data);
 
-            onSuccess(result.data as ResponseData<ContributorData[]>);
-        });
+                onSuccess(result.data as ResponseData<ContributorData[]>);
+            })
+            .catch(() => {
+                // setMessage({
+                //     msg: "Error de conexión con el servidor",
+                //     isError: true,
+                // });
+                setCanSubmit(true);
+            })
+            .finally(() => setCanSubmit(true));
     } catch (error) {
         console.error("Error al obtener los vendedores:", error);
     }

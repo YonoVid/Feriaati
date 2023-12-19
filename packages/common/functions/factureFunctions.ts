@@ -39,6 +39,7 @@ export const getFactures = (
     onSuccess: (data: Array<FactureData>) => void
 ) => {
     const { formatedData, setCanSubmit, setMessage } = data;
+    setCanSubmit(false);
 
     if (formatedData.token != undefined || formatedData.token != "") {
         const getFactures = httpsCallable(functions, "getFactures");
@@ -55,8 +56,8 @@ export const getFactures = (
                 }
             })
             .catch(() => {
-                setCanSubmit(true);
                 setMessage({ msg: messagesCode["ERR00"], isError: true });
+                setCanSubmit(true);
             })
             .finally(() => setCanSubmit(true));
     }
@@ -138,8 +139,8 @@ export const getFactureStatus = (
                 }
             })
             .catch(() => {
-                setCanSubmit(true);
                 setMessage({ msg: messagesCode["ERR00"], isError: true });
+                setCanSubmit(true);
             })
             .finally(() => setCanSubmit(true));
     }

@@ -64,6 +64,7 @@ const loginCall = (
     functionName: string = "login"
 ) => {
     const { formatedData, setCanSubmit, setMessage } = data;
+    setCanSubmit(false);
 
     const login = httpsCallable(functions, functionName);
     login(formatedData)
@@ -86,11 +87,11 @@ const loginCall = (
             }
         })
         .catch(() => {
-            setCanSubmit(true);
             setMessage({
                 msg: "Error de conexión con el servidor",
                 isError: true,
             });
+            setCanSubmit(true);
         })
         .finally(() => setCanSubmit(true));
 };

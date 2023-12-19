@@ -2,10 +2,9 @@ import { useContext, useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 import { FieldValues } from "react-hook-form";
 
-import { useHeaderContext } from "../HeaderFunction";
+import LoadingOverlay from "react-loading-overlay-ts";
 
 import { Hidden } from "@mui/material";
-// import DeleteIcon from "@mui/icons-material/Delete";
 
 import {
     SubscriptionData,
@@ -20,6 +19,8 @@ import {
     getSubscription,
     paySubscriptionWeb,
 } from "@feria-a-ti/common/functions/payment/subscriptionFunctions";
+
+import { useHeaderContext } from "../HeaderFunction";
 
 const SubscriptionPage = () => {
     //Global UI context
@@ -116,11 +117,17 @@ const SubscriptionPage = () => {
                     />
                 </form>
             </Hidden>
-            <SubscriptionForm
-                canSubmit={canSubmit}
-                subscription={subscriptionData}
-                onSubmit={onClick}
-            />
+            <LoadingOverlay
+                active={!canSubmit}
+                spinner
+                text="Cargando datos..."
+            >
+                <SubscriptionForm
+                    canSubmit={canSubmit}
+                    subscription={subscriptionData}
+                    onSubmit={onClick}
+                />
+            </LoadingOverlay>
         </>
     );
 };

@@ -2,6 +2,8 @@ import { useContext, useEffect, useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import { FieldValues } from "react-hook-form";
 
+import LoadingOverlay from "react-loading-overlay-ts";
+
 import { Alert, Box, Hidden } from "@mui/material";
 
 import {
@@ -88,6 +90,7 @@ const BuyProductsPage = () => {
             direction: data.direction || undefined,
             token: authToken as string,
             products: productPetition || {},
+            amount: priceTotal,
         };
 
         const returnUrl: string =
@@ -129,46 +132,52 @@ const BuyProductsPage = () => {
                     />
                 </form>
             </Hidden>
-            <Box sx={{ display: "flex", flexDirection: "column" }}>
-                {(vendorCheck == BUYERROR.REGION && (
-                    <Alert severity="error" sx={{ margin: 1 }}>
-                        Los productos son entregados por vendedores en regiones
-                        distintas
-                    </Alert>
-                )) ||
-                    (vendorCheck == BUYERROR.COMMUNE && (
-                        <Alert severity="warning" sx={{ margin: 1 }}>
+            <LoadingOverlay
+                active={!canSubmit}
+                spinner
+                text="Cargando datos..."
+            >
+                <Box sx={{ display: "flex", flexDirection: "column" }}>
+                    {(vendorCheck == BUYERROR.REGION && (
+                        <Alert severity="error" sx={{ margin: 1 }}>
                             Los productos son entregados por vendedores en
-                            comunas distintas
+                            regiones distintas
                         </Alert>
-                    ))}
-                <Box
-                    sx={{
-                        display: "flex",
-                        flexDirection: { xs: "column", md: "row" },
-                    }}
-                >
-                    <BuyProductComponent
-                        finalPrice={priceTotal}
-                        factureData={productPetition || {}}
-                        vendorData={vendorData}
-                        canSubmit={canSubmit}
-                        onSubmit={() => navigate("/shoppingCart")}
-                    />
-                    <BuyProductForm
-                        account={accountData}
-                        canSubmit={
-                            canSubmit &&
-                            vendorCheck == BUYERROR.NONE &&
-                            priceTotal != 0
-                        }
-                        onSubmit={(data) => {
-                            console.log(data);
-                            onClick(data);
+                    )) ||
+                        (vendorCheck == BUYERROR.COMMUNE && (
+                            <Alert severity="warning" sx={{ margin: 1 }}>
+                                Los productos son entregados por vendedores en
+                                comunas distintas
+                            </Alert>
+                        ))}
+                    <Box
+                        sx={{
+                            display: "flex",
+                            flexDirection: { xs: "column", md: "row" },
                         }}
-                    />
+                    >
+                        <BuyProductComponent
+                            finalPrice={priceTotal}
+                            factureData={productPetition || {}}
+                            vendorData={vendorData}
+                            canSubmit={canSubmit}
+                            onSubmit={() => navigate("/shoppingCart")}
+                        />
+                        <BuyProductForm
+                            account={accountData}
+                            canSubmit={
+                                canSubmit &&
+                                vendorCheck == BUYERROR.NONE &&
+                                priceTotal != 0
+                            }
+                            onSubmit={(data) => {
+                                console.log(data);
+                                onClick(data);
+                            }}
+                        />
+                    </Box>
                 </Box>
-            </Box>
+            </LoadingOverlay>
         </>
     );
 };
