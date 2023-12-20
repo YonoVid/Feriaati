@@ -10,6 +10,7 @@ import {
     RegisterVendorFields,
     userStatus,
 } from "@feria-a-ti/common/model/fields/registerFields";
+
 import { registerAccountVendor } from "@feria-a-ti/common/functions/account/registerFunctions";
 
 import RegisterVendorForm from "@feria-a-ti/web/src/components/forms/registerVendorForm/RegisterVendorForm";

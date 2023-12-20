@@ -1,27 +1,22 @@
-import React, { ReactNode, useEffect, useState } from "react";
+import React, { ReactNode, useState } from "react";
 import { ScrollView, StyleSheet } from "react-native";
 import { NavigationProp, ParamListBase } from "@react-navigation/native";
-import { httpsCallable } from "@firebase/functions";
-
-import { functions } from "@feria-a-ti/common/firebase";
 
 import {
     ProductData,
     ProductListCollectionData,
-    ResponseData,
-    userType,
 } from "@feria-a-ti/common/model/functionsTypes";
 import {
     DayTimeRange,
     UpdateProductVendorFields,
 } from "@feria-a-ti/common/model/fields/updateFields";
-import { checkProductVendorUpdate } from "@feria-a-ti/common/check/checkProductVendorUpdate";
 
-import ProductAddForm from "@feria-a-ti/mobile/components/forms/ProductAddForm";
+import { editProductList } from "@feria-a-ti/common/functions/vendor/manageProductsFunctions";
 
+import ProductVendorUpdateForm from "@feria-a-ti/mobile/components/forms/ProductVendorUpdateForm";
+
+import { useAppContext } from "@feria-a-ti/mobile/app/AppContext";
 import { ProductVendorPage } from "./ProductVendorPage";
-import { useAppContext } from "../AppContext";
-import ProductVendorUpdateForm from "../../components/forms/ProductVendorUpdateForm";
 
 export interface ManagerProductListProps {
     navigation: NavigationProp<ParamListBase>;
@@ -76,33 +71,13 @@ export const ManagerProductList = (props: ManagerProductListProps) => {
             contactEmail: data.contactEmail as string,
             serviceTime: data.serviceTime as DayTimeRange,
         };
-        const check = checkProductVendorUpdate(formatedData);
-        console.log("SUBMIT FORM ON EDIT VENDOR::", check);
-        if (check) {
-            setCanSubmit(false);
-            console.log("DATA FORM ON EDIT VENDOR::", formatedData);
-            // setCanSubmit(false);
-            const editProduct = httpsCallable<
-                UpdateProductVendorFields,
-                ResponseData<string>
-            >(functions, "productVendorUpdate");
-            editProduct(formatedData)
-                .then((result) => {
-                    const { msg, error } = result.data as ResponseData<string>;
-                    console.log(result.data);
-                    //setIsLogged(result.data as any);
-                    if (!error) {
-                        setProductEditable(null);
-                        loadVendor();
-                        setImageData("");
-                        setUpdateVendorPage(false);
-                    }
-                    if (msg !== "") {
-                        setMessage({ msg, isError: error });
-                    }
-                })
-                .finally(() => setCanSubmit(true));
-        }
+
+        editProductList({ formatedData, setCanSubmit, setMessage }, () => {
+            setProductEditable(null);
+            loadVendor();
+            setImageData("");
+            setUpdateVendorPage(false);
+        });
     };
 
     return (

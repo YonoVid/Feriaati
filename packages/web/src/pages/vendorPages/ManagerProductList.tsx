@@ -1,28 +1,25 @@
 import { ReactNode, useContext, useState } from "react";
 import { FieldValues } from "react-hook-form";
 import { Navigate, useNavigate } from "react-router-dom";
-import { httpsCallable } from "firebase/functions";
 
 import LoadingOverlay from "react-loading-overlay-ts";
 
-import { functions } from "@feria-a-ti/common/firebase";
-import { checkProductVendorUpdate } from "@feria-a-ti/common/check/checkProductVendorUpdate";
 import {
     ProductData,
     ProductListCollectionData,
-    ResponseData,
     userType,
 } from "@feria-a-ti/common/model/functionsTypes";
 import { UpdateProductVendorFields } from "@feria-a-ti/common/model/fields/updateFields";
+import { DayTime } from "@feria-a-ti/common/model/baseTypes";
+
+import { editProductList } from "@feria-a-ti/common/functions/vendor/manageProductsFunctions";
 
 import ProductVendorPage from "@feria-a-ti/web/src/components/productPage/ProductVendorPage";
 import ProductVendorUpdateForm from "@feria-a-ti/web/src/components/forms/productVendorUpdateForm/ProductVendorUpdateForm";
 
+import { useHeaderContext } from "@feria-a-ti/web/src/pages/HeaderFunction";
 import { UserContext } from "@feria-a-ti/web/src/App";
-import { useHeaderContext } from "../HeaderFunction";
-import "../../App.css";
-import { DayTime } from "@feria-a-ti/common/model/baseTypes";
-import { editProductList } from "@feria-a-ti/common/functions/vendor/manageProductsFunctions";
+import "@feria-a-ti/web/App.css";
 
 type ManagerProductListProps = {
     productVendor: ProductListCollectionData | undefined;

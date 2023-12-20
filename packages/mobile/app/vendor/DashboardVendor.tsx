@@ -2,26 +2,16 @@ import React, { useEffect, useState } from "react";
 import { Text, ScrollView, StyleSheet } from "react-native";
 import { Card } from "react-native-paper";
 import { NavigationProp, ParamListBase } from "@react-navigation/native";
-import { httpsCallable } from "@firebase/functions";
 
-import {
-    FactureData,
-    ProductFactureData,
-    ProductUnit,
-    ResponseData,
-    userType,
-    VendorCollectionData,
-    YearFactureResumeCollection,
-} from "@feria-a-ti/common/model/functionsTypes";
+import { YearFactureResumeCollection } from "@feria-a-ti/common/model/functionsTypes";
 import { colors } from "@feria-a-ti/common/theme/base";
 
-import { functions } from "@feria-a-ti/common/firebase";
+import { ResumeFields } from "@feria-a-ti/common/model/fields/factureFields";
+
+import { getResume } from "@feria-a-ti/common/functions/vendor/vendorFunctions";
+
 import { DashboardComponent } from "@feria-a-ti/mobile/components/dashboard/DashboardComponent";
-import { useAppContext } from "../AppContext";
-import {
-    FactureFields,
-    ResumeFields,
-} from "@feria-a-ti/common/model/fields/factureFields";
+import { useAppContext } from "@feria-a-ti/mobile/app/AppContext";
 
 export interface DashboardVendorProps {
     resumes?: Map<number, YearFactureResumeCollection>;
@@ -34,6 +24,8 @@ export const DashboardVendor = (props: DashboardVendorProps) => {
     // Context variables
     const { authUser, emailUser, type, authToken, setMessage, resetProduct } =
         useAppContext();
+    // UI variables
+    const [canSubmit, setCanSubmit] = useState<boolean>(true);
 
     // Retrived data
     const [localResumes, setLocalResumes] = useState<
@@ -50,29 +42,20 @@ export const DashboardVendor = (props: DashboardVendorProps) => {
             token: authToken as string,
             year: year,
         };
-        if (authUser != undefined || authUser != "") {
-            const getFactures = httpsCallable(functions, "getResume");
-            getFactures(formatedData).then((result) => {
-                const { msg, error, extra } =
-                    result.data as ResponseData<YearFactureResumeCollection>;
-                console.log(result);
-                //setIsLogged(result.data as any);
-                setMessage({ msg, isError: error });
-                if (!error && extra != null) {
-                    console.log("IM SAVING THE RESUMES >:I");
-                    const newResumes = resumes;
 
-                    newResumes?.set(extra.year, extra);
+        getResume({ formatedData, setCanSubmit, setMessage }, (data) => {
+            console.log("IM SAVING THE RESUMES >:I");
+            const newResumes = resumes;
 
-                    if (resumes && setResumes) {
-                        setResumes && setResumes(newResumes);
-                    } else {
-                        localResumes && setLocalResumes(newResumes);
-                    }
-                    setDate && setDate(new Date());
-                }
-            });
-        }
+            newResumes?.set(data.year, data);
+
+            if (resumes && setResumes) {
+                setResumes && setResumes(newResumes);
+            } else {
+                localResumes && setLocalResumes(newResumes);
+            }
+            setDate && setDate(new Date());
+        });
     };
 
     useEffect(() => {

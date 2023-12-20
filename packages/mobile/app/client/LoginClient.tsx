@@ -1,19 +1,16 @@
 import React, { useState } from "react";
-import { HttpsCallableResult } from "firebase/functions";
 import { ScrollView, StyleSheet } from "react-native";
 import { NavigationProp, ParamListBase } from "@react-navigation/native";
-import { httpsCallable } from "@firebase/functions";
 
-import { checkLoginFields } from "@feria-a-ti/common/check/checkLoginFields";
-import { LoginFields } from "@feria-a-ti/common/model/fields/loginFields";
-import { functions } from "@feria-a-ti/common/firebase";
-import LoginForm from "@feria-a-ti/mobile/components/forms/LoginForm";
 import { Button } from "react-native-paper";
-import {
-    ResponseData,
-    UserToken,
-} from "@feria-a-ti/common/model/functionsTypes";
-import { useAppContext } from "../AppContext";
+
+import { LoginFields } from "@feria-a-ti/common/model/fields/loginFields";
+import { UserToken } from "@feria-a-ti/common/model/functionsTypes";
+
+import { loginBuyer } from "@feria-a-ti/common/functions/accessFunctions";
+
+import LoginForm from "@feria-a-ti/mobile/components/forms/LoginForm";
+import { useAppContext } from "@feria-a-ti/mobile/app/AppContext";
 
 export interface LoginClientProps {
     navigation: NavigationProp<ParamListBase>;
@@ -25,37 +22,19 @@ export const LoginClient = (props: LoginClientProps) => {
     // Navigation
     const { navigation } = props;
     // Form variables
-    const [submitActive, setSubmitActive] = useState(true);
+    const [cansubmit, setCanSubmit] = useState(true);
 
     const onSubmit = (data: LoginFields) => {
-        //  setSubmitActive(false);
+        //  cetCanSubmit(false);
         console.log("SUBMIT FORM");
-        setSubmitActive(false);
+        setCanSubmit(false);
 
-        const check = checkLoginFields(data);
-        if (check) {
-            const login = httpsCallable(functions, "login");
-            login(data)
-                .then(
-                    (result: HttpsCallableResult<ResponseData<UserToken>>) => {
-                        const {
-                            msg,
-                            error,
-                            extra: { token, type, email, id },
-                        } = result.data;
-                        console.log(result);
-                        setMessage({ msg, isError: error });
-                        if (token != null && token != "") {
-                            setSession({ token, type, email, id });
-                            navigation.navigate("session");
-                        }
-                    }
-                )
-                .catch((error: any) => {
-                    console.log(error);
-                })
-                .finally(() => setSubmitActive(true));
-        }
+        loginBuyer({ formatedData: data, setCanSubmit, setMessage }, () => {
+            (value: UserToken) => {
+                setSession && setSession(value);
+                navigation.navigate("session");
+            };
+        });
     };
 
     return (
@@ -67,7 +46,7 @@ export const LoginClient = (props: LoginClientProps) => {
                 <LoginForm
                     label={"Acceso cliente"}
                     onSubmit={onSubmit}
-                    canSubmit={submitActive}
+                    canSubmit={cansubmit}
                 >
                     <Button
                         mode="text"

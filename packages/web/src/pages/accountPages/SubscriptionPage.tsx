@@ -72,11 +72,12 @@ const SubscriptionPage = () => {
         console.log("DATA::", formatedData);
         // Generate facture
         if (canSubmit && subscriptionData && subscriptionData != null) {
-            paySubscriptionWeb(
-                { formatedData, setCanSubmit, setMessage },
-                (value: any) => {
-                    resetProduct();
+            const returnUrl =
+                window.location.origin + "/transaction/subscription";
 
+            paySubscriptionWeb(
+                { formatedData, returnUrl, setCanSubmit, setMessage },
+                (value: any) => {
                     setResponse(value);
                     console.log(value);
                     console.log(form);

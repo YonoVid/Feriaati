@@ -14,6 +14,12 @@ import {
     userStatus,
 } from "@feria-a-ti/common/model/fields/registerFields";
 import { ResponseData } from "@feria-a-ti/common/model/functionsTypes";
+
+import {
+    confirmRegisterUser,
+    registerAccountUser,
+} from "@feria-a-ti/common/functions/account/registerFunctions";
+
 import RegisterForm from "@feria-a-ti/mobile/components/forms/RegisterForm";
 import ConfirmRegisterForm from "@feria-a-ti/mobile/components/forms/ConfirmRegisterForm";
 import { useAppContext } from "../AppContext";
@@ -34,64 +40,28 @@ export const RegisterClient = (props: RegisterClientProps) => {
     const [registerComplete, setRegisterComplete] = useState(false);
 
     const onSubmitRegister = async (data: RegisterFields) => {
-        setCanSubmit(false);
-        const check = checkRegisterFields(data);
-
-        if (check) {
-            //Call firebase function to create user
-            const addUser = httpsCallable<RegisterFields, ResponseData<string>>(
-                functions,
-                "addUser"
-            );
-            data.status = userStatus.registered;
-            addUser(data)
-                .then((result) => {
-                    const { msg, error } = result.data;
-                    console.log(result);
-                    //Set registered email
-                    setEmailRegistered(data.email);
-                    //Set register complete
-                    setRegisterComplete(true);
-                    setMessage({ msg, isError: error });
-                })
-                .catch((error) => {
-                    console.log(error);
-                    setMessage({ msg: messagesCode["ERR00"], isError: true });
-                })
-                .finally(() => setCanSubmit(true));
-        }
-        console.log(data, check);
+        registerAccountUser(
+            { formatedData: data, setCanSubmit, setMessage },
+            (value: string) => {
+                //Set registered email
+                setEmailRegistered(value);
+                //Set register complete
+                setRegisterComplete(true);
+            }
+        );
     };
 
     const onSubmitConfirmRegister = async (data: ConfirmRegisterFields) => {
-        setCanSubmit(false);
-        //Format data
-        const formatedData: RegisterConfirm = {
-            email: emailRegistered,
-            code: data.code,
-        };
-        //Call firebase function to create user
-        const confirmRegister = httpsCallable<
-            RegisterConfirm,
-            ResponseData<string>
-        >(functions, "confirmRegister");
-        confirmRegister(formatedData)
-            .then((result) => {
-                const { msg, error } = result.data;
-                console.log(result);
-
-                setMessage({ msg, isError: error });
-                navigation.navigate("loginClient", {
-                    email: { emailRegistered },
-                });
-            })
-            .catch((error) => {
-                console.log(error);
-                setMessage({ msg: messagesCode["ERR00"], isError: true });
-            })
-            .finally(() => setCanSubmit(true));
-
-        console.log(data);
+        if (registerComplete) {
+            confirmRegisterUser(
+                { formatedData: data, setCanSubmit, setMessage },
+                () => {
+                    navigation.navigate("loginClient", {
+                        email: { emailRegistered },
+                    });
+                }
+            );
+        }
     };
 
     return (

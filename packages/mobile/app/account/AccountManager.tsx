@@ -1,24 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { httpsCallable, FunctionsError } from "firebase/functions";
-import { Alert, ScrollView, StyleSheet, Text, View } from "react-native";
+import { ScrollView, StyleSheet } from "react-native";
 import { NavigationProp, ParamListBase } from "@react-navigation/native";
 
-import { functions } from "@feria-a-ti/common/firebase";
-import { messagesCode } from "@feria-a-ti/common/constants/errors";
 import { GetAccountFields } from "@feria-a-ti/common/model/account/getAccountFields";
 import { EditAccountFields } from "@feria-a-ti/common/model/account/editAccountFields";
-import {
-    checkEditAccountFields,
-    checkGetAccountFields,
-} from "@feria-a-ti/common/check/checkAccountFields";
+import { AccountData } from "@feria-a-ti/common/model/functionsTypes";
 
 import {
-    AccountData,
-    ResponseData,
-} from "@feria-a-ti/common/model/functionsTypes";
-import { useAppContext } from "../AppContext";
-import EditAccountForm from "../../components/forms/EditAccountForm";
-import { Button } from "react-native-paper";
+    editAccountUser,
+    getAccountUser,
+} from "@feria-a-ti/common/functions/account/accountFunctions";
+
+import EditAccountForm from "@feria-a-ti/mobile/components/forms/EditAccountForm";
+import { useAppContext } from "@feria-a-ti/mobile/app/AppContext";
 
 export interface AccountManagerProps {
     navigation: NavigationProp<ParamListBase>;
@@ -26,48 +20,27 @@ export interface AccountManagerProps {
 
 export const AccountManager = () => {
     // Context variables
-    const { authToken, type, setMessage } = useAppContext();
+    const { authToken, emailUser, type, setMessage } = useAppContext();
 
     const [accountData, setAccountData] = useState<AccountData | "loading">();
 
     const [canSubmit, setCanSubmit] = useState(true);
 
-    const getAccountData = () => {
+    const getAccount = () => {
         console.log("SUBMIT FORM");
         //Format data to send to server
         const formatedData: GetAccountFields = {
             token: authToken,
+            email: emailUser,
             type: type,
         };
-        const check = checkGetAccountFields(formatedData);
 
-        console.log("ERROR CHECK::", check);
-
-        if (check) {
-            //Lock register button
-            setCanSubmit(false);
-            //Call firebase function to create user
-            const getAccount = httpsCallable<
-                GetAccountFields,
-                ResponseData<AccountData>
-            >(functions, "getAccountUser");
-            getAccount(formatedData)
-                .then((result) => {
-                    const { msg, error, extra } = result.data;
-                    console.log(result);
-                    //Show alert message
-                    setMessage({ msg, isError: error });
-                    setAccountData(extra);
-                })
-                .catch((error) => {
-                    console.log(error);
-                    setMessage({ msg: messagesCode["ERR00"], isError: error });
-                })
-                .finally(() => setCanSubmit(true)); //Unlock register button
-        }
+        getAccountUser({ formatedData, setCanSubmit, setMessage }, (data) => {
+            setAccountData(data);
+        });
     };
 
-    const onEditAccount = (data: EditAccountFields) => {
+    const onEdit = (data: EditAccountFields) => {
         console.log("SUBMIT FORM");
         //Format data to send to server
         const formatedData: EditAccountFields = {
@@ -78,39 +51,16 @@ export const AccountManager = () => {
             direction: data.direction,
             phone: data.phone,
         };
-        const check = checkEditAccountFields(formatedData);
 
-        console.log("ERROR CHECK::", check);
-        console.log("DATA CHECKED::", formatedData);
-
-        if (check) {
-            //Lock register button
-            setCanSubmit(false);
-            //Call firebase function to create user
-            const getAccount = httpsCallable<
-                EditAccountFields,
-                ResponseData<AccountData>
-            >(functions, "editAccountUser");
-            getAccount(formatedData)
-                .then((result) => {
-                    const { msg, error, extra } = result.data;
-                    console.log(result);
-                    //Show alert message
-                    setMessage({ msg, isError: error });
-                    !error && extra && setAccountData(extra);
-                })
-                .catch((error) => {
-                    console.log(error);
-                    setMessage({ msg: messagesCode["ERR00"], isError: error });
-                })
-                .finally(() => setCanSubmit(true)); //Unlock register button
-        }
+        editAccountUser({ formatedData, setCanSubmit, setMessage }, (data) => {
+            setAccountData(data);
+        });
     };
 
     useEffect(() => {
         if (!accountData || accountData == null) {
             setAccountData("loading");
-            getAccountData();
+            getAccount();
         }
     }, []);
 
@@ -126,7 +76,7 @@ export const AccountManager = () => {
                             ? accountData
                             : undefined
                     }
-                    onSubmit={onEditAccount}
+                    onSubmit={onEdit}
                     canSubmit={canSubmit}
                 />
             </ScrollView>

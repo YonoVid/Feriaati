@@ -64,34 +64,39 @@ const loginCall = (
     functionName: string = "login"
 ) => {
     const { formatedData, setCanSubmit, setMessage } = data;
-    setCanSubmit(false);
 
-    const login = httpsCallable(functions, functionName);
-    login(formatedData)
-        .then((result) => {
-            const {
-                msg,
-                error,
-                extra: { email, type, token, id },
-            } = result.data as ResponseData<UserToken>;
-            console.log(result);
-            console.log(formatedData.attempts);
-            setCanSubmit(true);
-            //setIsLogged(result.data as any);
+    const check = checkLoginFields(formatedData);
 
-            if (msg !== "") {
-                setMessage({ msg, isError: error });
-            }
-            if (token != null && token !== "") {
-                onSuccess({ email, type, token, id });
-            }
-        })
-        .catch(() => {
-            setMessage({
-                msg: "Error de conexión con el servidor",
-                isError: true,
-            });
-            setCanSubmit(true);
-        })
-        .finally(() => setCanSubmit(true));
+    if (check) {
+        setCanSubmit(false);
+
+        const login = httpsCallable(functions, functionName);
+        login(formatedData)
+            .then((result) => {
+                const {
+                    msg,
+                    error,
+                    extra: { email, type, token, id },
+                } = result.data as ResponseData<UserToken>;
+                console.log(result);
+                console.log(formatedData.attempts);
+                setCanSubmit(true);
+                //setIsLogged(result.data as any);
+
+                if (msg !== "") {
+                    setMessage({ msg, isError: error });
+                }
+                if (token != null && token !== "") {
+                    onSuccess({ email, type, token, id });
+                }
+            })
+            .catch(() => {
+                setMessage({
+                    msg: "Error de conexión con el servidor",
+                    isError: true,
+                });
+                setCanSubmit(true);
+            })
+            .finally(() => setCanSubmit(true));
+    }
 };

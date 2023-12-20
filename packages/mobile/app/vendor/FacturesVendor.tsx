@@ -2,23 +2,16 @@ import React, { useEffect, useState } from "react";
 import { Text, ScrollView, StyleSheet } from "react-native";
 import { Card } from "react-native-paper";
 import { NavigationProp, ParamListBase } from "@react-navigation/native";
-import { httpsCallable } from "@firebase/functions";
 
-import {
-    FactureData,
-    ProductFactureData,
-    ProductUnit,
-    ResponseData,
-    VendorCollectionData,
-} from "@feria-a-ti/common/model/functionsTypes";
+import { FactureData } from "@feria-a-ti/common/model/functionsTypes";
+import { FactureFields } from "@feria-a-ti/common/model/fields/factureFields";
+
 import { colors } from "@feria-a-ti/common/theme/base";
 
-import { functions } from "@feria-a-ti/common/firebase";
-import { ShoppingCartComponent } from "@feria-a-ti/mobile/components/productList/ShoppingCartComponent";
-import { ProductFactureFields } from "@feria-a-ti/common/model/fields/buyingFields";
-import { useAppContext } from "../AppContext";
-import { FactureFields } from "@feria-a-ti/common/model/fields/factureFields";
-import { FactureList } from "../../components/factureList/factureList";
+import { getVendorFactures } from "@feria-a-ti/common/functions/factureFunctions";
+
+import { FactureList } from "@feria-a-ti/mobile/components/factureList/factureList";
+import { useAppContext } from "@feria-a-ti/mobile/app/AppContext";
 
 export interface FacturesVendorProps {
     navigation: NavigationProp<ParamListBase>;
@@ -29,8 +22,9 @@ export const FacturesVendor = (props: FacturesVendorProps) => {
     const { authUser, authToken, emailUser, setMessage, resetProduct } =
         useAppContext();
     // Context variables
-    const { products, editProduct, deleteProduct } = useAppContext();
-
+    const { products } = useAppContext();
+    // UI variable
+    const [canSubmit, setCanSubmit] = useState<boolean>(true);
     // Retrived data
     const [factures, setFactures] = useState<Array<FactureData>>([]);
 
@@ -42,20 +36,13 @@ export const FacturesVendor = (props: FacturesVendorProps) => {
             index: index,
             size: 10,
         };
-        if (authUser != undefined || authUser != "") {
-            const getFactures = httpsCallable(functions, "getVendorFactures");
-            getFactures(formatedData).then((result) => {
-                const { msg, error, extra } = result.data as ResponseData<
-                    Array<FactureData>
-                >;
-                console.log(result);
-                //setIsLogged(result.data as any);
-                setMessage({ msg, isError: error });
-                if (!error) {
-                    setFactures && setFactures(factures.concat(extra));
-                }
-            });
-        }
+
+        getVendorFactures(
+            { formatedData, setCanSubmit, setMessage },
+            (data) => {
+                setFactures && setFactures(factures.concat(data));
+            }
+        );
     };
 
     useEffect(() => {

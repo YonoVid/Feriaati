@@ -6,6 +6,7 @@ import {
     IntegrationCommerceCodes,
     Options,
     WebpayPlus,
+    Environment,
 } from "transbank-sdk";
 
 import { checkGetAccountFields } from "../../check/checkAccountFields";
@@ -40,11 +41,13 @@ export const getSubscription = async (
         >(functions, "getAccountSubscription");
         getAccount(formatedData)
             .then((result) => {
-                const { msg, error, extra } = result.data;
+                const { msg, error: isError, extra } = result.data;
                 console.log(result);
                 //Show alert message
-                setMessage({ msg, isError: error });
-                extra != null && onSuccess(extra);
+                setMessage({ msg, isError });
+                if (!isError && extra != null) {
+                    onSuccess(extra);
+                }
             })
             .catch((error) => {
                 console.log(error);
@@ -58,12 +61,50 @@ export const getSubscription = async (
 export const paySubscriptionWeb = async (
     data: {
         formatedData: SubscriptionFields;
+        returnUrl: string;
         setCanSubmit: (value: boolean) => void;
         setMessage: (value: MessageData) => void;
     },
     onSuccess: (value: any) => void
 ) => {
-    const { formatedData, setCanSubmit, setMessage } = data;
+    const { formatedData, returnUrl, setCanSubmit, setMessage } = data;
+
+    paySubscription(
+        { formatedData, returnUrl, setCanSubmit, setMessage },
+        onSuccess,
+        true
+    );
+};
+
+export const paySubscriptionMobile = async (
+    data: {
+        formatedData: SubscriptionFields;
+        returnUrl: string;
+        setCanSubmit: (value: boolean) => void;
+        setMessage: (value: MessageData) => void;
+    },
+    onSuccess: (value: any) => void
+) => {
+    const { formatedData, returnUrl, setCanSubmit, setMessage } = data;
+
+    paySubscription(
+        { formatedData, returnUrl, setCanSubmit, setMessage },
+        onSuccess,
+        false
+    );
+};
+
+export const paySubscription = async (
+    data: {
+        formatedData: SubscriptionFields;
+        returnUrl: string;
+        setCanSubmit: (value: boolean) => void;
+        setMessage: (value: MessageData) => void;
+    },
+    onSuccess: (value: any) => void,
+    isWeb: boolean = true
+) => {
+    const { formatedData, returnUrl, setCanSubmit, setMessage } = data;
 
     console.log("DATA::", formatedData);
     // Generate facture
@@ -86,14 +127,12 @@ export const paySubscriptionWeb = async (
 
                     const amount = formatedData.amount;
                     const sessionId = formatedData.token + "-" + extra;
-                    const returnUrl =
-                        window.location.origin + "/transaction/subscription";
 
                     const tx = new WebpayPlus.Transaction(
                         new Options(
                             IntegrationCommerceCodes.WEBPAY_PLUS,
                             IntegrationApiKeys.WEBPAY,
-                            "/api" //Environment.Integration
+                            isWeb ? "/api" : Environment.Integration
                         )
                     );
                     tx.create(extra, sessionId, amount, returnUrl)

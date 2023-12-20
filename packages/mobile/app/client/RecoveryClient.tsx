@@ -1,20 +1,20 @@
 import React, { useState } from "react";
-import { HttpsCallableResult } from "firebase/functions";
-import { Alert, ScrollView, StyleSheet, Text, View } from "react-native";
+import { ScrollView, StyleSheet } from "react-native";
 import { NavigationProp, ParamListBase } from "@react-navigation/native";
 
-import { checkUpdatePassFields } from "@feria-a-ti/common/check/checkLoginFields";
 import {
     RecoveryFields,
     UpdatePassFields,
 } from "@feria-a-ti/common/model/fields/loginFields";
-import { functions } from "@feria-a-ti/common/firebase";
-import { httpsCallable } from "@firebase/functions";
-import { ResponseData } from "@feria-a-ti/common/model/functionsTypes";
-import { MessageAlert } from "@feria-a-ti/mobile/components/MessageAlert";
 import RecoveryForm from "@feria-a-ti/mobile/components/forms/RecoveryForm";
-import { ChangePasswordForm } from "../../components/forms/ChangePasswordForm";
-import { useAppContext } from "../AppContext";
+import { ChangePasswordForm } from "@feria-a-ti/mobile/components/forms/ChangePasswordForm";
+
+import {
+    editPasswordUser,
+    recoverPasswordUser,
+} from "@feria-a-ti/common/functions/account/accountFunctions";
+
+import { useAppContext } from "@feria-a-ti/mobile/app/AppContext";
 
 export interface LoginClientProps {
     navigation: NavigationProp<ParamListBase>;
@@ -26,64 +26,32 @@ export const RecoveryClient = (props: LoginClientProps) => {
     // Navigation
     const { navigation } = props;
     // Form variables
-    const [submitActive, setSubmitActive] = useState(true);
+    const [canSubmit, setCanSubmit] = useState(true);
     const [recoveryApproved, setRecoveryApproved] = useState(false);
     const [recoveryEmail, setRecoveryEmail] = useState("");
 
     const onSubmitRecovery = (data: RecoveryFields) => {
         console.log("SUBMIT FORM");
-        setSubmitActive(false);
 
-        const check = data.email != null && data.email != "";
-        if (check) {
-            const passRecovery = httpsCallable(functions, "passRecovery");
-            passRecovery(data)
-                .then((result: HttpsCallableResult<ResponseData<string>>) => {
-                    const {
-                        msg,
-                        error,
-                        extra: { token, type, email },
-                    } = result.data;
-                    console.log(result);
-                    setMessage({ msg, isError: error });
-                    if (!error) {
-                        setRecoveryEmail(data.email);
-                        setRecoveryApproved(true);
-                    }
-                })
-                .catch((error: any) => {
-                    console.log(error);
-                })
-                .finally(() => setSubmitActive(true));
-        }
+        recoverPasswordUser(
+            { formatedData: data, setCanSubmit, setMessage },
+            (value: string) => {
+                setRecoveryEmail(value);
+                setRecoveryApproved(true);
+            }
+        );
     };
 
     const onSubmitChange = (data: UpdatePassFields) => {
         console.log("SUBMIT FORM");
-        setSubmitActive(false);
         data.email = recoveryEmail;
 
-        const check = checkUpdatePassFields(data);
-        if (check) {
-            const passUpdate = httpsCallable(functions, "passUpdate");
-            passUpdate(data)
-                .then((result: HttpsCallableResult<ResponseData<string>>) => {
-                    const {
-                        msg,
-                        error,
-                        extra: { token, type, email },
-                    } = result.data;
-                    console.log(result);
-                    setMessage({ msg, isError: error });
-                    if (!error) {
-                        navigation.navigate("loginClient");
-                    }
-                })
-                .catch((error: any) => {
-                    console.log(error);
-                })
-                .finally(() => setSubmitActive(true));
-        }
+        editPasswordUser(
+            { formatedData: data, setCanSubmit, setMessage },
+            () => {
+                navigation.navigate("loginClient");
+            }
+        );
     };
 
     return (
@@ -95,12 +63,12 @@ export const RecoveryClient = (props: LoginClientProps) => {
                 {recoveryApproved ? (
                     <ChangePasswordForm
                         onSubmit={onSubmitChange}
-                        canSubmit={submitActive}
+                        canSubmit={canSubmit}
                     />
                 ) : (
                     <RecoveryForm
                         onSubmit={onSubmitRecovery}
-                        canSubmit={submitActive}
+                        canSubmit={canSubmit}
                     />
                 )}
             </ScrollView>

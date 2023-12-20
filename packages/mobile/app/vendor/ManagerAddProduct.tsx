@@ -1,15 +1,13 @@
 import React, { useState } from "react";
 import { ScrollView, StyleSheet } from "react-native";
 import { NavigationProp, ParamListBase } from "@react-navigation/native";
-import { httpsCallable } from "@firebase/functions";
 
-import { functions } from "@feria-a-ti/common/firebase";
-
-import { checkAddProductFields } from "@feria-a-ti/common/check/checkProductFields";
-import { ResponseData } from "@feria-a-ti/common/model/functionsTypes";
-import { useAppContext } from "../AppContext";
-import ProductAddForm from "../../components/forms/ProductAddForm";
 import { ProductFields } from "@feria-a-ti/common/model/props/productAddFormProps";
+
+import { addProduct } from "@feria-a-ti/common/functions/vendor/manageProductsFunctions";
+
+import ProductAddForm from "@feria-a-ti/mobile/components/forms/ProductAddForm";
+import { useAppContext } from "@feria-a-ti/mobile/app/AppContext";
 
 export interface ManagerAddProductProps {
     navigation: NavigationProp<ParamListBase>;
@@ -36,26 +34,10 @@ export const ManagerAddProduct = (props: ManagerAddProductProps) => {
             tokenVendor: authToken,
             image: imageData,
         };
-        const check = checkAddProductFields(formatedData);
-        console.log("SUBMIT FORM::", check);
-        if (check) {
-            setCanSubmit(false);
-            const addProduct = httpsCallable<
-                ProductFields,
-                ResponseData<string>
-            >(functions, "addProduct");
-            addProduct(formatedData)
-                .then((result) => {
-                    const { msg, error } = result.data as ResponseData<string>;
-                    console.log(result.data);
-                    !error && navigation.navigate("managerVendor");
-                    //setIsLogged(result.data as any);
-                    if (msg !== "") {
-                        setMessage({ msg, isError: error });
-                    }
-                })
-                .finally(() => setCanSubmit(true));
-        }
+
+        addProduct({ formatedData, setCanSubmit, setMessage }, () => {
+            navigation.navigate("managerVendor");
+        });
     };
 
     return (

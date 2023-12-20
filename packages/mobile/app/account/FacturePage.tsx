@@ -1,33 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { useParams, useSearchParams } from "react-router-dom";
 import { ScrollView, StyleSheet, View, Text } from "react-native";
 import { NavigationProp, ParamListBase } from "@react-navigation/native";
-import { httpsCallable } from "@firebase/functions";
-import { functions } from "@feria-a-ti/common/firebase";
 
 import { Button, ProgressBar } from "react-native-paper";
 
-import {
-    IntegrationApiKeys,
-    IntegrationCommerceCodes,
-    Options,
-    WebpayPlus,
-    Environment,
-} from "transbank-sdk";
-
 import { colors } from "@feria-a-ti/common/theme/base";
-import {
-    FactureStatus,
-    ResponseData,
-} from "@feria-a-ti/common/model/functionsTypes";
+
 import { TransbankTransaction } from "@feria-a-ti/common/model/account/paymenTypes";
-import {
-    FactureTypes,
-    UpdateFactureFields,
-} from "@feria-a-ti/common/model/fields/buyingFields";
-import { messagesCode } from "@feria-a-ti/common/constants/errors";
 
 import { useAppContext } from "../AppContext";
+import {
+    FactureStatusFields,
+    getFactureStatus,
+} from "@feria-a-ti/common/functions/factureFunctions";
 
 export interface FactureResultProps {
     route: { params: any };
@@ -57,64 +42,24 @@ export const FactureResult = (props: FactureResultProps) => {
     useEffect(() => {
         console.log("TOKEN_WS::" + token_ws);
         console.log("TYPE::" + type);
-        if (
-            token_ws &&
-            token_ws != "" &&
-            Object.values<string>(FactureTypes).includes(type as string)
-        ) {
-            const tx = new WebpayPlus.Transaction(
-                new Options(
-                    IntegrationCommerceCodes.WEBPAY_PLUS,
-                    IntegrationApiKeys.WEBPAY,
-                    Environment.Integration
-                )
-            );
-            tx.commit(token_ws)
-                .then((value: TransbankTransaction) => {
-                    console.log("TOKEN RESPONSE::", value);
 
-                    setTransaction(value);
+        const formatedData: FactureStatusFields = {
+            token: authToken as string,
+            type: type,
+            transactionToken: token_ws as string,
+            factureType: type as string,
+        };
 
-                    if (value != undefined && value != null) {
-                        let status = FactureStatus.NEGATED;
-                        if (value.response_code == 0) {
-                            resetProduct();
-                            status = FactureStatus.APPROVED;
-                        }
+        getFactureStatus(
+            { formatedData, setCanSubmit, setMessage },
+            (value: TransbankTransaction) => {
+                setTransaction(value);
 
-                        const updateFacture = httpsCallable<
-                            UpdateFactureFields,
-                            ResponseData<string>
-                        >(functions, "updateUserFacture");
-
-                        const formatedData: UpdateFactureFields = {
-                            token: authToken as string,
-                            userType: authType,
-                            facture: value.buy_order,
-                            status: status,
-                            type: type as FactureTypes,
-                        };
-
-                        console.log(formatedData);
-
-                        updateFacture(formatedData)
-                            .then((result) => {
-                                const { msg, error } = result.data;
-                                console.log(result);
-                                //Show alert message
-                                setMessage({ msg, isError: error });
-                            })
-                            .catch((error) => {
-                                console.log(error);
-                                setMessage({
-                                    msg: messagesCode["ERR00"],
-                                    isError: error,
-                                });
-                            });
-                    }
-                })
-                .finally(() => setCanSubmit(true));
-        }
+                if (value.response_code == 0) {
+                    resetProduct();
+                }
+            }
+        );
     }, []);
 
     return (

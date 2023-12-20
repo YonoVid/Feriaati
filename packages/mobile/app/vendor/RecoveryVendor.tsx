@@ -12,9 +12,15 @@ import {
 import { functions } from "@feria-a-ti/common/firebase";
 import { httpsCallable } from "@firebase/functions";
 import { ResponseData } from "@feria-a-ti/common/model/functionsTypes";
+
+import {
+    editPasswordVendor,
+    recoverPasswordVendor,
+} from "@feria-a-ti/common/functions/account/accountFunctions";
+
 import RecoveryForm from "@feria-a-ti/mobile/components/forms/RecoveryForm";
-import { ChangePasswordForm } from "../../components/forms/ChangePasswordForm";
-import { useAppContext } from "../AppContext";
+import { ChangePasswordForm } from "@feria-a-ti/mobile/components/forms/ChangePasswordForm";
+import { useAppContext } from "@feria-a-ti/mobile/app/AppContext";
 
 export interface LoginClientProps {
     navigation: NavigationProp<ParamListBase>;
@@ -25,6 +31,8 @@ export const RecoveryVendor = (props: LoginClientProps) => {
     const { setMessage } = useAppContext();
     // Navigation
     const { navigation } = props;
+    // UI variable
+    const [canSubmit, setCanSubmit] = useState<boolean>(true);
     // Form variables
     const [submitActive, setSubmitActive] = useState(true);
     const [recoveryApproved, setRecoveryApproved] = useState(false);
@@ -34,28 +42,13 @@ export const RecoveryVendor = (props: LoginClientProps) => {
         console.log("SUBMIT FORM");
         setSubmitActive(false);
 
-        const check = data.email != null && data.email != "";
-        if (check) {
-            const passRecovery = httpsCallable(functions, "passRecoveryVendor");
-            passRecovery(data)
-                .then((result: HttpsCallableResult<ResponseData<string>>) => {
-                    const {
-                        msg,
-                        error,
-                        extra: { token, type, email },
-                    } = result.data;
-                    console.log(result);
-                    setMessage({ msg, isError: error });
-                    if (!error) {
-                        setRecoveryEmail(data.email);
-                        setRecoveryApproved(true);
-                    }
-                })
-                .catch((error: any) => {
-                    console.log(error);
-                })
-                .finally(() => setSubmitActive(true));
-        }
+        recoverPasswordVendor(
+            { formatedData: data, setCanSubmit, setMessage },
+            (data) => {
+                setRecoveryEmail(data);
+                setRecoveryApproved(true);
+            }
+        );
     };
 
     const onSubmitChange = (data: UpdatePassFields) => {
@@ -63,27 +56,12 @@ export const RecoveryVendor = (props: LoginClientProps) => {
         setSubmitActive(false);
         data.email = recoveryEmail;
 
-        const check = checkUpdatePassFields(data);
-        if (check) {
-            const passUpdate = httpsCallable(functions, "passUpdateVendor");
-            passUpdate(data)
-                .then((result: HttpsCallableResult<ResponseData<string>>) => {
-                    const {
-                        msg,
-                        error,
-                        extra: { token, type, email },
-                    } = result.data;
-                    console.log(result);
-                    setMessage({ msg, isError: error });
-                    if (!error) {
-                        navigation.navigate("loginClient");
-                    }
-                })
-                .catch((error: any) => {
-                    console.log(error);
-                })
-                .finally(() => setSubmitActive(true));
-        }
+        editPasswordVendor(
+            { formatedData: data, setCanSubmit, setMessage },
+            () => {
+                navigation.navigate("loginClient");
+            }
+        );
     };
 
     return (
