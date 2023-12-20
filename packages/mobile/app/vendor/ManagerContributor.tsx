@@ -1,8 +1,9 @@
-import { useContext, useEffect, useState } from "react";
-import { Navigate } from "react-router-dom";
-import { FieldValues } from "react-hook-form";
+import React, { useEffect, useState } from "react";
+import { Text, ScrollView, StyleSheet } from "react-native";
+import { Card } from "react-native-paper";
+import { NavigationProp, ParamListBase } from "@react-navigation/native";
 
-import LoadingOverlay from "react-loading-overlay-ts";
+import { colors } from "@feria-a-ti/common/theme/base";
 
 import {
     addContributor,
@@ -10,28 +11,35 @@ import {
     updateContributor,
 } from "@feria-a-ti/common/functions/vendor/contributorsFunctions";
 import { getContributorList } from "@feria-a-ti/common/functions/vendor/contributorsFunctions";
+
 import {
     ContributorData,
     ContributorLevel,
-    userType,
+    YearFactureResumeCollection,
 } from "@feria-a-ti/common/model/functionsTypes";
 import { UserRequestFields } from "@feria-a-ti/common/model/fields/fields";
 import { RegisterContributorFields } from "@feria-a-ti/common/model/fields/registerFields";
 import { UpdateContributorFields } from "@feria-a-ti/common/model/fields/updateFields";
 import { DeleteFields } from "@feria-a-ti/common/model/fields/adminFields";
 
-import RegisterContributorForm from "@feria-a-ti/web/src/components/forms/registerContributorForm/RegisterContributorForm";
-import ContributorList from "@feria-a-ti/web/src/components/contributorList/ContributorList";
+import { useAppContext } from "@feria-a-ti/mobile/app/AppContext";
+import { ContributorList } from "../../components/contributorList/contributorList";
+import ContributorAdd from "../../components/forms/ContributorAddForm";
+import ContributorAddForm from "../../components/forms/ContributorAddForm";
 
-import { UserContext } from "@feria-a-ti/web/src/App";
-import { useHeaderContext } from "../HeaderFunction";
-import "../../App.css";
+export interface ManagerContributorProps {
+    resumes?: Map<number, YearFactureResumeCollection>;
+    setResumes?: (data: Map<number, YearFactureResumeCollection>) => void;
+    navigation: NavigationProp<ParamListBase>;
+}
 
-function ManageContributorsPage() {
-    //Global UI context
-    const { setMessage } = useHeaderContext();
-    //Global state variable
-    const { authToken, emailUser, type } = useContext(UserContext);
+export const ManagerContributor = (props: ManagerContributorProps) => {
+    const { resumes, setResumes, navigation } = props;
+    // Context variables
+    const { authUser, emailUser, type, authToken, setMessage, resetProduct } =
+        useAppContext();
+    // UI variables
+    const [canSubmit, setCanSubmit] = useState<boolean>(true);
 
     //Page stored data
     const [usersData, setUsersData] = useState<ContributorData[]>([]);
@@ -42,7 +50,6 @@ function ManageContributorsPage() {
 
     const [isEditing, setIsEditing] = useState(false);
     const [updateContributorPage, setUpdateContributorPage] = useState(false);
-    const [canSubmit, setCanSubmit] = useState(true);
 
     const loadContributors = () => {
         const formatedData: UserRequestFields = {
@@ -60,12 +67,12 @@ function ManageContributorsPage() {
         );
     };
 
-    const onRegisterContributor = (data: FieldValues) => {
+    const onRegisterContributor = (data: RegisterContributorFields) => {
         const formatedData: RegisterContributorFields = {
             token: authToken as string,
             name: data.name.trim(),
             surname: data.surname.trim(),
-            email: data.email,
+            email: emailUser,
             password: data.password,
             permission: data.permission || ContributorLevel.MANAGER,
         };
@@ -80,7 +87,7 @@ function ManageContributorsPage() {
         });
     };
 
-    const onEditContributor = (data: FieldValues) => {
+    const onEditContributor = (data: RegisterContributorFields) => {
         const formatedData: UpdateContributorFields = {
             email: emailUser as string,
             token: authToken as string,
@@ -147,17 +154,13 @@ function ManageContributorsPage() {
 
     return (
         <>
-            {type !== userType.vendor && type !== userType.contributor && (
-                <Navigate to="/session" replace={true} />
-            )}
-            <LoadingOverlay
-                active={!canSubmit}
-                spinner
-                text="Realizando petición..."
+            <ScrollView
+                style={styles.container}
+                contentContainerStyle={styles.innerContainer}
             >
-                {updateContributorPage && (
+                {updateContributorPage ? (
                     <>
-                        <RegisterContributorForm
+                        <ContributorAddForm
                             isEdit={isEditing}
                             contributor={selectedContributor}
                             canSubmit={canSubmit}
@@ -173,20 +176,33 @@ function ManageContributorsPage() {
                             }}
                         />
                     </>
+                ) : (
+                    <ContributorList
+                        contributors={usersData}
+                        isAdding={updateContributorPage}
+                        onAdd={() => setUpdateContributorPage(true)}
+                        onEdit={(data) => {
+                            setUpdateContributorPage(true);
+                            setIsEditing(true);
+                            setSelectedContributor(data);
+                        }}
+                        onDelete={onDeleteContributor}
+                    />
                 )}
-                <ContributorList
-                    contributors={usersData}
-                    isAdding={updateContributorPage}
-                    onAdd={() => setUpdateContributorPage(true)}
-                    onEdit={(data) => {
-                        setUpdateContributorPage(true);
-                        setIsEditing(true);
-                        setSelectedContributor(data);
-                    }}
-                    onDelete={onDeleteContributor}
-                />
-            </LoadingOverlay>
+            </ScrollView>
         </>
     );
-}
-export default ManageContributorsPage;
+};
+
+const styles = StyleSheet.create({
+    innerContainer: {
+        flexGrow: 1,
+        alignContent: "center",
+        justifyContent: "center",
+    },
+    container: {
+        flex: 1,
+        padding: 8,
+        backgroundColor: "#EEEAE0",
+    },
+});

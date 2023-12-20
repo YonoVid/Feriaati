@@ -17,6 +17,7 @@ interface Props<T> extends UseControllerProps<T> {
     type?: "text" | "password" | "email" | "number";
     hidden?: boolean;
     error?: FieldError | undefined;
+    disabled?: boolean;
     onChange?: (value: string) => void;
 }
 
@@ -30,6 +31,7 @@ const InputComponent = <T extends FieldValues>({
     control,
     rules,
     error,
+    disabled,
     onChange,
 }: Props<T>) => {
     //const { name, label, control, rules, error } = props;
@@ -103,6 +105,7 @@ const InputComponent = <T extends FieldValues>({
                                 }}
                                 value={"" || value}
                                 error={error != null}
+                                disabled={disabled || false}
                             />
                             <HelperText
                                 type="error"

@@ -9,9 +9,11 @@ import { SearchProducts } from "@feria-a-ti/mobile/app/client/SearchProducts";
 import { RegisterVendor } from "@feria-a-ti/mobile/app/vendor/RegisterVendor";
 import { RecoveryVendor } from "@feria-a-ti/mobile/app/vendor/RecoveryVendor";
 import { ManagerAddProduct } from "@feria-a-ti/mobile/app/vendor/ManagerAddProduct";
+import { ManagerContributor } from "@feria-a-ti/mobile/app/vendor/ManagerContributor";
 import { AccountManager } from "@feria-a-ti/mobile/app/account/AccountManager";
 import { FactureResult } from "@feria-a-ti/mobile/app/account/FacturePage";
 import SubscriptionAccount from "@feria-a-ti/mobile/app/account/SubscriptionAccount";
+
 import NavigationSession from "@feria-a-ti/mobile/components/navigation/NavigationSession";
 import NavigationClient from "@feria-a-ti/mobile/components/navigation/NavigationClient";
 import NavigationVendor from "@feria-a-ti/mobile/components/navigation/NavigationVendor";
@@ -72,6 +74,11 @@ export default function App() {
                         name="recoveryVendor"
                         component={RecoveryVendor}
                         options={{ title: "Recuperar cuenta de vendedor " }}
+                    />
+                    <Stack.Screen
+                        name="managerContributor"
+                        component={ManagerContributor}
+                        options={{ title: "Gestión de contribuidores" }}
                     />
                     <Stack.Screen
                         name="managerAddProduct"

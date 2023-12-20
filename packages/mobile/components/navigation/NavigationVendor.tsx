@@ -1,14 +1,16 @@
 import React, { useState } from "react";
 
+import { createMaterialBottomTabNavigator } from "react-native-paper/react-navigation";
+import { BottomNavigation } from "react-native-paper";
+
 import { NavigationProp, ParamListBase } from "@react-navigation/native";
+
+import { YearFactureResumeCollection } from "@feria-a-ti/common/model/functionsTypes";
 
 import { DashboardVendor } from "@feria-a-ti/mobile/app/vendor/DashboardVendor";
 import { ManagerVendor } from "@feria-a-ti/mobile/app/vendor/ManagerVendor";
 import { FacturesVendor } from "@feria-a-ti/mobile/app/vendor/FacturesVendor";
-
-import { createMaterialBottomTabNavigator } from "react-native-paper/react-navigation";
-import { BottomNavigation } from "react-native-paper";
-import { YearFactureResumeCollection } from "@feria-a-ti/common/model/functionsTypes";
+import { ManagerContributor } from "@feria-a-ti/mobile/app/vendor/ManagerContributor";
 
 export interface NavigationBarProps {
     navigation: NavigationProp<ParamListBase>;
@@ -40,6 +42,12 @@ export default function NavigationVendor(props: NavigationBarProps) {
             unfocusedIcon: "store-outline",
         },
         {
+            key: "managerContributor",
+            title: "Contribuidores",
+            focusedIcon: "account-group",
+            unfocusedIcon: "account-group-outline",
+        },
+        {
             key: "facturesVendor",
             title: "Facturas",
             focusedIcon: "file-document-multiple",
@@ -54,6 +62,7 @@ export default function NavigationVendor(props: NavigationBarProps) {
                 resumes: resumes,
                 setResumes: setResumes,
             }),
+        managerContributor: () => ManagerContributor(props),
         managerVendor: () => ManagerVendor(props),
         facturesVendor: () => FacturesVendor(props),
     });

@@ -29,12 +29,14 @@ export const LoginClient = (props: LoginClientProps) => {
         console.log("SUBMIT FORM");
         setCanSubmit(false);
 
-        loginBuyer({ formatedData: data, setCanSubmit, setMessage }, () => {
+        loginBuyer(
+            { formatedData: data, setCanSubmit, setMessage },
             (value: UserToken) => {
+                console.log("SUCCESSFULL LOGIN");
                 setSession && setSession(value);
                 navigation.navigate("session");
-            };
-        });
+            }
+        );
     };
 
     return (
