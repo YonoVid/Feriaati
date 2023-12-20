@@ -2,6 +2,8 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FieldValues } from "react-hook-form";
 
+import LoadingOverlay from "react-loading-overlay-ts";
+
 import {
     RecoveryFields,
     UpdatePassFields,
@@ -57,17 +59,23 @@ function RecoveryPage() {
     };
     return (
         <>
-            {changePass ? (
-                <PassRecoveryForm
-                    onSubmit={onSubmitRecoveryPass}
-                    canSubmit={canSubmit}
-                />
-            ) : (
-                <UpdatePassword
-                    onSubmit={onSubmitUpdatePass}
-                    canSubmit={canSubmit}
-                />
-            )}
+            <LoadingOverlay
+                active={!canSubmit}
+                spinner
+                text="Realizando petición..."
+            >
+                {changePass ? (
+                    <PassRecoveryForm
+                        onSubmit={onSubmitRecoveryPass}
+                        canSubmit={canSubmit}
+                    />
+                ) : (
+                    <UpdatePassword
+                        onSubmit={onSubmitUpdatePass}
+                        canSubmit={canSubmit}
+                    />
+                )}
+            </LoadingOverlay>
         </>
     );
 }

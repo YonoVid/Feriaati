@@ -25,6 +25,7 @@ import SearchResultComponent from "@feria-a-ti/web/src/components/searchEngine/S
 import CustomSearchBoxComponent from "@feria-a-ti/web/src/components/searchEngine/CustomSearchBoxComponent";
 import CustomRangeSliderComponent from "@feria-a-ti/web/src/components/searchEngine/CustomRangeSliderComponent";
 import CustomRefinementListComponent from "@feria-a-ti/web/src/components/searchEngine/CustomRefinementListComponent";
+import CustomMenuSelectComponent from "@feria-a-ti/web/src/components/searchEngine/CustomMenuSelectComponent";
 
 import { UserContext } from "@feria-a-ti/web/src/App";
 
@@ -37,7 +38,7 @@ const searchClient = algoliasearch(
 
 const searchIndex = "dev_feriaati";
 
-const drawerWidthPercentage = 20;
+const drawerWidthPercentage = 25;
 
 const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })<{
     open?: boolean;
@@ -182,6 +183,16 @@ function SearchPage() {
                                     <Divider />
                                     <CustomRangeSliderComponent
                                         attribute={"price"}
+                                    />
+                                    <Divider />
+                                    <CustomMenuSelectComponent
+                                        attribute={"region"}
+                                        type={"region"}
+                                    />
+                                    <Divider />
+                                    <CustomMenuSelectComponent
+                                        attribute={"commune"}
+                                        type={"commune"}
                                     />
                                 </Box>
                             </Drawer>

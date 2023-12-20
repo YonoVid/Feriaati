@@ -30,7 +30,7 @@ import { ShoppingCartItem } from "../model/props/shoppingCartProps";
 import { MessageData } from "../model/sessionType";
 import { BUYERROR } from "../model/users/buyTypes";
 
-export const getFactures = (
+export const getVendorFactures = (
     data: {
         formatedData: FactureFields;
         setCanSubmit: (value: boolean) => void;
@@ -39,10 +39,29 @@ export const getFactures = (
     onSuccess: (data: Array<FactureData>) => void
 ) => {
     const { formatedData, setCanSubmit, setMessage } = data;
-    setCanSubmit(false);
+
+    getFactures(
+        { formatedData, setCanSubmit, setMessage },
+        onSuccess,
+        "getVendorFactures"
+    );
+};
+
+export const getFactures = (
+    data: {
+        formatedData: FactureFields;
+        setCanSubmit: (value: boolean) => void;
+        setMessage: (value: MessageData) => void;
+    },
+    onSuccess: (data: Array<FactureData>) => void,
+    functionName: string = "getFactures"
+) => {
+    const { formatedData, setCanSubmit, setMessage } = data;
 
     if (formatedData.token != undefined || formatedData.token != "") {
-        const getFactures = httpsCallable(functions, "getFactures");
+        setCanSubmit(false);
+
+        const getFactures = httpsCallable(functions, functionName);
         getFactures(formatedData)
             .then((result) => {
                 const { msg, error, extra } = result.data as ResponseData<

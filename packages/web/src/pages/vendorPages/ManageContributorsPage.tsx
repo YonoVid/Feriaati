@@ -1,12 +1,14 @@
 import { useContext, useEffect, useState } from "react";
 import { FieldValues } from "react-hook-form";
 
+import LoadingOverlay from "react-loading-overlay-ts";
+
 import {
     addContributor,
     deleteContributor,
     updateContributor,
-} from "@feria-a-ti/common/functions/contributorsFunctions";
-import { getContributorList } from "@feria-a-ti/common/functions/listFunctions";
+} from "@feria-a-ti/common/functions/vendor/contributorsFunctions";
+import { getContributorList } from "@feria-a-ti/common/functions/vendor/contributorsFunctions";
 import {
     ContributorData,
     ContributorLevel,
@@ -42,21 +44,39 @@ function ManageContributorsPage() {
     const [updateContributorPage, setUpdateContributorPage] = useState(false);
     const [canSubmit, setCanSubmit] = useState(true);
 
-    const onDeleteContributor = (id: string) => {
-        const formatedData: DeleteFields = {
+    const loadContributors = () => {
+        const formatedData: UserRequestFields = {
             email: emailUser as string,
             token: authToken as string,
-            itemId: id,
         };
 
-        deleteContributor({ formatedData, setCanSubmit }, (data) => {
-            console.log(data);
-            const { error: isError, msg, extra } = data;
-            setMessage({ msg, isError });
-            if (!isError) {
-                const newData = usersData.filter((value) => value.id !== extra);
-                setUsersData(newData);
+        console.log(formatedData);
+
+        getContributorList(
+            { formatedData, setCanSubmit, setMessage },
+            (data) => {
+                setUsersData(data);
             }
+        );
+    };
+
+    const onRegisterContributor = (data: FieldValues) => {
+        const formatedData: RegisterContributorFields = {
+            token: authToken as string,
+            name: data.name.trim(),
+            surname: data.surname.trim(),
+            email: data.email,
+            password: data.password,
+            permission: data.permission || ContributorLevel.MANAGER,
+        };
+
+        console.log(formatedData);
+
+        addContributor({ formatedData, setCanSubmit, setMessage }, (data) => {
+            setUsersData(usersData.concat([data]));
+            setUpdateContributorPage(false);
+            setIsEditing(false);
+            setSelectedContributor(undefined);
         });
     };
 
@@ -88,65 +108,34 @@ function ManageContributorsPage() {
             productsId: selectedContributor?.productsId || "",
         };
 
-        updateContributor({ formatedData, setCanSubmit }, (data) => {
-            console.log(data);
-            const { error: isError, msg, extra } = data;
-            setMessage({ msg, isError });
-            if (!isError) {
+        updateContributor(
+            { formatedData, setCanSubmit, setMessage },
+            (data) => {
                 const newData = usersData.concat([]);
-                newData[newData.findIndex((value) => value.id === extra.id)] =
-                    extra;
+                newData[newData.findIndex((value) => value.id === data.id)] =
+                    data;
                 setUsersData(newData);
                 setUpdateContributorPage(false);
                 setIsEditing(false);
                 setSelectedContributor(undefined);
             }
-        });
+        );
     };
 
-    const onRegisterContributor = (data: FieldValues) => {
-        const formatedData: RegisterContributorFields = {
-            token: authToken as string,
-            name: data.name.trim(),
-            surname: data.surname.trim(),
-            email: data.email,
-            password: data.password,
-            permission: data.permission || ContributorLevel.MANAGER,
-        };
-
-        console.log(formatedData);
-
-        addContributor({ formatedData, setCanSubmit }, (data) => {
-            console.log(data);
-            const { error: isError, msg, extra } = data;
-
-            setMessage({ msg, isError });
-            if (!isError) {
-                setUsersData(usersData.concat([extra]));
-                setUpdateContributorPage(false);
-                setIsEditing(false);
-                setSelectedContributor(undefined);
-            }
-        });
-    };
-
-    const loadContributors = () => {
-        const formatedData: UserRequestFields = {
+    const onDeleteContributor = (id: string) => {
+        const formatedData: DeleteFields = {
             email: emailUser as string,
             token: authToken as string,
+            itemId: id,
         };
 
-        console.log(formatedData);
-
-        getContributorList({ formatedData, setCanSubmit }, (data) => {
-            const { error, msg, extra } = data;
-
-            if (error) {
-                setMessage({ msg, isError: error });
-            } else {
-                setUsersData(extra);
+        deleteContributor(
+            { formatedData, setCanSubmit, setMessage },
+            (data) => {
+                const newData = usersData.filter((value) => value.id !== data);
+                setUsersData(newData);
             }
-        });
+        );
     };
 
     useEffect(() => {
@@ -161,36 +150,42 @@ function ManageContributorsPage() {
             {type !== userType.vendor && type !== userType.contributor && (
                 <Navigate to="/session" replace={true} />
             )}
-            {updateContributorPage && (
-                <>
-                    <RegisterContributorForm
-                        isEdit={isEditing}
-                        contributor={selectedContributor}
-                        canSubmit={canSubmit}
-                        onSubmit={
-                            isEditing
-                                ? onEditContributor
-                                : onRegisterContributor
-                        }
-                        onCancel={() => {
-                            setUpdateContributorPage(false);
-                            setIsEditing(false);
-                            setSelectedContributor(undefined);
-                        }}
-                    />
-                </>
-            )}
-            <ContributorList
-                contributors={usersData}
-                isAdding={updateContributorPage}
-                onAdd={() => setUpdateContributorPage(true)}
-                onEdit={(data) => {
-                    setUpdateContributorPage(true);
-                    setIsEditing(true);
-                    setSelectedContributor(data);
-                }}
-                onDelete={onDeleteContributor}
-            />
+            <LoadingOverlay
+                active={!canSubmit}
+                spinner
+                text="Realizando petición..."
+            >
+                {updateContributorPage && (
+                    <>
+                        <RegisterContributorForm
+                            isEdit={isEditing}
+                            contributor={selectedContributor}
+                            canSubmit={canSubmit}
+                            onSubmit={
+                                isEditing
+                                    ? onEditContributor
+                                    : onRegisterContributor
+                            }
+                            onCancel={() => {
+                                setUpdateContributorPage(false);
+                                setIsEditing(false);
+                                setSelectedContributor(undefined);
+                            }}
+                        />
+                    </>
+                )}
+                <ContributorList
+                    contributors={usersData}
+                    isAdding={updateContributorPage}
+                    onAdd={() => setUpdateContributorPage(true)}
+                    onEdit={(data) => {
+                        setUpdateContributorPage(true);
+                        setIsEditing(true);
+                        setSelectedContributor(data);
+                    }}
+                    onDelete={onDeleteContributor}
+                />
+            </LoadingOverlay>
         </>
     );
 }

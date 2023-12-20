@@ -1,10 +1,14 @@
 import { functions } from "@feria-a-ti/common/firebase";
 import { httpsCallable } from "@firebase/functions";
-import { checkRegisterFields } from "../../check/checkRegisterFields";
+import {
+    checkRegisterFields,
+    checkRegisterVendorFields,
+} from "../../check/checkRegisterFields";
 import { messagesCode } from "../../constants/errors";
 import {
     RegisterConfirm,
     RegisterFields,
+    RegisterVendorFields,
 } from "../../model/fields/registerFields";
 import { ResponseData } from "../../model/functionsTypes";
 import { MessageData } from "../../model/sessionType";
@@ -32,6 +36,47 @@ export const registerAccountUser = (
             "addUser"
         );
         addUser(formatedData)
+            .then((result) => {
+                const { msg, error } = result.data;
+                console.log(result);
+                //Show alert message
+                setMessage({ msg, isError: error });
+                if (!error) {
+                    onSuccess(formatedData.email);
+                }
+            })
+            .catch((error) => {
+                console.log(error);
+                setMessage({ msg: messagesCode["ERR00"], isError: error });
+                setCanSubmit(true);
+            })
+            .finally(() => setCanSubmit(true));
+    }
+};
+
+export const registerAccountVendor = (
+    data: {
+        formatedData: RegisterVendorFields;
+        setCanSubmit: (value: boolean) => void;
+        setMessage: (value: MessageData) => void;
+    },
+    onSuccess: (value: string) => void
+) => {
+    const { formatedData, setCanSubmit, setMessage } = data;
+
+    const check = checkRegisterVendorFields(formatedData);
+
+    console.log("ERROR CHECK::", check);
+
+    if (check) {
+        //Lock register button
+        setCanSubmit(false);
+        //Call firebase function to create user
+        const addVendor = httpsCallable<
+            RegisterVendorFields,
+            ResponseData<string>
+        >(functions, "addVendor");
+        addVendor(formatedData)
             .then((result) => {
                 const { msg, error } = result.data;
                 console.log(result);

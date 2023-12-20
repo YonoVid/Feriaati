@@ -1,28 +1,31 @@
 import { useEffect, useContext, useState } from "react";
 import { Navigate } from "react-router-dom";
-import { httpsCallable } from "firebase/functions";
 
-import { functions } from "@feria-a-ti/common/firebase";
+import LoadingOverlay from "react-loading-overlay-ts";
+
+import { Card, CardContent, CardHeader } from "@mui/material";
+
 import {
-    ResponseData,
     userType,
     YearFactureResumeCollection,
 } from "@feria-a-ti/common/model/functionsTypes";
 import { ResumeFields } from "@feria-a-ti/common/model/fields/factureFields";
 
+import { getResume } from "@feria-a-ti/common/functions/vendor/vendorFunctions";
+
 import DashboardComponent from "@feria-a-ti/web/src/components/dashboard/DashboardComponent";
 import { UserContext } from "@feria-a-ti/web/src/App";
 
-import { useHeaderContext } from "../HeaderFunction";
-import "../../App.css";
+import { useHeaderContext } from "@feria-a-ti/web/src/pages/HeaderFunction";
+import "@feria-a-ti/web/src/App.css";
 
 function VendorDashboardPage() {
     //Global UI context
     const { setMessage } = useHeaderContext();
     //Global state variable
-    const { authUser, authToken, emailUser, type } = useContext(UserContext);
+    const { authToken, emailUser, type } = useContext(UserContext);
     //Navigation definition
-    //const navigate = useNavigate();
+    const [canSubmit, setCanSubmit] = useState<boolean>(true);
     // Retrived data
     const [resumes, setResumes] = useState<
         Map<number, YearFactureResumeCollection>
@@ -38,25 +41,16 @@ function VendorDashboardPage() {
             token: authToken as string,
             year: year,
         };
-        if (authUser != undefined || authUser != "") {
-            const getFactures = httpsCallable(functions, "getResume");
-            getFactures(formatedData).then((result) => {
-                const { msg, error, extra } =
-                    result.data as ResponseData<YearFactureResumeCollection>;
-                console.log(result);
-                //setIsLogged(result.data as any);
-                setMessage({ msg, isError: error });
-                if (!error && extra != null) {
-                    console.log("IM SAVING THE RESUMES >:I");
-                    const newResumes = resumes;
 
-                    newResumes?.set(extra.year, extra);
+        getResume({ formatedData, setCanSubmit, setMessage }, (data) => {
+            console.log("IM SAVING THE RESUMES >:I");
+            const newResumes = resumes;
 
-                    setResumes && setResumes(newResumes);
-                    setDate && setDate(new Date());
-                }
-            });
-        }
+            newResumes?.set(data.year, data);
+
+            setResumes && setResumes(newResumes);
+            setDate && setDate(new Date());
+        });
     };
 
     useEffect(() => {
@@ -70,9 +64,33 @@ function VendorDashboardPage() {
             {type !== userType.vendor && type !== userType.contributor && (
                 <Navigate to="/session" replace={true} />
             )}
-            {date != null && resumes.size > 0 && (
-                <DashboardComponent date={date} resumes={resumes} />
-            )}
+            <LoadingOverlay
+                active={!canSubmit}
+                spinner
+                text="Realizando petición..."
+            >
+                {date != null && resumes.size > 0 ? (
+                    <DashboardComponent date={date} resumes={resumes} />
+                ) : (
+                    <Card
+                        className="inputContainer"
+                        sx={{
+                            maxWidth: "80%",
+                            alignContent: "center",
+                            borderRadius: "10%",
+                        }}
+                    >
+                        <CardHeader title={"No hay datos registrados"} />
+
+                        <CardContent>
+                            <p>
+                                Se deben tener ventas registradas en el sistema
+                                para generar información relevante del negocio.
+                            </p>
+                        </CardContent>
+                    </Card>
+                )}
+            </LoadingOverlay>
         </>
     );
 }

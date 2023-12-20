@@ -3,6 +3,8 @@ import { FieldValues } from "react-hook-form";
 import { Navigate, useNavigate } from "react-router-dom";
 import { httpsCallable } from "firebase/functions";
 
+import LoadingOverlay from "react-loading-overlay-ts";
+
 import { functions } from "@feria-a-ti/common/firebase";
 import { checkProductVendorUpdate } from "@feria-a-ti/common/check/checkProductVendorUpdate";
 import {
@@ -20,6 +22,7 @@ import { UserContext } from "@feria-a-ti/web/src/App";
 import { useHeaderContext } from "../HeaderFunction";
 import "../../App.css";
 import { DayTime } from "@feria-a-ti/common/model/baseTypes";
+import { editProductList } from "@feria-a-ti/common/functions/vendor/manageProductsFunctions";
 
 type ManagerProductListProps = {
     productVendor: ProductListCollectionData | undefined;
@@ -72,33 +75,13 @@ function ManagerProductList(props: ManagerProductListProps) {
             contactEmail: data.contactEmail as string,
             serviceTime: data.serviceTime as { start: DayTime; end: DayTime },
         };
-        const check = checkProductVendorUpdate(formatedData);
-        console.log("SUBMIT FORM ON EDIT VENDOR::", check);
-        if (check) {
-            setCanSubmit(false);
-            console.log("DATA FORM ON EDIT VENDOR::", formatedData);
-            // setCanSubmit(false);
-            const editProduct = httpsCallable<
-                UpdateProductVendorFields,
-                ResponseData<string>
-            >(functions, "productVendorUpdate");
-            editProduct(formatedData)
-                .then((result) => {
-                    const { msg, error } = result.data as ResponseData<string>;
-                    console.log(result.data);
-                    //setIsLogged(result.data as any);
-                    if (!error) {
-                        setProductEditable(null);
-                        loadVendor();
-                        setImageData("");
-                        setUpdateVendorPage(false);
-                    }
-                    if (msg !== "") {
-                        setMessage({ msg, isError: error });
-                    }
-                })
-                .finally(() => setCanSubmit(true));
-        }
+
+        editProductList({ formatedData, setCanSubmit, setMessage }, () => {
+            setProductEditable(null);
+            loadVendor();
+            setImageData("");
+            setUpdateVendorPage(false);
+        });
     };
 
     return (
@@ -106,37 +89,43 @@ function ManagerProductList(props: ManagerProductListProps) {
             {type !== userType.vendor && type !== userType.contributor && (
                 <Navigate to="/session" replace={true} />
             )}
-            {!updateVendorPage ? (
-                <>
-                    <ProductVendorPage
-                        vendorId={productVendor?.vendorId as string}
-                        vendorData={productVendor || {}}
-                        products={products}
-                        isEditable={true}
-                        onAdd={() => navigate("/addProduct")}
-                        onEdit={(data: ProductData) => {
-                            setProductEditable(data);
+            <LoadingOverlay
+                active={!canSubmit}
+                spinner
+                text="Realizando petición..."
+            >
+                {!updateVendorPage ? (
+                    <>
+                        <ProductVendorPage
+                            vendorId={productVendor?.vendorId as string}
+                            vendorData={productVendor || {}}
+                            products={products}
+                            isEditable={true}
+                            onAdd={() => navigate("/addProduct")}
+                            onEdit={(data: ProductData) => {
+                                setProductEditable(data);
+                            }}
+                            onUpdatePage={() => setUpdateVendorPage(true)}
+                            onDelete={onDelete}
+                        />
+                        {children}
+                    </>
+                ) : (
+                    <ProductVendorUpdateForm
+                        label="Actualizar puesto"
+                        imageData={productVendor?.image as string}
+                        canSubmit={canSubmit}
+                        buttonLabel="Actualizar local"
+                        editedVendor={productVendor}
+                        setImageData={setImageData}
+                        onSubmit={onEditVendor}
+                        onCancel={() => {
+                            setUpdateVendorPage(false);
+                            setImageData("");
                         }}
-                        onUpdatePage={() => setUpdateVendorPage(true)}
-                        onDelete={onDelete}
                     />
-                    {children}
-                </>
-            ) : (
-                <ProductVendorUpdateForm
-                    label="Actualizar puesto"
-                    imageData={productVendor?.image as string}
-                    canSubmit={canSubmit}
-                    buttonLabel="Actualizar local"
-                    editedVendor={productVendor}
-                    setImageData={setImageData}
-                    onSubmit={onEditVendor}
-                    onCancel={() => {
-                        setUpdateVendorPage(false);
-                        setImageData("");
-                    }}
-                />
-            )}
+                )}
+            </LoadingOverlay>
         </>
     );
 }

@@ -2,10 +2,11 @@ import { useContext, useEffect, useState } from "react";
 import { FieldValues } from "react-hook-form";
 import { Navigate } from "react-router-dom";
 
+import LoadingOverlay from "react-loading-overlay-ts";
+
 import {
     ProductData,
     ProductListData,
-    ResponseData,
     userType,
 } from "@feria-a-ti/common/model/functionsTypes";
 import {
@@ -15,11 +16,11 @@ import {
 } from "@feria-a-ti/common/model/props/productAddFormProps";
 
 import {
-    updateProduct,
+    editProduct,
     deleteProduct,
     listProducts,
     loadVendorProduct,
-} from "@feria-a-ti/common/functions/manageProductsFunctions";
+} from "@feria-a-ti/common/functions/vendor/manageProductsFunctions";
 
 import ProductAddForm from "@feria-a-ti/web/src/components/forms/productAddForm/ProductAddForm";
 import CommentList from "@feria-a-ti/web/src/components/commentList/CommentList";
@@ -60,15 +61,12 @@ function ManagerVendorPage() {
             email: emailUser as string,
         };
 
-        loadVendorProduct({ formatedData }, (data) => {
-            const { msg, error, extra } = data;
-
-            setProductVendor(extra);
-            //setIsLogged(result.data as any);
-            if (error && msg !== "") {
-                setMessage({ msg, isError: error });
+        loadVendorProduct(
+            { formatedData, setCanSubmit, setMessage },
+            (data) => {
+                setProductVendor(data);
             }
-        });
+        );
     };
 
     const loadProducts = () => {
@@ -77,14 +75,8 @@ function ManagerVendorPage() {
             email: emailUser as string,
         };
 
-        listProducts({ formatedData }, (data) => {
-            const { msg, error, extra } = data as ResponseData<ProductData[]>;
-
-            setProducts(extra);
-            //setIsLogged(result.data as any);
-            if (error && msg !== "") {
-                setMessage({ msg, isError: error });
-            }
+        listProducts({ formatedData, setCanSubmit, setMessage }, (data) => {
+            setProducts(data);
         });
     };
 
@@ -103,15 +95,9 @@ function ManagerVendorPage() {
             image: imageData,
         };
 
-        updateProduct({ formatedData, setCanSubmit }, (data) => {
-            const { msg, error } = data as ResponseData<string>;
-            if (!error) {
-                setProductEditable(null);
-                loadProducts();
-            }
-            if (msg !== "") {
-                setMessage({ msg, isError: error });
-            }
+        editProduct({ formatedData, setCanSubmit, setMessage }, () => {
+            setProductEditable(null);
+            loadProducts();
         });
     };
 
@@ -122,19 +108,12 @@ function ManagerVendorPage() {
             idProducts: id,
         };
 
-        deleteProduct({ formatedData, setCanSubmit }, (data) => {
-            const { msg, error } = data;
-
-            !error &&
-                setProducts(
-                    products.filter(
-                        (product) => product.id !== formatedData.idProducts
-                    )
-                );
-            //setIsLogged(result.data as any);
-            if (msg !== "") {
-                setMessage({ msg, isError: error });
-            }
+        deleteProduct({ formatedData, setCanSubmit, setMessage }, () => {
+            setProducts(
+                products.filter(
+                    (product) => product.id !== formatedData.idProducts
+                )
+            );
         });
     };
 
@@ -152,34 +131,40 @@ function ManagerVendorPage() {
             {type !== userType.vendor && type !== userType.contributor && (
                 <Navigate to="/session" replace={true} />
             )}
-            {!productEditable ? (
-                <ManagerProductList
-                    productVendor={productVendor}
-                    products={products}
-                    canSubmit={canSubmit}
-                    loadVendor={loadVendor}
-                    setProductEditable={setProductEditable}
-                    setCanSubmit={setCanSubmit}
-                    onDelete={onDelete}
-                >
-                    <CommentList
-                        commentsVendor={productVendor?.id || ""}
-                        isUser={false}
+            <LoadingOverlay
+                active={!canSubmit}
+                spinner
+                text="Realizando petición..."
+            >
+                {!productEditable ? (
+                    <ManagerProductList
+                        productVendor={productVendor}
+                        products={products}
+                        canSubmit={canSubmit}
+                        loadVendor={loadVendor}
+                        setProductEditable={setProductEditable}
+                        setCanSubmit={setCanSubmit}
+                        onDelete={onDelete}
+                    >
+                        <CommentList
+                            commentsVendor={productVendor?.id || ""}
+                            isUser={false}
+                        />
+                    </ManagerProductList>
+                ) : (
+                    <ProductAddForm
+                        label="Actualizar"
+                        editableState={productEditable}
+                        imageData={imageData}
+                        setImageData={setImageData}
+                        onSubmit={onEdit}
+                        onCancel={() => setProductEditable(null)}
+                        setCanSubmit={setCanSubmit}
+                        canSubmit={canSubmit}
+                        buttonLabel={"Editar producto"}
                     />
-                </ManagerProductList>
-            ) : (
-                <ProductAddForm
-                    label="Actualizar"
-                    editableState={productEditable}
-                    imageData={imageData}
-                    setImageData={setImageData}
-                    onSubmit={onEdit}
-                    onCancel={() => setProductEditable(null)}
-                    setCanSubmit={setCanSubmit}
-                    canSubmit={canSubmit}
-                    buttonLabel={"Editar producto"}
-                />
-            )}
+                )}
+            </LoadingOverlay>
         </>
     );
 }

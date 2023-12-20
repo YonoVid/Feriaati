@@ -1,20 +1,18 @@
 import { useContext, useState } from "react";
 import { FieldValues } from "react-hook-form";
 import { Navigate, useNavigate } from "react-router-dom";
-import { httpsCallable } from "firebase/functions";
 
-import { functions } from "@feria-a-ti/common/firebase";
-import { checkAddProductFields } from "@feria-a-ti/common/check/checkProductFields";
-import {
-    ResponseData,
-    userType,
-} from "@feria-a-ti/common/model/functionsTypes";
+import LoadingOverlay from "react-loading-overlay-ts";
+
+import { userType } from "@feria-a-ti/common/model/functionsTypes";
 import { ProductFields } from "@feria-a-ti/common/model/props/productAddFormProps";
+import { addProduct } from "@feria-a-ti/common/functions/vendor/manageProductsFunctions";
+
 import ProductAddForm from "@feria-a-ti/web/src/components/forms/productAddForm/ProductAddForm";
 
+import { useHeaderContext } from "@feria-a-ti/web/src/pages/HeaderFunction";
 import { UserContext } from "@feria-a-ti/web/src/App";
-import { useHeaderContext } from "../HeaderFunction";
-import "../../App.css";
+import "@feria-a-ti/web/src/App.css";
 
 function ProductAddManager() {
     //Global UI context
@@ -49,26 +47,10 @@ function ProductAddManager() {
             promotion: data.promotion as number,
             image: imageData,
         };
-        const check = checkAddProductFields(formatedData);
-        console.log("SUBMIT FORM::", check);
-        if (check) {
-            setCanSubmit(false);
-            const addProduct = httpsCallable<
-                ProductFields,
-                ResponseData<string>
-            >(functions, "addProduct");
-            addProduct(formatedData)
-                .then((result) => {
-                    const { msg, error } = result.data as ResponseData<string>;
-                    console.log(result.data);
-                    //setIsLogged(result.data as any);
-                    if (msg !== "") {
-                        setMessage({ msg, isError: error });
-                    }
-                    !error && navigate("/managerVendor");
-                })
-                .finally(() => setCanSubmit(true));
-        }
+
+        addProduct({ formatedData, setCanSubmit, setMessage }, () => {
+            navigate("/managerVendor");
+        });
     };
 
     return (
@@ -76,15 +58,21 @@ function ProductAddManager() {
             {type !== userType.vendor && type !== userType.contributor && (
                 <Navigate to="/session" replace={true} />
             )}
-            <ProductAddForm
-                label="Nuevo producto"
-                buttonLabel="Agregar producto"
-                imageData={imageData}
-                setImageData={setImageData}
-                onSubmit={onSubmit}
-                onCancel={() => navigate("/managerVendor")}
-                canSubmit={canSubmit}
-            />
+            <LoadingOverlay
+                active={!canSubmit}
+                spinner
+                text="Realizando petición..."
+            >
+                <ProductAddForm
+                    label="Nuevo producto"
+                    buttonLabel="Agregar producto"
+                    imageData={imageData}
+                    setImageData={setImageData}
+                    onSubmit={onSubmit}
+                    onCancel={() => navigate("/managerVendor")}
+                    canSubmit={canSubmit}
+                />
+            </LoadingOverlay>
         </>
     );
 }

@@ -98,7 +98,7 @@ export const editAccountUser = (
     }
 };
 
-export const recoverPasswordUser = (
+export const recoverPasswordVendor = (
     data: {
         formatedData: RecoveryFields;
         setCanSubmit: (value: boolean) => void;
@@ -108,14 +108,33 @@ export const recoverPasswordUser = (
 ) => {
     const { formatedData, setCanSubmit, setMessage } = data;
 
+    recoverPasswordUser(
+        { formatedData, setCanSubmit, setMessage },
+        onSuccess,
+        "passRecoveryVendor"
+    );
+};
+
+export const recoverPasswordUser = (
+    data: {
+        formatedData: RecoveryFields;
+        setCanSubmit: (value: boolean) => void;
+        setMessage: (value: MessageData) => void;
+    },
+    onSuccess: (value: string) => void,
+    functionName: string = "passRecovery"
+) => {
+    const { formatedData, setCanSubmit, setMessage } = data;
+
     const check = checkRecoveryFields(formatedData);
     console.log(formatedData);
     if (check) {
         setCanSubmit(false);
+
         const passRecovery = httpsCallable<
             RecoveryFields,
             ResponseData<string>
-        >(functions, "passRecovery");
+        >(functions, functionName);
         passRecovery(formatedData)
             .then((result) => {
                 const { error, msg } = result.data;
@@ -134,7 +153,7 @@ export const recoverPasswordUser = (
     }
 };
 
-export const editPasswordUser = (
+export const editPasswordVendor = (
     data: {
         formatedData: UpdatePassFields;
         setCanSubmit: (value: boolean) => void;
@@ -143,15 +162,33 @@ export const editPasswordUser = (
     onSuccess: () => void
 ) => {
     const { formatedData, setCanSubmit, setMessage } = data;
+    editPasswordUser(
+        { formatedData, setCanSubmit, setMessage },
+        onSuccess,
+        "passUpdateVendor"
+    );
+};
+
+export const editPasswordUser = (
+    data: {
+        formatedData: UpdatePassFields;
+        setCanSubmit: (value: boolean) => void;
+        setMessage: (value: MessageData) => void;
+    },
+    onSuccess: () => void,
+    functionName: string = "passUpdate"
+) => {
+    const { formatedData, setCanSubmit, setMessage } = data;
 
     const check = checkUpdatePassFields(formatedData);
     console.log("SUBMIT FORM::", formatedData);
     if (check) {
         setCanSubmit(false);
+
         const passUpdate = httpsCallable<
             UpdatePassFields,
             ResponseData<string>
-        >(functions, "passUpdate");
+        >(functions, functionName);
         passUpdate(formatedData)
             .then((result) => {
                 const { error, msg } = result.data;

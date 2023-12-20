@@ -1,17 +1,16 @@
 import { FieldValues } from "react-hook-form";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { httpsCallable } from "firebase/functions";
+
+import LoadingOverlay from "react-loading-overlay-ts";
+
 import { Link } from "@mui/material";
 
-import { functions } from "@feria-a-ti/common/firebase";
 import {
     RegisterConfirm,
     RegisterFields,
     userStatus,
 } from "@feria-a-ti/common/model/fields/registerFields";
-import { ResponseData } from "@feria-a-ti/common/model/functionsTypes";
-import { messagesCode } from "@feria-a-ti/common/constants/errors";
 
 import {
     confirmRegisterUser,
@@ -75,21 +74,30 @@ function RegisterPage() {
 
     return (
         <>
-            {(registerComplete && (
-                <ConfirmRegisterForm
-                    onSubmit={onSubmitConfirmRegister}
-                    canSubmit={canSubmit}
-                />
-            )) || (
-                <RegisterUserForm
-                    onSubmit={onSubmitRegister}
-                    canSubmit={canSubmit}
-                >
-                    <Link component="button" onClick={() => navigate("/login")}>
-                        Ya tengo una cuenta
-                    </Link>
-                </RegisterUserForm>
-            )}
+            <LoadingOverlay
+                active={!canSubmit}
+                spinner
+                text="Realizando petición..."
+            >
+                {(registerComplete && (
+                    <ConfirmRegisterForm
+                        onSubmit={onSubmitConfirmRegister}
+                        canSubmit={canSubmit}
+                    />
+                )) || (
+                    <RegisterUserForm
+                        onSubmit={onSubmitRegister}
+                        canSubmit={canSubmit}
+                    >
+                        <Link
+                            component="button"
+                            onClick={() => navigate("/login")}
+                        >
+                            Ya tengo una cuenta
+                        </Link>
+                    </RegisterUserForm>
+                )}
+            </LoadingOverlay>
         </>
     );
 }
