@@ -72,8 +72,13 @@ function ProductAddForm(props: RProductAddFormProps) {
             setValue("discount", editableState.discount);
             setValue("description", editableState.description);
             setValue("promotion", editableState.promotion);
-            setLocalImageData(editableState.image);
-            setImageData(editableState.image);
+            if (Array.isArray(editableState.image)) {
+                setLocalImageData(editableState.image);
+                setImageData(editableState.image);
+            } else {
+                setLocalImageData([editableState.image, "", ""]);
+                setImageData([editableState.image, "", ""]);
+            }
             console.log("Image data loaded::", editableState.image);
             console.log("Replaced image data to::", localImageData);
         }

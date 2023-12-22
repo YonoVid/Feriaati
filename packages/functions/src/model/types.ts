@@ -1,6 +1,12 @@
-import { AccountData, userStatus, userType } from "./accountTypes";
+import {
+    AccountData,
+    AccountDirection,
+    userStatus,
+    userType,
+} from "./accountTypes";
 import {
     DayTimeRange,
+    FactureStatus,
     ProductDiscount,
     ProductFactureData,
     ProductUnit,
@@ -20,6 +26,11 @@ export type AccountFields = {
 
 export type GetAccountFields = UserRequestFields & {
     type: userType;
+};
+
+export type SubscriptionFields = GetAccountFields & {
+    amount: number;
+    months: number;
 };
 
 export type EditAccountFields = Partial<AccountData> & UserRequestFields;
@@ -108,9 +119,29 @@ export type ProductEditFields = ProductFields & {
     id: string;
 };
 
+export enum FactureTypes {
+    PRODUCTS = "products",
+    SUBSCRIPTION = "subscription",
+}
+
+export type UpdateFactureFields = {
+    token: string;
+    userType: userType;
+    facture: string;
+    status: FactureStatus;
+    type: FactureTypes;
+};
+
 export type ProductFactureFields = {
     token: string;
+    direction?: AccountDirection;
     products: { [id: string]: ProductFactureData[] };
+};
+
+export type ProductSubscriptionFields = {
+    token: string;
+    priceTotal: number;
+    type: userType;
 };
 
 export type UpdateProductVendorFields = {
@@ -157,6 +188,10 @@ export type UpdateFullUserFields = {
 export type DeleteFields = {
     token: string;
     itemId: string;
+};
+
+export type ResumeFields = UserRequestFields & {
+    year: number;
 };
 
 export type FactureFields = UserRequestFields & {

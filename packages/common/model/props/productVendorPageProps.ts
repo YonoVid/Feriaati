@@ -7,7 +7,7 @@ export type ProductVendorPageProps = {
     isEditable: boolean;
     products: ProductData[];
     onReload?: () => void;
-    addProduct?: (data: ShoppingCartItem, quantity: number) => void;
+    addProduct?: (data: ShoppingCartItem) => void;
     onAdd?: () => void;
     onUpdatePage?: () => void;
     onEdit?: (data: ProductData) => void;

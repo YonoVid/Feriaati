@@ -110,20 +110,18 @@ export const vendorStateUpdate = functions.https.onCall(
 
                     if (status === userStatus.activated) {
                         // Get product list reference
-                        const productsId = (
-                            vendorDoc.data() as VendorCollectionData
-                        ).productsId;
+                        const vendorData: VendorCollectionData =
+                            vendorDoc.data() as VendorCollectionData;
 
                         const products = await db
                             .collection(collectionNames.VENDORPRODUCTS)
-                            .where("vendorId", "==", productsId)
+                            .doc(vendorData.productsId as string)
                             .get();
 
                         // Create new collection if not exists
-                        if (products.empty) {
-                            const vendorData =
-                                (await vendorDoc.data()) as VendorCollectionData;
+                        if (!products.exists) {
                             const collection: ProductListCollectionData = {
+                                vendorId: vendorDoc.id as string,
                                 isDeleted: false,
                                 enterpriseName: vendorData.enterpriseName,
                                 localNumber: vendorData.localNumber,
@@ -136,9 +134,14 @@ export const vendorStateUpdate = functions.https.onCall(
                                 updateDate: new Date(),
                                 userUpdate: adminDoc.id,
                             };
-                            await db
+                            const newDocument = await db
                                 .collection(collectionNames.VENDORPRODUCTS)
                                 .add(collection);
+
+                            // Update id reference
+                            await vendorDoc.ref.update({
+                                productsId: newDocument.id,
+                            });
                         }
                     }
                     return {

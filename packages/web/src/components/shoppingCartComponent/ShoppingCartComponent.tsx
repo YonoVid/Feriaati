@@ -34,13 +34,19 @@ function ShoppingCartComponent(props: ShoppingCartProps) {
         let newTotal = 0;
         if (products) {
             products.forEach((item) => {
-                const finalPrice =
-                    item.value.price -
-                    (item.value.discount !== "none"
-                        ? item.value.discount === "percentage"
-                            ? (item.value.price * item.value.promotion) / 100
-                            : item.value.promotion
-                        : 0);
+                let finalPrice = item.value.price;
+                if (
+                    item.value.discount != undefined &&
+                    item.value.discount != null &&
+                    item.value.promotion != undefined &&
+                    item.value.promotion != null &&
+                    item.value?.discount != "none"
+                ) {
+                    finalPrice -=
+                        item.value.discount == "percentage"
+                            ? (finalPrice * item.value.promotion) / 100
+                            : item.value.promotion;
+                }
                 newTotal += item.quantity * finalPrice;
             });
             setTotal(newTotal);
@@ -69,8 +75,10 @@ function ShoppingCartComponent(props: ShoppingCartProps) {
             >
                 {products.map((product, index) => (
                     <CartProductView
-                        onEdit={(quantity) => onEdit && onEdit(index, quantity)}
-                        onDelete={() => onDelete && onDelete(index)}
+                        onEdit={(quantity) =>
+                            onEdit && onEdit(product.id, quantity)
+                        }
+                        onDelete={() => onDelete && onDelete(product.id)}
                         key={product.value.name + index}
                         product={product.value}
                         quantity={product.quantity}
@@ -93,7 +101,7 @@ function ShoppingCartComponent(props: ShoppingCartProps) {
                     color="primary"
                     variant="contained"
                     type="button"
-                    disabled={canSubmit}
+                    disabled={!canSubmit}
                     onClick={onSubmit}
                 >
                     Realizar Comprar

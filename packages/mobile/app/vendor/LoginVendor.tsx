@@ -66,7 +66,11 @@ export const LoginVendor = (props: LoginVendorProps) => {
                 style={styles.container}
                 contentContainerStyle={styles.innerContainer}
             >
-                <LoginForm onSubmit={onSubmit} canSubmit={canSubmit}>
+                <LoginForm
+                    label={"Acceso vendedor"}
+                    onSubmit={onSubmit}
+                    canSubmit={canSubmit}
+                >
                     <Button
                         mode="text"
                         onPress={() => navigation.navigate("registerVendor")}

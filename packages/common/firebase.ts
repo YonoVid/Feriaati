@@ -30,10 +30,13 @@ export const storage = getStorage(app);
 
 if (
     (navigator.product == "ReactNative" && __DEV__) ||
-    location.hostname === "localhost" ||
-    location.hostname === "127.0.0.1"
+    !process.env.NODE_ENV ||
+    process.env.NODE_ENV === "development"
 ) {
-    const localAddress = "192.168.0.12" || "localhost";
+    let localAddress = "localhost";
+    if (navigator.product == "ReactNative" && __DEV__) {
+        localAddress = "192.168.253.106" || "/firebase";
+    }
     // Point to function emulator on localhost.
     connectFunctionsEmulator(functions, localAddress, 5001);
     // Point to the Storage emulator running on localhost.

@@ -1,25 +1,25 @@
 import React from "react";
 import { StyleSheet } from "react-native";
-import { PaperProvider } from "react-native-paper";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
-import AppBar from "@feria-a-ti/mobile/components/AppBar";
-import { Session } from "@feria-a-ti/mobile/app/Session";
-import { LoginClient } from "@feria-a-ti/mobile/app/client/LoginClient";
 import { RegisterClient } from "@feria-a-ti/mobile/app/client/RegisterClient";
 import { RecoveryClient } from "@feria-a-ti/mobile/app/client/RecoveryClient";
-import { LoginVendor } from "@feria-a-ti/mobile/app/vendor/LoginVendor";
+import { SearchProducts } from "@feria-a-ti/mobile/app/client/SearchProducts";
 import { RegisterVendor } from "@feria-a-ti/mobile/app/vendor/RegisterVendor";
 import { RecoveryVendor } from "@feria-a-ti/mobile/app/vendor/RecoveryVendor";
+import { ManagerAddProduct } from "@feria-a-ti/mobile/app/vendor/ManagerAddProduct";
+import { AccountManager } from "@feria-a-ti/mobile/app/account/AccountManager";
+import { FactureResult } from "@feria-a-ti/mobile/app/account/FacturePage";
+import SubscriptionAccount from "@feria-a-ti/mobile/app/account/SubscriptionAccount";
+import NavigationSession from "@feria-a-ti/mobile/components/navigation/NavigationSession";
+import NavigationClient from "@feria-a-ti/mobile/components/navigation/NavigationClient";
+import NavigationVendor from "@feria-a-ti/mobile/components/navigation/NavigationVendor";
+import NavigationBuy from "@feria-a-ti/mobile/components/navigation/NavigationBuy";
+import AppBar from "@feria-a-ti/mobile/components/AppBar";
+import { Session } from "@feria-a-ti/mobile/app/Session";
 import HomeLayout from "./_layout";
-import { ManagerAddProduct } from "./vendor/ManagerAddProduct";
-import { ManagerVendor } from "./vendor/ManagerVendor";
-import { UserVendorSelect } from "./client/UserVendorSelect";
-import { AccountManager } from "./account/AccountManager";
-import { ShoppingCartPage } from "./client/ShoppingCartPage";
-import { FacturesClient } from "./client/FacturesClient";
-import { FacturesVendor } from "./vendor/FacturesVendor";
+import { VendorProducts } from "./client/VendorProducts";
 
 const Stack = createNativeStackNavigator();
 
@@ -34,9 +34,14 @@ export default function App() {
                     }}
                 >
                     <Stack.Screen
-                        name="loginClient"
-                        component={LoginClient}
-                        options={{ title: "Inicio de sesión de usuario " }}
+                        name="login"
+                        component={NavigationSession}
+                        options={{ title: "Inicio de sesión" }}
+                    />
+                    <Stack.Screen
+                        name="client"
+                        component={NavigationClient}
+                        options={{ title: "Cuenta comprador" }}
                     />
                     <Stack.Screen
                         name="registerClient"
@@ -49,24 +54,14 @@ export default function App() {
                         options={{ title: "Recuperar cuenta de usuario " }}
                     />
                     <Stack.Screen
-                        name="userShoppingCart"
-                        component={ShoppingCartPage}
-                        options={{ title: "Productos de carro " }}
+                        name="buyClient"
+                        component={NavigationBuy}
+                        options={{ title: "Realizar compra" }}
                     />
                     <Stack.Screen
-                        name="userVendorSelect"
-                        component={UserVendorSelect}
-                        options={{ title: "Productos de vendedores " }}
-                    />
-                    <Stack.Screen
-                        name="userFactures"
-                        component={FacturesClient}
-                        options={{ title: "Productos de vendedores " }}
-                    />
-                    <Stack.Screen
-                        name="loginVendor"
-                        component={LoginVendor}
-                        options={{ title: "Inicio de sesión de vendedor " }}
+                        name="vendor"
+                        component={NavigationVendor}
+                        options={{ title: "Cuenta de vendedor " }}
                     />
                     <Stack.Screen
                         name="registerVendor"
@@ -79,16 +74,6 @@ export default function App() {
                         options={{ title: "Recuperar cuenta de vendedor " }}
                     />
                     <Stack.Screen
-                        name="managerVendor"
-                        component={ManagerVendor}
-                        options={{ title: "Gestionar productos " }}
-                    />
-                    <Stack.Screen
-                        name="facturesVendor"
-                        component={FacturesVendor}
-                        options={{ title: "Facturas de vendedor " }}
-                    />
-                    <Stack.Screen
                         name="managerAddProduct"
                         component={ManagerAddProduct}
                         options={{ title: "Añadir producto " }}
@@ -97,6 +82,26 @@ export default function App() {
                         name="accountManager"
                         component={AccountManager}
                         options={{ title: "Gestionar cuenta" }}
+                    />
+                    <Stack.Screen
+                        name="factureStatus"
+                        component={FactureResult}
+                        options={{ title: "Estado de factura" }}
+                    />
+                    <Stack.Screen
+                        name="vendorProducts"
+                        component={VendorProducts}
+                        options={{ title: "Página de vendedor" }}
+                    />
+                    <Stack.Screen
+                        name="searchProduct"
+                        component={SearchProducts}
+                        options={{ title: "Buscar productos" }}
+                    />
+                    <Stack.Screen
+                        name="subscription"
+                        component={SubscriptionAccount}
+                        options={{ title: "Subscripción" }}
                     />
                     <Stack.Screen
                         name="session"

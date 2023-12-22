@@ -9,12 +9,16 @@ import { errorCodes, messagesCode } from "../errors";
 import { checkEditAccountFields, checkGetAccountFields } from "./checkAccount";
 import {
     EditAccountFields,
+    FactureTypes,
     GetAccountFields,
     LogoutFields,
+    UpdateFactureFields,
 } from "../model/types";
 import { collectionNames } from "../consts";
 import { getAccount } from "../utilities/account";
 import { updateAccountPassword } from "../utilities/updateAccount";
+import { updateBuyerFacture } from "../buyer/buyerFunctions";
+import { updateSubscriptionFacture } from "./accountSubscriptionFunctions";
 
 export const getAccountUser = functions.https.onCall(
     async (
@@ -195,6 +199,36 @@ export const logoutUser = functions.https.onCall(
             throw new functions.https.HttpsError(
                 "invalid-argument",
                 "some message"
+            );
+        }
+    }
+);
+
+export const updateUserFacture = functions.https.onCall(
+    async (data: UpdateFactureFields): Promise<ResponseData<string>> => {
+        try {
+            functions.logger.info("DATA::", data);
+
+            if (data.type == FactureTypes.PRODUCTS) {
+                functions.logger.info("UPDATING PRODUCTS FACTURE");
+                return updateBuyerFacture(data);
+            } else if (data.type == FactureTypes.SUBSCRIPTION) {
+                functions.logger.info("UPDATING SUBSCRIPTION FACTURE");
+                return updateSubscriptionFacture(data);
+            }
+
+            // Returning results.
+            return {
+                extra: undefined,
+                error: true,
+                code: errorCodes.MISSING_REQUIRED_DATA_ERROR,
+                msg: messagesCode[errorCodes.MISSING_REQUIRED_DATA_ERROR],
+            };
+        } catch (error) {
+            functions.logger.error(error);
+            throw new functions.https.HttpsError(
+                "internal",
+                "Error al generar petición de compra"
             );
         }
     }

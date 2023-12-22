@@ -14,6 +14,8 @@ export type RSessionUserData = SessionUserData & {
     setProductQuantity: (quantity: number) => void;
 };
 
+export type MessageData = { msg: string; isError: boolean };
+
 export type UIMessages = {
-    setMessage: (data: { msg: string; isError: boolean }) => void;
+    setMessage: (data: MessageData) => void;
 };

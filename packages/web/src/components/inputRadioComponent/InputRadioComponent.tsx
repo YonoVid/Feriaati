@@ -1,108 +1,74 @@
-// import { ChangeEvent } from "react";
-// import { Controller, FieldValues, UseControllerProps } from "react-hook-form";
-// import { FormControl, FormLabel, MenuItem, RadioGroup, SxProps, TextField, Theme } from "@mui/material";
-// import "./InputRadioComponent.css";
-// // import { Box, TextField } from "@mui/material";
-// // import { Controller } from "react-hook-form";
+import { useState } from "react";
+import { FieldValues, UseControllerProps } from "react-hook-form";
 
-// interface Props<T> extends UseControllerProps<T> {
-//     sx?: SxProps<Theme>;
-//     label: string;
-//     disabled?: boolean;
-//     radioOptions: {value: string, label: string}[];
-//     hidden?: boolean;
-//     onChange?: React.ChangeEventHandler;
-// }
+import {
+    Box,
+    ButtonBase,
+    Radio,
+    SxProps,
+    Theme,
+    Typography,
+} from "@mui/material";
 
-// const InputRadioComponent = <T extends FieldValues>({
-//     sx,
-//     name,
-//     label,
-//     disabled,
-//     defaultValue,
-//     radioOptions,
-//     control,
-//     rules,
-//     onChange,
-// }: Props<T>) => {
-//     const inputLabel = label != null ? label : name;
+import { AccountDirection } from "@feria-a-ti/common/model/functionsTypes";
+import { regionCode, regionCommune } from "@feria-a-ti/common/constants/form";
 
-//     const onChangeWrapper = (
-//         onChangeWrapped: (...event: any[]) => void,
-//         value: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-//     ) => {
-//         if (onChange != null) {
-//             onChange(value);
-//         }
-//         onChangeWrapped(value);
-//     };
+import { colors } from "@feria-a-ti/common/theme/base";
 
-//     return (
-//         <>
-//             {control ? (
-//                 <FormControl>
-//                 <FormLabel id="demo-radio-buttons-group-label">
-//                     {label}
-//                 </FormLabel>
-//                 <Controller
-//                     control={control}
-//                     name={name}
-//                     render={({ field: { onChange, value } }) => (
-//                         <RadioGroup
-//                             aria-labelledby="demo-radio-buttons-group-label"
-//                             defaultValue="none"
-//                             name="radio-buttons-group"
-//                             value={value || "none"}
-//                             onChange={onChange}
-//                         >
-//                             {radioOptions.map(()=>{
-//                                 <FormControlLabel
-//                                     value={value}
-//                                     control={<Radio />}
-//                                     label={label}
-//                                 />
-//                             })}
-//                         </RadioGroup>
-//                     )}
-//                 />
-//             </FormControl>
-//             ) : (
-//                 <TextField
-//                     sx={{ flex: 1, minWidth: "10em", maxWidth: "20em" }}
-//                     disabled={disabled || false}
-//                     InputLabelProps={{
-//                         shrink: type === "file" ? true : undefined,
-//                     }}
-//                     inputProps={
-//                         type === "number"
-//                             ? { inputMode: "numeric", pattern: "[0-9]*" }
-//                             : {}
-//                     }
-//                     select={type === "select"}
-//                     label={inputLabel}
-//                     margin="dense"
-//                     type={type === "number" ? "text" : type}
-//                     color="secondary"
-//                     variant="filled"
-//                     placeholder={inputLabel}
-//                     defaultValue={defaultValue}
-//                     onChange={(value) => {
-//                         onChange && onChange(value);
-//                     }}
-//                 >
-//                     {type === "select" && selectOptions ? (
-//                         selectOptions?.map((value) => (
-//                             <MenuItem key={value[0]} value={value[0]}>
-//                                 {value[1]}
-//                             </MenuItem>
-//                         ))
-//                     ) : (
-//                         <MenuItem>{defaultValue}</MenuItem>
-//                     )}
-//                 </TextField>
-//             )}
-//         </>
-//     );
-// };
+import "./InputRadioComponent.css";
 
-// export default InputRadioComponent;
+interface Props<T> extends UseControllerProps<T> {
+    sx?: SxProps<Theme>;
+    label?: string;
+    disabled?: boolean;
+    hidden?: boolean;
+    isSelected?: boolean;
+    children: any;
+    onClick: () => void;
+}
+
+const InputRadioComponent = <T extends FieldValues>({
+    sx,
+    label,
+    children,
+    disabled,
+    isSelected,
+    onClick,
+}: Props<T>) => {
+    return (
+        <Box
+            sx={{
+                border: isSelected ? 3 : 0,
+                borderRadius: "10em",
+                borderColor: colors.primary,
+                ...sx,
+            }}
+        >
+            <ButtonBase
+                sx={{ width: "100%", display: "flex", flexDirection: "row" }}
+                onClick={() => {
+                    onClick();
+                }}
+                disabled={disabled}
+            >
+                <Radio
+                    sx={{ flex: 1 }}
+                    checked={isSelected}
+                    disableRipple={true}
+                />
+                <Box
+                    sx={{
+                        flex: 5,
+                        padding: "5",
+                        m: "10",
+                        flexDirection: "row",
+                    }}
+                >
+                    {children}
+                </Box>
+            </ButtonBase>
+        </Box>
+    );
+};
+
+export default InputRadioComponent;

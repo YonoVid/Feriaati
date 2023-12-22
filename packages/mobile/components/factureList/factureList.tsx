@@ -50,6 +50,7 @@ export const FactureList = (props: RFacturesListProps) => {
                     .slice(page * 3, (page + 1) * 3)
                     .map((facture, index) => (
                         <TouchableRipple
+                            key={index}
                             style={{
                                 flex: 1,
                                 alignContent: "center",

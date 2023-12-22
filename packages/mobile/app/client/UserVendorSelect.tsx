@@ -1,27 +1,26 @@
 import React, { useEffect, useState } from "react";
-import { HttpsCallableResult } from "firebase/functions";
-import { ScrollView, StyleSheet } from "react-native";
+import { ScrollView, StyleSheet, View } from "react-native";
 import { NavigationProp, ParamListBase } from "@react-navigation/native";
 
-import { checkLoginFields } from "@feria-a-ti/common/check/checkLoginFields";
-import { LoginFields } from "@feria-a-ti/common/model/fields/loginFields";
 import { functions } from "@feria-a-ti/common/firebase";
-import LoginForm from "@feria-a-ti/mobile/components/forms/LoginForm";
 import { httpsCallable } from "@firebase/functions";
 import { Button, IconButton, List } from "react-native-paper";
+
 import {
     ProductData,
+    ProductListCollectionData,
     ResponseData,
-    UserToken,
-    VendorCollectionData,
     VendorData,
 } from "@feria-a-ti/common/model/functionsTypes";
-import { useAppContext } from "../AppContext";
 import { ProductListFields } from "@feria-a-ti/common/model/props/productAddFormProps";
-import { ProductList } from "../../components/productList/ProductList";
+import { ShoppingCartItem } from "@feria-a-ti/common/model/props/shoppingCartProps";
+
 import { colors } from "@feria-a-ti/common/theme/base";
-import { CommentList } from "../../components/commentList/commentList";
-import { ProductVendorPage } from "../vendor/ProductVendorPage";
+
+import { CommentList } from "@feria-a-ti/mobile/components/commentList/commentList";
+import { ProductVendorPage } from "@feria-a-ti/mobile/app/vendor/ProductVendorPage";
+
+import { useAppContext } from "../AppContext";
 
 export interface UserVendorSelectProps {
     navigation: NavigationProp<ParamListBase>;
@@ -36,6 +35,10 @@ export const UserVendorSelect = (props: UserVendorSelectProps) => {
     const [filterVendor, setFilterVendor] = useState<string | null>();
     // Selection of vendor
     const [selectedVendor, setSelectedVendor] = useState<VendorData | null>();
+
+    const [selectedVendorId, setSelectedVendorId] = useState<string | null>();
+    const [productVendor, setProductVendor] =
+        useState<ProductListCollectionData | null>();
     // Product stored data
     const [products, setProducts] = useState<Array<ProductData>>([]);
     const [productVendorId, setProductVendorId] = useState<string | null>();
@@ -43,30 +46,58 @@ export const UserVendorSelect = (props: UserVendorSelectProps) => {
     // Data of vendors stored
     const [vendors, setVendors] = useState<VendorData[]>([]);
     useEffect(() => {
-        getVendors();
+        if (vendors.length < 1) {
+            getVendors();
+        }
     }, []);
 
-    const loadProducts = (data?: VendorData) => {
-        const dataSource = data ? data : selectedVendor;
+    const loadVendor = (vendorId: string) => {
+        setSelectedVendorId(vendorId);
         const formatedData: ProductListFields = {
-            idVendor: dataSource?.id as string,
+            idVendor: vendorId as string,
         };
-        const check = dataSource?.id != null && dataSource?.id != "";
-        console.log("SUBMIT FORM::", check, dataSource);
+        const check = vendorId != null && vendorId != "";
+        console.log("SUBMIT FORM LOAD VENDOR::", check);
         if (check) {
-            const listProduct = httpsCallable<
+            const getProductVendor = httpsCallable<
                 ProductListFields,
-                ResponseData<ProductData[]>
-            >(functions, "listProduct");
-            listProduct(formatedData).then((result) => {
+                ResponseData<ProductListCollectionData>
+            >(functions, "getProductVendor");
+            getProductVendor(formatedData).then((result) => {
                 const { msg, error, extra } = result.data;
                 console.log(result.data);
 
-                setProductVendorId(extra.id);
+                setProductVendor(extra);
+                //setIsLogged(result.data as any);
+                if (error && msg !== "") {
+                    setMessage({ msg, isError: error });
+                } else {
+                    loadProducts(extra.id);
+                }
+            });
+        }
+    };
+
+    const loadProducts = (id: string) => {
+        const dataSource = id ? id : (selectedVendorId as string);
+        const formatedData: ProductListFields = {
+            idVendor: id as string,
+        };
+        const check = id != null && id != "";
+        console.log("SUBMIT FORM::", check, dataSource);
+        if (check) {
+            const addProduct = httpsCallable<
+                ProductListFields,
+                ResponseData<ProductData[]>
+            >(functions, "listProduct");
+            addProduct(formatedData).then((result) => {
+                const { msg, error, extra } = result.data;
+                console.log(result.data);
+
                 setProducts(extra);
                 //setIsLogged(result.data as any);
-                if (error) {
-                    console.log(msg);
+                if (error && msg !== "") {
+                    setMessage({ msg, isError: error });
                 }
             });
         }
@@ -104,7 +135,10 @@ export const UserVendorSelect = (props: UserVendorSelectProps) => {
                         />
                         <ProductVendorPage
                             vendorId={selectedVendor.id}
-                            addProduct={addProduct}
+                            addProduct={(data: ShoppingCartItem) =>
+                                productVendor != null &&
+                                addProduct(data, productVendor)
+                            }
                             onReload={getVendors}
                             vendorData={selectedVendor}
                             isEditable={false}
@@ -131,7 +165,7 @@ export const UserVendorSelect = (props: UserVendorSelectProps) => {
                                     )}
                                     onPress={() => {
                                         setSelectedVendor(vendor);
-                                        loadProducts(vendor);
+                                        loadVendor(vendor.id);
                                     }}
                                 />
                             ))}
@@ -139,6 +173,15 @@ export const UserVendorSelect = (props: UserVendorSelectProps) => {
                     </>
                 )}
             </ScrollView>
+            <View style={styles.button}>
+                <Button
+                    mode="contained"
+                    color={styles.buttonInner.color}
+                    onPress={() => navigation.navigate("searchProduct")}
+                >
+                    {"Pagar"}
+                </Button>
+            </View>
         </>
     );
 };

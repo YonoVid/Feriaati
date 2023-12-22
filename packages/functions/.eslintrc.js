@@ -23,6 +23,8 @@ module.exports = {
     plugins: ["@typescript-eslint", "import"],
     rules: {
         quotes: ["error", "double"],
+        arraysInObjects: true,
+        objectsInObjects: true,
         "import/no-unresolved": 0,
         indent: ["error", 4],
         "max-len": ["error", 100],

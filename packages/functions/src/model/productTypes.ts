@@ -2,8 +2,8 @@
 // VENDOR PRODUCTS RELATED TYPES
 //
 
-import { LogicalData } from "./sharedTypes";
-import { TimeDate } from "./transactionTypes";
+import { ActualSubscription } from "./accountTypes";
+import { LogicalData, TimeDate } from "./sharedTypes";
 
 export type DayTime = {
     hours: number;
@@ -13,7 +13,7 @@ export type DayTime = {
 
 export type DayTimeRange = { start: DayTime; end: DayTime };
 
-export type ProductListCollectionData = LogicalData & {
+export type ProductListCollection = {
     rating?: { positive: number; negative: number };
     enterpriseName: string;
     rut: string;
@@ -25,7 +25,10 @@ export type ProductListCollectionData = LogicalData & {
     image: string;
     serviceTime?: DayTimeRange;
     contact?: { phone: string; email: string };
+    vendorId: string;
 };
+
+export type ProductListCollectionData = LogicalData & ProductListCollection;
 
 export enum ProductUnit {
     UNIT = "none",
@@ -48,6 +51,7 @@ export type ProductCollectionData = {
     discount: ProductDiscount;
     promotion?: number;
     image: [string, string, string] | string;
+    subscription?: ActualSubscription;
 };
 
 export type ProductFactureData = {
@@ -57,8 +61,17 @@ export type ProductFactureData = {
     subtotal: number;
 };
 
+export enum FactureStatus {
+    APPROVED = "approved",
+    PROCESSING = "processing",
+    CANCELED = "canceled",
+    NEGATED = "negated",
+}
+
 export type FactureData = {
     id: string;
+    status: FactureStatus;
     date: TimeDate;
     products: Array<ProductFactureData>;
+    originalFacture?: string;
 };

@@ -22,7 +22,7 @@ function FacturesList(props: RFacturesListProps) {
     const colorTheme =
         color != null && color === "secondary" ? "secondary" : "primary";
 
-    const pageSize = loadSize || 10;
+    const pageSize = loadSize || 3;
 
     // Stored variables
     const [filter, setFilter] = useState<string | null>();
@@ -31,7 +31,7 @@ function FacturesList(props: RFacturesListProps) {
     const [page, setPage] = useState(1);
 
     const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
-        if (value * pageSize >= factures.length && loadData != undefined) {
+        if (value * pageSize > factures.length && loadData != undefined) {
             loadData(factures.length);
         }
         setPage(value);
@@ -90,7 +90,7 @@ function FacturesList(props: RFacturesListProps) {
                 }}
             >
                 {getList()
-                    .slice((page - 1) * 3, page * 3)
+                    .slice((page - 1) * pageSize, page * pageSize)
                     .map((facture, index) => (
                         <Button
                             color="info"

@@ -70,7 +70,7 @@ const InputComponent = <T extends FieldValues>({
                             };
                             return data;
                         })}
-                        value={"" || valueDropdown}
+                        value={defaultValue || valueDropdown || ""}
                     />
                 )}
                 name={name}

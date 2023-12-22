@@ -32,7 +32,7 @@ export {
     passUpdateVendor,
 } from "./vendor/vendorAccessFunctions";
 
-export { getVendorFactures } from "./vendor/vendorFactureFunctions";
+export { getVendorFactures, getResume } from "./vendor/vendorFactureFunctions";
 
 export { checkPetitionVendor } from "./vendor/vendorFunctions";
 
@@ -73,10 +73,28 @@ export {
     getAccountUser,
     editAccountUser,
     logoutUser,
+    updateUserFacture,
 } from "./account/accountFunctions";
+
+export {
+    getAccountSubscription,
+    setAccountSubscription,
+} from "./account/accountSubscriptionFunctions";
 
 export {
     getComments,
     reportComment,
     addComment,
 } from "./comment/commentFunctions";
+
+export {
+    addProductIndex,
+    editProductIndex,
+    deleteProductIndex,
+} from "./search/productSearch";
+
+export {
+    addProductVendorIndex,
+    editProductVendorIndex,
+    deleteProductVendorIndex,
+} from "./search/productVendorSearch";

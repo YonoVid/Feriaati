@@ -1,4 +1,5 @@
 import { EditAccountFields, GetAccountFields } from "../model/types";
+import { AccountDirection } from "../model/accountTypes";
 import { userType } from "../model/accountTypes";
 import { errorCodes } from "../errors";
 import { emailFormatRegex, phoneFormatRegex } from "../utilities/checkDataType";
@@ -57,15 +58,7 @@ export const checkEditAccountFields = (
     }
     let directionCheck: boolean = true;
     direction?.forEach((element) => {
-        directionCheck =
-            directionCheck &&
-            element.commune != null &&
-            !isNaN(element.commune) &&
-            element.region != null &&
-            !isNaN(element.region) &&
-            element.street != null &&
-            element.streetNumber != null &&
-            !isNaN(element.streetNumber);
+        directionCheck = directionCheck && checkDirection(element);
     });
     if (!directionCheck) {
         return { check: false, code: errorCodes.DIRECTION_FORMAT_ERROR };
@@ -75,4 +68,16 @@ export const checkEditAccountFields = (
         check: emailCheck && passwordCheck && phoneCheck && directionCheck,
         code: errorCodes.SUCCESFULL,
     };
+};
+
+export const checkDirection = (data: AccountDirection) => {
+    return (
+        data.commune != null &&
+        !isNaN(data.commune) &&
+        data.region != null &&
+        !isNaN(data.region) &&
+        data.street != null &&
+        data.streetNumber != null &&
+        !isNaN(data.streetNumber)
+    );
 };

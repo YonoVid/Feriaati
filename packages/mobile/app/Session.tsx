@@ -27,18 +27,18 @@ export const Session = (props: SessionProps) => {
             if (type === userType.vendor) {
                 navigation.reset({
                     index: 0,
-                    routes: [{ name: "managerVendor" }],
+                    routes: [{ name: "vendor" }],
                 });
             } else if (type === userType.user) {
                 navigation.reset({
                     index: 0,
-                    routes: [{ name: "userVendorSelect" }],
+                    routes: [{ name: "client" }],
                 });
             }
         } else {
             navigation.reset({
                 index: 0,
-                routes: [{ name: "loginClient" }],
+                routes: [{ name: "login" }],
             });
         }
     });

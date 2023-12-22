@@ -1,18 +1,26 @@
 import { FormProps } from "react-router-dom";
-import { ProductCollectionData } from "@feria-a-ti/common/model/functionsTypes";
+import {
+    ProductCollectionData,
+    ProductFactureData,
+} from "@feria-a-ti/common/model/functionsTypes";
+
+export type ProductId = {
+    vendorId: string;
+    productId: string;
+};
 
 export type ShoppingCartItem = {
-    id: { productId: string; vendorId: string };
+    id: ProductId;
     value: ProductCollectionData;
     quantity: number;
 };
 
 export type ShoppingCartProps = FormProps & {
     label: string;
-    products: Array<ShoppingCartItem>;
+    products: ShoppingCartItem[];
     isEditable: boolean;
     canSubmit: boolean;
-    onEdit?: (index: number, quantity: number) => void;
-    onDelete?: (index: number) => void;
+    onEdit?: (id: ProductId, quantity: number) => void;
+    onDelete?: (id: ProductId) => void;
     onSubmit: () => void;
 };

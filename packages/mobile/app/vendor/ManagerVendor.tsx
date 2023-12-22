@@ -30,6 +30,10 @@ import { ManagerProductList } from "./ManagerProductList";
 import { CommentList } from "../../components/commentList/commentList";
 
 export interface ManagerVendorProps {
+    productVendor?: ProductListData;
+    setProductVendor?: (data: ProductListData) => void;
+    products?: Array<ProductData>;
+    setProducts?: (data: Array<ProductData>) => void;
     navigation: NavigationProp<ParamListBase>;
 }
 
@@ -37,10 +41,17 @@ export const ManagerVendor = (props: ManagerVendorProps) => {
     // Context variables
     const { type, authToken, checkSession, setMessage } = useAppContext();
     // Navigation
-    const { navigation } = props;
+    const {
+        productVendor,
+        setProductVendor,
+        products,
+        setProducts,
+        navigation,
+    } = props;
     // Server data
-    const [productVendor, setProductVendor] = useState<ProductListData>();
-    const [products, setProducts] = useState<Array<ProductData>>([]);
+    const [localProductVendor, setLocalProductVendor] =
+        useState<ProductListData>();
+    const [localProducts, setLocalProducts] = useState<Array<ProductData>>([]);
 
     // Form variables
     const [productEditable, setProductEditable] = useState<ProductData | null>(
@@ -70,7 +81,11 @@ export const ManagerVendor = (props: ManagerVendorProps) => {
                 const { msg, error, extra } = result.data;
                 console.log(result.data);
 
-                setProductVendor(extra as ProductListData);
+                if (setProductVendor) {
+                    setProductVendor(extra as ProductListData);
+                } else {
+                    setLocalProductVendor(extra as ProductListData);
+                }
                 //setIsLogged(result.data as any);
                 if (error && msg !== "") {
                     console.log(msg);
@@ -97,7 +112,11 @@ export const ManagerVendor = (props: ManagerVendorProps) => {
                 >;
                 console.log(result.data);
 
-                setProducts(extra);
+                if (setProducts) {
+                    setProducts(extra);
+                } else {
+                    setLocalProducts(extra);
+                }
                 //setIsLogged(result.data as any);
             });
         }
@@ -198,8 +217,8 @@ export const ManagerVendor = (props: ManagerVendorProps) => {
                     <>
                         <ManagerProductList
                             navigation={navigation}
-                            productVendor={productVendor}
-                            products={products}
+                            productVendor={productVendor || localProductVendor}
+                            products={products || localProducts}
                             canSubmit={canSubmit}
                             isEditable={true}
                             loadProducts={loadProducts}

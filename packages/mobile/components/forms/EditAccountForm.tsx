@@ -14,7 +14,7 @@ import {
     emailFormatRegex,
     numberRegex,
     passwordFormatRegex,
-} from "@feria-a-ti/common/check/checkRegisterFields";
+} from "@feria-a-ti/common/check/checkBase";
 import { phoneFormatRegex } from "@feria-a-ti/common/check/checkAccountFields";
 
 import InputComponent from "@feria-a-ti/mobile/components/inputs/InputComponent";

@@ -1,24 +1,19 @@
-import { useContext } from "react";
-import { Navigate } from "react-router-dom";
+import { useContext, useEffect, useState } from "react";
+import { Navigate, useNavigate } from "react-router-dom";
 
 import { Card } from "@mui/material";
 // import DeleteIcon from "@mui/icons-material/Delete";
 
-import {
-    ProductFactureData,
-    ProductUnit,
-    ResponseData,
-    userType,
-} from "@feria-a-ti/common/model/functionsTypes";
-
-import { ProductFactureFields } from "@feria-a-ti/common/model/fields/buyingFields";
+import { userType } from "@feria-a-ti/common/model/functionsTypes";
 
 import ShoppingCartComponent from "@feria-a-ti/web/src/components/shoppingCartComponent/ShoppingCartComponent";
 import { UserContext } from "@feria-a-ti/web/src/App";
 
 import { useHeaderContext } from "../HeaderLayout";
-import { httpsCallable } from "firebase/functions";
-import { functions } from "@feria-a-ti/common/firebase";
+import {
+    ProductId,
+    ShoppingCartItem,
+} from "@feria-a-ti/common/model/props/shoppingCartProps";
 
 const ShoppingCartPage = () => {
     //Global UI context
@@ -26,76 +21,45 @@ const ShoppingCartPage = () => {
         useHeaderContext();
     //Global state variable
     const { authToken, type } = useContext(UserContext);
+    //Navigation definition
+    const navigate = useNavigate();
+
+    const [productList, setProductList] = useState<Array<ShoppingCartItem>>([]);
 
     const [canSubmit, setCanSubmit] = useState(true);
 
-    const onEdit = (index: number, quantity: number) => {
-        editProduct(index, quantity);
+    const onEdit = (id: ProductId, quantity: number) => {
+        editProduct(id, quantity);
         return true;
     };
 
-    const onDelete = (index: number) => {
-        deleteProduct(index);
+    const onDelete = (id: ProductId) => {
+        deleteProduct(id);
         return false;
     };
 
     const onSubmit = () => {
         setCanSubmit(false);
-        const productPetition: { [id: string]: ProductFactureData[] } = {};
-
-        console.log("SUBMIT BUYING PETITION");
-        console.log(products);
-        products.forEach((product) => {
-            const { id, value, quantity } = product;
-
-            const finalPrice =
-                value.price -
-                (value.discount !== "none"
-                    ? value.discount === "percentage"
-                        ? (value.price * value.promotion) / 100
-                        : value.promotion
-                    : 0);
-            const unitLabel =
-                "(" +
-                (value.unitType === ProductUnit.GRAM
-                    ? value.unit + "gr."
-                    : value.unitType === ProductUnit.KILOGRAM
-                    ? "kg."
-                    : "unidad") +
-                ")";
-
-            productPetition[id.vendorId] = [
-                {
-                    id: id.productId,
-                    name: product.value.name + unitLabel,
-                    quantity: quantity,
-                    subtotal: finalPrice * quantity,
-                },
-                ...(productPetition[product.id.vendorId] || []),
-            ];
-        });
-        console.log(productPetition);
-
-        const buyProductUser = httpsCallable<
-            ProductFactureFields,
-            ResponseData<string>
-        >(functions, "buyProductUser");
-        buyProductUser({
-            token: authToken as string,
-            products: productPetition,
-        })
-            .then((result) => {
-                const { msg, error, extra } = result.data;
-                console.log(result.data);
-
-                setMessage({ msg, isError: error });
-                if (!error) {
-                    resetProduct();
-                }
-                //setIsLogged(result.data as any);
-            })
-            .finally(() => setCanSubmit(true));
+        if (products.size > 0) {
+            navigate("/buyProducts");
+        }
     };
+
+    useEffect(() => {
+        console.log("IS CART EMPTY?::", Object.keys(products).length > 0);
+        console.log(products);
+        if (products.size > 0) {
+            const newList: Array<ShoppingCartItem> = [];
+            products.forEach((vendor, key) => {
+                console.log("VENDOR::", key);
+                vendor.products.forEach((product) => newList.push(product));
+            });
+            setProductList(newList);
+            console.log(newList);
+        } else {
+            setProductList([]);
+        }
+    }, [products]);
 
     return (
         <>
@@ -115,7 +79,7 @@ const ShoppingCartPage = () => {
                     </h1>
                     <ShoppingCartComponent
                         label={"Carro de compra"}
-                        products={products}
+                        products={productList || []}
                         canSubmit={canSubmit}
                         isEditable={true}
                         onEdit={onEdit}
