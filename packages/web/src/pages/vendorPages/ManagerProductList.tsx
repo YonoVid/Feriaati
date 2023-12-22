@@ -19,7 +19,6 @@ import ProductVendorUpdateForm from "@feria-a-ti/web/src/components/forms/produc
 
 import { useHeaderContext } from "@feria-a-ti/web/src/pages/HeaderFunction";
 import { UserContext } from "@feria-a-ti/web/src/App";
-import "@feria-a-ti/web/App.css";
 
 type ManagerProductListProps = {
     productVendor: ProductListCollectionData | undefined;

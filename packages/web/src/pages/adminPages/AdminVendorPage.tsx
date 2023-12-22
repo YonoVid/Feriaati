@@ -4,6 +4,8 @@ import { FieldValues } from "react-hook-form";
 
 import { Card } from "@mui/material";
 
+import LoadingOverlay from "react-loading-overlay-ts";
+
 import { VendorData } from "@feria-a-ti/common/model/functionsTypes";
 import {
     DeleteFields,
@@ -85,33 +87,39 @@ const AdminVendorPage = () => {
     return (
         <>
             {type !== "admin" && <Navigate to="/adminLogin" replace={true} />}
-            {selectedVendor ? (
-                <AdminVendorUpdateForm
-                    canSubmit={canSubmit}
-                    vendor={selectedVendor}
-                    onCancel={() => setselectedVendor(undefined)}
-                    onSubmit={updateSubmit}
-                />
-            ) : (
-                <Card
-                    className="inputContainer"
-                    color="secondary"
-                    sx={{
-                        maxWidth: "80%",
-                        alignContent: "center",
-                        borderRadius: "10%",
-                    }}
-                >
-                    <h1 style={{ maxWidth: "100%" }}>
-                        {"Lista de Vendedores"}
-                    </h1>
-                    <VendorList
-                        vendors={vendors}
-                        onEdit={(data) => setselectedVendor(data)}
-                        onDelete={(id: string) => deleteSubmit(id)}
+            <LoadingOverlay
+                active={!canSubmit}
+                spinner
+                text="Realizando petición..."
+            >
+                {selectedVendor ? (
+                    <AdminVendorUpdateForm
+                        canSubmit={canSubmit}
+                        vendor={selectedVendor}
+                        onCancel={() => setselectedVendor(undefined)}
+                        onSubmit={updateSubmit}
                     />
-                </Card>
-            )}
+                ) : (
+                    <Card
+                        className="inputContainer"
+                        color="secondary"
+                        sx={{
+                            maxWidth: "80%",
+                            alignContent: "center",
+                            borderRadius: "10%",
+                        }}
+                    >
+                        <h1 style={{ maxWidth: "100%" }}>
+                            {"Lista de Vendedores"}
+                        </h1>
+                        <VendorList
+                            vendors={vendors}
+                            onEdit={(data) => setselectedVendor(data)}
+                            onDelete={(id: string) => deleteSubmit(id)}
+                        />
+                    </Card>
+                )}
+            </LoadingOverlay>
         </>
     );
 };

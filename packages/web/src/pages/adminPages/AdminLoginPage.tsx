@@ -2,6 +2,8 @@ import { useContext, useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import { FieldValues } from "react-hook-form";
 
+import LoadingOverlay from "react-loading-overlay-ts";
+
 import { LoginFields } from "@feria-a-ti/common/model/fields/loginFields";
 import { UserToken } from "@feria-a-ti/common/model/functionsTypes";
 
@@ -49,11 +51,17 @@ function AdminLoginPage() {
     return (
         <>
             {type === "admin" && <Navigate to="/admin" replace={true} />}
-            <LoginForm
-                label="Acceso de administración"
-                onSubmit={onSubmit}
-                canSubmit={canSubmit}
-            />
+            <LoadingOverlay
+                active={!canSubmit}
+                spinner
+                text="Realizando petición..."
+            >
+                <LoginForm
+                    label="Acceso de administración"
+                    onSubmit={onSubmit}
+                    canSubmit={canSubmit}
+                />
+            </LoadingOverlay>
         </>
     );
 }

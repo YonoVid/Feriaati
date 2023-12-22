@@ -95,9 +95,11 @@ function ProductAddForm(props: RProductAddFormProps) {
                 label="Ingresar foto de local"
                 defaultPreview={localImageData[0]}
                 error={errors?.image}
-                rules={{
-                    required: "La imagen del local es requerida",
-                }}
+                rules={
+                    editableState != undefined || editableState != null
+                        ? {}
+                        : { required: "La imagen del local es requerida" }
+                }
                 icon="camera"
                 setData={(data: string | ArrayBuffer) => fileStore(data, 0)}
                 setIsLoading={setIsLoading}

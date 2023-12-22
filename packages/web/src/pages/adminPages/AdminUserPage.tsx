@@ -4,6 +4,8 @@ import { FieldValues } from "react-hook-form";
 
 import { Card } from "@mui/material";
 
+import LoadingOverlay from "react-loading-overlay-ts";
+
 import { UserData } from "@feria-a-ti/common/model/functionsTypes";
 import {
     DeleteFields,
@@ -83,31 +85,39 @@ const AdminUserPage = () => {
     return (
         <>
             {type !== "admin" && <Navigate to="/adminLogin" replace={true} />}
-            {selectedUser ? (
-                <AdminUserUpdateForm
-                    canSubmit={canSubmit}
-                    user={selectedUser}
-                    onCancel={() => setSelectedUser(undefined)}
-                    onSubmit={updateSubmit}
-                />
-            ) : (
-                <Card
-                    className="inputContainer"
-                    color="secondary"
-                    sx={{
-                        maxWidth: "80%",
-                        alignContent: "center",
-                        borderRadius: "10%",
-                    }}
-                >
-                    <h1 style={{ maxWidth: "100%" }}>{"Lista de Usuarios"}</h1>
-                    <UserList
-                        users={users}
-                        onEdit={(data) => setSelectedUser(data)}
-                        onDelete={(id: string) => deleteSubmit(id)}
+            <LoadingOverlay
+                active={!canSubmit}
+                spinner
+                text="Realizando petición..."
+            >
+                {selectedUser ? (
+                    <AdminUserUpdateForm
+                        canSubmit={canSubmit}
+                        user={selectedUser}
+                        onCancel={() => setSelectedUser(undefined)}
+                        onSubmit={updateSubmit}
                     />
-                </Card>
-            )}
+                ) : (
+                    <Card
+                        className="inputContainer"
+                        color="secondary"
+                        sx={{
+                            maxWidth: "80%",
+                            alignContent: "center",
+                            borderRadius: "10%",
+                        }}
+                    >
+                        <h1 style={{ maxWidth: "100%" }}>
+                            {"Lista de Usuarios"}
+                        </h1>
+                        <UserList
+                            users={users}
+                            onEdit={(data) => setSelectedUser(data)}
+                            onDelete={(id: string) => deleteSubmit(id)}
+                        />
+                    </Card>
+                )}
+            </LoadingOverlay>
         </>
     );
 };

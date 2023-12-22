@@ -4,6 +4,8 @@ import { FieldValues } from "react-hook-form";
 
 import { Card } from "@mui/material";
 
+import LoadingOverlay from "react-loading-overlay-ts";
+
 import { ProductListData } from "@feria-a-ti/common/model/functionsTypes";
 import {
     DeleteFields,
@@ -95,33 +97,41 @@ const AdminProductsPage = () => {
     return (
         <>
             {type !== "admin" && <Navigate to="/adminLogin" replace={true} />}
-            {productList ? (
-                <AdminProductListUpdateForm
-                    canSubmit={canSubmit}
-                    imageData={imageData}
-                    setImageData={setImageData}
-                    productList={productList}
-                    onCancel={() => setProductList(undefined)}
-                    onSubmit={updateProductList}
-                />
-            ) : (
-                <Card
-                    className="inputContainer"
-                    color="secondary"
-                    sx={{
-                        maxWidth: "80%",
-                        alignContent: "center",
-                        borderRadius: "10%",
-                    }}
-                >
-                    <h1 style={{ maxWidth: "100%" }}>{"Lista de Tiendas"}</h1>
-                    <ProductVendorList
-                        productVendors={vendors}
-                        onEdit={(data) => setProductList(data)}
-                        onDelete={(id: string) => deleteSubmit(id)}
+            <LoadingOverlay
+                active={!canSubmit}
+                spinner
+                text="Realizando petición..."
+            >
+                {productList ? (
+                    <AdminProductListUpdateForm
+                        canSubmit={canSubmit}
+                        imageData={imageData}
+                        setImageData={setImageData}
+                        productList={productList}
+                        onCancel={() => setProductList(undefined)}
+                        onSubmit={updateProductList}
                     />
-                </Card>
-            )}
+                ) : (
+                    <Card
+                        className="inputContainer"
+                        color="secondary"
+                        sx={{
+                            maxWidth: "80%",
+                            alignContent: "center",
+                            borderRadius: "10%",
+                        }}
+                    >
+                        <h1 style={{ maxWidth: "100%" }}>
+                            {"Lista de Tiendas"}
+                        </h1>
+                        <ProductVendorList
+                            productVendors={vendors}
+                            onEdit={(data) => setProductList(data)}
+                            onDelete={(id: string) => deleteSubmit(id)}
+                        />
+                    </Card>
+                )}
+            </LoadingOverlay>
         </>
     );
 };

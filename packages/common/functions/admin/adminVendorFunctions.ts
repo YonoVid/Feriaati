@@ -60,7 +60,7 @@ export const editVendorState = (
         functions,
         "vendorStateUpdate"
     );
-    console.log("SELECTED USER::", id);
+    console.log("SELECTED USER::", formatedData.itemId);
     updateState(formatedData)
         .then((response) => {
             const { msg, error } = response.data;

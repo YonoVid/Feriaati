@@ -3,6 +3,8 @@ import { Navigate } from "react-router-dom";
 
 import { Card } from "@mui/material";
 
+import LoadingOverlay from "react-loading-overlay-ts";
+
 import { VendorData } from "@feria-a-ti/common/model/functionsTypes";
 import { UpdateStateFields } from "@feria-a-ti/common/model/fields/adminFields";
 import { userStatus } from "@feria-a-ti/common/model/fields/registerFields";
@@ -61,24 +63,30 @@ const AdminActivateVendors = () => {
     return (
         <>
             {type !== "admin" && <Navigate to="/adminLogin" replace={true} />}
-            {newVendors && (
-                <Card
-                    className="inputContainer"
-                    color="secondary"
-                    sx={{
-                        maxWidth: "80%",
-                        alignContent: "center",
-                        borderRadius: "10%",
-                    }}
-                >
-                    <h1 style={{ maxWidth: "100%" }}>{"Solicitudes"}</h1>
-                    <RegisterVendorList
-                        vendors={newVendors}
-                        canSubmit={canSubmit}
-                        updateState={updateState}
-                    />
-                </Card>
-            )}
+            <LoadingOverlay
+                active={!canSubmit}
+                spinner
+                text="Realizando petición..."
+            >
+                {newVendors && (
+                    <Card
+                        className="inputContainer"
+                        color="secondary"
+                        sx={{
+                            maxWidth: "80%",
+                            alignContent: "center",
+                            borderRadius: "10%",
+                        }}
+                    >
+                        <h1 style={{ maxWidth: "100%" }}>{"Solicitudes"}</h1>
+                        <RegisterVendorList
+                            vendors={newVendors}
+                            canSubmit={canSubmit}
+                            updateState={updateState}
+                        />
+                    </Card>
+                )}
+            </LoadingOverlay>
         </>
     );
 };

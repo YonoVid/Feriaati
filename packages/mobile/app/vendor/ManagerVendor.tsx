@@ -51,6 +51,7 @@ export const ManagerVendor = (props: ManagerVendorProps) => {
     // Server data
     const [localProductVendor, setLocalProductVendor] =
         useState<ProductListData>();
+    const [vendorId, setVendorId] = useState<string>();
     const [localProducts, setLocalProducts] = useState<Array<ProductData>>([]);
 
     // Form variables
@@ -80,6 +81,7 @@ export const ManagerVendor = (props: ManagerVendorProps) => {
                 } else {
                     setLocalProductVendor(data);
                 }
+                setVendorId(data.id);
             }
         );
     };
@@ -101,9 +103,15 @@ export const ManagerVendor = (props: ManagerVendorProps) => {
 
     const onEdit = (data: ProductFields) => {
         const formatedData: ProductEditFields = {
-            id: productEditable?.id,
-            ...data,
-            tokenVendor: authToken,
+            id: productEditable?.id as string,
+            tokenVendor: authToken as string,
+            name: data.name as string,
+            description: data.description as string,
+            unitType: data.unitType,
+            unit: data.unit as number,
+            price: data.price as number,
+            discount: data.discount,
+            promotion: data.promotion as number,
             image: imageData,
         };
 
@@ -172,9 +180,7 @@ export const ManagerVendor = (props: ManagerVendorProps) => {
                             onDelete={onDelete}
                         >
                             <CommentList
-                                commentsVendor={
-                                    productVendor ? productVendor.id : ""
-                                }
+                                commentsVendor={vendorId ? vendorId : ""}
                                 isUser={false}
                             />
                         </ManagerProductList>
