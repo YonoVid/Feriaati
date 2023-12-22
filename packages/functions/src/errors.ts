@@ -21,6 +21,7 @@ export enum errorCodes {
     INCORRECT_PASSWORD_ERROR = "ERL04",
     VENDOR_NOT_EXISTS_ERROR = "ERL05",
     VENDOR_PERMISSION_ERROR = "ERL06",
+    CONTRIBUTOR_PERMISSION_ERROR = "ERL06",
     ACTION_DONE_ERROR = "ERL09",
     ADMIN_NOT_EXISTS_ERROR = "ERL10",
     INCORRECT_INTEGER_FORMAT = "ERS00",
@@ -61,6 +62,8 @@ export const messagesCode: { [code in errorCodes]: string } = {
     [errorCodes.VENDOR_NOT_EXISTS_ERROR]: "El vendedor no existe",
     [errorCodes.VENDOR_PERMISSION_ERROR]:
         "El vendedor no tiene los permisos adecuados",
+    [errorCodes.CONTRIBUTOR_PERMISSION_ERROR]:
+        "El contribuidor no posee los permisos necesarios",
     [errorCodes.INCORRECT_INTEGER_FORMAT]:
         "El número debe ser un entero. Ej: 100",
     [errorCodes.ACTION_DONE_ERROR]:

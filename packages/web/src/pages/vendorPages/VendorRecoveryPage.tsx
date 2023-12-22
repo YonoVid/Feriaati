@@ -1,23 +1,23 @@
 import { useState } from "react";
 import { FieldValues } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import { httpsCallable } from "firebase/functions";
 
-import { functions } from "@feria-a-ti/common/firebase";
-import {
-    checkRecoveryFields,
-    checkUpdatePassFields,
-} from "@feria-a-ti/common/check/checkLoginFields";
+import LoadingOverlay from "react-loading-overlay-ts";
+
 import {
     RecoveryFields,
     UpdatePassFields,
 } from "@feria-a-ti/common/model/fields/loginFields";
-import { ResponseData } from "@feria-a-ti/common/model/functionsTypes";
+
+import {
+    editPasswordVendor,
+    recoverPasswordVendor,
+} from "@feria-a-ti/common/functions/account/accountFunctions";
 
 import PassRecoveryForm from "@feria-a-ti/web/src/components/forms/loginForm/PassRecoveryForm";
 import UpdatePassword from "@feria-a-ti/web/src/components/forms/loginForm/UpdatePassword";
 
-import { useHeaderContext } from "../HeaderLayout";
+import { useHeaderContext } from "../HeaderFunction";
 import "../../App.css";
 
 function VendorRecoveryPage() {
@@ -36,27 +36,16 @@ function VendorRecoveryPage() {
         const formatedData: RecoveryFields = {
             email: data.email as string,
         };
-        const check = checkRecoveryFields(formatedData);
-        console.log(formatedData);
-        if (check) {
-            setCanSubmit(false);
-            const passRecovery = httpsCallable<
-                RecoveryFields,
-                ResponseData<string>
-            >(functions, "passRecoveryVendor");
-            passRecovery(formatedData)
-                .then((result) => {
-                    const { error, msg } = result.data;
-                    console.log(result);
-                    setMessage({ msg, isError: error });
-                    if (!error) {
-                        setUserEmail(data.email);
-                        setChangePass(false);
-                    }
-                })
-                .finally(() => setCanSubmit(true));
-        }
+
+        recoverPasswordVendor(
+            { formatedData, setCanSubmit, setMessage },
+            (data) => {
+                setUserEmail(data);
+                setChangePass(false);
+            }
+        );
     };
+
     const onSubmitUpdatePass = (data: FieldValues) => {
         console.log("SUBMIT FORM");
         const formatedData: UpdatePassFields = {
@@ -65,41 +54,34 @@ function VendorRecoveryPage() {
             password: data.password as string,
             confirmPassword: data.confirmPassword as string,
         };
-        const check = checkUpdatePassFields(formatedData);
-        if (check) {
-            setCanSubmit(false);
-            const passUpdate = httpsCallable<
-                UpdatePassFields,
-                ResponseData<string>
-            >(functions, "passUpdateVendor");
-            passUpdate(formatedData)
-                .then((result) => {
-                    const { error, msg } = result.data;
-                    console.log(result);
-                    setMessage({ msg, isError: error });
-                    if (!error) {
-                        navigate("/loginVendor");
-                    }
-                })
-                .finally(() => setCanSubmit(true));
-        }
+
+        editPasswordVendor({ formatedData, setCanSubmit, setMessage }, () => {
+            navigate("/loginVendor");
+        });
     };
+
     return (
         <>
-            {(changePass && (
-                <PassRecoveryForm
-                    label="Recuperar cuenta de vendedor"
-                    color="secondary"
-                    onSubmit={onSubmitRecoveryPass}
-                    canSubmit={canSubmit}
-                />
-            )) || (
-                <UpdatePassword
-                    color="secondary"
-                    onSubmit={onSubmitUpdatePass}
-                    canSubmit={canSubmit}
-                />
-            )}
+            <LoadingOverlay
+                active={!canSubmit}
+                spinner
+                text="Realizando petición..."
+            >
+                {(changePass && (
+                    <PassRecoveryForm
+                        label="Recuperar cuenta de vendedor"
+                        color="secondary"
+                        onSubmit={onSubmitRecoveryPass}
+                        canSubmit={canSubmit}
+                    />
+                )) || (
+                    <UpdatePassword
+                        color="secondary"
+                        onSubmit={onSubmitUpdatePass}
+                        canSubmit={canSubmit}
+                    />
+                )}
+            </LoadingOverlay>
         </>
     );
 }

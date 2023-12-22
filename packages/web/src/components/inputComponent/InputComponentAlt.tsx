@@ -8,11 +8,10 @@ import {
     Theme,
 } from "@mui/material";
 import "./InputComponent.css";
-// import { Box, TextField } from "@mui/material";
-// import { Controller } from "react-hook-form";
 
-interface Props<T> extends UseControllerProps<T> {
+interface Props<T extends FieldValues> extends UseControllerProps<T> {
     sx?: SxProps<Theme>;
+    value?: unknown;
     inputProps?: InputBaseComponentProps | undefined;
     label: string;
     disabled?: boolean;
@@ -37,6 +36,7 @@ const InputComponentAlt = <T extends FieldValues>({
     type,
     control,
     rules,
+    value,
     onChange,
 }: Props<T>) => {
     const inputLabel = label != null ? label : name;
@@ -93,9 +93,14 @@ const InputComponentAlt = <T extends FieldValues>({
                             value={value || ""}
                             placeholder={defaultValue || inputLabel}
                             defaultValue={defaultValue}
+                            onSubmit={() => onChange(value.trim())}
                             onChange={(value) => {
                                 onChangeWrapper(onChange, value);
                             }}
+                            onLostPointerCapture={() =>
+                                console.log("ON LOST ENDED")
+                            }
+                            onEnded={() => console.log("ON ENDED")}
                             onBlur={onBlur}
                             helperText={error?.message || ""}
                         >
@@ -135,6 +140,7 @@ const InputComponentAlt = <T extends FieldValues>({
                     onChange={(value) => {
                         onChange && onChange(value);
                     }}
+                    value={value}
                 >
                     {type === "select" && selectOptions ? (
                         selectOptions?.map((value) => (

@@ -1,38 +1,42 @@
 import { useContext, useEffect, useState } from "react";
 import { FieldValues } from "react-hook-form";
-import { Navigate, useNavigate } from "react-router-dom";
-import { httpsCallable } from "firebase/functions";
+import { Navigate } from "react-router-dom";
 
-import { functions } from "@feria-a-ti/common/firebase";
-import {
-    checkAddProductFields,
-    checkDeleteProductFields,
-} from "@feria-a-ti/common/check/checkProductFields";
+import LoadingOverlay from "react-loading-overlay-ts";
+
 import {
     ProductData,
     ProductListData,
-    ResponseData,
+    userType,
 } from "@feria-a-ti/common/model/functionsTypes";
 import {
     ProductDeleteFields,
     ProductEditFields,
     ProductListFields,
 } from "@feria-a-ti/common/model/props/productAddFormProps";
+
+import {
+    editProduct,
+    deleteProduct,
+    listProducts,
+    loadVendorProduct,
+} from "@feria-a-ti/common/functions/vendor/manageProductsFunctions";
+
 import ProductAddForm from "@feria-a-ti/web/src/components/forms/productAddForm/ProductAddForm";
 import CommentList from "@feria-a-ti/web/src/components/commentList/CommentList";
 
 import { UserContext } from "@feria-a-ti/web/src/App";
-import { useHeaderContext } from "../HeaderLayout";
-import "../../App.css";
 import ManagerProductList from "./ManagerProductList";
+import { useHeaderContext } from "../HeaderFunction";
+import "../../App.css";
 
 function ManagerVendorPage() {
     //Global UI context
     const { setMessage } = useHeaderContext();
     //Global state variable
-    const { authToken, type } = useContext(UserContext);
+    const { authToken, emailUser, type } = useContext(UserContext);
     // Dom redirection variable
-    const navigate = useNavigate();
+    //const navigate = useNavigate();
 
     //Page stored data
     const [productVendor, setProductVendor] = useState<ProductListData>();
@@ -53,52 +57,27 @@ function ManagerVendorPage() {
 
     const loadVendor = () => {
         const formatedData: ProductListFields = {
-            tokenVendor: authToken as string,
+            token: authToken as string,
+            email: emailUser as string,
         };
-        const check = authToken != null && authToken != "";
-        console.log("SUBMIT FORM LOAD VENDOR::", check);
-        if (check) {
-            const addProduct = httpsCallable<
-                ProductListFields,
-                ResponseData<ProductListData>
-            >(functions, "getProductVendor");
-            addProduct(formatedData).then((result) => {
-                const { msg, error, extra } = result.data;
-                console.log(result.data);
 
-                setProductVendor(extra);
-                //setIsLogged(result.data as any);
-                if (error && msg !== "") {
-                    setMessage({ msg, isError: error });
-                }
-            });
-        }
+        loadVendorProduct(
+            { formatedData, setCanSubmit, setMessage },
+            (data) => {
+                setProductVendor(data);
+            }
+        );
     };
 
     const loadProducts = () => {
         const formatedData: ProductListFields = {
-            tokenVendor: authToken as string,
+            token: authToken as string,
+            email: emailUser as string,
         };
-        const check = authToken != null && authToken != "";
-        console.log("SUBMIT FORM LOAD PRODUCTS::", check);
-        if (check) {
-            const addProduct = httpsCallable<
-                ProductListFields,
-                ResponseData<ProductData>
-            >(functions, "listProduct");
-            addProduct(formatedData).then((result) => {
-                const { msg, error, extra } = result.data as ResponseData<
-                    ProductData[]
-                >;
-                console.log(result.data);
 
-                setProducts(extra);
-                //setIsLogged(result.data as any);
-                if (error && msg !== "") {
-                    setMessage({ msg, isError: error });
-                }
-            });
-        }
+        listProducts({ formatedData, setCanSubmit, setMessage }, (data) => {
+            setProducts(data);
+        });
     };
 
     const onEdit = (data: FieldValues) => {
@@ -115,64 +94,27 @@ function ManagerVendorPage() {
             promotion: data.promotion as number,
             image: imageData,
         };
-        const check = checkAddProductFields(formatedData);
-        console.log(formatedData);
-        console.log("SUBMIT FORM ON EDIT::", check);
-        if (check) {
-            setCanSubmit(false);
-            const editProduct = httpsCallable<
-                ProductEditFields,
-                ResponseData<string>
-            >(functions, "editProduct");
-            editProduct(formatedData)
-                .then((result) => {
-                    const { msg, error } = result.data as ResponseData<string>;
-                    console.log(result.data);
-                    //setIsLogged(result.data as any);
-                    if (!error) {
-                        setProductEditable(null);
-                        loadProducts();
-                    }
-                    if (msg !== "") {
-                        setMessage({ msg, isError: error });
-                    }
-                })
-                .finally(() => setCanSubmit(true));
-        }
+
+        editProduct({ formatedData, setCanSubmit, setMessage }, () => {
+            setProductEditable(null);
+            loadProducts();
+        });
     };
 
     const onDelete = (id: string) => {
         const formatedData: ProductDeleteFields = {
-            tokenVendor: authToken as string,
-            productId: id,
+            token: authToken as string,
+            email: emailUser as string,
+            idProducts: id,
         };
-        const check = checkDeleteProductFields(formatedData);
-        console.log("SUBMIT FORM ON DELETE::", check);
-        if (check) {
-            setCanSubmit(false);
-            const addProduct = httpsCallable<
-                ProductDeleteFields,
-                ResponseData<string>
-            >(functions, "deleteProduct");
-            addProduct(formatedData)
-                .then((result) => {
-                    const { msg, error } = result.data;
-                    console.log(result.data);
 
-                    !error &&
-                        setProducts(
-                            products.filter(
-                                (product) =>
-                                    product.id !== formatedData.productId
-                            )
-                        );
-                    //setIsLogged(result.data as any);
-                    if (msg !== "") {
-                        setMessage({ msg, isError: error });
-                    }
-                })
-                .finally(() => setCanSubmit(true));
-        }
+        deleteProduct({ formatedData, setCanSubmit, setMessage }, () => {
+            setProducts(
+                products.filter(
+                    (product) => product.id !== formatedData.idProducts
+                )
+            );
+        });
     };
 
     useEffect(() => {
@@ -183,36 +125,46 @@ function ManagerVendorPage() {
             loadProducts();
         }
     }, []);
+
     return (
         <>
-            {type !== "vendor" && <Navigate to="/session" replace={true} />}
-            {!productEditable ? (
-                <ManagerProductList
-                    productVendor={productVendor}
-                    products={products}
-                    canSubmit={canSubmit}
-                    loadVendor={loadVendor}
-                    setProductEditable={setProductEditable}
-                    setCanSubmit={setCanSubmit}
-                    onDelete={onDelete}
-                >
-                    <CommentList
-                        commentsVendor={productVendor?.id || ""}
-                        isUser={false}
-                    />
-                </ManagerProductList>
-            ) : (
-                <ProductAddForm
-                    editableState={productEditable}
-                    imageData={imageData}
-                    setImageData={setImageData}
-                    onSubmit={onEdit}
-                    onCancel={() => setProductEditable(null)}
-                    setCanSubmit={setCanSubmit}
-                    canSubmit={canSubmit}
-                    buttonLabel={"Editar producto"}
-                />
+            {type !== userType.vendor && type !== userType.contributor && (
+                <Navigate to="/session" replace={true} />
             )}
+            <LoadingOverlay
+                active={!canSubmit}
+                spinner
+                text="Realizando petición..."
+            >
+                {!productEditable ? (
+                    <ManagerProductList
+                        productVendor={productVendor}
+                        products={products}
+                        canSubmit={canSubmit}
+                        loadVendor={loadVendor}
+                        setProductEditable={setProductEditable}
+                        setCanSubmit={setCanSubmit}
+                        onDelete={onDelete}
+                    >
+                        <CommentList
+                            commentsVendor={productVendor?.id || ""}
+                            isUser={false}
+                        />
+                    </ManagerProductList>
+                ) : (
+                    <ProductAddForm
+                        label="Actualizar"
+                        editableState={productEditable}
+                        imageData={imageData}
+                        setImageData={setImageData}
+                        onSubmit={onEdit}
+                        onCancel={() => setProductEditable(null)}
+                        setCanSubmit={setCanSubmit}
+                        canSubmit={canSubmit}
+                        buttonLabel={"Editar producto"}
+                    />
+                )}
+            </LoadingOverlay>
         </>
     );
 }

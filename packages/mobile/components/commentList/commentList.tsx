@@ -17,8 +17,6 @@ import {
     ReportCommentFields,
 } from "@feria-a-ti/common/model/comments/commentsFields";
 
-import { useHeaderContext } from "@feria-a-ti/web/src/pages/HeaderLayout";
-
 import { Avatar, DataTable, IconButton } from "react-native-paper";
 import { CommentView } from "./commentView";
 import { useAppContext } from "../../app/AppContext";

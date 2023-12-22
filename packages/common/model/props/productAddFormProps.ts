@@ -1,6 +1,7 @@
 import { FormProps } from "./sharedProps";
 import { FieldValues } from "react-hook-form";
 import { ProductData, ProductDiscount, ProductUnit } from "../functionsTypes";
+import { UserRequestFields } from "../fields/fields";
 
 export enum unitType {
     KILOGRAM = "kilogram",
@@ -23,13 +24,12 @@ export type ProductEditFields = ProductFields & {
     id: string;
 };
 
-export type ProductListFields = {
-    tokenVendor?: string;
-    idVendor?: string;
+export type ProductListFields = UserRequestFields & {
+    idProducts?: string;
 };
 
 export type ProductDeleteFields = ProductListFields & {
-    productId: string;
+    idProducts: string;
 };
 
 export type ProductAddFormProps = FormProps & {

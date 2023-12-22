@@ -43,7 +43,7 @@ function ProductVendorPage(props: ProductVendorPageProps) {
 
     const rateColor =
         Math.abs(rate) < 0.1
-            ? "none"
+            ? "#696969"
             : rate > 0
             ? colors.primary
             : colors.secondary;

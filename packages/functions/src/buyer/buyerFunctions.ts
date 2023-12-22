@@ -13,6 +13,7 @@ import { FactureStatus } from "../model/productTypes";
 import { Timestamp } from "firebase-admin/firestore";
 import { checkBuyProduct } from "./checkBuyer";
 import { registerFactureData } from "../vendor/vendorFactureFunctions";
+import { sendBuyEvent } from "../search/insights";
 
 export const vendorListUser = functions.https.onCall(
     async (data: string): Promise<ResponseData<VendorData[]>> => {
@@ -34,7 +35,7 @@ export const buyProductUser = functions.https.onCall(
             // Return facture data
             let extra = data.token;
             // Checks of data and database
-            let { check, code } = checkBuyProduct(data);
+            let { check, code } = await checkBuyProduct(data);
             // Get collection of email data
 
             functions.logger.info("DATA::", data);
@@ -95,7 +96,7 @@ export const updateBuyerFacture = async (
     data: UpdateFactureFields
 ): Promise<ResponseData<string>> => {
     try {
-        let extra = data.facture;
+        const extra = data.facture;
         // Checks of data and database
         let code = errorCodes.SUCCESFULL;
 
@@ -133,13 +134,23 @@ export const updateBuyerFacture = async (
 
                     const time = Timestamp.now();
 
-                    for (let key in factureData.products) {
-                        registerFactureData({
-                            docId: factureDoc.id,
-                            id: key,
-                            products: factureData.products[key],
-                            time: time,
-                        });
+                    if (data.status == FactureStatus.APPROVED) {
+                        for (const key in factureData.products) {
+                            if (key) {
+                                sendBuyEvent(
+                                    collectionDoc.id,
+                                    key,
+                                    factureData.products[key]
+                                );
+
+                                registerFactureData({
+                                    docId: factureDoc.id,
+                                    id: key,
+                                    products: factureData.products[key],
+                                    time: time,
+                                });
+                            }
+                        }
                     }
                 }
             } else {

@@ -1,4 +1,4 @@
-import { Box, Card, CardContent, Typography, useTheme } from "@mui/material";
+import { Box, Card, CardContent, Typography } from "@mui/material";
 
 import { ProductFactureData } from "@feria-a-ti/common/model/functionsTypes";
 import "./BuyProductViewComponent.css";

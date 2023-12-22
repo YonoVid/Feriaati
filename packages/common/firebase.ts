@@ -28,14 +28,10 @@ export const app = initializeApp(firebaseConfig);
 export const functions = getFunctions(app);
 export const storage = getStorage(app);
 
-if (
-    (navigator.product == "ReactNative" && __DEV__) ||
-    !process.env.NODE_ENV ||
-    process.env.NODE_ENV === "development"
-) {
+if (!process.env.NODE_ENV || process.env.NODE_ENV === "development") {
     let localAddress = "localhost";
-    if (navigator.product == "ReactNative" && __DEV__) {
-        localAddress = "192.168.253.106" || "/firebase";
+    if (navigator.product == "ReactNative") {
+        localAddress = "192.168.76.106" || "/firebase";
     }
     // Point to function emulator on localhost.
     connectFunctionsEmulator(functions, localAddress, 5001);

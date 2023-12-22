@@ -1,11 +1,5 @@
-import { FormProps } from "react-router-dom";
-import {
-    AccountData,
-    ProductCollectionData,
-    ProductFactureData,
-} from "@feria-a-ti/common/model/functionsTypes";
+import { AccountData } from "@feria-a-ti/common/model/functionsTypes";
 import { FieldValues } from "react-hook-form";
-import { EditFormAccountFields } from "../account/editAccountFields";
 import { BuyProductFormFields } from "../fields/buyingFields";
 
 export type BuyProductFormProps = {

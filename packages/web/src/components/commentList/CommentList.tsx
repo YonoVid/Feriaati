@@ -17,7 +17,7 @@ import {
     ReportCommentFields,
 } from "@feria-a-ti/common/model/comments/commentsFields";
 
-import { useHeaderContext } from "@feria-a-ti/web/src/pages/HeaderLayout";
+import { useHeaderContext } from "@feria-a-ti/web/src/pages/HeaderFunction";
 
 import CommentForm from "../forms/commentForm/CommentForm";
 import CommentView from "./CommentView";
@@ -40,11 +40,12 @@ function CommentList(props: RListCommentsProps) {
 
     const [page, setPage] = useState(1);
     const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
+        console.log(event);
         setPage(value);
     };
 
     // Data of comments stored
-    const [ownComment, setOwnComment] = useState<CommentCollectionData>([]);
+    const [ownComment, setOwnComment] = useState<CommentCollectionData>();
     const [comments, setComments] = useState<UserComment[]>([]);
 
     const getComments = () => {

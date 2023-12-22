@@ -1,4 +1,7 @@
+export const indexMaxInstances = 10;
+
 export enum collectionNames {
+    CONTRIBUTORS = "contributors",
     VENDORS = "vendors",
     USERS = "users",
     ADMINS = "admins",

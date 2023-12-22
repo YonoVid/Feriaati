@@ -1,10 +1,169 @@
+import { functions } from "@feria-a-ti/common/firebase";
+import { httpsCallable } from "@firebase/functions";
+
 import {
+    IntegrationApiKeys,
+    IntegrationCommerceCodes,
+    Options,
+    WebpayPlus,
+    Environment,
+} from "transbank-sdk";
+
+import { messagesCode } from "../constants/errors";
+import { TransbankTransaction } from "../model/account/paymenTypes";
+import {
+    FactureTypes,
+    UpdateFactureFields,
+} from "../model/fields/buyingFields";
+
+import { FactureFields } from "../model/fields/factureFields";
+import {
+    FactureData,
+    FactureStatus,
     ProductFactureData,
     ProductListCollectionData,
     ProductUnit,
+    ResponseData,
+    userType,
 } from "../model/functionsTypes";
 import { ShoppingCartItem } from "../model/props/shoppingCartProps";
+import { MessageData } from "../model/sessionType";
 import { BUYERROR } from "../model/users/buyTypes";
+
+export const getVendorFactures = (
+    data: {
+        formatedData: FactureFields;
+        setCanSubmit: (value: boolean) => void;
+        setMessage: (value: MessageData) => void;
+    },
+    onSuccess: (data: Array<FactureData>) => void
+) => {
+    const { formatedData, setCanSubmit, setMessage } = data;
+
+    getFactures(
+        { formatedData, setCanSubmit, setMessage },
+        onSuccess,
+        "getVendorFactures"
+    );
+};
+
+export const getFactures = (
+    data: {
+        formatedData: FactureFields;
+        setCanSubmit: (value: boolean) => void;
+        setMessage: (value: MessageData) => void;
+    },
+    onSuccess: (data: Array<FactureData>) => void,
+    functionName: string = "getFactures"
+) => {
+    const { formatedData, setCanSubmit, setMessage } = data;
+
+    if (formatedData.token != undefined || formatedData.token != "") {
+        setCanSubmit(false);
+
+        const getFactures = httpsCallable(functions, functionName);
+        getFactures(formatedData)
+            .then((result) => {
+                const { msg, error, extra } = result.data as ResponseData<
+                    Array<FactureData>
+                >;
+                console.log(result);
+                //setIsLogged(result.data as any);
+                setMessage({ msg, isError: error });
+                if (!error) {
+                    onSuccess && onSuccess(extra);
+                }
+            })
+            .catch(() => {
+                setMessage({ msg: messagesCode["ERR00"], isError: true });
+                setCanSubmit(true);
+            })
+            .finally(() => setCanSubmit(true));
+    }
+};
+
+export type FactureStatusFields = {
+    token: string;
+    type: userType;
+    transactionToken: string;
+    factureType: string;
+};
+
+export const getFactureStatus = (
+    data: {
+        formatedData: FactureStatusFields;
+        setCanSubmit: (value: boolean) => void;
+        setMessage: (value: MessageData) => void;
+    },
+    onSuccess: (data: TransbankTransaction) => void,
+    isWeb: boolean = true
+) => {
+    const {
+        formatedData: { token, type, transactionToken, factureType },
+        setCanSubmit,
+        setMessage,
+    } = data;
+    if (
+        transactionToken &&
+        transactionToken != "" &&
+        Object.values<string>(FactureTypes).includes(factureType as string)
+    ) {
+        const tx = new WebpayPlus.Transaction(
+            new Options(
+                IntegrationCommerceCodes.WEBPAY_PLUS,
+                IntegrationApiKeys.WEBPAY,
+                isWeb ? "/api" : Environment.Integration
+            )
+        );
+        tx.commit(transactionToken)
+            .then((value: TransbankTransaction) => {
+                console.log("TOKEN RESPONSE::", value);
+
+                if (value != undefined && value != null) {
+                    onSuccess && onSuccess(value);
+                    let status = FactureStatus.NEGATED;
+                    if (value.response_code == 0) {
+                        status = FactureStatus.APPROVED;
+                    }
+
+                    const updateFacture = httpsCallable<
+                        UpdateFactureFields,
+                        ResponseData<string>
+                    >(functions, "updateUserFacture");
+
+                    const formatedData: UpdateFactureFields = {
+                        token: token as string,
+                        userType: type,
+                        facture: value.buy_order,
+                        status: status,
+                        type: factureType as FactureTypes,
+                    };
+
+                    console.log(formatedData);
+
+                    updateFacture(formatedData)
+                        .then((result) => {
+                            const { msg, error } = result.data;
+                            console.log(result);
+                            //Show alert message
+                            setMessage({ msg, isError: error });
+                        })
+                        .catch((error) => {
+                            console.log(error);
+                            setMessage({
+                                msg: messagesCode["ERR00"],
+                                isError: error,
+                            });
+                        });
+                }
+            })
+            .catch(() => {
+                setMessage({ msg: messagesCode["ERR00"], isError: true });
+                setCanSubmit(true);
+            })
+            .finally(() => setCanSubmit(true));
+    }
+};
 
 export type FormatFactureData = {
     buyError: BUYERROR;
@@ -75,8 +234,8 @@ export const formatFacture = (
                 (value.unitType === ProductUnit.GRAM
                     ? value.unit + "gr."
                     : value.unitType === ProductUnit.KILOGRAM
-                    ? "kg."
-                    : "unidad") +
+                      ? "kg."
+                      : "unidad") +
                 ")";
 
             newProductPetition[id.vendorId] = [

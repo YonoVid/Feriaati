@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import { Outlet, useOutletContext } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 import { AlertColor, Grid } from "@mui/material";
 import { Alert, Snackbar } from "@mui/material";
 
@@ -9,11 +9,17 @@ import {
     ShoppingCartItem,
 } from "@feria-a-ti/common/model/props/shoppingCartProps";
 import { UserContext } from "../App";
-import { ProductListCollectionData } from "@feria-a-ti/common/model/functionsTypes";
+import {
+    ProductCollectionData,
+    ProductListCollectionData,
+} from "@feria-a-ti/common/model/functionsTypes";
 
 import { getFromLocal, saveToLocal } from "@feria-a-ti/common/helpers";
+import AppFooter from "../components/footer/AppFooter";
 
 export type HeaderLayoutContext = {
+    mapsAvailable: boolean;
+    setMapsAvailable: (value: boolean) => void;
     setMessage: (data: { msg: string; isError: boolean }) => void;
     products: Map<
         string,
@@ -40,6 +46,11 @@ export interface SnackbarMessage {
 export const HeaderLayout = () => {
     // Storage keys
     const shoppingKey = "shoppingCart";
+
+    // API state variables
+
+    const [mapsAvailable, setMapsAvailable] = useState<boolean>(false);
+
     // Context variables
     const { productQuantity, setProductQuantity } = useContext(UserContext);
 
@@ -133,8 +144,8 @@ export const HeaderLayout = () => {
             newShoppingCart.set(vendorId, {
                 vendor: vendor,
                 products: products.set(productId, {
-                    id: product!.id,
-                    value: product!.value,
+                    id: product?.id as ProductId,
+                    value: product?.value as ProductCollectionData,
                     quantity: quantity,
                 }),
             });
@@ -158,7 +169,7 @@ export const HeaderLayout = () => {
             product != null
         ) {
             const newShoppingCart = new Map(shoppingCart);
-            if (vendor.products!.size < 2) {
+            if (vendor.products?.size < 2) {
                 console.log("DELETED VENDOR ENTRY");
                 newShoppingCart.delete(vendorId);
             } else {
@@ -183,7 +194,7 @@ export const HeaderLayout = () => {
     };
 
     const handleClose = (
-        event?: React.SyntheticEvent | Event,
+        _event?: React.SyntheticEvent | Event,
         reason?: string
     ) => {
         if (reason === "clickaway") {
@@ -238,6 +249,8 @@ export const HeaderLayout = () => {
                 >
                     <Outlet
                         context={{
+                            mapsAvailable,
+                            setMapsAvailable,
                             setMessage,
                             products: shoppingCart,
                             addProduct,
@@ -248,12 +261,9 @@ export const HeaderLayout = () => {
                     />
                 </Grid>
             </Grid>
-            {/* <MessageAlert
-                open={showAlert}
-                title="Estado de acción"
-                message={alertMessage}
-                handleClose={closeAlert}
-            /> */}
+            <footer>
+                <AppFooter />
+            </footer>
             <Snackbar
                 key={snackBarMsg ? snackBarMsg.key : undefined}
                 open={open}
@@ -272,5 +282,3 @@ export const HeaderLayout = () => {
         </>
     );
 };
-
-export const useHeaderContext = () => useOutletContext<HeaderLayoutContext>();

@@ -1,7 +1,6 @@
+import { UserRequestFields } from "../fields/fields";
 import { userType } from "../functionsTypes";
 
-export type GetAccountFields = {
-    token?: string;
-    id?: string;
+export type GetAccountFields = UserRequestFields & {
     type: userType;
 };

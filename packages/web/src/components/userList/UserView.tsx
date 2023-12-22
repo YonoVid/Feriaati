@@ -11,7 +11,6 @@ import {
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 
-import { colors } from "@feria-a-ti/common/theme/base";
 import { UserData } from "@feria-a-ti/common/model/functionsTypes";
 
 import "./UserList.css";
@@ -29,7 +28,7 @@ export const UserView = (props: UserViewProps) => {
 
     return (
         <>
-            <Box sx={{ display: "flex" }}>
+            <Box sx={{ ...sx, display: "flex" }}>
                 <Card
                     sx={{
                         display: "flex",

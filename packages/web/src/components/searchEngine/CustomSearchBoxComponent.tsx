@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 
 import { useSearchBox } from "react-instantsearch";
 
@@ -9,7 +9,6 @@ import {
     Divider,
     IconButton,
     Pagination,
-    Stack,
     TextField,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
@@ -22,15 +21,14 @@ import { colors } from "@feria-a-ti/common/theme/base";
 import "./CustomSearchBoxComponent.css";
 
 function CustomSearchBoxComponent(props: RCustomSearchBoxComponentProps) {
-    const { label, color, children, filter, filterMenu } = props;
+    const { label, color, children, filterMenu } = props;
 
     const colorTheme =
         color != null && color === "secondary" ? "secondary" : "primary";
 
-    const { query, refine, clear } = useSearchBox(props);
+    const { query, refine } = useSearchBox(props);
 
     const [inputValue, setInputValue] = useState(query);
-    const [filterVendor, setFilterVendor] = useState<string | null>();
 
     const inputRef = useRef<HTMLInputElement>(null);
 

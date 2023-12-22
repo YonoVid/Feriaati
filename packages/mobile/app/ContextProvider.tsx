@@ -4,13 +4,16 @@ import { SessionUserData } from "@feria-a-ti/common/model/sessionType";
 import { UserToken, userType } from "@feria-a-ti/common/model/functionsTypes";
 import {
     getSessionEmail,
+    getSessionId,
     getSessionToken,
     getSessionType,
 } from "../utilities/sessionData";
+import { PathString } from "react-hook-form";
 
 export const ComponentContext = createContext<SessionUserData>({
     authUser: "",
     authToken: "",
+    emailUser: "",
     type: userType.undefined,
     setSession: (data: UserToken) => {
         data;
@@ -21,7 +24,9 @@ export const ComponentContext = createContext<SessionUserData>({
 
 export const ContextProvider = (props: { children: any }) => {
     const [user, setUser] = useState<string>("");
-    getSessionEmail().then((data) => setUser(data));
+    getSessionId().then((data) => setUser(data));
+    const [emailUser, setEmailUser] = useState<PathString>();
+    getSessionEmail().then((data) => setEmailUser(data));
     const [token, setToken] = useState<string>("");
     getSessionToken().then((data) => setToken(data));
     const [type, setType] = useState<userType>();
@@ -54,6 +59,7 @@ export const ContextProvider = (props: { children: any }) => {
             value={{
                 authUser: user,
                 authToken: token,
+                emailUser,
                 type,
                 setSession: setSessionData,
                 resetSession: resetSessionData,

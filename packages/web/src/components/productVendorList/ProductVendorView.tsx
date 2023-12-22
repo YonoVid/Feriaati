@@ -12,11 +12,10 @@ import {
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 
-import { colors } from "@feria-a-ti/common/theme/base";
 import { ProductListCollectionData } from "@feria-a-ti/common/model/functionsTypes";
 
-import "./ProductVendorView.css";
 import { regionCode, regionCommune } from "@feria-a-ti/common/constants/form";
+import "./ProductVendorView.css";
 
 export type ProductVendorViewProps = {
     productVendor: ProductListCollectionData;
@@ -29,11 +28,8 @@ export const ProductVendorView = (props: ProductVendorViewProps) => {
     const { sx, productVendor, onEdit, onDelete } = props;
     const {
         enterpriseName,
-        localNumber,
         region,
         commune,
-        street,
-        streetNumber,
         serviceTime,
         contact,
         image,
@@ -42,7 +38,7 @@ export const ProductVendorView = (props: ProductVendorViewProps) => {
 
     return (
         <>
-            <Box sx={{ display: "flex" }}>
+            <Box sx={{ ...sx, display: "flex" }}>
                 <Card sx={{ display: "flex", flex: 6 }}>
                     <CardMedia
                         component="img"

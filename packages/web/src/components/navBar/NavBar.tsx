@@ -65,7 +65,9 @@ function NavBar() {
                       label: "HOME",
                       action: () => {
                           console.log("HOME ACTION");
-                          navigate(type === "vendor" ? "dashboard" : "home");
+                          navigate(
+                              type === userType.vendor ? "dashboard" : "home"
+                          );
                       },
                   },
                   {
@@ -73,16 +75,20 @@ function NavBar() {
                       action: () => {
                           console.log("PRODUCT ACTION");
                           navigate(
-                              type === "vendor" ? "managerVendor" : "search"
+                              type === userType.user
+                                  ? "search"
+                                  : "managerVendor"
                           );
                       },
                   },
                   {
-                      label: "FACTURAS",
+                      label: "PEDIDOS",
                       action: () => {
                           console.log("FACTURES ACTION");
                           navigate(
-                              type === "vendor" ? "facturesVendor" : "factures"
+                              type === userType.user
+                                  ? "factures"
+                                  : "facturesVendor"
                           );
                       },
                   },
@@ -118,7 +124,17 @@ function NavBar() {
                   },
               ];
 
-    const settings = [
+    if (type === userType.vendor || type === userType.contributor) {
+        pages.push({
+            label: "CONTRIBUIDORES",
+            action: () => {
+                console.log("CONTRIBUTORS ACTIONS");
+                navigate("manageContributor");
+            },
+        });
+    }
+
+    let settings = [
         {
             label: "Home",
             action: () => {
@@ -146,11 +162,18 @@ function NavBar() {
         },
     ];
 
+    if (type === userType.contributor) {
+        settings = settings.filter((value) => value.label !== "Cuenta");
+    }
+
     const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
     const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
 
     const isVendorPage =
-        window.location.pathname.includes("Vendor") || type === userType.vendor;
+        window.location.pathname.includes("loginVendor") ||
+        window.location.pathname.includes("registerVendor") ||
+        type === userType.vendor ||
+        type === userType.contributor;
 
     const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorElNav(event.currentTarget);
@@ -170,15 +193,7 @@ function NavBar() {
     return (
         <Slide appear={false} direction="down" in={!trigger}>
             <AppBar
-                color={
-                    type == userType.undefined
-                        ? isVendorPage
-                            ? "primary"
-                            : "secondary"
-                        : type == userType.vendor
-                        ? "primary"
-                        : "secondary"
-                }
+                color={isVendorPage ? "primary" : "secondary"}
                 position="fixed"
                 sx={{ top: 0, zIndex: (theme) => theme.zIndex.drawer + 10 }}
             >
@@ -191,9 +206,7 @@ function NavBar() {
                             variant="h6"
                             noWrap
                             component="a"
-                            onClick={() =>
-                                navigate(isVendorPage ? "/loginVendor" : "/")
-                            }
+                            onClick={() => navigate("/")}
                             sx={{
                                 mr: 2,
                                 display: { xs: "none", md: "flex" },
@@ -204,7 +217,7 @@ function NavBar() {
                                 textDecoration: "none",
                             }}
                         >
-                            LOGO
+                            FERIA A TI
                         </Typography>
                         {authUser !== "" && (
                             <Box
@@ -241,7 +254,7 @@ function NavBar() {
                                         display: { xs: "block", md: "none" },
                                     }}
                                 >
-                                    {settings.map((page) => (
+                                    {pages.map((page) => (
                                         <MenuItem
                                             key={page.label}
                                             onClick={() => {
@@ -264,9 +277,7 @@ function NavBar() {
                             variant="h5"
                             noWrap
                             component="a"
-                            onClick={() =>
-                                navigate(isVendorPage ? "/loginVendor" : "/")
-                            }
+                            onClick={() => navigate("/")}
                             sx={{
                                 mr: 2,
                                 display: { xs: "flex", md: "none" },
@@ -280,7 +291,7 @@ function NavBar() {
                         >
                             LOGO
                         </Typography>
-                        {(authUser !== "" && (
+                        {(authToken !== "" && (
                             <>
                                 <Box
                                     sx={{
@@ -333,7 +344,7 @@ function NavBar() {
                                             </IconButton>
                                         </Tooltip>
                                     )}
-                                    <Tooltip title="Abrir opciones">
+                                    <Tooltip title="Opciones de usuario">
                                         <IconButton
                                             size="large"
                                             aria-label="account of current user"
@@ -392,7 +403,9 @@ function NavBar() {
                                     component="a"
                                     onClick={() =>
                                         navigate(
-                                            isVendorPage ? "/" : "loginVendor"
+                                            isVendorPage
+                                                ? "login"
+                                                : "loginVendor"
                                         )
                                     }
                                     sx={{

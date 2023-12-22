@@ -1,4 +1,4 @@
-import { Box, Button, FormLabel, Slider } from "@mui/material";
+import { Box, FormLabel, Slider } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useRange } from "react-instantsearch";
 // …
@@ -27,6 +27,7 @@ function CustomRangeSliderComponent(props: any) {
     );
 
     const handleChange = (event: Event, newValue: number | number[]) => {
+        console.log(event);
         setValue(newValue as number[]);
     };
 

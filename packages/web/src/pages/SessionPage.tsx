@@ -6,7 +6,7 @@ import { UserContext } from "@feria-a-ti/web/src/App";
 
 function SessionPage() {
     //Global state variable
-    const { checkSession, authToken, type } = useContext(UserContext);
+    const { checkSession, authToken } = useContext(UserContext);
 
     const nav = useNavigate();
 

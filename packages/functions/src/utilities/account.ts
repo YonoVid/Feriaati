@@ -1,6 +1,11 @@
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
-import { userStatus, userType } from "../model/accountTypes";
+import {
+    AccountUser,
+    PasswordData,
+    userStatus,
+    userType,
+} from "../model/accountTypes";
 import Encryption, { getRandomBytes } from "./encryption";
 import { errorCodes } from "../errors";
 import { collectionNames } from "../consts";
@@ -11,21 +16,22 @@ export const accountLoginVerification = async (
     password: string,
     attempt?: number
 ): Promise<{ token: string; code: errorCodes; id: string }> => {
-    let token,
-        code = errorCodes.SUCCESFULL;
+    let token;
+    let code = errorCodes.SUCCESFULL;
     try {
         const { code: accountCode, doc: userSnapshot } = await getAccount(
             collection,
             { email: email }
         );
         if (accountCode == errorCodes.SUCCESFULL) {
-            let userData = userSnapshot.data();
+            const userData = userSnapshot.data() as AccountUser & PasswordData;
             functions.logger.info("DATA COLLECTION::", userData);
             if (
-                userData?.status === userStatus.activated &&
-                (userData?.token == null ||
-                    userData?.token == undefined ||
-                    userData?.token == "")
+                userData?.type === userType.contributor ||
+                (userData?.status === userStatus.activated &&
+                    (userData?.token == null ||
+                        userData?.token == undefined ||
+                        userData?.token == ""))
             ) {
                 const eConfig = {
                     algorithm: userData?.algorithm,
@@ -73,6 +79,12 @@ export const accountLoginVerification = async (
             } else if (code === errorCodes.BLOCKED_ACCOUNT_ERROR) {
                 userSnapshot.ref.update({ status: userStatus.blocked });
             }
+        } else {
+            return {
+                token: "",
+                code: accountCode,
+                id: "",
+            };
         }
         return { token: token || "", code: code, id: userSnapshot.id || "" };
     } catch (e) {
@@ -88,7 +100,7 @@ export const getAccount = async (
         token?: string;
         email?: string;
     },
-    createOnFail: boolean = false
+    createOnFail = false
 ): Promise<{ code: errorCodes; doc: admin.firestore.DocumentSnapshot }> => {
     const db = admin.firestore();
     let docReference;
@@ -144,6 +156,51 @@ export const getAccount = async (
         doc: docReference,
         code:
             !docReference || !docReference.exists
+                ? errorCodes.DOCUMENT_NOT_EXISTS_ERROR
+                : errorCodes.SUCCESFULL,
+    };
+};
+
+export const getAccountCount = async (search: {
+    collection: collectionNames;
+    value: any;
+    field: string;
+    exactSearch?: boolean;
+}): Promise<{ code: errorCodes; quantity: number }> => {
+    const { collection, value, field, exactSearch } = search;
+
+    const db = admin.firestore();
+    let docReference;
+    if (
+        value != null &&
+        value != undefined &&
+        field != null &&
+        field != undefined
+    ) {
+        functions.logger.info("ACCOUNT FROM EMAIL");
+        if (exactSearch) {
+            const queryAccount = db
+                .collection(collection)
+                .where(field, "==", value);
+            docReference = await queryAccount.get();
+        } else {
+            const queryAccount = db
+                .collection(collection)
+                .where(field, ">=", value)
+                .where(field, "<=", value + "\uf8ff");
+            docReference = await queryAccount.get();
+        }
+    } else {
+        return {
+            quantity: 0,
+            code: errorCodes.MISSING_REQUIRED_DATA_ERROR,
+        };
+    }
+
+    return {
+        quantity: docReference.docs.length || 0,
+        code:
+            !docReference || docReference.docs.length == 0
                 ? errorCodes.DOCUMENT_NOT_EXISTS_ERROR
                 : errorCodes.SUCCESFULL,
     };

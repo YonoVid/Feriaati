@@ -1,42 +1,34 @@
 import { useContext, useEffect, useState } from "react";
-import { Navigate, useNavigate, useSearchParams } from "react-router-dom";
-import { FieldValues, useForm } from "react-hook-form";
+import { Navigate } from "react-router-dom";
+import { FieldValues } from "react-hook-form";
 
-import { useHeaderContext } from "../HeaderLayout";
-import { httpsCallable } from "firebase/functions";
-import { functions } from "@feria-a-ti/common/firebase";
-import {
-    IntegrationApiKeys,
-    IntegrationCommerceCodes,
-    Options,
-    WebpayPlus,
-} from "transbank-sdk";
+import LoadingOverlay from "react-loading-overlay-ts";
 
-import { Button, Card, CardActions, Hidden } from "@mui/material";
-// import DeleteIcon from "@mui/icons-material/Delete";
+import { Hidden } from "@mui/material";
 
 import {
-    AccountData,
-    ResponseData,
     SubscriptionData,
     userType,
 } from "@feria-a-ti/common/model/functionsTypes";
-import { ProductSubscriptionFields } from "@feria-a-ti/common/model/fields/buyingFields";
 import { GetAccountFields } from "@feria-a-ti/common/model/account/getAccountFields";
-import { checkGetAccountFields } from "@feria-a-ti/common/check/checkAccountFields";
-import { messagesCode } from "@feria-a-ti/common/constants/errors";
 
 import { UserContext } from "@feria-a-ti/web/src/App";
-import SubscriptionForm from "../../components/forms/subscriptionForm/SubscriptionForm";
+import SubscriptionForm from "@feria-a-ti/web/src/components/forms/subscriptionForm/SubscriptionForm";
 import { SubscriptionFields } from "@feria-a-ti/common/model/account/subscriptionAccountFields";
+import {
+    getSubscription,
+    paySubscriptionWeb,
+} from "@feria-a-ti/common/functions/payment/subscriptionFunctions";
+
+import { useHeaderContext } from "../HeaderFunction";
 
 const SubscriptionPage = () => {
     //Global UI context
     const { setMessage, resetProduct } = useHeaderContext();
     //Global state variable
-    const { authToken, type } = useContext(UserContext);
+    const { authToken, emailUser, type } = useContext(UserContext);
     //Navigation definition
-    const navigate = useNavigate();
+    //const navigate = useNavigate();
     // Form variables
     const form: HTMLFormElement | null =
         document.querySelector("#transbankForm") || null;
@@ -57,39 +49,22 @@ const SubscriptionPage = () => {
         //Format data to send to server
         const formatedData: GetAccountFields = {
             token: authToken,
+            email: emailUser as string,
             type: type,
         };
-        const check = checkGetAccountFields(formatedData);
 
-        console.log("ERROR CHECK::", check);
-
-        if (check) {
-            //Lock register button
-            setCanSubmit(false);
-            //Call firebase function to create user
-            const getAccount = httpsCallable<
-                GetAccountFields,
-                ResponseData<SubscriptionData>
-            >(functions, "getAccountSubscription");
-            getAccount(formatedData)
-                .then((result) => {
-                    const { msg, error, extra } = result.data;
-                    console.log(result);
-                    //Show alert message
-                    setMessage({ msg, isError: error });
-                    setSubscriptionData(extra);
-                })
-                .catch((error) => {
-                    console.log(error);
-                    setMessage({ msg: messagesCode["ERR00"], isError: error });
-                })
-                .finally(() => setCanSubmit(true)); //Unlock register button
-        }
+        getSubscription(
+            { formatedData, setCanSubmit, setMessage },
+            (value: SubscriptionData) => {
+                setSubscriptionData(value);
+            }
+        );
     };
 
     const onClick = (data: FieldValues) => {
         const formatedData: SubscriptionFields = {
             type: type,
+            email: emailUser as string,
             token: authToken as string,
             amount: data.amount,
             months: data.months,
@@ -97,58 +72,26 @@ const SubscriptionPage = () => {
         console.log("DATA::", formatedData);
         // Generate facture
         if (canSubmit && subscriptionData && subscriptionData != null) {
-            setCanSubmit(false);
-            const buyProductUser = httpsCallable<
-                SubscriptionFields,
-                ResponseData<string>
-            >(functions, "setAccountSubscription");
-            buyProductUser(formatedData)
-                .then((result) => {
-                    const { msg, error, extra } = result.data;
-                    console.log(result.data);
+            const returnUrl =
+                window.location.origin + "/transaction/subscription";
 
-                    setMessage({ msg, isError: error });
-                    if (!error) {
-                        resetProduct();
-                        //setIsLogged(result.data as any);
+            paySubscriptionWeb(
+                { formatedData, returnUrl, setCanSubmit, setMessage },
+                (value: any) => {
+                    setResponse(value);
+                    console.log(value);
+                    console.log(form);
+                    if (value != null && form != null) {
+                        console.log("SUBMIT FORM");
 
-                        console.log("TRANSBANK TEST::");
-
-                        const amount = formatedData.amount;
-                        const sessionId = authToken + "-" + extra;
-                        const returnUrl =
-                            window.location.origin +
-                            "/transaction/subscription";
-
-                        const tx = new WebpayPlus.Transaction(
-                            new Options(
-                                IntegrationCommerceCodes.WEBPAY_PLUS,
-                                IntegrationApiKeys.WEBPAY,
-                                "/api" //Environment.Integration
-                            )
-                        );
-                        tx.create(extra, sessionId, amount, returnUrl)
-                            .then((newResponse) => {
-                                setResponse(newResponse);
-                                console.log(newResponse);
-                                console.log(form);
-                                if (newResponse != null && form != null) {
-                                    console.log("SUBMIT FORM");
-
-                                    form.action = newResponse.url;
-                                    form.onformdata = (ev) => {
-                                        ev.formData.set(
-                                            "token_ws",
-                                            newResponse.token
-                                        );
-                                    };
-                                    form.requestSubmit();
-                                }
-                            })
-                            .finally(() => setCanSubmit(true));
+                        form.action = value.url;
+                        form.onformdata = (ev) => {
+                            ev.formData.set("token_ws", value.token);
+                        };
+                        form.requestSubmit();
                     }
-                })
-                .finally(() => setCanSubmit(true));
+                }
+            );
         } else {
             setMessage({ msg: "Datos de pedido incorrectos", isError: true });
         }
@@ -156,9 +99,11 @@ const SubscriptionPage = () => {
 
     return (
         <>
-            {!(type === userType.user || type === userType.vendor) && (
-                <Navigate to="/login" replace={true} />
-            )}
+            {!(
+                type === userType.user ||
+                type === userType.vendor ||
+                type === userType.contributor
+            ) && <Navigate to="/login" replace={true} />}
             <Hidden>
                 <form
                     id="transbankForm"
@@ -173,11 +118,17 @@ const SubscriptionPage = () => {
                     />
                 </form>
             </Hidden>
-            <SubscriptionForm
-                canSubmit={canSubmit}
-                subscription={subscriptionData}
-                onSubmit={onClick}
-            />
+            <LoadingOverlay
+                active={!canSubmit}
+                spinner
+                text="Cargando datos..."
+            >
+                <SubscriptionForm
+                    canSubmit={canSubmit}
+                    subscription={subscriptionData}
+                    onSubmit={onClick}
+                />
+            </LoadingOverlay>
         </>
     );
 };

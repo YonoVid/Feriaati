@@ -1,26 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
 
-import { Searchbar } from "react-native-paper";
-
-import { useSearchBox } from "react-instantsearch";
-
 import { colors } from "@feria-a-ti/common/theme/base";
 
-import { useRange } from "react-instantsearch-core";
+import type { RangeBoundaries } from "instantsearch.js/es/connectors/range/connectRange";
+
 import MultiSlider from "@ptomasroos/react-native-multi-slider";
 import { CustomRangeSliderProps } from "@feria-a-ti/common/model/props/customSearchProps";
 
 const CustomRangeSliderComponent = (props: CustomRangeSliderProps) => {
-    const { label, color, children } = props;
-
-    const {
-        start,
-        range,
-
-        canRefine: canRefinePrice,
-        refine: refinePrice,
-    } = useRange(props);
+    const { start, range, canRefine, refine } = props;
 
     const { min, max } = range;
     const [localRange, setLocalRange] = useState<number[]>([
@@ -33,25 +22,16 @@ const CustomRangeSliderComponent = (props: CustomRangeSliderProps) => {
         max?.valueOf() || 1,
     ]);
 
+    const onChange = (rangeValue: RangeBoundaries) => {
+        if (canRefine) {
+            refine(rangeValue);
+        }
+    };
+
     useEffect(() => {
-        if (
-            range != null &&
-            range != undefined &&
-            range.max != 0 &&
-            limitRange[0] == 0 &&
-            limitRange[1] == 1
-        ) {
-            console.log("PASÉ POR AHÍ::", range);
-            setLimitRange([range.min, range.max]);
-            if (
-                start != null &&
-                start != undefined &&
-                localRange[0] == 0 &&
-                localRange[1] == 1
-            ) {
-                console.log("ACTUARIZA EL RANGO::", start);
-                setLocalRange([start[0].valueOf(), start[1].valueOf()]);
-            }
+        if (start != null && start != undefined) {
+            console.log("ACTUALIZA EL RANGO::", start);
+            setLocalRange([start[0].valueOf(), start[1].valueOf()]);
         }
     }, [range, start]);
 
@@ -59,7 +39,7 @@ const CustomRangeSliderComponent = (props: CustomRangeSliderProps) => {
         <View
             style={{
                 ...styles.container,
-                paddingBottom: 80,
+                paddingBottom: 8,
             }}
         >
             <MultiSlider
@@ -72,8 +52,7 @@ const CustomRangeSliderComponent = (props: CustomRangeSliderProps) => {
                     setLocalRange(value);
                 }}
                 onValuesChangeFinish={() => {
-                    canRefinePrice &&
-                        refinePrice([localRange[0], localRange[1]]);
+                    onChange([localRange[0], localRange[1]]);
                 }}
             />
         </View>

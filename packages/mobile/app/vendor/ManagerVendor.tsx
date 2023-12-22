@@ -2,23 +2,12 @@ import React, { useEffect, useState } from "react";
 import { ScrollView, StyleSheet } from "react-native";
 import { useFocusEffect } from "expo-router";
 import { NavigationProp, ParamListBase } from "@react-navigation/native";
-import { httpsCallable } from "@firebase/functions";
 
-import { functions } from "@feria-a-ti/common/firebase";
-
-import {
-    checkAddProductFields,
-    checkDeleteProductFields,
-} from "@feria-a-ti/common/check/checkProductFields";
 import {
     ProductData,
-    ProductListCollectionData,
     ProductListData,
-    ResponseData,
     userType,
 } from "@feria-a-ti/common/model/functionsTypes";
-import { useAppContext } from "../AppContext";
-import ProductAddForm from "@feria-a-ti/mobile/components/forms/ProductAddForm";
 import {
     ProductDeleteFields,
     ProductEditFields,
@@ -26,8 +15,18 @@ import {
     ProductListFields,
 } from "@feria-a-ti/common/model/props/productAddFormProps";
 
+import {
+    editProduct,
+    deleteProduct,
+    listProducts,
+    loadVendorProduct,
+} from "@feria-a-ti/common/functions/vendor/manageProductsFunctions";
+
+import ProductAddForm from "@feria-a-ti/mobile/components/forms/ProductAddForm";
+import { CommentList } from "@feria-a-ti/mobile/components/commentList/commentList";
+
+import { useAppContext } from "@feria-a-ti/mobile/app/AppContext";
 import { ManagerProductList } from "./ManagerProductList";
-import { CommentList } from "../../components/commentList/commentList";
 
 export interface ManagerVendorProps {
     productVendor?: ProductListData;
@@ -39,7 +38,8 @@ export interface ManagerVendorProps {
 
 export const ManagerVendor = (props: ManagerVendorProps) => {
     // Context variables
-    const { type, authToken, checkSession, setMessage } = useAppContext();
+    const { type, emailUser, authToken, checkSession, setMessage } =
+        useAppContext();
     // Navigation
     const {
         productVendor,
@@ -51,6 +51,7 @@ export const ManagerVendor = (props: ManagerVendorProps) => {
     // Server data
     const [localProductVendor, setLocalProductVendor] =
         useState<ProductListData>();
+    const [vendorId, setVendorId] = useState<string>();
     const [localProducts, setLocalProducts] = useState<Array<ProductData>>([]);
 
     // Form variables
@@ -66,140 +67,91 @@ export const ManagerVendor = (props: ManagerVendorProps) => {
     // Form related variables;
     const [canSubmit, setCanSubmit] = useState(true);
 
-    const loadVendor = () => {
+    const onLoadVendor = () => {
         const formatedData: ProductListFields = {
-            tokenVendor: authToken as string,
+            email: emailUser,
+            token: authToken as string,
         };
-        const check = authToken != null && authToken != "";
-        console.log("SUBMIT FORM LOAD VENDOR::", check);
-        if (check) {
-            const addProduct = httpsCallable<
-                ProductListFields,
-                ResponseData<ProductListData>
-            >(functions, "getProductVendor");
-            addProduct(formatedData).then((result) => {
-                const { msg, error, extra } = result.data;
-                console.log(result.data);
 
+        loadVendorProduct(
+            { formatedData, setCanSubmit, setMessage },
+            (data) => {
                 if (setProductVendor) {
-                    setProductVendor(extra as ProductListData);
+                    setProductVendor(data);
                 } else {
-                    setLocalProductVendor(extra as ProductListData);
+                    setLocalProductVendor(data);
                 }
-                //setIsLogged(result.data as any);
-                if (error && msg !== "") {
-                    console.log(msg);
-                }
-            });
-        }
+                setVendorId(data.id);
+            }
+        );
     };
 
-    const loadProducts = () => {
+    const onLoadProducts = () => {
         const formatedData: ProductListFields = {
-            tokenVendor: authToken as string,
+            email: emailUser,
+            token: authToken as string,
         };
-        console.log(formatedData);
-        const check = authToken != null && authToken != "";
-        console.log("SUBMIT FORM::", check);
-        if (check) {
-            const addProduct = httpsCallable<
-                ProductListFields,
-                ResponseData<ProductData>
-            >(functions, "listProduct");
-            addProduct(formatedData).then((result) => {
-                const { msg, error, extra } = result.data as ResponseData<
-                    ProductData[]
-                >;
-                console.log(result.data);
 
-                if (setProducts) {
-                    setProducts(extra);
-                } else {
-                    setLocalProducts(extra);
-                }
-                //setIsLogged(result.data as any);
-            });
-        }
+        listProducts({ formatedData, setCanSubmit, setMessage }, (data) => {
+            if (setProducts) {
+                setProducts(data);
+            } else {
+                setLocalProducts(data);
+            }
+        });
     };
 
     const onEdit = (data: ProductFields) => {
         const formatedData: ProductEditFields = {
-            id: productEditable?.id,
-            ...data,
-            tokenVendor: authToken,
+            id: productEditable?.id as string,
+            tokenVendor: authToken as string,
+            name: data.name as string,
+            description: data.description as string,
+            unitType: data.unitType,
+            unit: data.unit as number,
+            price: data.price as number,
+            discount: data.discount,
+            promotion: data.promotion as number,
             image: imageData,
         };
-        const check = checkAddProductFields(formatedData);
-        console.log("SUBMIT FORM::", check);
-        if (check) {
-            setCanSubmit(false);
-            const editProduct = httpsCallable<
-                ProductEditFields,
-                ResponseData<string>
-            >(functions, "editProduct");
-            editProduct(formatedData)
-                .then((result) => {
-                    const { msg, error } = result.data as ResponseData<string>;
-                    console.log(result.data);
-                    //setIsLogged(result.data as any);
-                    if (!error) {
-                        setProductEditable(null);
-                        loadProducts();
-                    }
-                    if (msg !== "") {
-                        setMessage({ msg, isError: error });
-                    }
-                })
-                .finally(() => setCanSubmit(true));
-        }
+
+        editProduct({ formatedData, setCanSubmit, setMessage }, () => {
+            setProductEditable(null);
+            onLoadProducts();
+        });
     };
 
     const onDelete = (id: string) => {
         const formatedData: ProductDeleteFields = {
-            tokenVendor: authToken as string,
-            productId: id,
+            email: emailUser,
+            token: authToken as string,
+            idProducts: id,
         };
-        const check = checkDeleteProductFields(formatedData);
-        console.log("SUBMIT FORM::", check);
-        if (check) {
-            setCanSubmit(false);
-            const addProduct = httpsCallable<
-                ProductDeleteFields,
-                ResponseData<string>
-            >(functions, "deleteProduct");
-            addProduct(formatedData)
-                .then((result) => {
-                    const { msg, error } = result.data;
-                    console.log(result.data);
 
-                    !error &&
-                        setProducts(
-                            products.filter(
-                                (product) =>
-                                    product.id !== formatedData.productId
-                            )
-                        );
-                    //setIsLogged(result.data as any);
-                    if (msg !== "") {
-                        setMessage({ msg, isError: error });
-                    }
-                })
-                .finally(() => setCanSubmit(true));
-        }
+        deleteProduct({ formatedData, setCanSubmit, setMessage }, () => {
+            setProducts(
+                products.filter(
+                    (product) => product.id !== formatedData.idProducts
+                )
+            );
+        });
     };
 
     useEffect(() => {
         if (!productVendor || productVendor == null) {
-            loadVendor();
-            loadProducts();
+            onLoadVendor();
+            onLoadProducts();
         } else if (!products || products == null) {
-            loadProducts();
+            onLoadProducts();
         }
     }, []);
 
     useFocusEffect(() => {
         console.log("CHECK SESSION TYPE::", type);
-        if (!checkSession() || type !== userType.vendor) {
+        if (
+            !checkSession() ||
+            !(type === userType.vendor || type === userType.contributor)
+        ) {
             navigation.reset({
                 index: 0,
                 routes: [{ name: "session" }],
@@ -221,16 +173,14 @@ export const ManagerVendor = (props: ManagerVendorProps) => {
                             products={products || localProducts}
                             canSubmit={canSubmit}
                             isEditable={true}
-                            loadProducts={loadProducts}
-                            loadVendor={loadVendor}
+                            loadProducts={onLoadProducts}
+                            loadVendor={onLoadVendor}
                             setProductEditable={setProductEditable}
                             setCanSubmit={setCanSubmit}
                             onDelete={onDelete}
                         >
                             <CommentList
-                                commentsVendor={
-                                    productVendor ? productVendor.id : ""
-                                }
+                                commentsVendor={vendorId ? vendorId : ""}
                                 isUser={false}
                             />
                         </ManagerProductList>

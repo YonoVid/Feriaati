@@ -1,29 +1,17 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { StackActions } from "@react-navigation/native";
 import { Card } from "react-native-paper";
 import WebView from "react-native-webview";
 import { Text, StyleSheet, ScrollView } from "react-native";
 import { NavigationProp, ParamListBase } from "@react-navigation/native";
 
-import { functions } from "@feria-a-ti/common/firebase";
-import { httpsCallable } from "@firebase/functions";
-
-import {
-    IntegrationApiKeys,
-    IntegrationCommerceCodes,
-    Options,
-    WebpayPlus,
-    Environment,
-} from "transbank-sdk";
-
 import { colors } from "@feria-a-ti/common/theme/base";
 
-import { callPayment } from "@feria-a-ti/common/functions/paymentFunctions";
+import { payProductsMobile } from "@feria-a-ti/common/functions/payment/paymentFunctions";
 import { BUYERROR } from "@feria-a-ti/common/model/users/buyTypes";
 import {
     AccountData,
     ProductFactureData,
-    ResponseData,
 } from "@feria-a-ti/common/model/functionsTypes";
 import {
     BuyProductFormFields,
@@ -32,9 +20,7 @@ import {
 } from "@feria-a-ti/common/model/fields/buyingFields";
 
 import { BuyForm } from "@feria-a-ti/mobile/components/forms/BuyForm";
-import { useAppContext } from "../AppContext";
-import { errorCodes } from "@feria-a-ti/common/constants/errors";
-import { checkBuyProduct } from "@feria-a-ti/common/check/checkBuyProduct";
+import { useAppContext } from "@feria-a-ti/mobile/app/AppContext";
 
 export interface BuyProductsProps {
     navigation: NavigationProp<ParamListBase>;
@@ -78,66 +64,23 @@ function BuyProducts(props: BuyProductsProps) {
             token: authToken as string,
             products: productPetition || {},
         };
-        setCanSubmit(false);
-        setLocalCanSubmit(false);
-        // Generate facture
-        if (checkBuyProduct(formatedData)) {
-            const buyProductUser = httpsCallable<
-                ProductFactureFields,
-                ResponseData<string>
-            >(functions, "buyProductUser");
-            buyProductUser(formatedData)
-                .then((result) => {
-                    const { msg, error, extra } = result.data;
-                    console.log(result.data);
 
-                    if (!error) {
-                        //setIsLogged(result.data as any);
-
-                        console.log("TRANSBANK TEST::");
-
-                        const amount = priceTotal;
-                        const sessionId = data.token + "-" + extra;
-
-                        const tx = new WebpayPlus.Transaction(
-                            new Options(
-                                IntegrationCommerceCodes.WEBPAY_PLUS,
-                                IntegrationApiKeys.WEBPAY,
-                                Environment.Integration
-                            )
-                        );
-                        tx.create(extra, sessionId, amount, returnUrl)
-                            .then((newResponse) => {
-                                console.log("RESPONSE::", newResponse);
-                                if (
-                                    newResponse != undefined ||
-                                    newResponse != null
-                                ) {
-                                    setResponse(newResponse);
-                                    console.log("::LOAD SHIT::");
-                                } else {
-                                    setMessage({
-                                        msg: "Problemas al realizar transacción",
-                                        isError: true,
-                                    });
-                                }
-                            })
-                            .finally(() => {
-                                setCanSubmit(true);
-                                setLocalCanSubmit(true);
-                            });
-                    } else {
-                        setMessage({ msg, isError: error });
-                        setCanSubmit(true);
-                        setLocalCanSubmit(true);
-                    }
-                })
-                .catch((error) => {
-                    console.log(error);
-                    setCanSubmit(true);
-                    setLocalCanSubmit(true);
-                });
-        }
+        payProductsMobile(
+            {
+                formatedData,
+                returnUrl,
+                setCanSubmit: (value: boolean) => {
+                    setCanSubmit(value);
+                    setLocalCanSubmit(value);
+                },
+                setMessage,
+            },
+            (value) => {
+                if (value != undefined || value != null) {
+                    setResponse(value);
+                }
+            }
+        );
     };
 
     return (

@@ -103,6 +103,8 @@ export const ProductView = (props: ProductViewProps) => {
         }
     };
 
+    const promotionLocal = promotion || 0;
+
     const unitLabel =
         "(" +
         (unitType === ProductUnit.GRAM
@@ -115,8 +117,8 @@ export const ProductView = (props: ProductViewProps) => {
         price -
         (discount !== "none"
             ? discount === "percentage"
-                ? (price * promotion) / 100
-                : promotion
+                ? (price * promotionLocal) / 100
+                : promotionLocal
             : 0);
 
     return (
@@ -217,8 +219,8 @@ export const ProductView = (props: ProductViewProps) => {
                         discount !== "none"
                             ? "Descuento de " +
                               (discount === "percentage"
-                                  ? promotion + "%"
-                                  : "$" + promotion)
+                                  ? promotionLocal + "%"
+                                  : "$" + promotionLocal)
                             : "Sin descuento"
                     }
                 />

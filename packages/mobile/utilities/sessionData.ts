@@ -4,10 +4,21 @@ import * as SecureStore from "expo-secure-store";
 import { UserToken, userType } from "@feria-a-ti/common/model/functionsTypes";
 
 enum dataKey {
+    userId = "userId",
     authUser = "authUser",
     authToken = "authToken",
     type = "type",
 }
+
+export const getSessionId = async () => {
+    try {
+        return await SecureStore.getItemAsync(dataKey.userId);
+    } catch (e) {
+        // saving error
+        console.log(e);
+        throw new e();
+    }
+};
 
 export const getSessionEmail = async () => {
     try {
@@ -41,6 +52,7 @@ export const getSessionType = async () => {
 
 export const getSession = async (): Promise<UserToken> => {
     return {
+        id: await getSessionId(),
         email: await getSessionEmail(),
         token: await getSessionToken(),
         type: await getSessionType(),
@@ -49,6 +61,7 @@ export const getSession = async (): Promise<UserToken> => {
 
 export const setSession = async (data: UserToken) => {
     try {
+        await SecureStore.setItemAsync(dataKey.userId, data.id);
         await SecureStore.setItemAsync(dataKey.authUser, data.email);
         await SecureStore.setItemAsync(dataKey.authToken, data.token);
         await SecureStore.setItemAsync(dataKey.type, data.type);
@@ -67,10 +80,13 @@ export const resetSession = async () => {
 
 export const checkSession = async (): Promise<boolean> => {
     try {
+        const userId = await getSessionId();
         const authUser = await getSessionEmail();
         const authToken = await getSessionToken();
         const type = await getSessionType();
         if (
+            userId == null ||
+            userId == "" ||
             authUser == null ||
             authUser == "" ||
             authToken == null ||

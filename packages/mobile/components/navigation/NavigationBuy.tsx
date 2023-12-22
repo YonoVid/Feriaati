@@ -24,7 +24,7 @@ import BuyProducts from "@feria-a-ti/mobile/app/client/BuyProducts";
 
 import { useAppContext } from "@feria-a-ti/mobile/app/AppContext";
 import { formatFacture } from "@feria-a-ti/common/functions/factureFunctions";
-import { getAccountData } from "@feria-a-ti/common/functions/accountFunctions";
+import { getAccountUser } from "@feria-a-ti/common/functions/account/accountFunctions";
 
 export interface NavigationBarProps {
     navigation: NavigationProp<ParamListBase>;
@@ -32,7 +32,8 @@ export interface NavigationBarProps {
 
 export default function NavigationBuy(props: NavigationBarProps) {
     // Context variables
-    const { authToken, type, products, setMessage } = useAppContext();
+    const { authToken, emailUser, type, products, setMessage } =
+        useAppContext();
     // Stored products list data
     const [productList, setProductList] = useState<Array<ShoppingCartItem>>([]);
     // Stored petition related data
@@ -84,10 +85,14 @@ export default function NavigationBuy(props: NavigationBarProps) {
         //Format data to send to server
         const formatedData: GetAccountFields = {
             token: authToken,
+            email: emailUser,
             type: type,
         };
 
-        getAccountData(formatedData, setAccountData, setCanSubmit, setMessage);
+        getAccountUser(
+            { formatedData, setCanSubmit, setMessage },
+            setAccountData
+        );
     };
 
     // Navigation tab data

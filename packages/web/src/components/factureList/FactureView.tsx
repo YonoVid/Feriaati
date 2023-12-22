@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import {
     Card,
     CardContent,
+    Chip,
     Stack,
     Table,
     TableBody,
@@ -13,7 +14,10 @@ import {
 } from "@mui/material";
 import Paper from "@mui/material/Paper";
 
-import { FactureData } from "@feria-a-ti/common/model/functionsTypes";
+import {
+    FactureData,
+    FactureStatus,
+} from "@feria-a-ti/common/model/functionsTypes";
 
 export type FactureViewProps = {
     color: string;
@@ -22,8 +26,8 @@ export type FactureViewProps = {
 };
 
 export const FactureView = (props: FactureViewProps) => {
-    const { color, vendorId, facture } = props;
-    const { id, products } = facture;
+    const { color, facture } = props;
+    const { id, products, status } = facture;
 
     const [finalPrice, setFinalPrice] = useState(0);
 
@@ -40,19 +44,40 @@ export const FactureView = (props: FactureViewProps) => {
         }
     }, [products]);
 
+    const renderStatus = (status: FactureStatus) => {
+        switch (status) {
+            case FactureStatus.APPROVED:
+                return <Chip label="Completado" color="success" />;
+            case FactureStatus.CANCELED:
+                return <Chip label="Cancelado" color="warning" />;
+            case FactureStatus.PROCESSING:
+                return <Chip label="Procesando" color="info" />;
+            case FactureStatus.NEGATED:
+                return <Chip label="Negado" color="warning" />;
+            default:
+                break;
+        }
+    };
+
     return (
         <Card
             className="inputContainer"
             color={colorTheme}
             sx={{
                 maxWidth: "80%",
+                maxHeight: "90%",
                 alignContent: "center",
                 borderRadius: "10%",
+                overflow: "auto",
             }}
         >
             <Typography component="div" variant="h6">
-                {id + "-" + new Date(facture.date.seconds * 1000).toISOString()}
+                Pedido {id}
             </Typography>
+            <Typography component="div" variant="subtitle1">
+                Fecha: {new Date(facture.date.seconds * 1000).toLocaleString()}
+            </Typography>
+            {renderStatus(status)}
             <Stack
                 direction={{ xs: "column" }}
                 spacing={{ xs: 1, sm: 2, md: 4 }}
@@ -64,10 +89,20 @@ export const FactureView = (props: FactureViewProps) => {
                 }}
             >
                 <TableContainer component={Paper}>
-                    <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                    <Table
+                        sx={{
+                            minWidth: 650,
+                            maxWidth: "100%",
+                            overflowWrap: "break-word",
+                            overflow: "auto",
+                        }}
+                        aria-label="simple table"
+                    >
                         <TableHead>
                             <TableRow>
-                                <TableCell>Producto</TableCell>
+                                <TableCell size="small" width={"10em"}>
+                                    Producto
+                                </TableCell>
                                 <TableCell align="right">Cantidad</TableCell>
                                 <TableCell align="right">Precio</TableCell>
                                 <TableCell align="right">Subtotal</TableCell>
@@ -83,7 +118,7 @@ export const FactureView = (props: FactureViewProps) => {
                                         },
                                     }}
                                 >
-                                    <TableCell component="th" scope="row">
+                                    <TableCell scope="row" width={"10em"}>
                                         {product.name}
                                     </TableCell>
                                     <TableCell align="right">

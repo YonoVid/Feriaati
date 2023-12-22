@@ -26,7 +26,7 @@ export const checkAddProductFields = (
         unit,
         unitType,
     } = input;
-    //Check required values exist
+    // Check required values exist
     const requiredCheck =
         name != null &&
         description != null &&
@@ -73,11 +73,11 @@ export const checkAddProductFields = (
 export const checkProductListFields = (
     input: ProductListFields
 ): { check: boolean; code: errorCodes } => {
-    const { idVendor, tokenVendor } = input;
-    //Check required values exist
+    const { token, email, idProducts } = input;
+    // Check required values exist
     const requiredCheck =
-        (idVendor != null && idVendor != "") ||
-        (tokenVendor != "" && tokenVendor != null);
+        (idProducts != null && idProducts != "") ||
+        (token != "" && token != null && email != "" && email != null);
     if (!requiredCheck) {
         return { check: false, code: errorCodes.MISSING_REQUIRED_DATA_ERROR };
     }
@@ -104,7 +104,8 @@ export const checkProductVendorUpdate = (
     input: UpdateProductVendorFields
 ): { check: boolean; code: errorCodes } => {
     const {
-        tokenVendor,
+        token,
+        email,
         productVendorId,
         image,
         serviceTime,
@@ -113,8 +114,10 @@ export const checkProductVendorUpdate = (
     } = input;
 
     const requiredCheck =
-        tokenVendor != undefined &&
-        tokenVendor != null &&
+        token != undefined &&
+        token != null &&
+        email != undefined &&
+        email != null &&
         productVendorId != undefined &&
         productVendorId != null &&
         ((image != undefined && image != null && image != "") ||
@@ -179,7 +182,8 @@ export const checkProductVendorFullUpdate = (
     } = input;
 
     const { check, code } = checkProductVendorUpdate({
-        tokenVendor: "ignore",
+        token: "ignore",
+        email: "ignore",
         productVendorId: "ignore",
         image: image || undefined,
         serviceTime: serviceTime || undefined,
@@ -187,7 +191,7 @@ export const checkProductVendorFullUpdate = (
         contactEmail: contact?.email || undefined,
     });
     if (!check) {
-        //Check required values exist
+        // Check required values exist
         const requiredCheck =
             adminToken != null &&
             adminToken != "" &&

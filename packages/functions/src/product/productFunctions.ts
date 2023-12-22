@@ -19,10 +19,10 @@ import { collectionNames } from "../consts";
 import { errorCodes, messagesCode } from "../errors";
 import { uploadProductImage } from "../utilities/storage";
 import { getAccount } from "../utilities/account";
-import { DocumentSnapshot } from "firebase-admin/firestore";
-import { VendorCollectionData } from "../model/accountTypes";
+import { ContributorLevel, VendorCollectionData } from "../model/accountTypes";
+import { getAccountVendor } from "../account/accountVendorFunctions";
 
-//funciones crud producto
+// Add product function
 export const addProduct = functions.https.onCall(
     async (data: ProductFields, context): Promise<ResponseData<string>> => {
         try {
@@ -56,7 +56,7 @@ export const addProduct = functions.https.onCall(
                         .collection(collectionNames.PRODUCTS)
                         .doc();
                     // Store images data
-                    let imageData: [string, string, string] = ["", "", ""];
+                    const imageData: [string, string, string] = ["", "", ""];
                     if (typeof data.image === "string") {
                         imageData[0] = await uploadProductImage(
                             productRef.id + "_0",
@@ -135,11 +135,11 @@ export const deleteProduct = functions.https.onCall(
     ): Promise<ResponseData<string>> => {
         try {
             const db = admin.firestore();
-            const { productId } = data;
+            const { idProducts } = data;
 
             const { doc, code } = await getAccount(collectionNames.VENDORS, {
-                token: data.tokenVendor,
-                id: data.idVendor,
+                token: data.token,
+                id: data.idProducts,
             });
 
             if (doc.exists) {
@@ -156,7 +156,7 @@ export const deleteProduct = functions.https.onCall(
                         .collection(collectionNames.VENDORPRODUCTS)
                         .doc(vendorProducts.id)
                         .collection(collectionNames.PRODUCTS)
-                        .doc(productId)
+                        .doc(idProducts)
                         .delete();
 
                     // Retornar una respuesta indicando que el producto se eliminó correctamente
@@ -164,7 +164,7 @@ export const deleteProduct = functions.https.onCall(
                         msg: messagesCode[errorCodes.SUCCESFULL],
                         code: errorCodes.SUCCESFULL,
                         error: false,
-                        extra: productId,
+                        extra: idProducts,
                     };
                 }
                 return {
@@ -230,7 +230,7 @@ export const editProduct = functions.https.onCall(
                     }
 
                     // Store images data
-                    let imageData: [string, string, string] = ["", "", ""];
+                    const imageData: [string, string, string] = ["", "", ""];
                     if (typeof data.image === "string") {
                         imageData[0] =
                             data.image[0] != undefined &&
@@ -331,42 +331,45 @@ export const listProduct = functions.https.onCall(
     ): Promise<ResponseData<ProductData[]>> => {
         try {
             functions.logger.info("DATA::", data);
-            const { check, code } = checkProductListFields(data);
+            let { check, code } = checkProductListFields(data);
             if (check) {
+                const { idProducts, token, id, email } = data;
                 const db = admin.firestore();
                 let vendorProductRef;
-                if (
-                    data.idVendor &&
-                    data.idVendor !== null &&
-                    data.idVendor !== ""
-                ) {
+                if (idProducts && idProducts !== null && idProducts !== "") {
                     functions.logger.info("LIST FROM VENDOR ID");
-                    vendorProductRef = await db
-                        .collection(collectionNames.VENDORPRODUCTS)
-                        .doc(data.idVendor as string)
-                        .get();
+                    const { code: idCode, doc } = await getAccount(
+                        collectionNames.VENDORPRODUCTS,
+                        { id: idProducts }
+                    );
+                    vendorProductRef = doc;
+                    code = idCode;
                 } else {
                     functions.logger.info("LIST FROM VENDOR TOKEN");
-                    const queryVendor = db
-                        .collection(collectionNames.VENDORS)
-                        .where("token", "==", data.tokenVendor);
-                    let docReference = (await queryVendor.get()).docs[0];
 
-                    const vendorData: VendorCollectionData =
-                        docReference.data() as VendorCollectionData;
+                    const { code: codeToken, doc: docVendor } =
+                        await getAccountVendor(
+                            { id, token, email },
+                            ContributorLevel.VIEWER
+                        );
 
-                    vendorProductRef = await db
-                        .collection(collectionNames.VENDORPRODUCTS)
-                        .doc(vendorData.productsId as string)
-                        .get();
+                    if (codeToken === errorCodes.SUCCESFULL) {
+                        const vendorData: VendorCollectionData =
+                            docVendor.data() as VendorCollectionData;
+
+                        vendorProductRef = await db
+                            .collection(collectionNames.VENDORPRODUCTS)
+                            .doc(vendorData.productsId as string)
+                            .get();
+                    }
+                    code = codeToken;
                 }
 
-                functions.logger.info(
-                    "VENDOR PRODUCTS DOC::",
-                    vendorProductRef.id
-                );
-
                 if (vendorProductRef && vendorProductRef.exists) {
+                    functions.logger.info(
+                        "VENDOR PRODUCTS DOC::",
+                        vendorProductRef.id
+                    );
                     const productsRef = await db
                         .collection(collectionNames.VENDORPRODUCTS)
                         .doc(vendorProductRef.id)
@@ -387,12 +390,6 @@ export const listProduct = functions.https.onCall(
                         extra: products,
                     };
                 }
-                return {
-                    code: errorCodes.USER_NOT_EXISTS_ERROR,
-                    msg: messagesCode[errorCodes.USER_NOT_EXISTS_ERROR],
-                    error: true,
-                    extra: [],
-                };
             }
             return {
                 code: code,
@@ -416,44 +413,46 @@ export const getProductVendor = functions.https.onCall(
         context
     ): Promise<ResponseData<ProductListData>> => {
         try {
+            const { id, token, email, idProducts } = data;
+
             functions.logger.info("DATA::", data);
-            const { check, code } = checkProductListFields(data);
+            let { check, code } = checkProductListFields(data);
             if (check) {
                 const db = admin.firestore();
-                let vendorProductsRef: DocumentSnapshot;
-                if (
-                    data.idVendor &&
-                    data.idVendor !== null &&
-                    data.idVendor !== ""
-                ) {
-                    vendorProductsRef = await db
-                        .collection(collectionNames.VENDORPRODUCTS)
-                        .doc(data.idVendor)
-                        .get();
+                let vendorProductsRef;
+                if (idProducts && idProducts !== null && idProducts !== "") {
+                    const { code: codeId, doc: docId } = await getAccount(
+                        collectionNames.VENDORPRODUCTS,
+                        { id: idProducts }
+                    );
+
+                    code = codeId;
+                    vendorProductsRef = docId;
                 } else {
                     functions.logger.info("GET VENDOR BY TOKEN");
-                    const queryVendor = db
-                        .collection(collectionNames.VENDORS)
-                        .where("token", "==", data.tokenVendor);
-                    let docReference = (await queryVendor.get()).docs[0];
+                    const { code: codeToken, doc: docToken } =
+                        await getAccountVendor(
+                            { id, token, email },
+                            ContributorLevel.VIEWER
+                        );
 
-                    functions.logger.info("VENDOR DOC::", docReference.id);
+                    if (codeToken === errorCodes.SUCCESFULL) {
+                        const vendorData: VendorCollectionData =
+                            docToken.data() as VendorCollectionData;
 
-                    const vendorData: VendorCollectionData =
-                        docReference.data() as VendorCollectionData;
-
-                    vendorProductsRef = await db
-                        .collection(collectionNames.VENDORPRODUCTS)
-                        .doc(vendorData.productsId as string)
-                        .get();
+                        vendorProductsRef = await db
+                            .collection(collectionNames.VENDORPRODUCTS)
+                            .doc(vendorData.productsId as string)
+                            .get();
+                    }
+                    code = codeToken;
                 }
 
-                functions.logger.info(
-                    "PRODUCT VENDOR DOC::",
-                    vendorProductsRef.id
-                );
-
                 if (vendorProductsRef && vendorProductsRef.exists) {
+                    functions.logger.info(
+                        "PRODUCT VENDOR DOC::",
+                        vendorProductsRef.id
+                    );
                     const productVendorDoc = vendorProductsRef.data();
 
                     functions.logger.info(
@@ -471,13 +470,6 @@ export const getProductVendor = functions.https.onCall(
                         },
                     };
                 }
-
-                return {
-                    code: errorCodes.USER_NOT_EXISTS_ERROR,
-                    msg: messagesCode[errorCodes.USER_NOT_EXISTS_ERROR],
-                    error: true,
-                    extra: [],
-                };
             }
             return {
                 code: code,
@@ -527,7 +519,7 @@ export const productListPagination = functions.https.onCall(
     }
 );
 
-//funcion para filtrar productos
+// funcion para filtrar productos
 
 export const filterProductList = functions.https.onCall(
     async (data: any, context: any) => {

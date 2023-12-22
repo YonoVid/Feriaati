@@ -1,3 +1,6 @@
+import { ContributorLevel } from "../functionsTypes";
+import { UserRequestFields } from "./fields";
+
 export enum userStatus {
     registered = "registered",
     activated = "activated",
@@ -31,6 +34,15 @@ export type RegisterVendorFields = AccountFields & {
     confirmPassword: string;
     image: string | ArrayBuffer;
 };
+
+export type RegisterContributorFields = UserRequestFields &
+    AccountFields & {
+        name: string;
+        surname: string;
+        permission: ContributorLevel;
+        confirmPassword?: string;
+        token: string;
+    };
 
 export type ConfirmRegisterFields = UserFields & {
     code: string;

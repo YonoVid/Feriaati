@@ -1,18 +1,13 @@
 import React, { useState } from "react";
-import { httpsCallable, FunctionsError } from "firebase/functions";
-import { Alert, ScrollView, StyleSheet, Text, View } from "react-native";
+import { ScrollView, StyleSheet } from "react-native";
 import { NavigationProp, ParamListBase } from "@react-navigation/native";
 
-import { functions } from "@feria-a-ti/common/firebase";
-import { messagesCode } from "@feria-a-ti/common/constants/errors";
-import { checkRegisterVendorFields } from "@feria-a-ti/common/check/checkRegisterFields";
-import {
-    RegisterVendorFields,
-    userStatus,
-} from "@feria-a-ti/common/model/fields/registerFields";
-import { ResponseData } from "@feria-a-ti/common/model/functionsTypes";
+import { RegisterVendorFields } from "@feria-a-ti/common/model/fields/registerFields";
+
+import { registerAccountVendor } from "@feria-a-ti/common/functions/account/registerFunctions";
+
 import RegisterVendorForm from "@feria-a-ti/mobile/components/forms/RegisterVendorForm";
-import { useAppContext } from "../AppContext";
+import { useAppContext } from "@feria-a-ti/mobile/app/AppContext";
 
 export interface RegisterVendorProps {
     navigation: NavigationProp<ParamListBase>;
@@ -20,49 +15,29 @@ export interface RegisterVendorProps {
 
 export const RegisterVendor = (props: RegisterVendorProps) => {
     // Context variables
-    const { setSession, setMessage } = useAppContext();
+    const { setMessage } = useAppContext();
     // Navigation
     const { navigation } = props;
 
     //Account data
-    const [emailRegistered, setEmailRegistered] = useState("");
+    const [_emailRegistered, setEmailRegistered] = useState("");
 
     const [canRegister, setCanRegister] = useState(true);
 
+    //UI variables
+    const [canSubmit, setCanSubmit] = useState<boolean>();
+
     //Store user file data
-    const [imageData, setImageData] = useState<string | ArrayBuffer>("");
+    const [_imageData, setImageData] = useState<string | ArrayBuffer>("");
 
     const onSubmitRegister = async (data: RegisterVendorFields) => {
-        setCanRegister(false);
-        const check = checkRegisterVendorFields(data);
-
-        if (check) {
-            let dataWithImage = data;
-            dataWithImage.image = imageData;
-            //Call firebase function to create user
-            const addUser = httpsCallable<
-                RegisterVendorFields,
-                ResponseData<string>
-            >(functions, "addVendor");
-            data.status = userStatus.registered;
-            addUser(data)
-                .then((result) => {
-                    const { msg, error } = result.data;
-                    console.log(result);
-                    //Set registered email
-                    setEmailRegistered(data.email);
-                    setMessage({ msg, isError: error });
-                })
-                .catch((error) => {
-                    console.log(error);
-                    setMessage({ msg: messagesCode["ERR00"], isError: true });
-                    if (!error) {
-                        navigation.navigate("/loginVendor");
-                    }
-                })
-                .finally(() => setCanRegister(true));
-        }
-        console.log(data, check);
+        registerAccountVendor(
+            { formatedData: data, setCanSubmit, setMessage },
+            () => {
+                setEmailRegistered(data.email);
+                navigation.navigate("/loginVendor");
+            }
+        );
     };
 
     return (

@@ -1,4 +1,3 @@
-import { FieldValues } from "react-hook-form";
 import { FormProps } from "react-router-dom";
 import { FactureData } from "@feria-a-ti/common/model/functionsTypes";
 
@@ -8,6 +7,7 @@ export type FacturesListProps = FormProps & {
     factures: Array<FactureData>;
     filter?: string;
     loadSize?: number;
+    canSubmit?: boolean;
     onReload?: () => void;
 };
 

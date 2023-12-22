@@ -330,11 +330,7 @@ function RegisterVendorForm(props: RRegisterVendorFormProps) {
                             color="secondary"
                             type="submit"
                             variant="contained"
-                            disabled={
-                                props.canSubmit != null
-                                    ? !props.canSubmit
-                                    : false
-                            }
+                            disabled={canSubmit != null ? !canSubmit : false}
                         >
                             Registrar cuenta de vendedor
                         </Button>

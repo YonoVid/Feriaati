@@ -5,45 +5,22 @@ import WebView from "react-native-webview";
 import { Text, StyleSheet, ScrollView } from "react-native";
 import { NavigationProp, ParamListBase } from "@react-navigation/native";
 
-import { functions } from "@feria-a-ti/common/firebase";
-import { httpsCallable } from "@firebase/functions";
-
-import {
-    IntegrationApiKeys,
-    IntegrationCommerceCodes,
-    Options,
-    WebpayPlus,
-    Environment,
-} from "transbank-sdk";
-
 import { colors } from "@feria-a-ti/common/theme/base";
 
-import { callPayment } from "@feria-a-ti/common/functions/paymentFunctions";
-import { BUYERROR } from "@feria-a-ti/common/model/users/buyTypes";
-import {
-    AccountData,
-    ProductFactureData,
-    ResponseData,
-    SubscriptionData,
-} from "@feria-a-ti/common/model/functionsTypes";
-import {
-    BuyProductFormFields,
-    FactureTypes,
-    ProductFactureFields,
-} from "@feria-a-ti/common/model/fields/buyingFields";
-
-import { BuyForm } from "@feria-a-ti/mobile/components/forms/BuyForm";
-import { useAppContext } from "../AppContext";
-import { errorCodes, messagesCode } from "@feria-a-ti/common/constants/errors";
-import { checkBuyProduct } from "@feria-a-ti/common/check/checkBuyProduct";
+import { SubscriptionData } from "@feria-a-ti/common/model/functionsTypes";
+import { FactureTypes } from "@feria-a-ti/common/model/fields/buyingFields";
 import {
     SubscriptionFields,
     SubscriptionFormFields,
 } from "@feria-a-ti/common/model/account/subscriptionAccountFields";
-import { FieldValues } from "react-hook-form";
 import { GetAccountFields } from "@feria-a-ti/common/model/account/getAccountFields";
-import { checkGetAccountFields } from "@feria-a-ti/common/check/checkAccountFields";
-import { SubscriptionForm } from "../../components/forms/SubscriptionForm";
+import {
+    getSubscription,
+    paySubscriptionWeb,
+} from "@feria-a-ti/common/functions/payment/subscriptionFunctions";
+
+import { SubscriptionForm } from "@feria-a-ti/mobile/components/forms/SubscriptionForm";
+import { useAppContext } from "@feria-a-ti/mobile/app/AppContext";
 
 export interface SubscriptionAccountProps {
     navigation: NavigationProp<ParamListBase>;
@@ -53,7 +30,8 @@ function SubscriptionAccount(props: SubscriptionAccountProps) {
     const { navigation } = props;
 
     // Context variables
-    const { authToken, type, setMessage, resetProduct } = useAppContext();
+    const { authToken, emailUser, type, setMessage, resetProduct } =
+        useAppContext();
 
     const returnUrl = "https://localhost";
 
@@ -73,81 +51,33 @@ function SubscriptionAccount(props: SubscriptionAccountProps) {
         //Format data to send to server
         const formatedData: GetAccountFields = {
             token: authToken,
+            email: emailUser,
             type: type,
         };
-        const check = checkGetAccountFields(formatedData);
 
-        console.log("ERROR CHECK::", check);
-
-        if (check) {
-            //Lock register button
-            setCanSubmit(false);
-            //Call firebase function to create user
-            const getAccount = httpsCallable<
-                GetAccountFields,
-                ResponseData<SubscriptionData>
-            >(functions, "getAccountSubscription");
-            getAccount(formatedData)
-                .then((result) => {
-                    const { msg, error, extra } = result.data;
-                    console.log(result);
-                    //Show alert message
-                    setMessage({ msg, isError: error });
-                    setSubscriptionData(extra);
-                })
-                .catch((error) => {
-                    console.log(error);
-                    setMessage({ msg: messagesCode["ERR00"], isError: error });
-                })
-                .finally(() => setCanSubmit(true)); //Unlock register button
-        }
+        getSubscription(
+            { formatedData, setCanSubmit, setMessage },
+            (value: SubscriptionData) => {
+                setSubscriptionData(value);
+            }
+        );
     };
 
     const onSubmit = (data: SubscriptionFormFields) => {
         const formatedData: SubscriptionFields = {
             type: type,
+            email: emailUser,
             token: authToken as string,
             amount: data.amount,
             months: data.months,
         };
-        console.log("DATA::", formatedData);
-        // Generate facture
         if (canSubmit && subscriptionData && subscriptionData != null) {
-            setCanSubmit(false);
-            const buyProductUser = httpsCallable<
-                SubscriptionFields,
-                ResponseData<string>
-            >(functions, "setAccountSubscription");
-            buyProductUser(formatedData)
-                .then((result) => {
-                    const { msg, error, extra } = result.data;
-                    console.log(result.data);
-
-                    setMessage({ msg, isError: error });
-                    if (!error) {
-                        resetProduct();
-                        //setIsLogged(result.data as any);
-
-                        console.log("TRANSBANK TEST::");
-
-                        const amount = formatedData.amount;
-                        const sessionId = authToken + "-" + extra;
-
-                        const tx = new WebpayPlus.Transaction(
-                            new Options(
-                                IntegrationCommerceCodes.WEBPAY_PLUS,
-                                IntegrationApiKeys.WEBPAY,
-                                Environment.Integration
-                            )
-                        );
-                        tx.create(extra, sessionId, amount, returnUrl)
-                            .then((newResponse) => {
-                                setResponse(newResponse);
-                            })
-                            .finally(() => setCanSubmit(true));
-                    }
-                })
-                .finally(() => setCanSubmit(true));
+            paySubscriptionWeb(
+                { formatedData, returnUrl, setCanSubmit, setMessage },
+                (data) => {
+                    setResponse(data);
+                }
+            );
         } else {
             setMessage({ msg: "Datos de pedido incorrectos", isError: true });
         }

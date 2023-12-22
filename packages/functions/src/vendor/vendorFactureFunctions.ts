@@ -20,7 +20,8 @@ import {
     VendorProductData,
     YearFactureResumeCollection,
 } from "../model/transactionTypes";
-import { VendorCollectionData } from "../model/accountTypes";
+import { ContributorLevel, VendorCollectionData } from "../model/accountTypes";
+import { getAccountVendor } from "../account/accountVendorFunctions";
 /**
  * Function to log in user in the platform requires data of type LoginFields
  * @typeparam LoginFields - is the data from a login form
@@ -31,15 +32,17 @@ export const getVendorFactures = functions.https.onCall(
         context
     ): Promise<ResponseData<Array<FactureData>>> => {
         try {
-            var { code, check } = checkFactureFields(data);
+            let { code, check } = checkFactureFields(data);
 
             if (check) {
-                const { doc: docVendor, code: vendorCode } = await getAccount(
-                    collectionNames.VENDORS,
-                    {
-                        token: data.token,
-                    }
-                );
+                const { doc: docVendor, code: vendorCode } =
+                    await getAccountVendor(
+                        {
+                            token: data.token,
+                            email: data.email,
+                        },
+                        ContributorLevel.VIEWER
+                    );
                 if (vendorCode == errorCodes.SUCCESFULL) {
                     const { doc, code: productsCode } = await getAccount(
                         collectionNames.VENDORPRODUCTS,
@@ -136,15 +139,17 @@ export const getResume = functions.https.onCall(
         context
     ): Promise<ResponseData<Array<YearFactureResumeCollection>>> => {
         try {
-            var { code, check } = checkResumeFields(data);
+            let { code, check } = checkResumeFields(data);
 
             if (check) {
-                const { doc: docVendor, code: vendorCode } = await getAccount(
-                    collectionNames.VENDORS,
-                    {
-                        token: data.token,
-                    }
-                );
+                const { doc: docVendor, code: vendorCode } =
+                    await getAccountVendor(
+                        {
+                            token: data.token,
+                            email: data.email,
+                        },
+                        ContributorLevel.VIEWER
+                    );
                 if (vendorCode == errorCodes.SUCCESFULL) {
                     const { doc, code: productsCode } = await getAccount(
                         collectionNames.VENDORPRODUCTS,
@@ -223,7 +228,7 @@ export const registerFactureData = async (
                 .where("year", "==", date.getFullYear())
                 .get();
 
-            var newData: YearFactureResumeCollection = {
+            let newData: YearFactureResumeCollection = {
                 day: {
                     [date.getDate()]: {
                         transactions: 1,
@@ -258,61 +263,67 @@ export const registerFactureData = async (
                 };
             }
 
-            for (let key in data.products) {
-                const product = data.products[key];
-                const dateData = newData.day[date.getDate()];
-                if (
-                    dateData !== undefined &&
-                    dateData.products[key] !== undefined &&
-                    newData.lastUpdate.getDate() <= date.getDate()
-                ) {
-                    newData.day[date.getDate()].products[key] = {
-                        name: dateData.products[key].name,
-                        quantity:
-                            product.quantity + dateData.products[key].quantity,
-                        subtotal:
-                            product.subtotal + dateData.products[key].subtotal,
-                    };
-                } else {
-                    newData.day[date.getDate()] = {
-                        transactions: 1,
-                        totalIncome: product.subtotal,
-                        products: {
-                            [key]: {
-                                name: product.name,
-                                quantity: product.quantity,
-                                subtotal: product.subtotal,
+            for (const key in data.products) {
+                if (key) {
+                    const product = data.products[key];
+                    const dateData = newData.day[date.getDate()];
+                    if (
+                        dateData !== undefined &&
+                        dateData.products[key] !== undefined &&
+                        newData.lastUpdate.getDate() <= date.getDate()
+                    ) {
+                        newData.day[date.getDate()].products[key] = {
+                            name: dateData.products[key].name,
+                            quantity:
+                                product.quantity +
+                                dateData.products[key].quantity,
+                            subtotal:
+                                product.subtotal +
+                                dateData.products[key].subtotal,
+                        };
+                    } else {
+                        newData.day[date.getDate()] = {
+                            transactions: 1,
+                            totalIncome: product.subtotal,
+                            products: {
+                                [key]: {
+                                    name: product.name,
+                                    quantity: product.quantity,
+                                    subtotal: product.subtotal,
+                                },
                             },
-                        },
-                    };
-                }
-                const monthData = newData.month[date.getMonth()];
-                if (
-                    monthData !== undefined &&
-                    monthData.products[key] !== undefined &&
-                    newData.lastUpdate.getMonth() <= date.getMonth()
-                ) {
-                    newData.month[date.getMonth()].products[key] = {
-                        name: monthData.products[key].name,
-                        quantity:
-                            product.quantity + monthData.products[key].quantity,
-                        subtotal:
-                            product.subtotal + monthData.products[key].subtotal,
-                    };
-                } else {
-                    newData.month[date.getMonth()] = {
-                        transactions: 1,
-                        totalIncome: product.subtotal,
-                        products: {
-                            [key]: {
-                                name: product.name,
-                                quantity: product.quantity,
-                                subtotal: product.subtotal,
+                        };
+                    }
+                    const monthData = newData.month[date.getMonth()];
+                    if (
+                        monthData !== undefined &&
+                        monthData.products[key] !== undefined &&
+                        newData.lastUpdate.getMonth() <= date.getMonth()
+                    ) {
+                        newData.month[date.getMonth()].products[key] = {
+                            name: monthData.products[key].name,
+                            quantity:
+                                product.quantity +
+                                monthData.products[key].quantity,
+                            subtotal:
+                                product.subtotal +
+                                monthData.products[key].subtotal,
+                        };
+                    } else {
+                        newData.month[date.getMonth()] = {
+                            transactions: 1,
+                            totalIncome: product.subtotal,
+                            products: {
+                                [key]: {
+                                    name: product.name,
+                                    quantity: product.quantity,
+                                    subtotal: product.subtotal,
+                                },
                             },
-                        },
-                    };
+                        };
+                    }
+                    newData.totalIncome += product.subtotal;
                 }
-                newData.totalIncome += product.subtotal;
             }
 
             newData.lastUpdate = date;

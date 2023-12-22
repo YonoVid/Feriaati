@@ -24,7 +24,7 @@ export const Session = (props: SessionProps) => {
         if (checkSession()) {
             console.log("USER TOKEN::", authUser);
             console.log("USER TYPE::", type);
-            if (type === userType.vendor) {
+            if (type === userType.vendor || type === userType.contributor) {
                 navigation.reset({
                     index: 0,
                     routes: [{ name: "vendor" }],

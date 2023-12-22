@@ -17,7 +17,7 @@ import InputComponentAlt from "@feria-a-ti/web/src/components/inputComponent/Inp
 import "./AdminVendorUpdateForm.css";
 
 function AdminVendorUpdateForm(props: RVendorFullUpdateProps) {
-    const { label, color, children, vendor, onSubmit, onCancel } = props;
+    const { color, children, vendor, onSubmit, onCancel } = props;
 
     const { setValue, handleSubmit, watch, control } =
         useForm<FormUpdateFullVendorFields>();

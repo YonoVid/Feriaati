@@ -1,17 +1,16 @@
 import { useEffect, useContext, useState } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
-import { httpsCallable } from "firebase/functions";
+import { Navigate } from "react-router-dom";
 
-import { functions } from "@feria-a-ti/common/firebase";
-import {
-    FactureData,
-    ResponseData,
-} from "@feria-a-ti/common/model/functionsTypes";
+import LoadingOverlay from "react-loading-overlay-ts";
+
+import { FactureData, userType } from "@feria-a-ti/common/model/functionsTypes";
 import { FactureFields } from "@feria-a-ti/common/model/fields/factureFields";
+
+import { getVendorFactures } from "@feria-a-ti/common/functions/factureFunctions";
 
 import { UserContext } from "@feria-a-ti/web/src/App";
 
-import { useHeaderContext } from "../HeaderLayout";
+import { useHeaderContext } from "../HeaderFunction";
 import FacturesList from "../../components/factureList/FacturesList";
 import "../../App.css";
 
@@ -19,33 +18,29 @@ function VendorFacturesPage() {
     //Global UI context
     const { setMessage } = useHeaderContext();
     //Global state variable
-    const { authUser, authToken, type } = useContext(UserContext);
-    //Navigation definition
-    const navigate = useNavigate();
+    const { authUser, authToken, emailUser, type } = useContext(UserContext);
+    //UI variables
+    const [canSubmit, setCanSubmit] = useState<boolean>(true);
     // Retrived data
     const [factures, setFactures] = useState<Array<FactureData>>([]);
 
     const loadFactures = (index: number) => {
+        setCanSubmit(false);
+
         console.log("LOAD FACTURES");
         const formatedData: FactureFields = {
+            email: emailUser as string,
             token: authToken as string,
             index: index,
             size: 10,
         };
-        if (authUser != undefined || authUser != "") {
-            const getFactures = httpsCallable(functions, "getVendorFactures");
-            getFactures(formatedData).then((result) => {
-                const { msg, error, extra } = result.data as ResponseData<
-                    Array<FactureData>
-                >;
-                console.log(result);
-                //setIsLogged(result.data as any);
-                setMessage({ msg, isError: error });
-                if (!error) {
-                    setFactures && setFactures(factures.concat(extra));
-                }
-            });
-        }
+
+        getVendorFactures(
+            { formatedData, setCanSubmit, setMessage },
+            (data) => {
+                setFactures && setFactures(factures.concat(data));
+            }
+        );
     };
 
     useEffect(() => {
@@ -56,13 +51,21 @@ function VendorFacturesPage() {
 
     return (
         <>
-            {type === "user" && <Navigate to="/session" replace={true} />}
-            <FacturesList
-                userId={authUser || "userId"}
-                factures={factures}
-                label="Facturas de compras"
-                loadData={loadFactures}
-            />
+            {type !== userType.vendor && type !== userType.contributor && (
+                <Navigate to="/session" replace={true} />
+            )}
+            <LoadingOverlay
+                active={!canSubmit}
+                spinner
+                text="Realizando petición..."
+            >
+                <FacturesList
+                    userId={authUser || "userId"}
+                    factures={factures}
+                    label="Facturas de compras"
+                    loadData={loadFactures}
+                />
+            </LoadingOverlay>
         </>
     );
 }

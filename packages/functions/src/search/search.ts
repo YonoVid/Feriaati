@@ -7,6 +7,9 @@ const client = algoliasearch.default(
     process.env.SEARCH_ENGINE_API_KEY as string
 );
 
+export const productIndex = (id: string) => "product-" + id;
+export const productVendorIndex = (id: string) => "productVendor-" + id;
+
 export const editIndex = (data: any, indexName: string): Promise<unknown> => {
     try {
         // Create a new index and add a record

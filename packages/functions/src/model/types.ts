@@ -1,6 +1,7 @@
 import {
     AccountData,
     AccountDirection,
+    ContributorLevel,
     userStatus,
     userType,
 } from "./accountTypes";
@@ -10,12 +11,12 @@ import {
     ProductDiscount,
     ProductFactureData,
     ProductUnit,
-} from "./productTypes";
-import { DayTime } from "./productTypes";
+ DayTime } from "./productTypes";
 
 export type UserRequestFields = {
     token?: string;
     id?: string;
+    email: string;
 };
 
 export type AccountFields = {
@@ -28,13 +29,19 @@ export type GetAccountFields = UserRequestFields & {
     type: userType;
 };
 
+export type GetVendorAccountFields = GetAccountFields & {
+    permissions: ContributorLevel;
+};
+
 export type SubscriptionFields = GetAccountFields & {
     amount: number;
     months: number;
 };
 
-export type EditAccountFields = Partial<AccountData> & UserRequestFields;
-
+export type EditAccountFields = Partial<AccountData> &
+    UserRequestFields & {
+        updateEmail?: string;
+    };
 export type UserFields = AccountFields & {
     username: string;
 };
@@ -56,6 +63,15 @@ export type RegisterVendorFields = AccountFields & {
     confirmPassword: string;
     image: string;
 };
+
+export type RegisterContributorFields = UserRequestFields &
+    AccountFields & {
+        name: string;
+        surname: string;
+        permission: ContributorLevel;
+        confirmPassword?: string;
+        token: string;
+    };
 
 export type ConfirmRegisterFields = UserFields & {
     code: string;
@@ -106,13 +122,12 @@ export type ProductFields = {
     image: [string, string, string] | string;
 };
 
-export type ProductListFields = {
-    tokenVendor?: string;
-    idVendor?: string;
+export type ProductListFields = UserRequestFields & {
+    idProducts?: string;
 };
 
 export type ProductDeleteFields = ProductListFields & {
-    productId: string;
+    idProducts: string;
 };
 
 export type ProductEditFields = ProductFields & {
@@ -144,8 +159,7 @@ export type ProductSubscriptionFields = {
     type: userType;
 };
 
-export type UpdateProductVendorFields = {
-    tokenVendor?: string;
+export type UpdateProductVendorFields = UserRequestFields & {
     productVendorId: string;
     image?: string;
     serviceTime?: { start: DayTime; end: DayTime };
@@ -185,8 +199,17 @@ export type UpdateFullUserFields = {
     username?: string;
 };
 
-export type DeleteFields = {
-    token: string;
+export type UpdateContributorFields = UserRequestFields & {
+    contributorId: string;
+    productsId: string;
+    name?: string;
+    surname?: string;
+    password?: string;
+    confirmPassword?: string;
+    permission?: ContributorLevel;
+};
+
+export type DeleteFields = UserRequestFields & {
     itemId: string;
 };
 

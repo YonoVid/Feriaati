@@ -11,7 +11,7 @@ export const checkGetCommentsFields = (
     input: GetCommentsFields
 ): { check: boolean; code: errorCodes } => {
     const { id, token, max } = input;
-    //Check required values exist
+    // Check required values exist
     const requiredCheck =
         (id != null && id != "") || (token != "" && token != null);
     if (!requiredCheck) {
@@ -35,7 +35,7 @@ export const checkReportCommentFields = (
     input: ReportCommentFields
 ): { check: boolean; code: errorCodes } => {
     const { commentId, userToken, vendorId } = input;
-    //Check required values exist
+    // Check required values exist
     const requiredCheck =
         vendorId != null &&
         vendorId != "" &&
@@ -57,7 +57,7 @@ export const checkCommentFields = (
     input: CommentFields
 ): { check: boolean; code: errorCodes } => {
     const { vendorId, userToken, comment, opinion } = input;
-    //Check required values exist
+    // Check required values exist
     const requiredCheck =
         vendorId != null &&
         vendorId != "" &&

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import {
     Box,
@@ -11,10 +11,7 @@ import {
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import { RProductListProps } from "@feria-a-ti/common/model/props/productListProps";
-import {
-    ProductData,
-    ProductDiscount,
-} from "@feria-a-ti/common/model/functionsTypes";
+import { ProductData } from "@feria-a-ti/common/model/functionsTypes";
 
 import ProductView from "./ProductView";
 import "./ProductList.css";
@@ -41,6 +38,7 @@ function ProductList(props: RProductListProps) {
 
     const [page, setPage] = useState(1);
     const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
+        console.log(event);
         setPage(value);
     };
 

@@ -4,6 +4,7 @@ import { ResponseData } from "../model/reponseFields";
 import {
     AccountCollectionData,
     ActualSubscription,
+    ContributorLevel,
     SubscriptionCollectionData,
     SubscriptionData,
     SubscriptionStatus,
@@ -22,6 +23,7 @@ import { getAccount } from "../utilities/account";
 import { SubscriptionConstants } from "../model/dataTypes";
 import { Timestamp } from "firebase-admin/firestore";
 import { getConstant } from "../utilities/getConstant";
+import { getAccountVendor } from "./accountVendorFunctions";
 
 export const getAccountSubscription = functions.https.onCall(
     async (
@@ -29,19 +31,25 @@ export const getAccountSubscription = functions.https.onCall(
         context: any
     ): Promise<ResponseData<SubscriptionData>> => {
         try {
+            const { id, token, email } = data;
+
             let { check, code } = checkGetAccountFields(data);
 
             if (check) {
-                let { doc: docAccount, code: accountCode } = await getAccount(
-                    data.type === userType.vendor
-                        ? collectionNames.VENDORS
-                        : collectionNames.USERS,
-                    { id: data.id, token: data.token }
-                );
+                const { doc: docAccount, code: accountCode } =
+                    await (data.type === userType.user
+                        ? getAccount(collectionNames.USERS, {
+                              id: data.id,
+                              token: data.token,
+                          })
+                        : getAccountVendor(
+                              { id, token, email },
+                              ContributorLevel.VIEWER
+                          ));
 
                 let subscriptionData: SubscriptionData | undefined;
                 if (code === errorCodes.SUCCESFULL) {
-                    let { doc: constantReference, code: constantCode } =
+                    const { doc: constantReference, code: constantCode } =
                         await getConstant(constantNames.SUBSCRIPTIONS);
                     if (code === errorCodes.SUCCESFULL) {
                         const constantData: SubscriptionConstants =
@@ -102,19 +110,24 @@ export const setAccountSubscription = functions.https.onCall(
         context: any
     ): Promise<ResponseData<string>> => {
         try {
+            const { id, token, email } = data;
             let { check, code } = checkGetAccountFields(data);
 
             if (check) {
-                let { doc, code: accountCode } = await getAccount(
-                    data.type === userType.vendor
-                        ? collectionNames.VENDORS
-                        : collectionNames.USERS,
-                    { id: data.id, token: data.token }
-                );
+                const { doc: doc, code: accountCode } = await (data.type ===
+                userType.user
+                    ? getAccount(collectionNames.USERS, {
+                          id: data.id,
+                          token: data.token,
+                      })
+                    : getAccountVendor(
+                          { id, token, email },
+                          ContributorLevel.MANAGER
+                      ));
 
                 let subscriptionData: SubscriptionCollectionData | undefined;
                 if (code === errorCodes.SUCCESFULL) {
-                    let { doc: constantReference, code: constantCode } =
+                    const { doc: constantReference, code: constantCode } =
                         await getConstant(constantNames.SUBSCRIPTIONS);
                     if (code === errorCodes.SUCCESFULL) {
                         const constantData: SubscriptionConstants =
@@ -135,14 +148,32 @@ export const setAccountSubscription = functions.https.onCall(
                                 doc.data() as AccountCollectionData;
 
                             const now = Timestamp.now();
-                            const dateNow = new Date();
-                            const expiration = Timestamp.fromDate(
-                                new Date(
-                                    dateNow.setMonth(
-                                        dateNow.getMonth() + data.months
+                            let expiration;
+                            if (
+                                docData.subscription &&
+                                docData.subscription != null
+                            ) {
+                                const oldDate = new Date(1970, 0, 1);
+                                oldDate.setSeconds(
+                                    docData.subscription.expiration.seconds
+                                );
+                                expiration = Timestamp.fromDate(
+                                    new Date(
+                                        oldDate.setMonth(
+                                            oldDate.getMonth() + data.months
+                                        )
                                     )
-                                )
-                            );
+                                );
+                            } else {
+                                const dateNow = new Date();
+                                expiration = Timestamp.fromDate(
+                                    new Date(
+                                        dateNow.setMonth(
+                                            dateNow.getMonth() + data.months
+                                        )
+                                    )
+                                );
+                            }
 
                             subscriptionData = {
                                 status: SubscriptionStatus.PROCESSING,
@@ -174,7 +205,7 @@ export const setAccountSubscription = functions.https.onCall(
                             };
 
                             doc.ref.update({
-                                actualSubscription: actualSubscription,
+                                subscription: actualSubscription,
                             });
 
                             const error = code !== errorCodes.SUCCESFULL;
@@ -214,7 +245,7 @@ export const updateSubscriptionFacture = async (
     data: UpdateFactureFields
 ): Promise<ResponseData<string>> => {
     try {
-        let extra = data.facture;
+        const extra = data.facture;
         // Checks of data and database
         let code = errorCodes.SUCCESFULL;
 

@@ -6,14 +6,16 @@ type ColorsProps = {
     secondary: string;
     secondaryShadow: string;
     light: string;
+    dark: string;
 };
 
 export const colors: ColorsProps = {
     primary: "#89B056",
     primaryShadow: "#405228",
-    secondary: "#FFA3A3",
-    secondaryShadow: "##D04E4E",
+    secondary: "#F97777",
+    secondaryShadow: "#D04E4E",
     light: "#EEEAE0",
+    dark: "#3A433B99",
 };
 
 export const themeOptions: ThemeOptions = {

@@ -1,12 +1,23 @@
+import { collectionNames } from "../consts";
 import { LogicalData, TimeDate } from "./sharedTypes";
 
 export enum userType {
     admin = "admin",
     user = "user",
     vendor = "vendor",
+    contributor = "contributor",
     temp = "temp",
     undefined = "undefined",
 }
+
+export const UserCollection: { [type in userType]: collectionNames } = {
+    [userType.user]: collectionNames.USERS,
+    [userType.vendor]: collectionNames.VENDORS,
+    [userType.admin]: collectionNames.ADMINS,
+    [userType.contributor]: collectionNames.VENDORS,
+    [userType.temp]: collectionNames.USERS,
+    [userType.undefined]: collectionNames.USERS,
+};
 
 export enum userStatus {
     registered = "registered",
@@ -23,22 +34,30 @@ export type AccountDirection = {
     extra?: string;
 };
 
-export type AccountData = {
+export type AccountUser = {
+    id?: string;
     type: userType;
     email: string;
     password: string;
+    creationDate: Date;
+    status: string;
+    token?: string;
+};
+
+export type AccountData = AccountUser & {
     phone?: string;
     direction?: Array<AccountDirection>;
     subscription?: ActualSubscription;
 };
 
-export type AccountCollectionData = LogicalData &
-    AccountData & {
-        algorithm: string;
-        status: string;
-        iv: ArrayBuffer;
-        code: string;
-    };
+export type PasswordData = {
+    password: string;
+    algorithm: string;
+    iv: ArrayBuffer;
+    code?: string;
+};
+
+export type AccountCollectionData = LogicalData & AccountData & PasswordData;
 
 export type UserCollectionData = AccountCollectionData & {
     username: string;
@@ -57,6 +76,23 @@ export type VendorCollectionData = AccountCollectionData & {
     image: string;
     productsId: string | undefined;
 };
+
+export enum ContributorLevel {
+    MANAGER = "manager",
+    CASHIER = "cashier",
+    VIEWER = "viewer",
+}
+
+export type ContributorData = AccountUser & {
+    name: string;
+    surname: string;
+    permissions: ContributorLevel;
+    productsId: string;
+};
+
+export type ContributorCollectionData = LogicalData &
+    ContributorData &
+    PasswordData;
 
 export enum SubscriptionStatus {
     APPROVED = "approved",

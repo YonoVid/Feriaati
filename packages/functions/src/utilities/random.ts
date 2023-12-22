@@ -4,9 +4,9 @@ export const getRandomInt = (max: number) => {
 
 export const getRandomIntString = (
     max: number,
-    fixedLength: boolean = true
+    fixedLength = true
 ) => {
-    let number = getRandomInt(max);
+    const number = getRandomInt(max);
     return number
         .toString()
         .padStart((fixedLength ? max : number).toString().length, "0");

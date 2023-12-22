@@ -12,16 +12,16 @@ import { ProductFactureData } from "../model/productTypes";
 export const checkPetitionVendor = functions.https.onCall(
     async (data: UserRequestFields): Promise<ResponseData<Array<string>>> => {
         try {
-            let petitions: Array<ProductFactureData> = [];
-            //Checks of data and database
+            const petitions: Array<ProductFactureData> = [];
+            // Checks of data and database
             let code = errorCodes.SUCCESFULL;
-            let check = true;
-            //Get collection of email data
+            const check = true;
+            // Get collection of email data
 
             functions.logger.info("DATA::", data);
 
             if (check) {
-                let { code: accountCode, doc: collectionDoc } =
+                const { code: accountCode, doc: collectionDoc } =
                     await getAccount(
                         collectionNames.VENDORS,
                         {
@@ -39,7 +39,7 @@ export const checkPetitionVendor = functions.https.onCall(
                     const docReference = (await queryProducts.get()).docs[0];
 
                     if (docReference.exists) {
-                        //Access documents from the collection an store them
+                        // Access documents from the collection an store them
                         const collectionDocuments = await docReference.ref
                             .collection(collectionNames.FACTURES)
                             .get();

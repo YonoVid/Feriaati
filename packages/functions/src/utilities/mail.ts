@@ -1,14 +1,14 @@
-import * as sendGrid from "@sendgrid/mail";
-//Set API Key to use service
-//"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"
+import sendGrid from "@sendgrid/mail";
+// Set API Key to use service
+// "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"
 sendGrid.setApiKey(process.env.SENDGRID_API_KEY as string);
 
 /**
  * Function to send the verification code of a user
  * trying to register in the platform
- * @param username Name of user being created
- * @param email Email of user being created
- * @param code Verification code to activate account
+ * @param {string} username Name of user being created
+ * @param {string} email Email of user being created
+ * @param {string} code Verification code to activate account
  */
 export const sendVerificationMail = (
     username: string,
@@ -29,6 +29,12 @@ export const sendVerificationMail = (
         .catch((reason: any) => console.log(reason, reason.body?.errors));
 };
 
+/**
+ * Function to send the verification code to recover mail
+ * @param {string} username Name of user
+ * @param {string} email Email of user
+ * @param {string} code Verification code to change password
+ */
 export const sendRecoveryMail = (
     username: string,
     email: string,

@@ -1,21 +1,19 @@
 import { useContext, useState } from "react";
 import { FieldValues } from "react-hook-form";
 import { Navigate, useNavigate } from "react-router-dom";
-import { httpsCallable } from "firebase/functions";
 import { Link } from "@mui/material";
 
-import { functions } from "@feria-a-ti/common/firebase";
-import { checkLoginFields } from "@feria-a-ti/common/check/checkLoginFields";
+import LoadingOverlay from "react-loading-overlay-ts";
+
 import { LoginFields } from "@feria-a-ti/common/model/fields/loginFields";
-import {
-    ResponseData,
-    UserToken,
-} from "@feria-a-ti/common/model/functionsTypes";
+import { UserToken, userType } from "@feria-a-ti/common/model/functionsTypes";
+import { loginVendor } from "@feria-a-ti/common/functions/accessFunctions";
+
 import LoginForm from "@feria-a-ti/web/src/components/forms/loginForm/LoginForm";
 
 import { UserContext } from "@feria-a-ti/web/src/App";
-import { useHeaderContext } from "../HeaderLayout";
-import "../../App.css";
+import { useHeaderContext } from "@feria-a-ti/web/src/pages/HeaderFunction";
+import "@feria-a-ti/web/src/App.css";
 
 function VendorLoginPage() {
     //Global UI context
@@ -38,56 +36,46 @@ function VendorLoginPage() {
             attempts: attempt,
         };
         console.log(formatedData);
-        const check = checkLoginFields(formatedData);
-        if (check) {
-            //Lock button
-            setCanSubmit(false);
-            const login = httpsCallable(functions, "loginVendor");
-            login(formatedData)
-                .then((result) => {
-                    const {
-                        msg,
-                        error,
-                        extra: { token, email, type },
-                    } = result.data as ResponseData<UserToken>;
-                    localStorage.setItem("token", token);
-                    console.log(result);
-                    console.log(attempt);
-                    //setIsLogged(result.data as any);
-                    if (msg !== "") {
-                        setMessage({ msg, isError: error });
-                    }
-                    if (token != null && token !== "") {
-                        setSession && setSession({ token, type, email });
-                        navigate("/session");
-                    }
-                })
-                .finally(() => setCanSubmit(true));
-        }
+
+        loginVendor(
+            { formatedData, setCanSubmit, setMessage },
+            (value: UserToken) => {
+                setSession && setSession(value);
+                navigate("/session");
+            }
+        );
     };
     return (
         <>
-            {type === "vendor" && <Navigate to="/session" replace={true} />}
-            <LoginForm
-                label="Iniciar sesión de vendedor"
-                color="secondary"
-                onSubmit={onSubmit}
-                canSubmit={canSubmit}
+            {(type === userType.vendor || type === userType.contributor) && (
+                <Navigate to="/session" replace={true} />
+            )}
+            <LoadingOverlay
+                active={!canSubmit}
+                spinner
+                text="Realizando petición..."
             >
-                <Link
-                    component="button"
-                    onClick={() => navigate("/registerVendor")}
+                <LoginForm
+                    label="Iniciar sesión de vendedor"
+                    color="secondary"
+                    onSubmit={onSubmit}
+                    canSubmit={canSubmit}
                 >
-                    No tienes una cuenta? Registrate
-                </Link>
-                <br />
-                <Link
-                    component="button"
-                    onClick={() => navigate("/recoveryVendor")}
-                >
-                    Olvidaste tu contraseña?
-                </Link>
-            </LoginForm>
+                    <Link
+                        component="button"
+                        onClick={() => navigate("/registerVendor")}
+                    >
+                        ¿No tienes una cuenta? Regístrate
+                    </Link>
+                    <br />
+                    <Link
+                        component="button"
+                        onClick={() => navigate("/recoveryVendor")}
+                    >
+                        ¿Olvidaste tu contraseña?
+                    </Link>
+                </LoginForm>
+            </LoadingOverlay>
         </>
     );
 }

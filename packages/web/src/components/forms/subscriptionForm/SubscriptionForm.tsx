@@ -1,13 +1,6 @@
-import { useEffect, useState } from "react";
-import { Controller, useForm } from "react-hook-form";
-import {
-    Box,
-    Button,
-    Card,
-    CardActions,
-    Divider,
-    Typography,
-} from "@mui/material";
+import { useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { Button, Card, CardActions, Divider, Typography } from "@mui/material";
 import { RSubscriptionFormProps } from "@feria-a-ti/common/model/props/subscriptionFormProps";
 
 import { SubscriptionFormFields } from "@feria-a-ti/common/model/account/subscriptionAccountFields";
@@ -18,10 +11,9 @@ import InputRadioComponent from "../../inputRadioComponent/InputRadioComponent";
 
 function SubscriptionForm(props: RSubscriptionFormProps) {
     const { subscription, onSubmit } = props;
-    const { watch, handleSubmit, setValue, reset, clearErrors, control } =
-        useForm<SubscriptionFormFields>({
-            defaultValues: { amount: 2000, months: 1 },
-        });
+    const { watch, handleSubmit, setValue } = useForm<SubscriptionFormFields>({
+        defaultValues: { amount: 2000, months: 1 },
+    });
 
     useEffect(() => {
         if (subscription && subscription !== null) {

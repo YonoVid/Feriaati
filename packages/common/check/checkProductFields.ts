@@ -54,13 +54,11 @@ export const checkAddProductFields = (input: ProductFields): boolean => {
 export const checkDeleteProductFields = (
     input: ProductDeleteFields
 ): boolean => {
-    const { tokenVendor, idVendor, productId } = input;
+    const { token, email, idProducts } = input;
     //Check required values exist
     const requiredCheck =
-        ((tokenVendor != null && tokenVendor != "") ||
-            (idVendor != "" && idVendor != null)) &&
-        productId != "" &&
-        productId != "";
+        (token != null && token != "" && email != null && email != "") ||
+        (idProducts != "" && idProducts != null);
     console.log("Required check", requiredCheck);
 
     // console.log("Username check", userCheck);

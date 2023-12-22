@@ -9,7 +9,7 @@ import { userType } from "@feria-a-ti/common/model/functionsTypes";
 import ShoppingCartComponent from "@feria-a-ti/web/src/components/shoppingCartComponent/ShoppingCartComponent";
 import { UserContext } from "@feria-a-ti/web/src/App";
 
-import { useHeaderContext } from "../HeaderLayout";
+import { useHeaderContext } from "../HeaderFunction";
 import {
     ProductId,
     ShoppingCartItem,
@@ -17,10 +17,9 @@ import {
 
 const ShoppingCartPage = () => {
     //Global UI context
-    const { products, setMessage, editProduct, deleteProduct, resetProduct } =
-        useHeaderContext();
+    const { products, editProduct, deleteProduct } = useHeaderContext();
     //Global state variable
-    const { authToken, type } = useContext(UserContext);
+    const { type } = useContext(UserContext);
     //Navigation definition
     const navigate = useNavigate();
 
